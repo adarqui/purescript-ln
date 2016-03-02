@@ -4,6 +4,10 @@
   "moduleType": [
     "node"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/adarqui/purescript-ln.git"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
