@@ -1,0 +1,102 @@
+module LN.T.Leuron.Ajax (
+  ajaxFetchLeuron,
+  ajaxRandomLeuron,
+  ajaxAddByLeuron,
+  ajaxAddByResource,
+  ajaxAddByCategory,
+  ajaxAddByInt,
+  ajaxAddBy,
+  ajaxStatusKnow,
+  ajaxStatusDontKnow,
+  ajaxStatusDontCare,
+  ajaxStatus,
+  ajaxReset
+) where
+
+import Prelude
+import Data.Either
+import Data.Int
+import Data.JSON
+import Data.Maybe
+
+import LN.T.Leuron
+
+import Control.Monad.Aff
+import Control.Monad.Eff
+import Control.Monad.Eff.Class
+import Control.Monad.Eff.Console
+
+import Network.HTTP.Affjax
+import Network.HTTP.Method
+import Network.HTTP.MimeType
+import Network.HTTP.MimeType.Common
+import Network.HTTP.RequestHeader
+import Network.HTTP.StatusCode
+
+import Global
+
+ajaxFetchLeuron :: forall eff. String -> Aff (ajax :: AJAX | eff) (Either String LeuronEntry)
+ajaxFetchLeuron lid = do
+  res <- affjax $ defaultRequest { method = GET, url = ("/leurons/" ++ lid), headers = [ContentType applicationJSON] }
+  let le = eitherDecode res.response :: Either String LeuronEntry
+  return le
+
+-- buckets
+
+ajaxRandomLeuron :: forall eff. String -> Aff (ajax :: AJAX | eff) (Either String LeuronEntry)
+ajaxRandomLeuron bucket_id = do
+  res <- affjax $ defaultRequest { method = GET, url = ("/buckets/member/" ++ bucket_id), headers = [ContentType applicationJSON] }
+  case res.status of
+       StatusCode 400 -> do
+              liftEff $ log "400"
+              return $ Left "error 400"
+       _              -> do
+              let le = eitherDecode res.response :: Either String LeuronEntry
+              return le
+
+ajaxAddByLeuron :: forall eff. String -> String -> Aff (ajax :: AJAX | eff) String
+ajaxAddByLeuron = ajaxAddByInt "leuron"
+
+ajaxAddByResource :: forall eff. String -> String -> Aff (ajax :: AJAX | eff) String
+ajaxAddByResource = ajaxAddByInt "resource"
+
+ajaxAddByCategory :: forall eff. String -> String -> Aff (ajax :: AJAX | eff) String
+ajaxAddByCategory = ajaxAddBy "category"
+
+ajaxAddBy :: forall eff. String -> String -> String -> Aff (ajax :: AJAX | eff) String
+ajaxAddBy type_id bucket_id the_id = do
+  res <- affjax $ defaultRequest { method = POST, url = ("/buckets/" ++ type_id ++ "/" ++ bucket_id), headers = [ContentType applicationJSON], content = Just (encode the_id) }
+
+  liftEff $ log res.response
+  return "hi"
+
+ajaxAddByInt :: forall eff. String -> String -> String -> Aff (ajax :: AJAX | eff) String
+ajaxAddByInt type_id bucket_id the_id = do
+  res <- affjax $ defaultRequest { method = POST, url = ("/buckets/" ++ type_id ++ "/" ++ bucket_id), headers = [ContentType applicationJSON], content = Just (encode (readInt 10 the_id)) }
+  liftEff $ log res.response
+  return "hi"
+
+--
+-- setting the status of a leuron: know, dont know, dont care
+--
+
+ajaxStatusKnow :: forall eff. String -> String -> Aff (ajax :: AJAX | eff) String
+ajaxStatusKnow = ajaxStatus "know"
+
+ajaxStatusDontKnow :: forall eff. String -> String -> Aff (ajax :: AJAX | eff) String
+ajaxStatusDontKnow = ajaxStatus "dont_know"
+
+ajaxStatusDontCare :: forall eff. String -> String -> Aff (ajax :: AJAX | eff) String
+ajaxStatusDontCare = ajaxStatus "dont_care"
+
+ajaxStatus :: forall eff. String -> String -> String -> Aff (ajax :: AJAX | eff) String
+ajaxStatus status bucket_id leuron_id = do
+  res <- affjax $ defaultRequest { method = GET, url = ("/buckets/status/" ++ status ++ "/" ++ bucket_id ++ "/" ++ leuron_id), headers = [ContentType applicationJSON] }
+  liftEff $ log res.response
+  return "hi"
+
+ajaxReset :: forall eff. String -> Int -> Aff (ajax :: AJAX | eff) Unit
+ajaxReset title max = do
+  res <- affjax $ defaultRequest { method = POST, url = ("/buckets/reset/" ++ title ++ "/" ++ show max), headers = [ContentType applicationJSON] }
+  liftEff $ log res.response
+  return unit
