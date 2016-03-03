@@ -38,6 +38,10 @@ data Resource = Resource {
 
 
 
+unResource (Resource r) = r
+
+
+
 defaultResource = Resource {
   resourceId            : toId 0,
   resourceTitle         : "empty",
@@ -87,7 +91,7 @@ instance resourceTypeToJSON :: ToJSON ResourceType where
   toJSON (URL s) = object ["tag".="URL","contents".=s]
 
 instance resourceShow :: Show Resource where
-  show _ = "Resource"
+  show (Resource r) = "Resource, title="<>r.resourceTitle<>", description="<>r.resourceDescription
 
 instance resourceEq :: Eq Resource where
   eq (Resource r1) (Resource r2) = r1.resourceId == r2.resourceId
