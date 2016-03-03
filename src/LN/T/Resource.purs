@@ -17,6 +17,7 @@ data ResourceType
   | ISBN10 String
   | ISBN String
   | URL String
+  | SourceNone
 
 data Resource = Resource {
   resourceId            :: Id,
@@ -46,7 +47,7 @@ defaultResource = Resource {
   resourceId            : toId 0,
   resourceTitle         : "empty",
   resourceDescription   : "empty",
-  resourceSource        : URL "http://empty",
+  resourceSource        : SourceNone,
   resourceAuthor        : Nothing,
   resourceOwners        : [],
   resourceParticipants  : [],
@@ -66,6 +67,7 @@ instance resourceTypeShow :: Show ResourceType where
   show (ISBN10 s) = s
   show (ISBN s)   = s
   show (URL s)    = s
+  show SourceNone = "SourceNone"
   show _       = "Unknown Resource Type"
 
 instance resourceTypeEq :: Eq ResourceType where
@@ -73,22 +75,26 @@ instance resourceTypeEq :: Eq ResourceType where
   eq (ISBN10 s1) (ISBN10 s2) = s1 == s2
   eq (ISBN s1) (ISBN s2)     = s1 == s2
   eq (URL s1) (URL s2)       = s1 == s2
+  eq SourceNone SourceNone   = true
+  eq _ _                     = false
 
 instance resourceTypeFromJSON :: FromJSON ResourceType where
   parseJSON (JObject o) = do
     tag <- o .: "tag"
     case tag of
-         "ISBN13" -> ISBN13 <$> (o .: "contents")
-         "ISBN10" -> ISBN10 <$> (o .: "contents")
-         "ISBN"   -> ISBN <$> (o .: "contents")
-         "URL"    -> URL <$> (o .: "contents")
+         "ISBN13"     -> ISBN13 <$> (o .: "contents")
+         "ISBN10"     -> ISBN10 <$> (o .: "contents")
+         "ISBN"       -> ISBN <$> (o .: "contents")
+         "URL"        -> URL <$> (o .: "contents")
+         "SourceNone" -> pure SourceNone
   parseJSON _ = fail "ResourceType: Invalid JSON"
 
 instance resourceTypeToJSON :: ToJSON ResourceType where
   toJSON (ISBN13 s) = object ["tag".="ISBN13","contents".=s]
   toJSON (ISBN10 s) = object ["tag".="ISBN10","contents".=s]
   toJSON (ISBN s)   = object ["tag".="ISBN","contents".=s]
-  toJSON (URL s) = object ["tag".="URL","contents".=s]
+  toJSON (URL s)    = object ["tag".="URL","contents".=s]
+  toJSON SourceNone = object ["tag".="SourceNone"]
 
 instance resourceShow :: Show Resource where
   show (Resource r) = "Resource, title="<>r.resourceTitle<>", description="<>r.resourceDescription
