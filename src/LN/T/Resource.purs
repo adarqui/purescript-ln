@@ -104,20 +104,20 @@ instance resourceEq :: Eq Resource where
 
 instance resourceFromJSON :: FromJSON Resource where
   parseJSON (JObject o) = do
-    resource_id            <- o .: "resourceId"
-    resource_title         <- o .: "resourceTitle"
-    resource_description   <- o .: "resourceDescription"
-    resource_source        <- o .: "resourceSource"
-    resource_author        <- o .:? "resourceAuthor"
-    resource_owners        <- o .: "resourceOwners"
-    resource_participants  <- o .: "resourceParticipants"
-    resource_visibility    <- o .: "resourceVisibility"
-    resource_prerequisites <- o .: "resourcePrerequisites"
-    resource_categories    <- o .: "resourceCategories"
-    resource_counter       <- o .: "resourceCounter"
-    resource_version       <- o .:? "resourceVersion"
-    resource_urls          <- o .:? "resourceUrls"
-    resource_ts            <- o .:? "resourceTs"
+    resource_id            <- o .: "id"
+    resource_title         <- o .: "title"
+    resource_description   <- o .: "desc"
+    resource_source        <- o .: "source"
+    resource_author        <- o .:? "author"
+    resource_owners        <- o .: "owners"
+    resource_participants  <- o .: "participants"
+    resource_visibility    <- o .: "visibility"
+    resource_prerequisites <- o .: "prereqs"
+    resource_categories    <- o .: "categories"
+    resource_counter       <- o .: "counter"
+    resource_version       <- o .:? "version"
+    resource_urls          <- o .:? "urls"
+    resource_ts            <- o .:? "ts"
     return $ Resource {
       resourceId:            resource_id,
       resourceTitle:         resource_title,
@@ -138,4 +138,4 @@ instance resourceFromJSON :: FromJSON Resource where
 
 instance resourceToJSON :: ToJSON Resource where
   toJSON (Resource {resourceId=x1, resourceTitle=x2, resourceDescription=x3, resourceAuthor=x4, resourcePrerequisites=x5, resourceCategories=x6, resourceCounter=x7, resourceVersion=x8, resourceUrls=x9, resourceSource=x10, resourceOwners=x11, resourceParticipants=x12, resourceVisibility=x13, resourceTs=x14})
-    = object [ "resourceId".=x1, "resourceTitle".=x2, "resourceDescription".=x3, "resourceAuthor".=x4, "resourcePrerequisites".=x5, "resourceCategories".=x6, "resourceCounter".=x7, "resourceVersion".=x8, "resourceUrls".=x9, "resourceSource".=x10, "resourceOwners".=x11, "resourceParticipants".=x12, "resourceVisibility".=x13, "resourceTs".=x14 ]
+    = object [ "id".=x1, "title".=x2, "desc".=x3, "author".=x4, "prereqs".=x5, "categories".=x6, "counter".=x7, "version".=x8, "urls".=x9, "source".=x10, "owners".=x11, "participants".=x12, "visibility".=x13, "ts".=x14 ]
