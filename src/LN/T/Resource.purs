@@ -45,8 +45,8 @@ unResource (Resource r) = r
 
 defaultResource = Resource {
   resourceId            : toId 0,
-  resourceTitle         : "empty",
-  resourceDescription   : "empty",
+  resourceTitle         : "",
+  resourceDescription   : "",
   resourceSource        : SourceNone,
   resourceAuthor        : Nothing,
 --  resourceOwners        : [],
