@@ -121,3 +121,23 @@ maybeField_EditAndDelete input_type label mvalue set_cb edit_cb delete_cb =
         (Just value) ->
             deleteAndEdit input_type value edit_cb delete_cb
     ]
+
+
+
+-- | Creates a radio menu
+--
+-- radioMenu "Leuron Type" "leuron-type" [NONE, FACT, CARD] SetLeuronType
+--
+radioMenu :: forall a b c. Show c => String -> String -> Array c -> (c -> Unit -> a Unit) -> HTML b a
+radioMenu menu_label radio_name radios setter =
+  H.p_ $
+      H.label_ [H.text menu_label] `cons`
+      map (\radio ->
+          H.label
+            [radioInlineClasses]
+            [
+              H.text (show radio),
+              H.input [P.inputType P.InputRadio, P.name radio_name, P.value "", E.onChecked (E.input_ (setter
+radio))]
+            ]
+      ) radios
