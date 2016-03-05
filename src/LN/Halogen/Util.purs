@@ -76,3 +76,26 @@ deleteAndEdit value edit_cb delete_cb =
           ] [H.text "✖"]
         ]
     ]
+
+
+deleteAndEditLabeled label value edit_cb delete_cb =
+  H.div
+    [_class "form-group"]
+    [
+      H.label
+        [_classes ["control-label col-sm-2"]]
+        [H.text label]
+
+    , H.div [_class "form-group"] [
+        H.input [formControlClasses, P.value value, E.onValueChange edit_cb],
+          H.span
+            [P.class_ (H.className "input-group-btn")]
+            [
+              H.button [
+                buttonClasses,
+                P.title "Delete",
+                E.onClick delete_cb
+              ] [H.text "✖"]
+            ]
+      ]
+    ]
