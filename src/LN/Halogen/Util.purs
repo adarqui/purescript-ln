@@ -132,11 +132,10 @@ radioMenu :: forall a b c d. (Show c, Eq c) => String -> String -> Array c -> (c
 radioMenu menu_label radio_name radios setter checked_value =
   H.p_ $
       H.label_ [H.text menu_label] `cons`
-      map (\radio ->
-          H.label
+      concatMap (\radio ->
+          [H.label
             [radioInlineClasses]
-            [
-              H.text (show radio),
-              H.input [P.inputType P.InputRadio, P.name radio_name, P.value "", E.onChecked (E.input_ (setter radio)), P.checked (checked_value == radio)]
-            ]
+            [H.text (show radio)]
+           ,H.input [P.inputType P.InputRadio, P.name radio_name, P.value "", E.onChecked (E.input_ (setter radio)), P.checked (checked_value == radio)]
+          ]
       ) radios
