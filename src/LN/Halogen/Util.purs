@@ -54,6 +54,11 @@ _class = P.class_ <<< H.className
 
 -- | Create a text field which can be edited or deleted
 --
+-- deleteAndEdit
+--  author
+--  (E.input (\new -> EditResourceAuthor author new))
+--  (E.input_ (RemoveResourceAuthor author))
+
 deleteAndEdit value edit_cb delete_cb =
   H.div
     [P.class_ (H.className "input-group")]
