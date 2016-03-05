@@ -158,3 +158,11 @@ radioMenu menu_label radio_name radios setter checked_value =
            ,H.input [P.inputType P.InputRadio, P.name radio_name, P.value "", E.onChecked (E.input_ (setter radio)), P.checked (checked_value == radio)]
           ]
       ) radios
+
+
+
+-- | creates a simple info button
+--
+-- simpleInfoButton "Create!" CreateResource
+--
+simpleInfoButton label act = H.p_ [ H.button [buttonClasses, E.onClick (E.input_ act) ] [ H.text label ] ]
