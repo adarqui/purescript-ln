@@ -104,15 +104,16 @@ deleteAndEditLabeled input_type label value edit_cb delete_cb =
 
 -- | Creates a mandatory field
 --
--- labeledInputField "Title" "Title" resource.resourceTitle (E.input SetResourcetitle)
+-- labeledInputField "Title" "Title" resource.resourceTitle P.InputText (E.input SetResourcetitle)
 --
-labeledInputField label placeholder value setter =
+labeledInputField label placeholder value input_type setter =
   H.div
     [formGroupClasses]
     [
       H.label_ [H.text label],
       H.input [
         formControlClasses,
+        P.inputType input_type,
         P.placeholder placeholder,
         P.value value,
         E.onValueChange setter
