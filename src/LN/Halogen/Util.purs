@@ -87,7 +87,7 @@ deleteAndEditLabeled label value edit_cb delete_cb =
         [H.text label]
 
     , H.div [_class "form-group"] [
-        H.input [formControlClasses, P.value value, E.onValueChange edit_cb],
+        H.input [formControlClasses, _class "col-sm-6", P.value value, E.onValueChange edit_cb],
           H.span
             [P.class_ (H.className "input-group-btn")]
             [
