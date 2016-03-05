@@ -57,15 +57,16 @@ _classes classes = P.classes $ map H.className classes
 -- | Create a text field which can be edited or deleted
 --
 -- deleteAndEdit
+--  P.InputText
 --  author
 --  (E.input (\new -> EditResourceAuthor author new))
 --  (E.input_ (RemoveResourceAuthor author))
 
-deleteAndEdit value edit_cb delete_cb =
+deleteAndEdit input_type value edit_cb delete_cb =
   H.div
     [P.class_ (H.className "input-group")]
     [
-      H.input [formControlClasses, P.value value, E.onValueChange edit_cb],
+      H.input [formControlClasses, P.value value, E.onValueChange edit_cb, P.inputType input_type],
       H.span
         [P.class_ (H.className "input-group-btn")]
         [
@@ -78,7 +79,7 @@ deleteAndEdit value edit_cb delete_cb =
     ]
 
 
-deleteAndEditLabeled label value edit_cb delete_cb =
+deleteAndEditLabeled input_type label value edit_cb delete_cb =
   H.div
     [_class "form-group"]
     [
@@ -87,7 +88,7 @@ deleteAndEditLabeled label value edit_cb delete_cb =
         [H.text label]
 
     , H.div [_class "form-group"] [
-        H.input [formControlClasses, _class "col-sm-6", P.value value, E.onValueChange edit_cb],
+        H.input [formControlClasses, _class "col-sm-6", P.value value, E.onValueChange edit_cb, P.inputType input_type],
           H.span
             [P.class_ (H.className "input-group-btn")]
             [
@@ -107,7 +108,7 @@ deleteAndEditLabeled label value edit_cb delete_cb =
 -- Then, we can edit & delete it.
 --
 --
-maybeField_EditAndDelete label mvalue set_cb edit_cb delete_cb =
+maybeField_EditAndDelete input_type label mvalue set_cb edit_cb delete_cb =
   H.div
     [formGroupClasses, _class "form-group"]
     [
@@ -118,5 +119,5 @@ maybeField_EditAndDelete label mvalue set_cb edit_cb delete_cb =
             [buttonClasses, P.title "Add", E.onClick set_cb]
             [H.text "Add"]
         (Just value) ->
-            deleteAndEdit value edit_cb delete_cb
+            deleteAndEdit input_type value edit_cb delete_cb
     ]
