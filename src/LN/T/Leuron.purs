@@ -10,7 +10,7 @@ import Data.Array
 import Data.Maybe
 import Data.JSON
 
-data Leuron
+data LeuronData
   = LnAcronym Acronym
   | LnAntonym Antonym
   | LnFact Fact
@@ -21,10 +21,10 @@ data Leuron
   | LnSynonym Synonym
   | LnEmpty
 
-data LeuronEntry = LeuronEntry {
+data Leuron = Leuron {
   leuronId            :: Id,
   leuronResourceId    :: Id,
-  leuron              :: Leuron,
+  leuronData          :: LeuronData,
   leuronTitle         :: Maybe String,
   leuronDescription   :: Maybe String,
   leuronSection       :: Maybe String,
@@ -226,10 +226,10 @@ instance synonymToJSON :: ToJSON Synonym where
 
 
 
-defaultLeuron = LeuronEntry {
+defaultLeuron = Leuron {
   leuronId:            toId 0,
   leuronResourceId:    toId 0,
-  leuron:              LnEmpty,
+  leuronData:          LnEmpty,
   leuronTitle:         Nothing,
   leuronDescription:   Nothing,
   leuronSection:       Nothing,
@@ -245,10 +245,10 @@ defaultLeuron = LeuronEntry {
 
 
 
-instance leuronShow :: Show Leuron where
+instance leuronDataShow :: Show LeuronData where
   show _ = "Leuron"
 
-instance leuronFromJSON :: FromJSON Leuron where
+instance leuronDataFromJSON :: FromJSON LeuronData where
   parseJSON (JObject o) = do
     tag <- o .: "tag"
     case tag of
@@ -263,7 +263,7 @@ instance leuronFromJSON :: FromJSON Leuron where
          "LnEmpty"    -> pure LnEmpty
   parseJSON _ = fail "Leuron: Invalid JSON"
 
-instance leuronToJSON :: ToJSON Leuron where
+instance leuronDataToJSON :: ToJSON LeuronData where
   toJSON (LnAcronym o)  = object [ "tag" .= "LnSynonym", "contents" .= o ]
   toJSON (LnAntonym o)  = object [ "tag" .= "LnAntonym", "contents" .= o ]
   toJSON (LnFact o)     = object [ "tag" .= "LnFact", "contents" .= o ]
@@ -274,17 +274,17 @@ instance leuronToJSON :: ToJSON Leuron where
   toJSON (LnSynonym o)  = object [ "tag" .= "LnSynonym", "contents" .= o ]
   toJSON LnEmpty        = object [ "tag" .= "LnEmpty" ]
 
-instance leuronEntryEq :: Eq LeuronEntry where
-  eq (LeuronEntry o1) (LeuronEntry o2) = o1.leuronId == o2.leuronId
+instance leuronEq :: Eq Leuron where
+  eq (Leuron o1) (Leuron o2) = o1.leuronId == o2.leuronId
 
-instance leuronEntryShow :: Show LeuronEntry where
-  show (LeuronEntry obj) = "leuronEntry"
+instance leuronShow :: Show Leuron where
+  show (Leuron obj) = "leuron"
 
-instance leuronEntryFromJSON :: FromJSON LeuronEntry where
+instance leuronFromJSON :: FromJSON Leuron where
   parseJSON (JObject o) = do
     leuron_id           <- o .: "leuronId"
     leuron_resource_id  <- o .: "leuronResourceId"
-    leuron              <- o .: "leuron"
+    leuron_data         <- o .: "leuronData"
     leuron_title        <- o .:? "leuronTitle"
     leuron_description  <- o .:? "leuronDescription"
     leuron_section      <- o .:? "leuronSection"
@@ -296,10 +296,10 @@ instance leuronEntryFromJSON :: FromJSON LeuronEntry where
     leuron_tags         <- o .:? "leuronTags"
     leuron_style        <- o .:? "leuronStyle"
     leuron_specific     <- o .:? "leuronSpecificTo"
-    return $ LeuronEntry {
+    return $ Leuron {
       leuronId: leuron_id,
       leuronResourceId: leuron_resource_id,
-      leuron: leuron,
+      leuronData: leuron_data,
       leuronTitle: leuron_title,
       leuronDescription: leuron_description,
       leuronSection: leuron_section,
@@ -312,8 +312,11 @@ instance leuronEntryFromJSON :: FromJSON LeuronEntry where
       leuronStyle: leuron_style,
       leuronSpecificTo: leuron_specific
     }
-  parseJSON _ = fail "LeuronEntry: Invalid JSON"
+  parseJSON _ = fail "Leuron: Invalid JSON"
 
-instance leuronEntryToJSON :: ToJSON LeuronEntry where
-  toJSON (LeuronEntry { leuronId = x1, leuronResourceId = x2, leuron = x3, leuronTitle = x4, leuronDescription = x5, leuronExamples = x6, leuronStrengths = x7, leuronCategories = x8, leuronTags = x9, leuronStyle = x10, leuronSpecificTo = x11, leuronSubstitutions = x12, leuronSplits = x13 })
-    = object [ "leuronId" .= x1, "leuronResourceId" .= x2, "leuron" .= x3, "leuronTitle" .= x4, "leuronDescription" .= x5, "leuronExamples" .= x6, "leuronStrengths" .= x7, "leuronCategories" .= x8, "leuronTags" .= x9, "leuronStyle" .= x10, "leuronSpecificTo" .= x11, "leuronSubstitutions" .= x12, "leuronSplits" .= x13 ]
+instance leuronToJSON :: ToJSON Leuron where
+  toJSON (Leuron { leuronId = x1, leuronResourceId = x2, leuronData = x3, leuronTitle = x4, leuronDescription = x5, leuronExamples = x6, leuronStrengths = x7, leuronCategories = x8, leuronTags = x9, leuronStyle = x10, leuronSpecificTo = x11, leuronSubstitutions = x12, leuronSplits = x13 })
+    = object [ "leuronId" .= x1, "leuronResourceId" .= x2, "leuronData" .= x3, "leuronTitle" .= x4, "leuronDescription" .= x5, "leuronExamples" .= x6, "leuronStrengths" .= x7, "leuronCategories" .= x8, "leuronTags" .= x9, "leuronStyle" .= x10, "leuronSpecificTo" .= x11, "leuronSubstitutions" .= x12, "leuronSplits" .= x13 ]
+
+
+unLeuron (Leuron ln) = ln
