@@ -137,7 +137,6 @@ radioMenu menu_label radio_name radios setter =
             [radioInlineClasses]
             [
               H.text (show radio),
-              H.input [P.inputType P.InputRadio, P.name radio_name, P.value "", E.onChecked (E.input_ (setter
-radio))]
+              H.input [P.inputType P.InputRadio, P.name radio_name, P.value "", E.onChecked (E.input_ (setter radio))]
             ]
       ) radios
