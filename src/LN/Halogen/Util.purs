@@ -99,3 +99,24 @@ deleteAndEditLabeled label value edit_cb delete_cb =
             ]
       ]
     ]
+
+
+
+-- | Creates a "maybe field".. ie, a field which has no value,
+-- but has an "Add" button. The add button adds an input field.
+-- Then, we can edit & delete it.
+--
+--
+maybeField_EditAndDelete label mvalue set_cb edit_cb delete_cb =
+  H.div
+    [formGroupClasses, _class "form-group"]
+    [
+      H.label [_classes ["control-label", "col-sm-2"]] [H. text label],
+      case mvalue of
+        Nothing ->
+          H.button
+            [buttonClasses, P.title "Add", E.onClick set_cb]
+            [H.text "Add"]
+        (Just value) ->
+            deleteAndEdit value edit_cb delete_cb
+    ]
