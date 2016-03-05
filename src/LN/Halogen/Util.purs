@@ -52,6 +52,8 @@ radioInlineClasses = P.classes [H.className "radio-inline"]
 
 _class = P.class_ <<< H.className
 
+_classes classes = P.classes $ map H.className classes
+
 -- | Create a text field which can be edited or deleted
 --
 -- deleteAndEdit
