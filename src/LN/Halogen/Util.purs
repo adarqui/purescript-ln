@@ -102,6 +102,24 @@ deleteAndEditLabeled input_type label value edit_cb delete_cb =
     ]
 
 
+-- | Creates a mandatory field
+--
+-- labeledInputField "Title" "Title" resource.resourceTitle (E.input SetResourcetitle)
+--
+labeledInputField label placeholder value setter =
+  H.div
+    [formGroupClasses]
+    [
+      H.label_ [H.text label],
+      H.input [
+        formControlClasses,
+        P.placeholder placeholder,
+        P.value value,
+        E.onValueChange setter
+      ]
+    ]
+
+
 
 -- | Creates a "maybe field".. ie, a field which has no value,
 -- but has an "Add" button. The add button adds an input field.
