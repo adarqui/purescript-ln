@@ -122,6 +122,26 @@ labeledInputField label placeholder value input_type setter =
 
 
 
+-- | Creates a mandatory field
+--
+-- labeledTextAreaField "Title" "Title" resource.resourceTitle P.TextAreaText (E.input SetResourcetitle)
+--
+labeledTextAreaField label placeholder value input_type setter =
+  H.div
+    [formGroupClasses]
+    [
+      H.label_ [H.text label],
+      H.textarea [
+        formControlClasses,
+--        P.inputType input_type,
+        P.placeholder placeholder,
+        P.value value,
+        E.onValueChange setter
+      ]
+    ]
+
+
+
 -- | Creates a "maybe field".. ie, a field which has no value,
 -- but has an "Add" button. The add button adds an input field.
 -- Then, we can edit & delete it.
