@@ -62,6 +62,10 @@ instance acronymToJSON :: ToJSON Acronym where
   toJSON (Acronym { acronymA = acronym_a, acronymB = acronym_b }) =
     object [ "acronymA" .= acronym_a, "acronymB" .= acronym_b ]
 
+defaultAcronym :: Acronym
+defaultAcronym = Acronym { acronymA: "", acronymB: "" }
+
+
 
 data Antonym = Antonym {
   antonymA :: String,
@@ -84,6 +88,9 @@ instance antonymFromJSON :: FromJSON Antonym where
 instance antonymToJSON :: ToJSON Antonym where
   toJSON (Antonym { antonymA = antonym_a, antonymB = antonym_b }) =
     object [ "antonymA" .= antonym_a, "antonymB" .= antonym_b ]
+
+defaultAntonym :: Antonym
+defaultAntonym = Antonym { antonymA: "", antonymB: "" }
 
 
 
@@ -108,6 +115,9 @@ instance cardFromJSON :: FromJSON Card where
 instance cardToJSON :: ToJSON Card where
   toJSON (Card { cardFront = cardFront, cardBack = cardBack }) = object [ "cardFront" .= cardFront, "cardBack" .= "cardBack" ]
 
+defaultCard :: Card
+defaultCard = Card { cardFront: "", cardBack: "" }
+
 
 
 data DCard = DCard {
@@ -130,6 +140,9 @@ instance dcardFromJSON :: FromJSON DCard where
 
 instance dcardToJSON :: ToJSON DCard where
   toJSON (DCard { dcardFront = dcardFront, dcardBack = dcardBack }) = object [ "dcardFront" .= dcardFront, "dcardBack" .= "dcardBack" ]
+
+defaultDCard :: DCard
+defaultDCard = DCard { dcardFront: "", dcardBack: "" }
 
 
 
@@ -154,6 +167,9 @@ instance dcardxFromJSON :: FromJSON DCardX where
 instance dcardxToJSON :: ToJSON DCardX where
   toJSON (DCardX { dcardxFront = dcardxFront, dcardxBack = dcardxBack }) = object [ "dcardxFront" .= dcardxFront, "dcardxBack" .= "dcardxBack" ]
 
+defaultDCardX :: DCardX
+defaultDCardX = DCardX { dcardxFront: [], dcardxBack: [] }
+
 
 
 data Fact = Fact {
@@ -175,6 +191,8 @@ instance factFromJSON :: FromJSON Fact where
 instance factToJSON :: ToJSON Fact where
   toJSON (Fact { factText = fact }) = object [ "factText" .= fact ]
 
+defaultFact :: Fact
+defaultFact = Fact { factText: "" }
 
 
 
@@ -200,6 +218,9 @@ instance factListToJSON :: ToJSON FactList where
   toJSON (FactList { factListFact = fact, factListList = fact_list }) =
     object [ "factListFact" .= fact, "factListList" .= fact_list ]
 
+defaultFactList :: FactList
+defaultFactList = FactList { factListFact: "", factListList: [] }
+
 
 
 data Synonym = Synonym {
@@ -223,6 +244,9 @@ instance synonymFromJSON :: FromJSON Synonym where
 instance synonymToJSON :: ToJSON Synonym where
   toJSON (Synonym { synonymA = synonym_a, synonymB = synonym_b }) =
     object [ "synonymA" .= synonym_a, "synonymB" .= synonym_b ]
+
+defaultSynonym :: Synonym
+defaultSynonym = Synonym { synonymA: "", synonymB: "" }
 
 
 
