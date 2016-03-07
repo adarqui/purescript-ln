@@ -306,20 +306,20 @@ instance leuronShow :: Show Leuron where
 
 instance leuronFromJSON :: FromJSON Leuron where
   parseJSON (JObject o) = do
-    leuron_id           <- o .: "leuronId"
-    leuron_resource_id  <- o .: "leuronResourceId"
-    leuron_data         <- o .: "leuronData"
-    leuron_title        <- o .:? "leuronTitle"
-    leuron_description  <- o .:? "leuronDescription"
-    leuron_section      <- o .:? "leuronSection"
-    leuron_examples     <- o .:? "leuronExamples"
-    leuron_strengths    <- o .: "leuronStrengths"
-    leuron_categories   <- o .: "leuronCategories"
-    leuron_splits       <- o .:? "leuronSplits"
-    leuron_subs         <- o .:? "leuronSubstitutions"
-    leuron_tags         <- o .:? "leuronTags"
-    leuron_style        <- o .:? "leuronStyle"
-    leuron_specific     <- o .:? "leuronSpecificTo"
+    leuron_id           <- o .: "id"
+    leuron_resource_id  <- o .: "resource_id"
+    leuron_data         <- o .: "data"
+    leuron_title        <- o .:? "title"
+    leuron_description  <- o .:? "desc"
+    leuron_section      <- o .:? "section"
+    leuron_examples     <- o .:? "examples"
+    leuron_strengths    <- o .: "strengths"
+    leuron_categories   <- o .: "categories"
+    leuron_splits       <- o .:? "splits"
+    leuron_subs         <- o .:? "subs"
+    leuron_tags         <- o .:? "tags"
+    leuron_style        <- o .:? "style"
+    leuron_specific     <- o .:? "specific_to"
     return $ Leuron {
       leuronId: leuron_id,
       leuronResourceId: leuron_resource_id,
@@ -340,7 +340,7 @@ instance leuronFromJSON :: FromJSON Leuron where
 
 instance leuronToJSON :: ToJSON Leuron where
   toJSON (Leuron { leuronId = x1, leuronResourceId = x2, leuronData = x3, leuronTitle = x4, leuronDescription = x5, leuronExamples = x6, leuronStrengths = x7, leuronCategories = x8, leuronTags = x9, leuronStyle = x10, leuronSpecificTo = x11, leuronSubstitutions = x12, leuronSplits = x13 })
-    = object [ "leuronId" .= x1, "leuronResourceId" .= x2, "leuronData" .= x3, "leuronTitle" .= x4, "leuronDescription" .= x5, "leuronExamples" .= x6, "leuronStrengths" .= x7, "leuronCategories" .= x8, "leuronTags" .= x9, "leuronStyle" .= x10, "leuronSpecificTo" .= x11, "leuronSubstitutions" .= x12, "leuronSplits" .= x13 ]
+    = object [ "id" .= x1, "resource_id" .= x2, "data" .= x3, "tiitle" .= x4, "desc" .= x5, "examples" .= x6, "strengths" .= x7, "categories" .= x8, "tags" .= x9, "style" .= x10, "specific_to" .= x11, "subs" .= x12, "splits" .= x13 ]
 
 
 unLeuron (Leuron ln) = ln
