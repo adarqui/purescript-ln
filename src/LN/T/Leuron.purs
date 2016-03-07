@@ -113,7 +113,7 @@ instance cardFromJSON :: FromJSON Card where
   parseJSON _ = fail "Card: Invalid JSON"
 
 instance cardToJSON :: ToJSON Card where
-  toJSON (Card { cardFront = cardFront, cardBack = cardBack }) = object [ "cardFront" .= cardFront, "cardBack" .= "cardBack" ]
+  toJSON (Card { cardFront = cardFront, cardBack = cardBack }) = object [ "cardFront" .= cardFront, "cardBack" .= cardBack ]
 
 defaultCard :: Card
 defaultCard = Card { cardFront: "", cardBack: "" }
@@ -139,7 +139,7 @@ instance dcardFromJSON :: FromJSON DCard where
   parseJSON _ = fail "DCard: Invalid JSON"
 
 instance dcardToJSON :: ToJSON DCard where
-  toJSON (DCard { dcardFront = dcardFront, dcardBack = dcardBack }) = object [ "dcardFront" .= dcardFront, "dcardBack" .= "dcardBack" ]
+  toJSON (DCard { dcardFront = dcardFront, dcardBack = dcardBack }) = object [ "dcardFront" .= dcardFront, "dcardBack" .= dcardBack ]
 
 defaultDCard :: DCard
 defaultDCard = DCard { dcardFront: "", dcardBack: "" }
@@ -165,7 +165,7 @@ instance dcardxFromJSON :: FromJSON DCardX where
   parseJSON _ = fail "DCardX: Invalid JSON"
 
 instance dcardxToJSON :: ToJSON DCardX where
-  toJSON (DCardX { dcardxFront = dcardxFront, dcardxBack = dcardxBack }) = object [ "dcardxFront" .= dcardxFront, "dcardxBack" .= "dcardxBack" ]
+  toJSON (DCardX { dcardxFront = dcardxFront, dcardxBack = dcardxBack }) = object [ "dcardxFront" .= dcardxFront, "dcardxBack" .= dcardxBack ]
 
 defaultDCardX :: DCardX
 defaultDCardX = DCardX { dcardxFront: [], dcardxBack: [] }
