@@ -53,7 +53,6 @@ buttonClasses button_type = P.classes [H.className "btn", H.className button_typ
 -- Forms
 
 formGroupClasses = P.classes [H.className "form-group"]
-
 formControlClasses = P.classes [H.className "form-control"]
 
 
@@ -77,7 +76,7 @@ _classes classes = P.classes $ map H.className classes
 --  (E.input (\new -> EditResourceAuthor author new))
 --  (E.input_ (RemoveResourceAuthor author))
 
-input_deleteAndEdit input_type value edit_cb delete_cb =
+input_DeleteEdit input_type value edit_cb delete_cb =
   H.div
     [P.class_ (H.className "input-group")]
     [
@@ -95,7 +94,7 @@ input_deleteAndEdit input_type value edit_cb delete_cb =
 
 
 
-input_deleteAndEditLabeled input_type label value edit_cb delete_cb =
+input_DeleteEditLabel input_type label value edit_cb delete_cb =
   H.div
     [_class "form-group"]
     [
@@ -123,7 +122,7 @@ input_deleteAndEditLabeled input_type label value edit_cb delete_cb =
 --
 -- labeledInputField "Title" "Title" resource.resourceTitle P.InputText (E.input SetResourcetitle)
 --
-input_labeled label placeholder value input_type setter =
+input_Label label placeholder value input_type setter =
   H.div
     [formGroupClasses]
     [
@@ -143,7 +142,7 @@ input_labeled label placeholder value input_type setter =
 --
 -- labeledTextAreaField "Title" "Title" resource.resourceTitle P.TextAreaText (E.input SetResourcetitle)
 --
-textArea_labeled label placeholder value setter =
+textArea_Label label placeholder value setter =
   H.div
     [formGroupClasses]
     [
@@ -158,7 +157,7 @@ textArea_labeled label placeholder value setter =
 
 
 
-textArea_labeledWithButton label value button_name action_cb =
+textArea_LabelWithButton label value button_name action_cb =
   H.div
     [P.class_ (H.className "input-group")]
     [
@@ -181,7 +180,7 @@ textArea_labeledWithButton label value button_name action_cb =
 -- Then, we can edit & delete it.
 --
 --
-input_maybeField_EditAndDelete input_type label mvalue set_cb edit_cb delete_cb =
+input_maybeField_DeleteEdit input_type label mvalue set_cb edit_cb delete_cb =
   H.div
     [formGroupClasses, _class "form-group"]
     [
@@ -192,7 +191,7 @@ input_maybeField_EditAndDelete input_type label mvalue set_cb edit_cb delete_cb 
             [buttonInfoClasses, P.title "Add", E.onClick set_cb]
             [H.text "Add"]
         (Just value) ->
-          input_deleteAndEdit input_type value edit_cb delete_cb
+          input_DeleteEdit input_type value edit_cb delete_cb
     ]
 
 
