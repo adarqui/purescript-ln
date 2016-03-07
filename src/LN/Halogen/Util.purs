@@ -175,6 +175,24 @@ textArea_LabelWithButton label placeholder value button_name value_change_cb cli
 
 
 
+textArea_DeleteEdit value edit_cb delete_cb =
+  H.div
+    [P.class_ (H.className "input-group")]
+    [
+      H.textarea [formControlClasses, P.value value, E.onValueChange edit_cb],
+      H.span
+        [P.class_ (H.className "input-group-btn")]
+        [
+          H.button [
+            buttonInfoClasses,
+            P.title "Delete",
+            E.onClick delete_cb
+          ] [H.text "✖"]
+        ]
+    ]
+
+
+
 -- | Creates a "maybe field".. ie, a field which has no value,
 -- but has an "Add" button. The add button adds an input field.
 -- Then, we can edit & delete it.
