@@ -157,11 +157,11 @@ textArea_Label label placeholder value setter =
 
 
 
-textArea_LabelWithButton label value button_name action_cb =
+textArea_LabelWithButton label placeholder value button_name action_cb =
   H.div
     [P.class_ (H.className "input-group")]
     [
-      H.textarea [formControlClasses, P.value value],
+      H.textarea [formControlClasses, P.placeholder placeholder, P.value value],
       H.span
         [P.class_ (H.className "input-group-btn")]
         [
