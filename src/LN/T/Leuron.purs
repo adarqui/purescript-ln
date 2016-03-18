@@ -339,8 +339,8 @@ instance leuronFromJSON :: FromJSON Leuron where
   parseJSON _ = fail "Leuron: Invalid JSON"
 
 instance leuronToJSON :: ToJSON Leuron where
-  toJSON (Leuron { leuronId = x1, leuronResourceId = x2, leuronData = x3, leuronTitle = x4, leuronDescription = x5, leuronExamples = x6, leuronStrengths = x7, leuronCategories = x8, leuronTags = x9, leuronStyle = x10, leuronSpecificTo = x11, leuronSubstitutions = x12, leuronSplits = x13 })
-    = object [ "id" .= x1, "resource_id" .= x2, "data" .= x3, "tiitle" .= x4, "desc" .= x5, "examples" .= x6, "strengths" .= x7, "categories" .= x8, "tags" .= x9, "style" .= x10, "specific_to" .= x11, "subs" .= x12, "splits" .= x13 ]
+  toJSON (Leuron { leuronId = x1, leuronResourceId = x2, leuronData = x3, leuronTitle = x4, leuronDescription = x5, leuronSection = x56, leuronExamples = x6, leuronStrengths = x7, leuronCategories = x8, leuronTags = x9, leuronStyle = x10, leuronSpecificTo = x11, leuronSubstitutions = x12, leuronSplits = x13 })
+    = object [ "id" .= x1, "resource_id" .= x2, "data" .= x3, "tiitle" .= x4, "desc" .= x5, "section" .= x56, "examples" .= x6, "strengths" .= x7, "categories" .= x8, "tags" .= x9, "style" .= x10, "specific_to" .= x11, "subs" .= x12, "splits" .= x13 ]
 
 
 unLeuron (Leuron ln) = ln
