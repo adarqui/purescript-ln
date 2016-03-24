@@ -17,10 +17,9 @@ newtype UserResponse = UserResponse {
   plugin :: String,
   ident :: String,
   isActive :: Boolean,
-  createdAt :: DateMaybe {-,
+  createdAt :: DateMaybe,
   modifiedAt :: DateMaybe,
   deactivatedAt :: DateMaybe
--}
 }
 
 {-
@@ -31,11 +30,11 @@ instance showUserResponse :: Show UserResponse where
 -}
 
 defaultUserResponse :: UserResponse
-defaultUserResponse = mkUserResponse 0 "nick" "display_nick" "name" "email" "plugin" "ident" false defaultDate {- defaultDate defaultDate -}
+defaultUserResponse = mkUserResponse 0 "nick" "display_nick" "name" "email" "plugin" "ident" false defaultDate defaultDate defaultDate
 
-mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> Boolean -> DateMaybe ->  {- DateMaybe -> DateMaybe -> -} UserResponse
-mkUserResponse id nick displayNick name email plugin ident isActive createdAt {-modifiedAt deactivatedAt -} =
-  UserResponse { id, nick, displayNick, name, email, plugin, ident, isActive, createdAt {-, modifiedAt, deactivatedAt -}}
+mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> Boolean -> DateMaybe -> DateMaybe -> DateMaybe -> UserResponse
+mkUserResponse id nick displayNick name email plugin ident isActive createdAt modifiedAt deactivatedAt =
+  UserResponse { id, nick, displayNick, name, email, plugin, ident, isActive, createdAt, modifiedAt, deactivatedAt }
 
 {-
 _UserResponse :: LensP UserResponse { id :: Int, nick :: String }
@@ -59,10 +58,8 @@ instance encodeUserResponse :: EncodeJson UserResponse where
     ~> "ident" := u.ident
     ~> "is_active" := u.isActive
     ~> "created_at" := toISOString u.createdAt
-{-
     ~> "modified_at" := toISOString u.modifiedAt
     ~> "deactivated_at" := toISOString u.deactivatedAt
--}
     ~> jsonEmptyObject
 
 {-
@@ -81,11 +78,9 @@ instance decodeUserResponse :: DecodeJson UserResponse where
     ident <- obj .? "ident"
     isActive <- obj .? "is_active"
     createdAt <- obj .? "created_at"
-{-
     modifiedAt <- obj .? "modified_at"
     deactivatedAt <- obj .? "deactivated_at"
--}
-    pure $ UserResponse {id, nick, displayNick, name, email, plugin, ident, isActive , createdAt {-, modifiedAt, deactivatedAt-}}
+    pure $ UserResponse {id, nick, displayNick, name, email, plugin, ident, isActive , createdAt, modifiedAt, deactivatedAt}
 
 instance respondableUserResponse :: Respondable UserResponse where
   responseType =
@@ -101,10 +96,8 @@ instance respondableUserResponse :: Respondable UserResponse where
       <*> readProp "ident" json
       <*> readProp "is_active" json
       <*> readProp "created_at" json
-{-
       <*> readProp "modified_at" json
       <*> readProp "deactivated_at" json
--}
 
 
 instance requestableUserResponse :: Requestable UserResponse where
@@ -123,7 +116,5 @@ instance isForeignUserResponse :: IsForeign UserResponse where
     <*> readProp "ident" f
     <*> readProp "is_active" f
     <*> readProp "created_at" f
-{-
     <*> readProp "modified_at" f
     <*> readProp "deactivated_at" f
--}

@@ -136,6 +136,8 @@ yyyy_mm_dd (DateMaybe (Just date)) = y ++ "-" ++ m ++ "-" ++ d
 instance decodeDateMaybe :: DecodeJson DateMaybe where
   decodeJson json = pure defaultDate
 
+  -- wtf how does this work ^^
+
   {-
   decodeJson json = case toString json of
                     Nothing -> pure $ defaultDate
