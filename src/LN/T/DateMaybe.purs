@@ -54,28 +54,6 @@ unDayOfMonth (D.DayOfMonth n) = n
 instance isForeignDateMaybe :: IsForeign DateMaybe where
   read = readDateMaybe
 
-{-
-readDate :: Foreign -> F Date
-readDate f =
-  case tagOf f of
-       "Date" ->
-         case D.fromJSDate <$> unsafeReadTagged "Date" f of
-              Right (Just d) -> Right (Date d)
-              Right Nothing -> Left (TypeMismatch "invalid date" "asdf")
-              Left a -> Left a
-       "String" ->
-         case D.fromString <$> unsafeReadTagged "String" f of
-              Right (Just d) -> Right (Date d)
-              Right Nothing -> Left (TypeMismatch "invalid date" "invalid date")
-              Left a -> Left a
-       "Number" ->
-         case D.fromEpochMilliseconds <<< T.Milliseconds <$> unsafeReadTagged "Number" f of
-              Right (Just d) -> (Right (Date d))
-              Right Nothing -> Left (TypeMismatch "invalid read" "expecting epoch milliseconds")
-              Left a -> Left a
-       _ ->
-         Left (TypeMismatch "Expecting date" (tagOf f))
-         -}
 readDateMaybe :: Foreign -> F DateMaybe
 readDateMaybe f =
   case tagOf f of
@@ -96,17 +74,7 @@ readDateMaybe f =
               Left a -> Left a
        "Null" -> Right (DateMaybe Nothing)
        _ ->
-         Left (TypeMismatch "Expecting date" (tagOf f))
-
-{-
-instance isForeignDateMaybe :: IsForeign (Maybe Date) where
-  read = readDateMaybe
-
-readDateMaybe :: Foreign -> F (Maybe Date)
-readDateMaybe f =
-  case tagOf f of
-       _ -> pure (readDate f)
-       -}
+         Left (TypeMismatch "readDateMaybe: Expecting date" (tagOf f))
 
 toISOString :: DateMaybe -> String
 toISOString (DateMaybe Nothing)  = "Invalid date."
