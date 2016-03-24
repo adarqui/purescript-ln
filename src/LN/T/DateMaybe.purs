@@ -130,9 +130,13 @@ yyyy_mm_dd (DateMaybe (Just date)) = y ++ "-" ++ m ++ "-" ++ d
 
 
 instance decodeDateMaybe :: DecodeJson DateMaybe where
+  decodeJson json = pure defaultDate
+
+  {-
   decodeJson json = case toString json of
                     Nothing -> pure $ defaultDate
                     Just d  -> pure (fromJust $ dateFromString d)
+                    -}
     {-
     obj <- decodeJson json
     d <- obj .? "date"
