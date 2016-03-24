@@ -23,6 +23,8 @@
     "purescript-daimyo": "https://github.com/adarqui/purescript-daimyo",
     "purescript-halogen": "^0.5.18",
     "purescript-dom": "^0.2.19",
-    "purescript-webstorage": "^0.4.0"
+    "purescript-webstorage": "^0.4.0",
+    "purescript-lens": "^0.9.1",
+    "purescript-argonaut": "^0.12.0"
   }
 }

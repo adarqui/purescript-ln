@@ -1,6 +1,4 @@
-module LN.T.User.Ajax (
-  ajaxFetchUserSession
-) where
+module LN.T.User.Ajax where
 
 import Prelude
 import Data.Either
@@ -16,8 +14,10 @@ import Network.HTTP.MimeType
 import Network.HTTP.MimeType.Common
 import Network.HTTP.RequestHeader
 
+{-
 ajaxFetchUserSession :: forall eff. Aff (ajax :: AJAX | eff) (Either String User)
 ajaxFetchUserSession = do
   res <- affjax $ defaultRequest { method = GET, url = "/session/", headers = [ContentType applicationJSON] }
   let le = eitherDecode res.response :: Either String User
   return le
+  -}
