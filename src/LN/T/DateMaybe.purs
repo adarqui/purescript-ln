@@ -73,8 +73,8 @@ readDateMaybe f =
               Right Nothing -> Left (TypeMismatch "invalid read" "expecting epoch milliseconds")
               Left a -> Left a
        "Null" -> Right (DateMaybe Nothing)
-       _ ->
-         Left (TypeMismatch "readDateMaybe: Expecting date" (tagOf f))
+       _ -> Right (DateMaybe Nothing)
+--          Left (TypeMismatch "readDateMaybe: Expecting date" (tagOf f))
 
 toISOString :: DateMaybe -> String
 toISOString (DateMaybe Nothing)  = "Invalid date."
