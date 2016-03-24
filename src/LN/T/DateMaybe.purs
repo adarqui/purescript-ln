@@ -94,6 +94,7 @@ readDateMaybe f =
               Right (Just d) -> (Right (DateMaybe (Just d)))
               Right Nothing -> Left (TypeMismatch "invalid read" "expecting epoch milliseconds")
               Left a -> Left a
+       "Null" -> Right (DateMaybe Nothing)
        _ ->
          Left (TypeMismatch "Expecting date" (tagOf f))
 
