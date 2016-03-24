@@ -25,6 +25,7 @@
     "purescript-dom": "^0.2.19",
     "purescript-webstorage": "^0.4.0",
     "purescript-lens": "^0.9.1",
-    "purescript-argonaut": "^0.12.0"
+    "purescript-argonaut": "^0.12.0",
+    "purescript-enums": "^0.7.0"
   }
 }
