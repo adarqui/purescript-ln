@@ -21,6 +21,9 @@ instance eqDateMaybe :: Eq DateMaybe where
 instance ordDateMaybe :: Ord DateMaybe where
   compare = compare `on` underlyingDate
 
+instance showDateMaybe :: Show DateMaybe where
+  show = toISOString
+
 underlyingDate :: DateMaybe -> D.Date
 underlyingDate (DateMaybe (Just d)) = d
 
@@ -105,6 +108,7 @@ readDateMaybe f =
        -}
 
 toISOString :: DateMaybe -> String
+toISOString (DateMaybe Nothing)  = "Invalid date."
 toISOString (DateMaybe (Just d)) = runFn2 jsDateMethod "toISOString" (D.toJSDate d)
 
 foreign import jsDateMethod :: forall a. Fn2 String D.JSDate a
