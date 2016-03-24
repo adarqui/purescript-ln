@@ -4,7 +4,8 @@ module LN.T.User.Response where
 
 import LN.T.Prelude.Argonaut
 import LN.T.User
-import LN.T.Date
+-- import LN.T.Date
+import LN.T.DateMaybe
 
 
 newtype UserResponse = UserResponse {
@@ -16,9 +17,9 @@ newtype UserResponse = UserResponse {
   plugin :: String,
   ident :: String,
   isActive :: Boolean,
-  createdAt :: Date,
-  modifiedAt :: Date,
-  deactivatedAt :: Date
+  createdAt :: DateMaybe,
+  modifiedAt :: DateMaybe,
+  deactivatedAt :: DateMaybe
 }
 
 {-
@@ -31,8 +32,7 @@ instance showUserResponse :: Show UserResponse where
 defaultUserResponse :: UserResponse
 defaultUserResponse = mkUserResponse 0 "nick" "display_nick" "name" "email" "plugin" "ident" false defaultDate defaultDate defaultDate
 
-mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> Boolean -> Date -> Date -> Date -> UserResponse
-
+mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> Boolean -> DateMaybe -> DateMaybe -> DateMaybe -> UserResponse
 mkUserResponse id nick displayNick name email plugin ident isActive createdAt modifiedAt deactivatedAt =
   UserResponse { id, nick, displayNick, name, email, plugin, ident, isActive, createdAt, modifiedAt, deactivatedAt }
 
