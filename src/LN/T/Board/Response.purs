@@ -11,7 +11,7 @@ import LN.T.DateMaybe
 newtype BoardResponse = BoardResponse {
   id   :: BoardId,
   forumId :: Int,
-  parentId :: Int,
+  parentId :: Maybe Int,
   name :: String,
   description :: Maybe String,
   createdBy :: Int,
@@ -23,11 +23,11 @@ newtype BoardResponse = BoardResponse {
 
 
 defaultBoardResponse :: BoardResponse
-defaultBoardResponse = mkBoardResponse 0 0 0 "name" Nothing 0 defaultDate Nothing defaultDate
+defaultBoardResponse = mkBoardResponse 0 0 Nothing "name" Nothing 0 defaultDate Nothing defaultDate
 
 
 
-mkBoardResponse :: Int -> Int -> Int -> String -> Maybe String -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> BoardResponse
+mkBoardResponse :: Int -> Int -> Maybe Int -> String -> Maybe String -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> BoardResponse
 mkBoardResponse id forumId parentId name description createdBy createdAt modifiedBy modifiedAt =
   BoardResponse { id, forumId, parentId, name, description, createdBy, createdAt, modifiedBy, modifiedAt }
 
@@ -72,7 +72,7 @@ instance respondableBoardResponse :: Respondable BoardResponse where
     mkBoardResponse
       <$> readProp "id" json
       <*> readProp "forum_id" json
-      <*> readProp "parent_id" json
+      <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "desc" json)
       <*> readProp "created_by" json
@@ -93,7 +93,7 @@ instance isForeignBoardResponse :: IsForeign BoardResponse where
   read f = mkBoardResponse
     <$> readProp "id" f
     <*> readProp "forum_id" f
-    <*> readProp "parent_id" f
+    <*> (runNullOrUndefined <$> readProp "parent_id" f)
     <*> readProp "name" f
     <*> (runNullOrUndefined <$> readProp "desc" f)
     <*> readProp "created_by" f
