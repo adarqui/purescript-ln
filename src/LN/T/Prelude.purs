@@ -13,6 +13,7 @@ import Optic.Lens as A
 import Optic.Core as A
 -- import Data.Foreign hiding (isNull, isArray)
 import Data.Foreign.Class as A
+import Data.Foreign.NullOrUndefined as A
 import Data.Generic as A
 -- import Data.Date hiding (fromString)
 -- import Data.Date as Date
