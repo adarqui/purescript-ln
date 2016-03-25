@@ -9,8 +9,8 @@ import LN.T.Organization.Response
 
 
 
-getUsers :: forall eff. Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponses)
-getUsers = do
+getOrganizations :: forall eff. Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponses)
+getOrganizations = do
     liftAff $ log "getOrganizations"
     { response: response } <- AJ.get "api/orgs"
     let r = fromResponse response
