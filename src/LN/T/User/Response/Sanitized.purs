@@ -98,20 +98,20 @@ mkUserResponsesSanitized = UserResponsesSanitized { users: [] }
 
 instance encodeUserResponsesSanitized :: EncodeJson UserResponsesSanitized where
   encodeJson (UserResponsesSanitized u) =
-       "users"    := u.users
+       "users_sanitized"    := u.users
     ~> jsonEmptyObject
 
 instance decodeUserResponsesSanitized :: DecodeJson UserResponsesSanitized where
   decodeJson json = do
     obj <- decodeJson json
-    users <- obj .? "users"
+    users <- obj .? "users_sanitized"
     pure $ UserResponsesSanitized { users: users }
 
 instance respondableUserResponsesSanitized :: Respondable UserResponsesSanitized where
   responseType =
     Tuple Nothing JSONResponse
   fromResponse json = do
-    users <- readProp "users" json
+    users <- readProp "users_sanitized" json
     pure $ UserResponsesSanitized { users: users }
 
 instance requestableUserResponsesSanitized :: Requestable UserResponsesSanitized where
@@ -121,5 +121,5 @@ instance requestableUserResponsesSanitized :: Requestable UserResponsesSanitized
 
 instance isForeignUserResponsesSanitized :: IsForeign UserResponsesSanitized where
   read f = do
-    users <- readProp "users" f
+    users <- readProp "users_sanitized" f
     pure $ UserResponsesSanitized { users: users }
