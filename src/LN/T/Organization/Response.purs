@@ -107,3 +107,40 @@ instance isForeignOrganizationResponse :: IsForeign OrganizationResponse where
 
 
 
+newtype OrganizationResponses = OrganizationResponses {
+  organizations :: Array OrganizationResponse
+}
+
+defaultOrganizationResponses :: OrganizationResponses
+defaultOrganizationResponses = mkOrganizationResponses
+
+mkOrganizationResponses :: OrganizationResponses
+mkOrganizationResponses = OrganizationResponses { organizations: [] }
+
+instance encodeOrganizationResponses :: EncodeJson OrganizationResponses where
+  encodeJson (OrganizationResponses u) =
+       "orgs"    := u.organizations
+    ~> jsonEmptyObject
+
+instance decodeOrganizationResponses :: DecodeJson OrganizationResponses where
+  decodeJson json = do
+    obj <- decodeJson json
+    organizations <- obj .? "orgs"
+    pure $ OrganizationResponses { organizations: organizations }
+
+instance respondableOrganizationResponses :: Respondable OrganizationResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    organizations <- readProp "orgs" json
+    pure $ OrganizationResponses { organizations: organizations }
+
+instance requestableOrganizationResponses :: Requestable OrganizationResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+     in toRequest str
+
+instance isForeignOrganizationResponses :: IsForeign OrganizationResponses where
+  read f = do
+    organizations <- readProp "orgs" f
+    pure $ OrganizationResponses { organizations: organizations }
