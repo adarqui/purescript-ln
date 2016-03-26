@@ -21,6 +21,19 @@ newtype OrganizationResponse = OrganizationResponse {
   modifiedAt :: DateMaybe
 }
 
+_OrganizationResponse :: LensP OrganizationResponse {
+    id :: OrganizationId,
+    userId :: Int,
+    name :: String,
+    description :: Maybe String,
+    company :: String,
+    location :: String,
+    email :: String,
+    createdAt :: DateMaybe,
+    modifiedAt :: DateMaybe
+  }
+_OrganizationResponse f (OrganizationResponse o) = OrganizationResponse <$> f o
+
 
 
 defaultOrganizationResponse :: OrganizationResponse
