@@ -24,7 +24,7 @@ getOrganizations = do
 
 
 
-getOrganization :: forall eff. Int -> Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponses)
+getOrganization :: forall eff. Int -> Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponse)
 getOrganization org_id = do
     liftAff $ log "getOrganization"
     { response: response } <- AJ.get ("api/orgs/" ++ show org_id)
