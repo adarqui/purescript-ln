@@ -22,3 +22,8 @@ getForumsByOrgName org = getAt [] [ByOrgName org] [forumsTag]
 
 getForum :: String -> ApiEff (Maybe ForumResponse)
 getForum forum = getAt [] [] [forumsTag, forum]
+
+
+
+getForumForOrgName :: String -> String -> ApiEff (Maybe ForumResponse)
+getForumForOrgName org forum = getAt [] [ByOrgName org] [forumsTag, forum]
