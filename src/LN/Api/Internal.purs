@@ -9,6 +9,11 @@ import Data.Array (cons)
 
 
 
+type ApiEff a = forall eff. Aff (ajax :: AJAX, console :: CONSOLE | eff) a
+type ApiEffP a = Aff (ajax :: AJAX, console :: CONSOLE) a
+
+
+
 data By
   = ByOrgId String
   | ByOrgName String
