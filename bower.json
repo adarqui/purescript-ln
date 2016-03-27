@@ -20,7 +20,7 @@
     "purescript-aff": "^0.14.1",
     "purescript-identity": "^0.4.1",
     "purescript-affjax": "^0.12.0",
-    "purescript-daimyo": "https://github.com/adarqui/purescript-daimyo",
+    "purescript-daimyo": "https://github.com/adarqui/purescript-daimyo.git",
     "purescript-halogen": "^0.5.18",
     "purescript-dom": "^0.2.19",
     "purescript-webstorage": "^0.4.0",

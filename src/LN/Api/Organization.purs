@@ -4,11 +4,18 @@ module LN.Api.Organization where
 
 import LN.T.Prelude
 import LN.Api.Prelude
+import LN.Api.Internal
 import Network.HTTP.Affjax as AJ
 import LN.T.Organization.Response
 
 
 
+getOrganizations :: forall eff. Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponse)
+getOrganizations = getAt [] [] ["orgs"]
+
+
+
+{-
 getOrganizations :: forall eff. Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponses)
 getOrganizations = do
     liftAff $ log "getOrganizations"
@@ -21,6 +28,7 @@ getOrganizations = do
          (Right js) -> do
            liftAff $ log "success"
            return $ Just js
+           -}
 
 
 
