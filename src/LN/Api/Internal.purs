@@ -40,13 +40,12 @@ route paths = joinWith "/" (apiPrefix `cons` paths)
 flattenParams :: Array (Tuple String String) -> Array String
 flattenParams [] = []
 flattenParams params = map (\(Tuple k v) -> k <> "=" <> v) params
--- query params = joinWith "&" ("?" `cons` (map (\(Tuple k v) -> k <> "=" <> v) params))
 
 
 
 query :: Array String -> String
 query [] = ""
-query params = joinWith "&" ("?" `cons` params)
+query params = "?" <> joinWith "&" params
 
 
 
