@@ -42,8 +42,8 @@ defaultOrganizationResponse = mkOrganizationResponse 0 0 "name" Nothing "company
 
 
 mkOrganizationResponse :: Int -> Int -> String -> Maybe String -> String -> String -> String -> DateMaybe -> DateMaybe -> OrganizationResponse
-mkOrganizationResponse id userId name description location company email createdAt modifiedAt =
-  OrganizationResponse { id, userId, description, name, location, company, email, createdAt, modifiedAt }
+mkOrganizationResponse id userId name description company location email createdAt modifiedAt =
+  OrganizationResponse { id, userId, name, description, company, location, email, createdAt, modifiedAt }
 
 
 
