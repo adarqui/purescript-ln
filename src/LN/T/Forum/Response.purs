@@ -19,6 +19,18 @@ newtype ForumResponse = ForumResponse {
   modifiedAt :: DateMaybe
 }
 
+_ForumResponse :: LensP ForumResponse {
+    id   :: ForumId,
+    orgId :: Int,
+    name :: String,
+    description :: Maybe String,
+    createdBy :: Int,
+    createdAt :: DateMaybe,
+    modifiedBy :: Maybe Int,
+    modifiedAt :: DateMaybe
+  }
+_ForumResponse f (ForumResponse o) = ForumResponse <$> f o
+
 
 
 defaultForumResponse :: ForumResponse
