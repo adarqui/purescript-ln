@@ -10,8 +10,18 @@ import LN.T.Organization.Response
 
 
 
-getOrganizations :: forall eff. Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponse)
+getOrganizations :: forall eff. Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponses)
 getOrganizations = getAt [] [] ["orgs"]
+
+
+
+getOrganizationsByUserId :: forall eff. String -> Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponses)
+getOrganizationsByUserId user_id = getAt [] [ByUserId user_id] ["orgs"]
+
+
+
+getOrganization :: forall eff. String -> Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponse)
+getOrganization org_id = getAt [] [] ["orgs", org_id]
 
 
 
@@ -32,6 +42,7 @@ getOrganizations = do
 
 
 
+{-
 getOrganization :: forall eff. Int -> Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe OrganizationResponse)
 getOrganization org_id = do
     liftAff $ log "getOrganization"
@@ -44,3 +55,4 @@ getOrganization org_id = do
          (Right js) -> do
            liftAff $ log "success"
            return $ Just js
+           -}
