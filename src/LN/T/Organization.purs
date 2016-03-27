@@ -11,9 +11,9 @@ type OrganizationId = Int
 
 
 organizationTag :: String
-organizationTag = "organization"
+organizationTag = "org"
 
 
 
 organizationsTag :: String
-organizationsTag = "organizations"
+organizationsTag = "orgs"
