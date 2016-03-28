@@ -18,12 +18,16 @@ data By
   | ByOrgName String
   | ByUserId String
   | ByUserName String
+  | ByForumId String
+  | ByForumName String
 
 instance byShow :: Show By where
   show (ByOrgId s) = "org_id=" <> s
   show (ByOrgName s) = "org_name=" <> s
   show (ByUserId s) = "user_id=" <> s
   show (ByUserName s) = "user_name=" <> s
+  show (ByForumId s) = "forum_id=" <> s
+  show (ByForumName s) = "forum_name=" <> s
 
 
 

@@ -10,10 +10,15 @@ import LN.T.Board.Response
 
 
 
-getBoards :: forall eff. Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe BoardResponses)
+getBoards :: ApiEff (Maybe BoardResponses)
 getBoards = getAt [] [] [boardsTag]
 
 
 
-getBoard :: forall eff. String -> Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe BoardResponse)
+getBoard :: String -> ApiEff (Maybe BoardResponse)
 getBoard board_id = getAt [] [] [boardsTag, board_id]
+
+
+
+getBoardForForumId :: String -> String -> ApiEff (Maybe BoardResponse)
+getBoardForForumId forum board = getAt [] [ByForumId forum] [boardsTag, board]
