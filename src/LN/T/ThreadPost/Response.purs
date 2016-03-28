@@ -21,6 +21,21 @@ newtype ThreadPostResponse = ThreadPostResponse {
   modifiedAt :: DateMaybe
 }
 
+_ThreadPostResponse :: LensP ThreadPostResponse {
+  id   :: ThreadPostId,
+  userId :: Int,
+  threadId :: Int,
+  parentId :: Maybe Int,
+  title :: Maybe String,
+  body :: String,
+  createdBy :: Int,
+  createdAt :: DateMaybe,
+  modifiedBy :: Maybe Int,
+  modifiedAt :: DateMaybe
+}
+
+_ThreadPostResponse f (ThreadPostResponse o) = ThreadPostResponse <$> f o
+
 
 
 defaultThreadPostResponse :: ThreadPostResponse
