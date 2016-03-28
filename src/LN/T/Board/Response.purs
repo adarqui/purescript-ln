@@ -20,6 +20,19 @@ newtype BoardResponse = BoardResponse {
   modifiedAt :: DateMaybe
 }
 
+_BoardResponse :: LensP BoardResponse {
+    id   :: BoardId,
+    forumId :: Int,
+    parentId :: Maybe Int,
+    name :: String,
+    description :: Maybe String,
+    createdBy :: Int,
+    createdAt :: DateMaybe,
+    modifiedBy :: Maybe Int,
+    modifiedAt :: DateMaybe
+  }
+_BoardResponse f (BoardResponse o) = BoardResponse <$> f o
+
 
 
 defaultBoardResponse :: BoardResponse
