@@ -20,14 +20,18 @@ data By
   | ByUserName String
   | ByForumId String
   | ByForumName String
+  | ByBoardId String
+  | ByBoardName String
 
 instance byShow :: Show By where
-  show (ByOrgId s) = "org_id=" <> s
-  show (ByOrgName s) = "org_name=" <> s
-  show (ByUserId s) = "user_id=" <> s
-  show (ByUserName s) = "user_name=" <> s
-  show (ByForumId s) = "forum_id=" <> s
+  show (ByOrgId s)     = "org_id=" <> s
+  show (ByOrgName s)   = "org_name=" <> s
+  show (ByUserId s)    = "user_id=" <> s
+  show (ByUserName s)  = "user_name=" <> s
+  show (ByForumId s)   = "forum_id=" <> s
   show (ByForumName s) = "forum_name=" <> s
+  show (ByBoardId s)   = "board_id=" <> s
+  show (ByBoardName s) = "board_name=" <> s
 
 
 
