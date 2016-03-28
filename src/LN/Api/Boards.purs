@@ -15,7 +15,6 @@ getBoards = getAt [] [] [boardsTag]
 
 
 
--- change For / By
 getBoardsByForumId :: String -> ApiEff (Maybe BoardResponses)
 getBoardsByForumId forum = getAt [] [ByForumId forum] [boardsTag]
 
@@ -26,3 +25,5 @@ getBoard board_id = getAt [] [] [boardsTag, board_id]
 
 
 
+getBoardByForumId :: String -> String -> ApiEff (Maybe BoardResponse)
+getBoardByForumId forum board = getAt [] [ByForumId forum] [boardsTag, board]
