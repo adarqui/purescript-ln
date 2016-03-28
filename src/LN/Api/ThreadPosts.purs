@@ -15,5 +15,25 @@ getThreadPosts = getAt [] [] [threadPostsTag]
 
 
 
+getThreadPostsByOrgId :: String -> ApiEff (Maybe ThreadPostResponses)
+getThreadPostsByOrgId org = getAt [] [ByOrgId org] [threadPostsTag]
+
+
+
+getThreadPostsByOrgName :: String -> ApiEff (Maybe ThreadPostResponses)
+getThreadPostsByOrgName org = getAt [] [ByOrgName org] [threadPostsTag]
+
+
+
 getThreadPost :: String -> ApiEff (Maybe ThreadPostResponse)
 getThreadPost thread_post = getAt [] [] [threadPostsTag, thread_post]
+
+
+
+getThreadPostByThreadId :: String -> String -> ApiEff (Maybe ThreadPostResponse)
+getThreadPostByThreadId thread thread_post = getAt [] [ByThreadId thread] [threadPostsTag, thread_post]
+
+
+
+getThreadPostByThreadName :: String -> String -> ApiEff (Maybe ThreadPostResponse)
+getThreadPostByThreadName thread thread_post = getAt [] [ByThreadName thread] [threadPostsTag, thread_post]

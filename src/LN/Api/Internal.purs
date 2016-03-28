@@ -22,16 +22,30 @@ data By
   | ByForumName String
   | ByBoardId String
   | ByBoardName String
+  | ByThreadId String
+  | ByThreadName String
+  | ByThreadPostId String
+  | ByThreadPostName String
+  | ByResourceId String
+  | ByResourceName String
+  | ByLeuronId String
 
 instance byShow :: Show By where
-  show (ByOrgId s)     = "org_id=" <> s
-  show (ByOrgName s)   = "org_name=" <> s
-  show (ByUserId s)    = "user_id=" <> s
-  show (ByUserName s)  = "user_name=" <> s
-  show (ByForumId s)   = "forum_id=" <> s
-  show (ByForumName s) = "forum_name=" <> s
-  show (ByBoardId s)   = "board_id=" <> s
-  show (ByBoardName s) = "board_name=" <> s
+  show (ByOrgId s)          = "org_id=" <> s
+  show (ByOrgName s)        = "org_name=" <> s
+  show (ByUserId s)         = "user_id=" <> s
+  show (ByUserName s)       = "user_name=" <> s
+  show (ByForumId s)        = "forum_id=" <> s
+  show (ByForumName s)      = "forum_name=" <> s
+  show (ByBoardId s)        = "board_id=" <> s
+  show (ByBoardName s)      = "board_name=" <> s
+  show (ByThreadId s)       = "thread_id=" <> s
+  show (ByThreadName s)     = "thread_name=" <> s
+  show (ByThreadPostId s)   = "thread_post_id=" <> s
+  show (ByThreadPostName s) = "thread_post_name=" <> s
+  show (ByResourceId s)     = "resource_id=" <> s
+  show (ByResourceName s)   = "resource_name=" <> s
+  show (ByLeuronId s)       = "leuron_id=" <> s
 
 
 
