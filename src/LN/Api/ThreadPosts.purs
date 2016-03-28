@@ -6,6 +6,7 @@ import LN.T.Prelude
 import LN.Api.Prelude
 import LN.Api.Internal
 import LN.T.ThreadPost
+import LN.T.ThreadPost.Request
 import LN.T.ThreadPost.Response
 
 
@@ -47,3 +48,8 @@ getThreadPostByThreadId thread thread_post = getAt [] [ByThreadId thread] [threa
 
 getThreadPostByThreadName :: String -> String -> ApiEff (Maybe ThreadPostResponse)
 getThreadPostByThreadName thread thread_post = getAt [] [ByThreadName thread] [threadPostsTag, thread_post]
+
+
+
+postThread :: String -> ThreadPostRequest -> ApiEff (Maybe ThreadPostResponse)
+postThread thread thread_request = postAt [] [] [threadPostsTag, thread] thread_request
