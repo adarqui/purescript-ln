@@ -22,6 +22,23 @@ newtype ThreadResponse = ThreadResponse {
   modifiedAt :: DateMaybe
 }
 
+_ThreadResponse :: LensP ThreadResponse {
+  id   :: ThreadId,
+  boardId :: Int,
+  name :: String,
+  description :: Maybe String,
+  sticky :: Boolean,
+  locked :: Boolean,
+  poll :: Maybe String,
+  createdBy :: Int,
+  createdAt :: DateMaybe,
+  modifiedBy :: Maybe Int,
+  modifiedAt :: DateMaybe
+}
+
+_ThreadResponse f (ThreadResponse o) = ThreadResponse <$> f o
+
+
 
 
 defaultThreadResponse :: ThreadResponse
