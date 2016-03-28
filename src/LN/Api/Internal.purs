@@ -29,6 +29,8 @@ data By
   | ByResourceId String
   | ByResourceName String
   | ByLeuronId String
+  | ByParentId String
+  | ByParentName String
 
 instance byShow :: Show By where
   show (ByOrgId s)          = "org_id=" <> s
@@ -46,6 +48,8 @@ instance byShow :: Show By where
   show (ByResourceId s)     = "resource_id=" <> s
   show (ByResourceName s)   = "resource_name=" <> s
   show (ByLeuronId s)       = "leuron_id=" <> s
+  show (ByParentId s)       = "parent_id=" <> s
+  show (ByParentName s)     = "parent_name=" <> s
 
 
 
