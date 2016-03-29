@@ -41,6 +41,21 @@ email_ f o = o { email = _ } <$> f o.email
 
 
 
+subject_ :: forall b a r. Lens { subject :: a | r } { subject :: b | r } a b
+subject_ f o = o { subject = _ } <$> f o.subject
+
+
+
+title_ :: forall b a r. Lens { title :: a | r } { title :: b | r } a b
+title_ f o = o { title = _ } <$> f o.title
+
+
+
+body_ :: forall b a r. Lens { body :: a | r } { body :: b | r } a b
+body_ f o = o { body = _ } <$> f o.body
+
+
+
 createdBy_ :: forall b a r. Lens { createdBy :: a | r } { createdBy :: b | r } a b
 createdBy_ f o = o { createdBy = _ } <$> f o.createdBy
 
