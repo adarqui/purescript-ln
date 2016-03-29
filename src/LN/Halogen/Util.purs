@@ -14,6 +14,7 @@ import Data.Foreign.Class (readProp)
 import Data.Functor (($>))
 import Data.JSON (eitherDecode, decode, encode)
 import Data.Maybe (Maybe(..), maybe, fromMaybe)
+import Data.Tuple
 
 import Halogen
 import Halogen.Util (appendTo, appendToBody, onLoad)
@@ -189,6 +190,19 @@ textArea_DeleteEdit value edit_cb delete_cb =
             E.onClick delete_cb
           ] [H.text "✖"]
         ]
+    ]
+
+
+
+textArea_LabelWithButtons label placeholder value value_change_cb buttons =
+  H.div
+    [P.class_ (H.className "input-group")]
+    [
+      H.textarea [formControlClasses, P.placeholder placeholder, P.value value, E.onValueChange value_change_cb],
+      H.span
+        [P.class_ (H.className "input-group-btn")]
+        [],
+      H.p_ $ map (\(Tuple name cb) -> H.button [buttonInfoClasses, P.title name, E.onClick cb] [H.text name]) buttons
     ]
 
 
