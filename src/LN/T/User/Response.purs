@@ -4,7 +4,6 @@ module LN.T.User.Response where
 
 import LN.T.Prelude.Argonaut
 import LN.T.User
--- import LN.T.Date
 import LN.T.DateMaybe
 
 
@@ -14,6 +13,7 @@ newtype UserResponse = UserResponse {
   displayNick :: String,
   name :: String,
   email :: String,
+  emailMD5 :: String,
   plugin :: String,
   ident :: String,
   isActive :: Boolean,
@@ -22,30 +22,12 @@ newtype UserResponse = UserResponse {
   deactivatedAt :: DateMaybe
 }
 
-{-
-derive instance genericUserResponse :: Generic UserResponse
-
-instance showUserResponse :: Show UserResponse where
-  show = gShow
--}
-
 defaultUserResponse :: UserResponse
-defaultUserResponse = mkUserResponse 0 "nick" "display_nick" "name" "email" "plugin" "ident" false defaultDate defaultDate defaultDate
+defaultUserResponse = mkUserResponse 0 "nick" "display_nick" "name" "email" "md5" "plugin" "ident" false defaultDate defaultDate defaultDate
 
-mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> Boolean -> DateMaybe -> DateMaybe -> DateMaybe -> UserResponse
-mkUserResponse id nick displayNick name email plugin ident isActive createdAt modifiedAt deactivatedAt =
-  UserResponse { id, nick, displayNick, name, email, plugin, ident, isActive, createdAt, modifiedAt, deactivatedAt }
-
-{-
-_UserResponse :: LensP UserResponse { id :: Int, nick :: String }
-_UserResponse f (UserResponse o) = UserResponse <$> f o
-
-_id :: forall b a r. Lens { id :: a | r } { id :: b | r } a b
-_id f o = o { id = _ } <$> f o.id
-
-_nick :: forall b a r. Lens { nick :: a | r } { nick :: b | r } a b
-_nick f o = o { nick = _ } <$> f o.nick
--}
+mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> String -> Boolean -> DateMaybe -> DateMaybe -> DateMaybe -> UserResponse
+mkUserResponse id nick displayNick name email emailMD5 plugin ident isActive createdAt modifiedAt deactivatedAt =
+  UserResponse { id, nick, displayNick, name, email, emailMD5, plugin, ident, isActive, createdAt, modifiedAt, deactivatedAt }
 
 instance encodeUserResponse :: EncodeJson UserResponse where
   encodeJson (UserResponse u) =
@@ -74,13 +56,14 @@ instance decodeUserResponse :: DecodeJson UserResponse where
     displayNick <- obj .? "display_nick"
     name <- obj .? "name"
     email <- obj .? "email"
+    emailMD5 <- obj .? "email_md5"
     plugin <- obj .? "plugin"
     ident <- obj .? "ident"
     isActive <- obj .? "is_active"
     createdAt <- obj .? "created_at"
     modifiedAt <- obj .? "modified_at"
     deactivatedAt <- obj .? "deactivated_at"
-    pure $ UserResponse {id, nick, displayNick, name, email, plugin, ident, isActive , createdAt, modifiedAt, deactivatedAt}
+    pure $ UserResponse {id, nick, displayNick, name, email, emailMD5, plugin, ident, isActive , createdAt, modifiedAt, deactivatedAt}
 
 instance respondableUserResponse :: Respondable UserResponse where
   responseType =
@@ -92,6 +75,7 @@ instance respondableUserResponse :: Respondable UserResponse where
       <*> readProp "display_nick" json
       <*> readProp "name" json
       <*> readProp "email" json
+      <*> readProp "email_md5" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
       <*> readProp "is_active" json
@@ -112,6 +96,7 @@ instance isForeignUserResponse :: IsForeign UserResponse where
     <*> readProp "display_nick" f
     <*> readProp "name" f
     <*> readProp "email" f
+    <*> readProp "email_md5" f
     <*> readProp "plugin" f
     <*> readProp "ident" f
     <*> readProp "is_active" f

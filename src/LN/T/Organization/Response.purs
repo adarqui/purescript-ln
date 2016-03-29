@@ -17,6 +17,7 @@ newtype OrganizationResponse = OrganizationResponse {
   company :: String,
   location :: String,
   email :: String,
+  emailMD5 :: String,
   createdAt :: DateMaybe,
   modifiedAt :: DateMaybe
 }
@@ -29,6 +30,7 @@ _OrganizationResponse :: LensP OrganizationResponse {
     company :: String,
     location :: String,
     email :: String,
+    emailMD5 :: String,
     createdAt :: DateMaybe,
     modifiedAt :: DateMaybe
   }
@@ -37,13 +39,13 @@ _OrganizationResponse f (OrganizationResponse o) = OrganizationResponse <$> f o
 
 
 defaultOrganizationResponse :: OrganizationResponse
-defaultOrganizationResponse = mkOrganizationResponse 0 0 "name" Nothing "company" "location" "email" defaultDate defaultDate
+defaultOrganizationResponse = mkOrganizationResponse 0 0 "name" Nothing "company" "location" "email" "md5" defaultDate defaultDate
 
 
 
-mkOrganizationResponse :: Int -> Int -> String -> Maybe String -> String -> String -> String -> DateMaybe -> DateMaybe -> OrganizationResponse
-mkOrganizationResponse id userId name description company location email createdAt modifiedAt =
-  OrganizationResponse { id, userId, name, description, company, location, email, createdAt, modifiedAt }
+mkOrganizationResponse :: Int -> Int -> String -> Maybe String -> String -> String -> String -> String -> DateMaybe -> DateMaybe -> OrganizationResponse
+mkOrganizationResponse id userId name description company location email emailMD5 createdAt modifiedAt =
+  OrganizationResponse { id, userId, name, description, company, location, email, emailMD5, createdAt, modifiedAt }
 
 
 
@@ -56,6 +58,7 @@ instance encodeOrganizationResponse :: EncodeJson OrganizationResponse where
     ~> "company" := u.company
     ~> "location" := u.location
     ~> "email" := u.email
+    ~> "email_md5" := u.emailMD5
     ~> "created_at" := toISOString u.createdAt
     ~> "modified_at" := toISOString u.modifiedAt
     ~> jsonEmptyObject
@@ -72,9 +75,10 @@ instance decodeOrganizationResponse :: DecodeJson OrganizationResponse where
     company <- obj .? "company"
     location <- obj .? "location"
     email <- obj .? "email"
+    emailMD5 <- obj .? "email_md5"
     createdAt <- obj .? "created_at"
     modifiedAt <- obj .? "modified_at"
-    pure $ OrganizationResponse {id, userId, name, description, company, location, email, createdAt, modifiedAt}
+    pure $ OrganizationResponse {id, userId, name, description, company, location, email, emailMD5, createdAt, modifiedAt}
 
 
 
@@ -90,6 +94,7 @@ instance respondableOrganizationResponse :: Respondable OrganizationResponse whe
       <*> readProp "company" json
       <*> readProp "location" json
       <*> readProp "email" json
+      <*> readProp "email_md5" json
       <*> readProp "created_at" json
       <*> readProp "modified_at" json
 
@@ -111,6 +116,7 @@ instance isForeignOrganizationResponse :: IsForeign OrganizationResponse where
     <*> readProp "company" f
     <*> readProp "location" f
     <*> readProp "email" f
+    <*> readProp "email_md5" f
     <*> readProp "created_at" f
     <*> readProp "modified_at" f
 

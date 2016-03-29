@@ -4,7 +4,6 @@ module LN.T.User.Response.Sanitized where
 
 import LN.T.Prelude.Argonaut
 import LN.T.User
--- import LN.T.Date
 import LN.T.DateMaybe
 
 
@@ -12,33 +11,24 @@ newtype UserResponseSanitized = UserResponseSanitized {
   id   :: UserId,
   nick :: String,
   displayNick :: String,
+  emailMD5 :: String,
   isActive :: Boolean,
   createdAt :: DateMaybe
 }
 
 defaultUserResponseSanitized :: UserResponseSanitized
-defaultUserResponseSanitized = mkUserResponseSanitized 0 "nick" "display_nick" false defaultDate
+defaultUserResponseSanitized = mkUserResponseSanitized 0 "nick" "display_nick" "md5" false defaultDate
 
-mkUserResponseSanitized :: Int -> String -> String -> Boolean -> DateMaybe -> UserResponseSanitized
-mkUserResponseSanitized id nick displayNick isActive createdAt =
-  UserResponseSanitized { id, nick, displayNick, isActive, createdAt }
-
-{-
-_UserResponseSanitized :: LensP UserResponseSanitized { id :: Int, nick :: String }
-_UserResponseSanitized f (UserResponseSanitized o) = UserResponseSanitized <$> f o
-
-_id :: forall b a r. Lens { id :: a | r } { id :: b | r } a b
-_id f o = o { id = _ } <$> f o.id
-
-_nick :: forall b a r. Lens { nick :: a | r } { nick :: b | r } a b
-_nick f o = o { nick = _ } <$> f o.nick
--}
+mkUserResponseSanitized :: Int -> String -> String -> String -> Boolean -> DateMaybe -> UserResponseSanitized
+mkUserResponseSanitized id nick displayNick emailMD5 isActive createdAt =
+  UserResponseSanitized { id, nick, displayNick, emailMD5, isActive, createdAt }
 
 instance encodeUserResponseSanitized :: EncodeJson UserResponseSanitized where
   encodeJson (UserResponseSanitized u) =
        "id"    := u.id
     ~> "nick"  := u.nick
     ~> "display_nick" := u.displayNick
+    ~> "email_md5" := u.emailMD5
     ~> "is_active" := u.isActive
     ~> "created_at" := toISOString u.createdAt
     ~> jsonEmptyObject
@@ -49,9 +39,10 @@ instance decodeUserResponseSanitized :: DecodeJson UserResponseSanitized where
     id <- obj .? "id"
     nick <- obj .? "nick"
     displayNick <- obj .? "display_nick"
+    emailMD5 <- obj .? "email_md5"
     isActive <- obj .? "is_active"
     createdAt <- obj .? "created_at"
-    pure $ UserResponseSanitized {id, nick, displayNick, isActive, createdAt}
+    pure $ UserResponseSanitized {id, nick, displayNick, emailMD5, isActive, createdAt}
 
 instance respondableUserResponseSanitized :: Respondable UserResponseSanitized where
   responseType =
@@ -61,6 +52,7 @@ instance respondableUserResponseSanitized :: Respondable UserResponseSanitized w
       <$> readProp "id" json
       <*> readProp "nick" json
       <*> readProp "display_nick" json
+      <*> readProp "email_md5" json
       <*> readProp "is_active" json
       <*> readProp "created_at" json
 
@@ -75,6 +67,7 @@ instance isForeignUserResponseSanitized :: IsForeign UserResponseSanitized where
     <$> readProp "id" f
     <*> readProp "nick" f
     <*> readProp "display_nick" f
+    <*> readProp "email_md5" f
     <*> readProp "is_active" f
     <*> readProp "created_at" f
 
