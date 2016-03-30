@@ -62,4 +62,21 @@ instance decodePostData :: DecodeJson PostData where
       "post_data_other"    -> PostDataOther <$> obj .? "name" <*> obj .? "data"
       _                    -> pure PostDataEmpty
 
--- instance respondablePostData :: Res
+
+
+instance respondablePostData :: Respondable PostData where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = pure PostDataEmpty
+
+
+
+instance requestablePostData :: Requestable PostData where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+     in toRequest str
+
+
+
+instance isForeignPostData :: IsForeign PostData where
+  read f = pure PostDataEmpty

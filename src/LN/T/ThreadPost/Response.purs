@@ -4,6 +4,7 @@ module LN.T.ThreadPost.Response where
 
 import LN.T.Prelude.Argonaut
 import LN.T.ThreadPost
+import LN.T.ThreadPost.PostData
 import LN.T.DateMaybe
 
 
@@ -14,7 +15,7 @@ newtype ThreadPostResponse = ThreadPostResponse {
   threadId :: Int,
   parentId :: Maybe Int,
   title :: Maybe String,
-  body :: String,
+  body :: PostData,
   createdBy :: Int,
   createdAt :: DateMaybe,
   modifiedBy :: Maybe Int,
@@ -27,7 +28,7 @@ _ThreadPostResponse :: LensP ThreadPostResponse {
   threadId :: Int,
   parentId :: Maybe Int,
   title :: Maybe String,
-  body :: String,
+  body :: PostData,
   createdBy :: Int,
   createdAt :: DateMaybe,
   modifiedBy :: Maybe Int,
@@ -39,11 +40,11 @@ _ThreadPostResponse f (ThreadPostResponse o) = ThreadPostResponse <$> f o
 
 
 defaultThreadPostResponse :: ThreadPostResponse
-defaultThreadPostResponse = mkThreadPostResponse 0 0 0 Nothing Nothing "body" 0 defaultDate Nothing defaultDate
+defaultThreadPostResponse = mkThreadPostResponse 0 0 0 Nothing Nothing PostDataEmpty 0 defaultDate Nothing defaultDate
 
 
 
-mkThreadPostResponse :: Int -> Int -> Int -> Maybe Int -> Maybe String -> String -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> ThreadPostResponse
+mkThreadPostResponse :: Int -> Int -> Int -> Maybe Int -> Maybe String -> PostData -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> ThreadPostResponse
 mkThreadPostResponse id userId threadId parentId title body createdBy createdAt modifiedBy modifiedAt =
   ThreadPostResponse { id, userId, threadId, parentId, title, body, createdBy, createdAt, modifiedBy, modifiedAt }
 
