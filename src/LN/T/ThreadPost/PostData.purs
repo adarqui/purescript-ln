@@ -67,7 +67,15 @@ instance decodePostData :: DecodeJson PostData where
 instance respondablePostData :: Respondable PostData where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse json = pure PostDataEmpty
+  fromResponse f = do
+    typ <- readProp "type" f
+    case typ of
+      "post_data_raw"      -> PostDataRaw <$> readProp "data" f
+      "post_data_markdown" -> PostDataMarkdown <$> readProp "data" f
+      "post_data_bbcode"   -> PostDataBBCode <$> readProp "data" f
+      "post_data_code"     -> PostDataCode <$> readProp "name" f <*> readProp "data" f
+      "post_data_other"    -> PostDataOther <$> readProp "name" f <*> readProp "data" f
+      _                    -> pure PostDataEmpty
 
 
 
@@ -79,4 +87,12 @@ instance requestablePostData :: Requestable PostData where
 
 
 instance isForeignPostData :: IsForeign PostData where
-  read f = pure PostDataEmpty
+  read f = do
+    typ <- readProp "type" f
+    case typ of
+      "post_data_raw"      -> PostDataRaw <$> readProp "data" f
+      "post_data_markdown" -> PostDataMarkdown <$> readProp "data" f
+      "post_data_bbcode"   -> PostDataBBCode <$> readProp "data" f
+      "post_data_code"     -> PostDataCode <$> readProp "name" f <*> readProp "data" f
+      "post_data_other"    -> PostDataOther <$> readProp "name" f <*> readProp "data" f
+      _                    -> pure PostDataEmpty
