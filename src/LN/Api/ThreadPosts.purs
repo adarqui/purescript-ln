@@ -5,34 +5,36 @@ module LN.Api.ThreadPost where
 import LN.T.Prelude
 import LN.Api.Prelude
 import LN.Api.Internal
+import LN.T.Count
+import LN.T.Count.Response
 import LN.T.ThreadPost
 import LN.T.ThreadPost.Request
 import LN.T.ThreadPost.Response
 
 
 
-getThreadPosts :: ApiEff (Maybe ThreadPostResponses)
-getThreadPosts = getAt [] [] [threadPostsTag]
+getThreadPosts :: Array Param -> Array By -> ApiEff (Maybe ThreadPostResponses)
+getThreadPosts params by = getAt (map paramToTuple params) by [threadPostsTag]
 
 
 
-getThreadPostsByOrgId :: String -> ApiEff (Maybe ThreadPostResponses)
-getThreadPostsByOrgId org = getAt [] [ByOrgId org] [threadPostsTag]
+getThreadPostsByOrgId :: Array Param -> String -> ApiEff (Maybe ThreadPostResponses)
+getThreadPostsByOrgId params org = getThreadPosts params [ByOrgId org]
 
 
 
-getThreadPostsByOrgName :: String -> ApiEff (Maybe ThreadPostResponses)
-getThreadPostsByOrgName org = getAt [] [ByOrgName org] [threadPostsTag]
+getThreadPostsByOrgName :: Array Param -> String -> ApiEff (Maybe ThreadPostResponses)
+getThreadPostsByOrgName params org = getThreadPosts params [ByOrgName org]
 
 
 
-getThreadPostsByThreadId :: String -> ApiEff (Maybe ThreadPostResponses)
-getThreadPostsByThreadId thread = getAt [] [ByThreadId thread] [threadPostsTag]
+getThreadPostsByThreadId :: Array Param -> String -> ApiEff (Maybe ThreadPostResponses)
+getThreadPostsByThreadId params thread = getThreadPosts params [ByThreadId thread]
 
 
 
-getThreadPostsByThreadName :: String -> ApiEff (Maybe ThreadPostResponses)
-getThreadPostsByThreadName thread = getAt [] [ByThreadName thread] [threadPostsTag]
+getThreadPostsByThreadName :: Array Param -> String -> ApiEff (Maybe ThreadPostResponses)
+getThreadPostsByThreadName params thread = getThreadPosts params [ByThreadName thread]
 
 
 
@@ -64,3 +66,17 @@ postThreadByThreadId thread thread_request = postAt [] [ByThreadId thread] [thre
 
 postThreadByParentId :: String -> ThreadPostRequest -> ApiEff (Maybe ThreadPostResponse)
 postThreadByParentId parent thread_request = postAt [] [ByParentId parent] [threadPostsTag] thread_request
+
+
+
+--
+-- count
+--
+
+countThreadPosts :: Array By -> ApiEff (Maybe CountResponses)
+countThreadPosts by = getAt [] by [countsThreadPostsTag]
+
+
+
+countThreadPostsByThreadId :: String -> ApiEff (Maybe CountResponses)
+countThreadPostsByThreadId thread_id = countThreadPosts [ByThreadId thread_id]

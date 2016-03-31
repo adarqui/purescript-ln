@@ -17,3 +17,8 @@ threadPostTag = "thread_post"
 
 threadPostsTag :: String
 threadPostsTag = "thread_posts"
+
+
+
+countsThreadPostsTag :: String
+countsThreadPostsTag = "counts" <> "/" <> threadPostsTag
