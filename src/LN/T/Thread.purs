@@ -17,3 +17,8 @@ threadTag = "thread"
 
 threadsTag :: String
 threadsTag = "threads"
+
+
+
+countsThreadsTag :: String
+countsThreadsTag = "counts" <> "/" <> threadsTag
