@@ -12,18 +12,18 @@ import LN.T.Thread.Response
 
 
 
-getThreads :: ApiEff (Maybe ThreadResponses)
-getThreads = getAt [] [] [threadsTag]
+getThreads :: Array Param -> Array By -> ApiEff (Maybe ThreadResponses)
+getThreads params by = getAt (map paramToTuple params) by [threadsTag]
 
 
 
-getThreadsByBoardId :: String -> ApiEff (Maybe ThreadResponses)
-getThreadsByBoardId board = getAt [] [ByBoardId board] [threadsTag]
+getThreadsByBoardId :: Array Param -> String -> ApiEff (Maybe ThreadResponses)
+getThreadsByBoardId params board = getThreads params [ByBoardId board]
 
 
 
-getThreadsByBoardName :: String -> ApiEff (Maybe ThreadResponses)
-getThreadsByBoardName board = getAt [] [ByBoardName board] [threadsTag]
+getThreadsByBoardName :: Array Param -> String -> ApiEff (Maybe ThreadResponses)
+getThreadsByBoardName params board = getThreads params [ByBoardName board]
 
 
 
