@@ -51,5 +51,5 @@ countThreads by = getAt [] by [countsThreadsTag]
 
 
 
-countThreadsByBoardId :: Int -> ApiEff (Maybe CountResponses)
-countThreadsByBoardId board_id = countThreads [ByBoardId $ show board_id]
+countThreadsByBoardId :: String -> ApiEff (Maybe CountResponses)
+countThreadsByBoardId board_id = countThreads [ByBoardId board_id]
