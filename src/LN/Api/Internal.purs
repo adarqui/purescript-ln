@@ -92,14 +92,14 @@ flattenParams params = map (\(Tuple k v) -> k <> "=" <> v) params
 
 
 
-mkQuery :: Array String -> String
-mkQuery [] = ""
-mkQuery params = "?" <> joinWith "&" params
+mkQueryString :: Array String -> String
+mkQueryString [] = ""
+mkQueryString params = "?" <> joinWith "&" params
 
 
 
 routeQueryBy :: Array String -> Array (Tuple String String) -> Array By -> String
-routeQueryBy paths params by = route paths <> mkQuery (by' <> flattenParams params)
+routeQueryBy paths params by = route paths <> mkQueryString (by' <> flattenParams params)
   where
   by' = map show by
 
