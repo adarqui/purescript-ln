@@ -88,6 +88,7 @@ data OrderBy
   | OrderBy_ForumId
   | OrderBy_BoardId
   | OrderBy_ThreadId
+  | OrderBy_Id
   | OrderBy_None
 
 instance orderByShow :: Show OrderBy where
@@ -101,6 +102,7 @@ instance orderByShow :: Show OrderBy where
   show OrderBy_ForumId    = "forum_id"
   show OrderBy_BoardId    = "board_id"
   show OrderBy_ThreadId   = "thread_id"
+  show OrderBy_Id         = "id"
   show OrderBy_None       = "none"
 
 
