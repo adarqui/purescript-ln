@@ -60,20 +60,26 @@ data Param
   | ParOrderDsc
   | ParOrderRand
   | ParOrderBy OrderBy
+  | ParNone
 
 instance paramShow :: Show Param where
-  show (ParLimit n)  = "limit=" <> show n
-  show (ParOffset n) = "offset=" <> show n
-  show ParOrderAsc    = "order=asc"
-  show ParOrderDsc    = "order=dsc"
-  show ParOrderRand   = "order=rand"
+  show (ParLimit n)    = "limit=" <> show n
+  show (ParOffset n)   = "offset=" <> show n
+  show ParOrderAsc     = "order=asc"
+  show ParOrderDsc     = "order=dsc"
+  show ParOrderRand    = "order=rand"
+  show (ParOrderBy by) = "order_by=" <> show by
+  show ParNone         = "none=true"
+  show _               = "none=true"
 
 paramToTuple :: Param -> Tuple String String
-paramToTuple (ParLimit n)  = Tuple "limit" (show n)
-paramToTuple (ParOffset n) = Tuple "offset" (show n)
-paramToTuple ParOrderAsc    = Tuple "order" "asc"
-paramToTuple ParOrderDsc    = Tuple "order" "dsc"
-paramToTuple ParOrderRand   = Tuple "order" "rand"
+paramToTuple (ParLimit n)    = Tuple "limit" (show n)
+paramToTuple (ParOffset n)   = Tuple "offset" (show n)
+paramToTuple ParOrderAsc     = Tuple "order" "asc"
+paramToTuple ParOrderDsc     = Tuple "order" "dsc"
+paramToTuple ParOrderRand    = Tuple "order" "rand"
+paramToTuple (ParOrderBy by) = Tuple "order_by" (show by)
+paramToTuple _               = Tuple "none" "true"
 
 
 
@@ -92,9 +98,9 @@ data OrderBy
   | OrderBy_None
 
 instance orderByShow :: Show OrderBy where
-  show OrderBy_UserId = "user_id"
-  show OrderBy_CreatedAt = "created_at"
-  show OrderBy_CreatedBy = "created_by"
+  show OrderBy_UserId     = "user_id"
+  show OrderBy_CreatedAt  = "created_at"
+  show OrderBy_CreatedBy  = "created_by"
   show OrderBy_ModifiedAt = "modified_at"
   show OrderBy_ModifiedBy = "modified_by"
   show OrderBy_OrganizationId = "org_id"
