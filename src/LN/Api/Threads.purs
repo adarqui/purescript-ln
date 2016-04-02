@@ -8,6 +8,7 @@ import LN.Api.Internal
 import LN.T.Count
 import LN.T.Count.Response
 import LN.T.Thread
+import LN.T.Thread.Request
 import LN.T.Thread.Response
 
 
