@@ -59,6 +59,7 @@ data Param
   | ParOrderAsc
   | ParOrderDsc
   | ParOrderRand
+  | ParOrderBy OrderBy
 
 instance paramShow :: Show Param where
   show (ParLimit n)  = "limit=" <> show n
@@ -73,6 +74,34 @@ paramToTuple (ParOffset n) = Tuple "offset" (show n)
 paramToTuple ParOrderAsc    = Tuple "order" "asc"
 paramToTuple ParOrderDsc    = Tuple "order" "dsc"
 paramToTuple ParOrderRand   = Tuple "order" "rand"
+
+
+
+data OrderBy
+  = OrderBy_UserId
+  | OrderBy_CreatedAt
+  | OrderBy_CreatedBy
+  | OrderBy_ModifiedAt
+  | OrderBy_ModifiedBy
+  | OrderBy_OrganizationId
+  | OrderBy_TeamId
+  | OrderBy_ForumId
+  | OrderBy_BoardId
+  | OrderBy_ThreadId
+  | OrderBy_None
+
+instance orderByShow :: Show OrderBy where
+  show OrderBy_UserId = "user_id"
+  show OrderBy_CreatedAt = "created_at"
+  show OrderBy_CreatedBy = "created_by"
+  show OrderBy_ModifiedAt = "modified_at"
+  show OrderBy_ModifiedBy = "modified_by"
+  show OrderBy_OrganizationId = "org_id"
+  show OrderBy_TeamId     = "team_id"
+  show OrderBy_ForumId    = "forum_id"
+  show OrderBy_BoardId    = "board_id"
+  show OrderBy_ThreadId   = "thread_id"
+  show OrderBy_None       = "none"
 
 
 
