@@ -56,23 +56,23 @@ instance byShow :: Show By where
 data Param
   = ParLimit Int
   | ParOffset Int
-  | ParSortAsc
-  | ParSortDsc
-  | ParSortRand
+  | ParOrderAsc
+  | ParOrderDsc
+  | ParOrderRand
 
 instance paramShow :: Show Param where
   show (ParLimit n)  = "limit=" <> show n
   show (ParOffset n) = "offset=" <> show n
-  show ParSortAsc    = "sort_by=asc"
-  show ParSortDsc    = "sort_by=dsc"
-  show ParSortRand   = "sort_by=rand"
+  show ParOrderAsc    = "order=asc"
+  show ParOrderDsc    = "order=dsc"
+  show ParOrderRand   = "order=rand"
 
 paramToTuple :: Param -> Tuple String String
 paramToTuple (ParLimit n)  = Tuple "limit" (show n)
 paramToTuple (ParOffset n) = Tuple "offset" (show n)
-paramToTuple ParSortAsc    = Tuple "sort_by" "asc"
-paramToTuple ParSortDsc    = Tuple "sort_by" "dsc"
-paramToTuple ParSortRand   = Tuple "sort_by" "rand"
+paramToTuple ParOrderAsc    = Tuple "order" "asc"
+paramToTuple ParOrderDsc    = Tuple "order" "dsc"
+paramToTuple ParOrderRand   = Tuple "order" "rand"
 
 
 
