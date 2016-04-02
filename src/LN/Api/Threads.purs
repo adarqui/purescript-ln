@@ -43,6 +43,15 @@ getThreadByBoardName board thread = getAt [] [ByBoardName board] [threadsTag, th
 
 
 --
+-- Post
+--
+
+postThreadByBoardId :: String -> ThreadRequest -> ApiEff (Maybe ThreadResponse)
+postThreadByBoardId board thread_request = postAt [] [ByBoardId board] [threadsTag] thread_request
+
+
+
+--
 -- count
 --
 

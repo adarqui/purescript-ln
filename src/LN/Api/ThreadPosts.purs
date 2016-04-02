@@ -59,13 +59,13 @@ getThreadPostByThreadName thread thread_post = getAt [] [ByThreadName thread] [t
 
 
 
-postThreadByThreadId :: String -> ThreadPostRequest -> ApiEff (Maybe ThreadPostResponse)
-postThreadByThreadId thread thread_request = postAt [] [ByThreadId thread] [threadPostsTag] thread_request
+postThreadPostByThreadId :: String -> ThreadPostRequest -> ApiEff (Maybe ThreadPostResponse)
+postThreadPostByThreadId thread thread_post_request = postAt [] [ByThreadId thread] [threadPostsTag] thread_post_request
 
 
 
-postThreadByParentId :: String -> ThreadPostRequest -> ApiEff (Maybe ThreadPostResponse)
-postThreadByParentId parent thread_request = postAt [] [ByParentId parent] [threadPostsTag] thread_request
+postThreadPostByParentId :: String -> ThreadPostRequest -> ApiEff (Maybe ThreadPostResponse)
+postThreadPostByParentId parent thread_post_request = postAt [] [ByParentId parent] [threadPostsTag] thread_post_request
 
 
 
