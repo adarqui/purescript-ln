@@ -4,18 +4,19 @@ module LN.T.ThreadPost.Request where
 
 import LN.T.Prelude.Argonaut
 import LN.T.ThreadPost
+import LN.T.ThreadPost.PostData
 import LN.T.DateMaybe
 
 
 
 newtype ThreadPostRequest = ThreadPostRequest {
   title :: Maybe String,
-  body :: String
+  body :: PostData
 }
 
 _ThreadPostRequest :: LensP ThreadPostRequest {
   title :: Maybe String,
-  body :: String
+  body :: PostData
 }
 
 _ThreadPostRequest f (ThreadPostRequest o) = ThreadPostRequest <$> f o
@@ -23,11 +24,11 @@ _ThreadPostRequest f (ThreadPostRequest o) = ThreadPostRequest <$> f o
 
 
 defaultThreadPostRequest :: ThreadPostRequest
-defaultThreadPostRequest = mkThreadPostRequest Nothing "body"
+defaultThreadPostRequest = mkThreadPostRequest Nothing PostDataEmpty
 
 
 
-mkThreadPostRequest :: Maybe String -> String -> ThreadPostRequest
+mkThreadPostRequest :: Maybe String -> PostData -> ThreadPostRequest
 mkThreadPostRequest title body =
   ThreadPostRequest { title, body }
 
@@ -35,7 +36,7 @@ mkThreadPostRequest title body =
 
 instance encodeThreadPostRequest :: EncodeJson ThreadPostRequest where
   encodeJson (ThreadPostRequest u) =
-       "title"    := u.title
+       "title":= u.title
     ~> "body" := u.body
     ~> jsonEmptyObject
 
