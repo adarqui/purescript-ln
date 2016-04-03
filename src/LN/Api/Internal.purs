@@ -89,6 +89,14 @@ paramToTuple ParOrderRand    = Tuple "order" "rand"
 paramToTuple (ParOrderBy by) = Tuple "order_by" (show by)
 paramToTuple _               = Tuple "none" "true"
 
+orderFromString :: String -> Param
+orderFromString s =
+  case s of
+    "asc" -> ParOrderAsc
+    "dsc" -> ParOrderDsc
+    "rand" -> ParOrderRand
+    _      -> ParOrderAsc
+
 
 
 data OrderBy
