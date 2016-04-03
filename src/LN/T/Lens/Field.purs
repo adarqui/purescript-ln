@@ -41,6 +41,12 @@ email_ f o = o { email = _ } <$> f o.email
 
 
 
+
+email_md5_ :: forall b a r. Lens { email_md5 :: a | r } { email_md5 :: b | r } a b
+email_md5_ f o = o { email_md5 = _ } <$> f o.email_md5
+
+
+
 subject_ :: forall b a r. Lens { subject :: a | r } { subject :: b | r } a b
 subject_ f o = o { subject = _ } <$> f o.subject
 
