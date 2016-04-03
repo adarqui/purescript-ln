@@ -121,6 +121,23 @@ instance orderByShow :: Show OrderBy where
   show OrderBy_Id         = "id"
   show OrderBy_None       = "none"
 
+orderByFromString :: String -> OrderBy
+orderByFromString s =
+  case s of
+    "user_id" -> OrderBy_UserId
+    "created_at" -> OrderBy_CreatedAt
+    "created_by" -> OrderBy_CreatedBy
+    "modified_at" -> OrderBy_ModifiedAt
+    "modified_by" -> OrderBy_ModifiedBy
+    "activity_at" -> OrderBy_ActivityAt
+    "org_id"      -> OrderBy_OrganizationId
+    "team_id"     -> OrderBy_TeamId
+    "forum_id"    -> OrderBy_ForumId
+    "board_id"    -> OrderBy_BoardId
+    "thread_id"   -> OrderBy_ThreadId
+    "id"          -> OrderBy_Id
+    _             -> OrderBy_None
+
 
 
 apiPrefix :: String
