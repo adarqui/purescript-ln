@@ -97,6 +97,7 @@ data OrderBy
   | OrderBy_CreatedBy
   | OrderBy_ModifiedAt
   | OrderBy_ModifiedBy
+  | OrderBy_ActivityAt
   | OrderBy_OrganizationId
   | OrderBy_TeamId
   | OrderBy_ForumId
@@ -111,6 +112,7 @@ instance orderByShow :: Show OrderBy where
   show OrderBy_CreatedBy  = "created_by"
   show OrderBy_ModifiedAt = "modified_at"
   show OrderBy_ModifiedBy = "modified_by"
+  show OrderBy_ActivityAt = "activity_at"
   show OrderBy_OrganizationId = "org_id"
   show OrderBy_TeamId     = "team_id"
   show OrderBy_ForumId    = "forum_id"
