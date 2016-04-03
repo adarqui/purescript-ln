@@ -31,6 +31,10 @@ data By
   | ByLeuronId String
   | ByParentId String
   | ByParentName String
+  -- bulk
+  | ByUserIds (Array Int)
+  | ByThreadIds (Array Int)
+  | ByThreadPostIds (Array Int)
 
 instance byShow :: Show By where
   show (ByOrgId s)          = "org_id=" <> s
@@ -50,6 +54,10 @@ instance byShow :: Show By where
   show (ByLeuronId s)       = "leuron_id=" <> s
   show (ByParentId s)       = "parent_id=" <> s
   show (ByParentName s)     = "parent_name=" <> s
+  -- bulk
+  show (ByUserIds a)        = "user_ids=" <> show a
+  show (ByThreadIds a)      = "thread_ids=" <> show a
+  show (ByThreadPostIds a)  = "thread_post_ids=" <> show a
 
 
 
@@ -173,7 +181,7 @@ postAt :: forall eff a b. (Respondable a, Requestable b)
         -> b
         -> Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe a)
 postAt params by paths body = do
-    liftAff $ log "getAt"
+    liftAff $ log ("postAt: " <> routeQueryBy paths params by)
     { response: response } <- AJ.post (routeQueryBy paths params by) body
     let r = fromResponse response
     case r of
