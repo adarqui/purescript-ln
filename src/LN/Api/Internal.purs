@@ -151,7 +151,7 @@ getAt :: forall eff a.
         -> Array String
         -> Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe a)
 getAt params by paths = do
-    liftAff $ log "getAt"
+    liftAff $ log ("getAt: " <> routeQueryBy paths params by)
     { response: response } <- AJ.get (routeQueryBy paths params by)
     let r = fromResponse response
     case r of
