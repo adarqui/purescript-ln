@@ -114,32 +114,32 @@ instance isForeignBoardPackResponse :: IsForeign BoardPackResponse where
 
 
 newtype BoardPackResponses = BoardPackResponses {
-  boardPacks :: Array BoardPackResponse
+  boardsPacks :: Array BoardPackResponse
 }
 
 defaultBoardPackResponses :: BoardPackResponses
 defaultBoardPackResponses = mkBoardPackResponses
 
 mkBoardPackResponses :: BoardPackResponses
-mkBoardPackResponses = BoardPackResponses { boardPacks: [] }
+mkBoardPackResponses = BoardPackResponses { boardsPacks: [] }
 
 instance encodeBoardPackResponses :: EncodeJson BoardPackResponses where
   encodeJson (BoardPackResponses o) =
-       boardsPacksTag  := o.boardPacks
+       boardsPacksTag  := o.boardsPacks
     ~> jsonEmptyObject
 
 instance decodeBoardPackResponses :: DecodeJson BoardPackResponses where
   decodeJson json = do
     obj <- decodeJson json
-    boardPacks <- obj .? boardsPacksTag
-    pure $ BoardPackResponses { boardPacks: boardPacks }
+    boardsPacks <- obj .? boardsPacksTag
+    pure $ BoardPackResponses { boardsPacks: boardsPacks }
 
 instance respondableBoardPackResponses :: Respondable BoardPackResponses where
   responseType =
     Tuple Nothing JSONResponse
   fromResponse json = do
-    boardPacks <- readProp boardsPacksTag json
-    pure $ BoardPackResponses { boardPacks: boardPacks }
+    boardsPacks <- readProp boardsPacksTag json
+    pure $ BoardPackResponses { boardsPacks: boardsPacks }
 
 instance requestableBoardPackResponses :: Requestable BoardPackResponses where
   toRequest s =
@@ -148,5 +148,5 @@ instance requestableBoardPackResponses :: Requestable BoardPackResponses where
 
 instance isForeignBoardPackResponses :: IsForeign BoardPackResponses where
   read f = do
-    boardPacks <- readProp boardsPacksTag f
-    pure $ BoardPackResponses { boardPacks: boardPacks }
+    boardsPacks <- readProp boardsPacksTag f
+    pure $ BoardPackResponses { boardsPacks: boardsPacks }
