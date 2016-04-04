@@ -12,12 +12,12 @@ import LN.T.User.Response.Sanitized
 
 
 
-getUsers' :: ApiEff (Maybe UserResponsesSanitized)
+getUsers' :: ApiEff (Maybe UserSanitizedResponses)
 getUsers' = getUsers [] []
 
 
 
-getUsers :: Array Param -> Array By -> ApiEff (Maybe UserResponsesSanitized)
+getUsers :: Array Param -> Array By -> ApiEff (Maybe UserSanitizedResponses)
 getUsers params by = getAt (map paramToTuple params) by [usersTag]
 
 
@@ -27,7 +27,7 @@ getUsers params by = getAt (map paramToTuple params) by [usersTag]
 -- ...
 
 
-getUser :: String -> ApiEff (Maybe UserResponseSanitized)
+getUser :: String -> ApiEff (Maybe UserSanitizedResponse)
 getUser user = getAt [] [] [usersTag, user]
 
 

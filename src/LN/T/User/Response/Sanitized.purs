@@ -7,7 +7,7 @@ import LN.T.User
 import LN.T.DateMaybe
 
 
-newtype UserResponseSanitized = UserResponseSanitized {
+newtype UserSanitizedResponse = UserSanitizedResponse {
   id   :: UserId,
   nick :: String,
   displayNick :: String,
@@ -16,7 +16,7 @@ newtype UserResponseSanitized = UserResponseSanitized {
   createdAt :: DateMaybe
 }
 
-_UserResponseSanitized :: LensP UserResponseSanitized {
+_UserSanitizedResponse :: LensP UserSanitizedResponse {
     id   :: UserId,
     nick :: String,
     displayNick :: String,
@@ -24,23 +24,23 @@ _UserResponseSanitized :: LensP UserResponseSanitized {
     isActive :: Boolean,
     createdAt :: DateMaybe
   }
-_UserResponseSanitized f (UserResponseSanitized o) = UserResponseSanitized <$> f o
+_UserSanitizedResponse f (UserSanitizedResponse o) = UserSanitizedResponse <$> f o
 
 
 
-defaultUserResponseSanitized :: UserResponseSanitized
-defaultUserResponseSanitized = mkUserResponseSanitized 0 "nick" "display_nick" "md5" false defaultDate
+defaultUserSanitizedResponse :: UserSanitizedResponse
+defaultUserSanitizedResponse = mkUserSanitizedResponse 0 "nick" "display_nick" "md5" false defaultDate
 
 
 
-mkUserResponseSanitized :: Int -> String -> String -> String -> Boolean -> DateMaybe -> UserResponseSanitized
-mkUserResponseSanitized id nick displayNick emailMD5 isActive createdAt =
-  UserResponseSanitized { id, nick, displayNick, emailMD5, isActive, createdAt }
+mkUserSanitizedResponse :: Int -> String -> String -> String -> Boolean -> DateMaybe -> UserSanitizedResponse
+mkUserSanitizedResponse id nick displayNick emailMD5 isActive createdAt =
+  UserSanitizedResponse { id, nick, displayNick, emailMD5, isActive, createdAt }
 
 
 
-instance encodeUserResponseSanitized :: EncodeJson UserResponseSanitized where
-  encodeJson (UserResponseSanitized u) =
+instance encodeUserSanitizedResponse :: EncodeJson UserSanitizedResponse where
+  encodeJson (UserSanitizedResponse u) =
        "id"    := u.id
     ~> "nick"  := u.nick
     ~> "display_nick" := u.displayNick
@@ -51,7 +51,7 @@ instance encodeUserResponseSanitized :: EncodeJson UserResponseSanitized where
 
 
 
-instance decodeUserResponseSanitized :: DecodeJson UserResponseSanitized where
+instance decodeUserSanitizedResponse :: DecodeJson UserSanitizedResponse where
   decodeJson json = do
     obj <- decodeJson json
     id <- obj .? "id"
@@ -60,15 +60,15 @@ instance decodeUserResponseSanitized :: DecodeJson UserResponseSanitized where
     emailMD5 <- obj .? "email_md5"
     isActive <- obj .? "is_active"
     createdAt <- obj .? "created_at"
-    pure $ UserResponseSanitized {id, nick, displayNick, emailMD5, isActive, createdAt}
+    pure $ UserSanitizedResponse {id, nick, displayNick, emailMD5, isActive, createdAt}
 
 
 
-instance respondableUserResponseSanitized :: Respondable UserResponseSanitized where
+instance respondableUserSanitizedResponse :: Respondable UserSanitizedResponse where
   responseType =
     Tuple Nothing JSONResponse
   fromResponse json =
-    mkUserResponseSanitized
+    mkUserSanitizedResponse
       <$> readProp "id" json
       <*> readProp "nick" json
       <*> readProp "display_nick" json
@@ -78,15 +78,15 @@ instance respondableUserResponseSanitized :: Respondable UserResponseSanitized w
 
 
 
-instance requestableUserResponseSanitized :: Requestable UserResponseSanitized where
+instance requestableUserSanitizedResponse :: Requestable UserSanitizedResponse where
   toRequest s =
     let str = printJson (encodeJson s) :: String
      in toRequest str
 
 
 
-instance isForeignUserResponseSanitized :: IsForeign UserResponseSanitized where
-  read f = mkUserResponseSanitized
+instance isForeignUserSanitizedResponse :: IsForeign UserSanitizedResponse where
+  read f = mkUserSanitizedResponse
     <$> readProp "id" f
     <*> readProp "nick" f
     <*> readProp "display_nick" f
@@ -102,59 +102,59 @@ instance isForeignUserResponseSanitized :: IsForeign UserResponseSanitized where
 
 
 
-newtype UserResponsesSanitized = UserResponsesSanitized {
-  users :: Array UserResponseSanitized
+newtype UserSanitizedResponses = UserSanitizedResponses {
+  users :: Array UserSanitizedResponse
 }
 
-_UserResponsesSanitized :: LensP UserResponsesSanitized {
-    users :: Array UserResponseSanitized
+_UserSanitizedResponses :: LensP UserSanitizedResponses {
+    users :: Array UserSanitizedResponse
   }
-_UserResponsesSanitized f (UserResponsesSanitized o) = UserResponsesSanitized <$> f o
+_UserSanitizedResponses f (UserSanitizedResponses o) = UserSanitizedResponses <$> f o
 
 
 
-defaultUserResponsesSanitized :: UserResponsesSanitized
-defaultUserResponsesSanitized = mkUserResponsesSanitized
+defaultUserSanitizedResponses :: UserSanitizedResponses
+defaultUserSanitizedResponses = mkUserSanitizedResponses
 
 
 
-mkUserResponsesSanitized :: UserResponsesSanitized
-mkUserResponsesSanitized = UserResponsesSanitized { users: [] }
+mkUserSanitizedResponses :: UserSanitizedResponses
+mkUserSanitizedResponses = UserSanitizedResponses { users: [] }
 
 
 
-instance encodeUserResponsesSanitized :: EncodeJson UserResponsesSanitized where
-  encodeJson (UserResponsesSanitized u) =
+instance encodeUserSanitizedResponses :: EncodeJson UserSanitizedResponses where
+  encodeJson (UserSanitizedResponses u) =
        "users_sanitized"    := u.users
     ~> jsonEmptyObject
 
 
 
-instance decodeUserResponsesSanitized :: DecodeJson UserResponsesSanitized where
+instance decodeUserSanitizedResponses :: DecodeJson UserSanitizedResponses where
   decodeJson json = do
     obj <- decodeJson json
     users <- obj .? "users_sanitized"
-    pure $ UserResponsesSanitized { users: users }
+    pure $ UserSanitizedResponses { users: users }
 
 
 
-instance respondableUserResponsesSanitized :: Respondable UserResponsesSanitized where
+instance respondableUserSanitizedResponses :: Respondable UserSanitizedResponses where
   responseType =
     Tuple Nothing JSONResponse
   fromResponse json = do
     users <- readProp "users_sanitized" json
-    pure $ UserResponsesSanitized { users: users }
+    pure $ UserSanitizedResponses { users: users }
 
 
 
-instance requestableUserResponsesSanitized :: Requestable UserResponsesSanitized where
+instance requestableUserSanitizedResponses :: Requestable UserSanitizedResponses where
   toRequest s =
     let str = printJson (encodeJson s) :: String
      in toRequest str
 
 
 
-instance isForeignUserResponsesSanitized :: IsForeign UserResponsesSanitized where
+instance isForeignUserSanitizedResponses :: IsForeign UserSanitizedResponses where
   read f = do
     users <- readProp "users_sanitized" f
-    pure $ UserResponsesSanitized { users: users }
+    pure $ UserSanitizedResponses { users: users }

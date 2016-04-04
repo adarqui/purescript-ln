@@ -30,7 +30,7 @@ newtype BoardPackResponse = BoardPackResponse {
   boardStat :: BoardStatResponse,
   latestThread :: Maybe ThreadResponse,
   latestThreadPost :: Maybe ThreadPostResponse,
-  latestThreadPostUser :: Maybe UserResponseSanitized
+  latestThreadPostUser :: Maybe UserSanitizedResponse
 }
 
 
@@ -40,7 +40,7 @@ _BoardPackResponse :: LensP BoardPackResponse {
     boardStat :: BoardStatResponse,
     latestThread :: Maybe ThreadResponse,
     latestThreadPost :: Maybe ThreadPostResponse,
-    latestThreadPostUser :: Maybe UserResponseSanitized
+    latestThreadPostUser :: Maybe UserSanitizedResponse
   }
 _BoardPackResponse f (BoardPackResponse o) = BoardPackResponse <$> f o
 
@@ -51,7 +51,7 @@ defaultBoardPackResponse = mkBoardPackResponse defaultBoardResponse defaultBoard
 
 
 
-mkBoardPackResponse :: BoardResponse -> BoardStatResponse -> Maybe ThreadResponse -> Maybe ThreadPostResponse -> Maybe UserResponseSanitized -> BoardPackResponse
+mkBoardPackResponse :: BoardResponse -> BoardStatResponse -> Maybe ThreadResponse -> Maybe ThreadPostResponse -> Maybe UserSanitizedResponse -> BoardPackResponse
 mkBoardPackResponse board boardStat latestThread latestThreadPost latestThreadPostUser =
   BoardPackResponse {board, boardStat, latestThread, latestThreadPost, latestThreadPostUser}
 
