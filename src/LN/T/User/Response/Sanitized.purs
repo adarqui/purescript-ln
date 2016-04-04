@@ -16,12 +16,28 @@ newtype UserResponseSanitized = UserResponseSanitized {
   createdAt :: DateMaybe
 }
 
+_UserResponseSanitized :: LensP UserResponseSanitized {
+    id   :: UserId,
+    nick :: String,
+    displayNick :: String,
+    emailMD5 :: String,
+    isActive :: Boolean,
+    createdAt :: DateMaybe
+  }
+_UserResponseSanitized f (UserResponseSanitized o) = UserResponseSanitized <$> f o
+
+
+
 defaultUserResponseSanitized :: UserResponseSanitized
 defaultUserResponseSanitized = mkUserResponseSanitized 0 "nick" "display_nick" "md5" false defaultDate
+
+
 
 mkUserResponseSanitized :: Int -> String -> String -> String -> Boolean -> DateMaybe -> UserResponseSanitized
 mkUserResponseSanitized id nick displayNick emailMD5 isActive createdAt =
   UserResponseSanitized { id, nick, displayNick, emailMD5, isActive, createdAt }
+
+
 
 instance encodeUserResponseSanitized :: EncodeJson UserResponseSanitized where
   encodeJson (UserResponseSanitized u) =
@@ -33,6 +49,8 @@ instance encodeUserResponseSanitized :: EncodeJson UserResponseSanitized where
     ~> "created_at" := toISOString u.createdAt
     ~> jsonEmptyObject
 
+
+
 instance decodeUserResponseSanitized :: DecodeJson UserResponseSanitized where
   decodeJson json = do
     obj <- decodeJson json
@@ -43,6 +61,8 @@ instance decodeUserResponseSanitized :: DecodeJson UserResponseSanitized where
     isActive <- obj .? "is_active"
     createdAt <- obj .? "created_at"
     pure $ UserResponseSanitized {id, nick, displayNick, emailMD5, isActive, createdAt}
+
+
 
 instance respondableUserResponseSanitized :: Respondable UserResponseSanitized where
   responseType =
@@ -57,10 +77,13 @@ instance respondableUserResponseSanitized :: Respondable UserResponseSanitized w
       <*> readProp "created_at" json
 
 
+
 instance requestableUserResponseSanitized :: Requestable UserResponseSanitized where
   toRequest s =
     let str = printJson (encodeJson s) :: String
      in toRequest str
+
+
 
 instance isForeignUserResponseSanitized :: IsForeign UserResponseSanitized where
   read f = mkUserResponseSanitized
@@ -83,22 +106,37 @@ newtype UserResponsesSanitized = UserResponsesSanitized {
   users :: Array UserResponseSanitized
 }
 
+_UserResponsesSanitized :: LensP UserResponsesSanitized {
+    users :: Array UserResponseSanitized
+  }
+_UserResponsesSanitized f (UserResponsesSanitized o) = UserResponsesSanitized <$> f o
+
+
+
 defaultUserResponsesSanitized :: UserResponsesSanitized
 defaultUserResponsesSanitized = mkUserResponsesSanitized
 
+
+
 mkUserResponsesSanitized :: UserResponsesSanitized
 mkUserResponsesSanitized = UserResponsesSanitized { users: [] }
+
+
 
 instance encodeUserResponsesSanitized :: EncodeJson UserResponsesSanitized where
   encodeJson (UserResponsesSanitized u) =
        "users_sanitized"    := u.users
     ~> jsonEmptyObject
 
+
+
 instance decodeUserResponsesSanitized :: DecodeJson UserResponsesSanitized where
   decodeJson json = do
     obj <- decodeJson json
     users <- obj .? "users_sanitized"
     pure $ UserResponsesSanitized { users: users }
+
+
 
 instance respondableUserResponsesSanitized :: Respondable UserResponsesSanitized where
   responseType =
@@ -107,10 +145,14 @@ instance respondableUserResponsesSanitized :: Respondable UserResponsesSanitized
     users <- readProp "users_sanitized" json
     pure $ UserResponsesSanitized { users: users }
 
+
+
 instance requestableUserResponsesSanitized :: Requestable UserResponsesSanitized where
   toRequest s =
     let str = printJson (encodeJson s) :: String
      in toRequest str
+
+
 
 instance isForeignUserResponsesSanitized :: IsForeign UserResponsesSanitized where
   read f = do
