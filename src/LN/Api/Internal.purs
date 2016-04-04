@@ -92,8 +92,8 @@ paramToTuple _               = Tuple "none" "true"
 orderFromString :: String -> Param
 orderFromString s =
   case s of
-    "asc" -> ParOrderAsc
-    "dsc" -> ParOrderDsc
+    "asc"  -> ParOrderAsc
+    "dsc"  -> ParOrderDsc
     "rand" -> ParOrderRand
     _      -> ParOrderAsc
 
