@@ -104,6 +104,24 @@ latestThreadPost_ f o = o { latestThreadPost = _ } <$> f o.latestThreadPost
 
 latestThreadPostUser_ :: forall b a r. Lens { latestThreadPostUser :: a | r } { latestThreadPostUser :: b | r } a b
 latestThreadPostUser_ f o = o { latestThreadPostUser = _ } <$> f o.latestThreadPostUser
+
+
+
+threads_ :: forall b a r. Lens { threads :: a | r } { threads :: b | r } a b
+threads_ f o = o { threads = _ } <$> f o.threads
+
+
+
+threadPosts_ :: forall b a r. Lens { threadPosts :: a | r } { threadPosts :: b | r } a b
+threadPosts_ f o = o { threadPosts = _ } <$> f o.threadPosts
+
+
+
+views_ :: forall b a r. Lens { views :: a | r } { views :: b | r } a b
+views_ f o = o { views = _ } <$> f o.views
+
+
+
 {-
 id_ :: forall b a r. Lens { id :: a | r } { id :: b | r } a b
 id_ f o = o { id = _ } <$> f o.id
