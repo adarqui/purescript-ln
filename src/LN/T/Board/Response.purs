@@ -199,7 +199,7 @@ mkBoardStatResponse id threads threadPosts views =
 
 instance encodeBoardStatResponse :: EncodeJson BoardStatResponse where
   encodeJson (BoardStatResponse o) =
-       "id"    := o.id
+       "board_id"    := o.id
     ~> "threads" := o.threads
     ~> "thread_posts" := o.threadPosts
     ~> "views" := o.views
@@ -210,7 +210,7 @@ instance encodeBoardStatResponse :: EncodeJson BoardStatResponse where
 instance decodeBoardStatResponse :: DecodeJson BoardStatResponse where
   decodeJson json = do
     obj <- decodeJson json
-    id <- obj .? "id"
+    id <- obj .? "board_id"
     threads <- obj .? "threads"
     threadPosts <- obj .? "thread_posts"
     views <- obj .? "views"
@@ -223,7 +223,7 @@ instance respondableBoardStatResponse :: Respondable BoardStatResponse where
     Tuple Nothing JSONResponse
   fromResponse json =
     mkBoardStatResponse
-      <$> readProp "id" json
+      <$> readProp "board_id" json
       <*> readProp "threads" json
       <*> readProp "thread_posts" json
       <*> readProp "views" json
@@ -239,7 +239,7 @@ instance requestableBoardStatResponse :: Requestable BoardStatResponse where
 
 instance isForeignBoardStatResponse :: IsForeign BoardStatResponse where
   read f = mkBoardStatResponse
-    <$> readProp "id" f
+    <$> readProp "board_id" f
     <*> readProp "threads" f
     <*> readProp "thread_posts" f
     <*> readProp "views" f
