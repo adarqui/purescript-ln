@@ -82,6 +82,28 @@ modifiedAt_ f o = o { modifiedAt = _ } <$> f o.modifiedAt
 
 
 
+board_ :: forall b a r. Lens { board :: a | r } { board :: b | r } a b
+board_ f o = o { board = _ } <$> f o.board
+
+
+
+boardStat_ :: forall b a r. Lens { boardStat :: a | r } { boardStat :: b | r } a b
+boardStat_ f o = o { boardStat = _ } <$> f o.boardStat
+
+
+
+latestThread_ :: forall b a r. Lens { latestThread :: a | r } { latestThread :: b | r } a b
+latestThread_ f o = o { latestThread = _ } <$> f o.latestThread
+
+
+
+latestThreadPost_ :: forall b a r. Lens { latestThreadPost :: a | r } { latestThreadPost :: b | r } a b
+latestThreadPost_ f o = o { latestThreadPost = _ } <$> f o.latestThreadPost
+
+
+
+latestThreadPostUser_ :: forall b a r. Lens { latestThreadPostUser :: a | r } { latestThreadPostUser :: b | r } a b
+latestThreadPostUser_ f o = o { latestThreadPostUser = _ } <$> f o.latestThreadPostUser
 {-
 id_ :: forall b a r. Lens { id :: a | r } { id :: b | r } a b
 id_ f o = o { id = _ } <$> f o.id
