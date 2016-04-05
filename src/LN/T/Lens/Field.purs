@@ -82,6 +82,11 @@ createdAt_ f o = o { createdAt = _ } <$> f o.createdAt
 
 
 
+createdAtMoment_ :: forall b a r. Lens { createdAtMoment :: a | r } { createdAtMoment :: b | r } a b
+createdAtMoment_ f o = o { createdAtMoment = _ } <$> f o.createdAtMoment
+
+
+
 modifiedBy_ :: forall b a r. Lens { modifiedBy :: a | r } { modifiedBy :: b | r } a b
 modifiedBy_ f o = o { modifiedBy = _ } <$> f o.modifiedBy
 
