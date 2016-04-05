@@ -1,17 +1,16 @@
 module LN.T.DateMaybe where
 
---import LN.T.Prelude
-
 import qualified Data.String as Str
 import Data.Foreign
 import Data.Foreign.Class
 import Data.Function
-
 import qualified Data.Date as D
 import qualified Data.Date.UTC as U
 import qualified Data.Time as T
-
 import LN.T.Prelude.Argonaut
+import Data.Moment.Simple
+
+
 
 newtype DateMaybe = DateMaybe (Maybe D.Date)
 
@@ -117,3 +116,10 @@ instance decodeDateMaybe :: DecodeJson DateMaybe where
     d <- obj .? "date"
     pure $ (fromJust $ dateFromString d)
     -}
+
+
+
+-- moment :: DateMaybe -> String
+moment d = fromDate $ underlyingDate d
+
+humanMoment d = calendar $ fromDate $ underlyingDate d
