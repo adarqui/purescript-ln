@@ -18,6 +18,7 @@ newtype ThreadResponse = ThreadResponse {
   poll :: Maybe String,
   createdBy :: Int,
   createdAt :: DateMaybe,
+  createdAtMoment :: String,
   modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
 }
@@ -32,6 +33,7 @@ _ThreadResponse :: LensP ThreadResponse {
   poll :: Maybe String,
   createdBy :: Int,
   createdAt :: DateMaybe,
+  createdAtMoment :: String,
   modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
 }
@@ -42,13 +44,13 @@ _ThreadResponse f (ThreadResponse o) = ThreadResponse <$> f o
 
 
 defaultThreadResponse :: ThreadResponse
-defaultThreadResponse = mkThreadResponse 0 0 "name" Nothing false false Nothing 0 defaultDate Nothing defaultDate
+defaultThreadResponse = mkThreadResponse 0 0 "name" Nothing false false Nothing 0 defaultDate "moment" Nothing defaultDate
 
 
 
-mkThreadResponse :: Int -> Int -> String -> Maybe String -> Boolean -> Boolean -> Maybe String -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> ThreadResponse
-mkThreadResponse id boardId name description sticky locked poll createdBy createdAt modifiedBy modifiedAt =
-  ThreadResponse { id, boardId, name, description, sticky, locked, poll, createdBy, createdAt, modifiedBy, modifiedAt }
+mkThreadResponse :: Int -> Int -> String -> Maybe String -> Boolean -> Boolean -> Maybe String -> Int -> DateMaybe -> String -> Maybe Int -> DateMaybe -> ThreadResponse
+mkThreadResponse id boardId name description sticky locked poll createdBy createdAt createdAtMoment modifiedBy modifiedAt =
+  ThreadResponse { id, boardId, name, description, sticky, locked, poll, createdBy, createdAt, createdAtMoment, modifiedBy, modifiedAt }
 
 
 
@@ -64,6 +66,7 @@ instance encodeThreadResponse :: EncodeJson ThreadResponse where
     ~> "poll" := u.poll
     ~> "created_by" := u.createdBy
     ~> "created_at" := toISOString u.createdAt
+    ~> "created_at_moment" := u.createdAtMoment
     ~> "modified_by" := u.modifiedBy
     ~> "modified_at" := toISOString u.modifiedAt
     ~> jsonEmptyObject
@@ -84,7 +87,10 @@ instance decodeThreadResponse :: DecodeJson ThreadResponse where
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
-    pure $ ThreadResponse {id, boardId, name, description, sticky, locked, poll, createdBy, createdAt, modifiedBy, modifiedAt}
+    pure $ ThreadResponse {id, boardId, name, description, sticky, locked, poll, createdBy, createdAt, createdAtMoment, modifiedBy, modifiedAt}
+    where
+    createdAtMoment = "moment"
+
 
 
 
@@ -102,6 +108,7 @@ instance respondableThreadResponse :: Respondable ThreadResponse where
       <*> (runNullOrUndefined <$> readProp "poll" json)
       <*> readProp "created_by" json
       <*> readProp "created_at" json
+      <*> pure "moment"
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> readProp "modified_at" json
 
@@ -125,6 +132,7 @@ instance isForeignThreadResponse :: IsForeign ThreadResponse where
     <*> (runNullOrUndefined <$> readProp "poll" f)
     <*> readProp "created_by" f
     <*> readProp "created_at" f
+    <*> pure "moment"
     <*> (runNullOrUndefined <$> readProp "modified_by" f)
     <*> readProp "modified_at" f
 
