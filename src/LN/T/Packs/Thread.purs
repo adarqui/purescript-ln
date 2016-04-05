@@ -27,6 +27,7 @@ threadsPacksTag = "threads_packs"
 
 newtype ThreadPackResponse = ThreadPackResponse {
   thread :: ThreadResponse,
+  threadUser :: UserSanitizedResponse,
   threadStat :: ThreadStatResponse,
   latestThreadPost :: Maybe ThreadPostResponse,
   latestThreadPostUser :: Maybe UserSanitizedResponse
@@ -36,6 +37,7 @@ newtype ThreadPackResponse = ThreadPackResponse {
 
 _ThreadPackResponse :: LensP ThreadPackResponse {
     thread :: ThreadResponse,
+    threadUser :: UserSanitizedResponse,
     threadStat :: ThreadStatResponse,
     latestThreadPost :: Maybe ThreadPostResponse,
     latestThreadPostUser :: Maybe UserSanitizedResponse
@@ -45,13 +47,14 @@ _ThreadPackResponse f (ThreadPackResponse o) = ThreadPackResponse <$> f o
 
 
 defaultThreadPackResponse :: ThreadPackResponse
-defaultThreadPackResponse = mkThreadPackResponse defaultThreadResponse defaultThreadStatResponse Nothing Nothing
+defaultThreadPackResponse =
+  mkThreadPackResponse defaultThreadResponse defaultUserSanitizedResponse defaultThreadStatResponse Nothing Nothing
 
 
 
-mkThreadPackResponse :: ThreadResponse -> ThreadStatResponse -> Maybe ThreadPostResponse -> Maybe UserSanitizedResponse -> ThreadPackResponse
-mkThreadPackResponse thread threadStat latestThreadPost latestThreadPostUser =
-  ThreadPackResponse {thread, threadStat, latestThreadPost, latestThreadPostUser}
+mkThreadPackResponse :: ThreadResponse -> UserSanitizedResponse -> ThreadStatResponse -> Maybe ThreadPostResponse -> Maybe UserSanitizedResponse -> ThreadPackResponse
+mkThreadPackResponse thread threadUser threadStat latestThreadPost latestThreadPostUser =
+  ThreadPackResponse {thread, threadUser, threadStat, latestThreadPost, latestThreadPostUser}
 
 
 
@@ -59,6 +62,7 @@ mkThreadPackResponse thread threadStat latestThreadPost latestThreadPostUser =
 instance encodeThreadPackResponse :: EncodeJson ThreadPackResponse where
   encodeJson (ThreadPackResponse o) =
        "thread"    := o.thread
+    ~> "thread_user" := o.threadUser
     ~> "thread_stat" := o.threadStat
     ~> "latest_thread_post" := o.latestThreadPost
     ~> "latest_thread_post_user" := o.latestThreadPostUser
@@ -70,10 +74,11 @@ instance decodeThreadPackResponse :: DecodeJson ThreadPackResponse where
   decodeJson json = do
     obj <- decodeJson json
     thread <- obj .? "thread"
+    threadUser <- obj .? "thread_user"
     threadStat <- obj .? "thread_stat"
     latestThreadPost <- obj .? "latest_thread_post"
     latestThreadPostUser <- obj .? "latest_thread_post_user"
-    pure $ ThreadPackResponse {thread, threadStat, latestThreadPost, latestThreadPostUser}
+    pure $ ThreadPackResponse {thread, threadUser, threadStat, latestThreadPost, latestThreadPostUser}
 
 
 
@@ -84,6 +89,7 @@ instance respondableThreadPackResponse :: Respondable ThreadPackResponse where
   fromResponse f =
     mkThreadPackResponse
       <$> readProp "thread" f
+      <*> readProp "thread_user" f
       <*> readProp "thread_stat" f
       <*> (runNullOrUndefined <$> readProp "latest_thread_post" f)
       <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" f)
@@ -100,6 +106,7 @@ instance requestableThreadPackResponse :: Requestable ThreadPackResponse where
 instance isForeignThreadPackResponse :: IsForeign ThreadPackResponse where
   read f = mkThreadPackResponse
     <$> readProp "thread" f
+    <*> readProp "thread_user" f
     <*> readProp "thread_stat" f
     <*> (runNullOrUndefined <$> readProp "latest_thread_post" f)
     <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" f)
