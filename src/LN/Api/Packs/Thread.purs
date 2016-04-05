@@ -9,13 +9,13 @@ import LN.T.Packs.Thread
 
 
 
-getThreadsPacks :: ApiEff (Maybe ThreadPackResponses)
-getThreadsPacks = getAt [] [] [threadsPacksTag]
+getThreadsPacks :: Array Param -> Array By -> ApiEff (Maybe ThreadPackResponses)
+getThreadsPacks params by = getAt (map paramToTuple params) by [threadsPacksTag]
 
 
 
-getThreadsPacksByBoardId :: String -> ApiEff (Maybe ThreadPackResponses)
-getThreadsPacksByBoardId board = getAt [] [ByBoardId board] [threadsPacksTag]
+getThreadsPacksByBoardId :: Array Param -> String -> ApiEff (Maybe ThreadPackResponses)
+getThreadsPacksByBoardId params board = getThreadsPacks params [ByBoardId board]
 
 
 
