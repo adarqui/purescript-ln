@@ -92,6 +92,16 @@ boardStat_ f o = o { boardStat = _ } <$> f o.boardStat
 
 
 
+threadStat_ :: forall b a r. Lens { threadStat :: a | r } { threadStat :: b | r } a b
+threadStat_ f o = o { threadStat = _ } <$> f o.threadStat
+
+
+
+threadPostStat_ :: forall b a r. Lens { threadPostStat :: a | r } { threadPostStat :: b | r } a b
+threadPostStat_ f o = o { threadPostStat = _ } <$> f o.threadPostStat
+
+
+
 latestThread_ :: forall b a r. Lens { latestThread :: a | r } { latestThread :: b | r } a b
 latestThread_ f o = o { latestThread = _ } <$> f o.latestThread
 
@@ -104,6 +114,16 @@ latestThreadPost_ f o = o { latestThreadPost = _ } <$> f o.latestThreadPost
 
 latestThreadPostUser_ :: forall b a r. Lens { latestThreadPostUser :: a | r } { latestThreadPostUser :: b | r } a b
 latestThreadPostUser_ f o = o { latestThreadPostUser = _ } <$> f o.latestThreadPostUser
+
+
+
+thread_ :: forall b a r. Lens { thread :: a | r } { thread :: b | r } a b
+thread_ f o = o { thread = _ } <$> f o.thread
+
+
+
+threadUser_ :: forall b a r. Lens { threadUser :: a | r } { threadUser :: b | r } a b
+threadUser_ f o = o { threadUser = _ } <$> f o.threadUser
 
 
 
