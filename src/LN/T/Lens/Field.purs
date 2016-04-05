@@ -21,6 +21,16 @@ name_ f o = o { name = _ } <$> f o.name
 
 
 
+nick_ :: forall b a r. Lens { nick :: a | r } { nick :: b | r } a b
+nick_ f o = o { nick = _ } <$> f o.nick
+
+
+
+displayNick_ :: forall b a r. Lens { displayNick :: a | r } { displayNick :: b | r } a b
+displayNick_ f o = o { displayNick = _ } <$> f o.displayNick
+
+
+
 description_ :: forall b a r. Lens { description :: a | r } { description :: b | r } a b
 description_ f o = o { description = _ } <$> f o.description
 
