@@ -5,34 +5,35 @@ module LN.T.Profile.Response where
 import LN.T.Prelude.Argonaut
 import LN.T.Profile
 import LN.T.DateMaybe
+import LN.T.Date as D
 
 
 
 newtype ProfileResponse = ProfileResponse {
   id   :: ProfileId,
-  boardId :: Int,
-  name :: String,
-  description :: Maybe String,
-  sticky :: Boolean,
-  locked :: Boolean,
-  poll :: Maybe String,
-  createdBy :: Int,
+  entityId :: Int,
+  gender :: ProfileGender,
+  birthdate :: D.Date,
+  website :: Maybe String,
+  location :: Maybe String,
+  signature :: Maybe String,
+  karmaGood :: Int,
+  karmaBad :: Int,
   createdAt :: DateMaybe,
-  modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
 }
 
 _ProfileResponse :: LensP ProfileResponse {
   id   :: ProfileId,
-  boardId :: Int,
-  name :: String,
-  description :: Maybe String,
-  sticky :: Boolean,
-  locked :: Boolean,
-  poll :: Maybe String,
-  createdBy :: Int,
+  entityId :: Int,
+  gender :: ProfileGender,
+  birthdate :: D.Date,
+  website :: Maybe String,
+  location :: Maybe String,
+  signature :: Maybe String,
+  karmaGood :: Int,
+  karmaBad :: Int,
   createdAt :: DateMaybe,
-  modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
 }
 
@@ -42,13 +43,13 @@ _ProfileResponse f (ProfileResponse o) = ProfileResponse <$> f o
 
 
 defaultProfileResponse :: ProfileResponse
-defaultProfileResponse = mkProfileResponse 0 0 "name" Nothing false false Nothing 0 defaultDate Nothing defaultDate
+defaultProfileResponse = mkProfileResponse 0 0 GenderUnknown D.defaultDate Nothing Nothing Nothing 0 0 defaultDate defaultDate
 
 
 
-mkProfileResponse :: Int -> Int -> String -> Maybe String -> Boolean -> Boolean -> Maybe String -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> ProfileResponse
-mkProfileResponse id boardId name description sticky locked poll createdBy createdAt modifiedBy modifiedAt =
-  ProfileResponse { id, boardId, name, description, sticky, locked, poll, createdBy, createdAt, modifiedBy, modifiedAt }
+mkProfileResponse :: Int -> Int -> ProfileGender -> D.Date -> Maybe String -> Maybe String -> Maybe String -> Int -> Int -> DateMaybe -> DateMaybe -> ProfileResponse
+mkProfileResponse id entityId gender birthdate website location signature karmaGood karmaBad createdAt modifiedAt =
+  ProfileResponse {id, entityId, gender, birthdate, website, location, signature, karmaGood, karmaBad, createdAt, modifiedAt}
 
 
 
@@ -56,15 +57,15 @@ mkProfileResponse id boardId name description sticky locked poll createdBy creat
 instance encodeProfileResponse :: EncodeJson ProfileResponse where
   encodeJson (ProfileResponse u) =
        "id"    := u.id
-    ~> "board_id" := u.boardId
-    ~> "name" := u.name
-    ~> "desc" := u.description
-    ~> "sticky" := u.sticky
-    ~> "locked" := u.locked
-    ~> "poll" := u.poll
-    ~> "created_by" := u.createdBy
+    ~> "entity_id" := u.entityId
+    ~> "gender" := u.gender
+    ~> "birthdate" := u.birthdate
+    ~> "website" := u.website
+    ~> "location" := u.location
+    ~> "signature" := u.signature
+    ~> "karma_good" := u.karmaGood
+    ~> "karma_bad" := u.karmaBad
     ~> "created_at" := toISOString u.createdAt
-    ~> "modified_by" := u.modifiedBy
     ~> "modified_at" := toISOString u.modifiedAt
     ~> jsonEmptyObject
 
@@ -74,17 +75,17 @@ instance decodeProfileResponse :: DecodeJson ProfileResponse where
   decodeJson json = do
     obj <- decodeJson json
     id <- obj .? "id"
-    boardId <- obj .? "board_id"
-    name <- obj .? "name"
-    description <- obj .? "desc"
-    sticky <- obj .? "sticky"
-    locked <- obj .? "locked"
-    poll <- obj .? "poll"
-    createdBy <- obj .? "created_by"
+    entityId <- obj .? "entity_id"
+    gender <- obj .? "gender"
+    birthdate <- obj .? "birthdate"
+    website <- obj .? "website"
+    location <- obj .? "location"
+    signature <- obj .? "signature"
+    karmaGood <- obj .? "karma_good"
+    karmaBad <- obj .? "karma_bad"
     createdAt <- obj .? "created_at"
-    modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
-    pure $ ProfileResponse {id, boardId, name, description, sticky, locked, poll, createdBy, createdAt, modifiedBy, modifiedAt}
+    pure $ ProfileResponse {id, entityId, gender, birthdate, website, location, signature, karmaGood, karmaBad, createdAt, modifiedAt}
 
 
 
@@ -95,15 +96,15 @@ instance respondableProfileResponse :: Respondable ProfileResponse where
   fromResponse json =
     mkProfileResponse
       <$> readProp "id" json
-      <*> readProp "board_id" json
-      <*> readProp "name" json
-      <*> (runNullOrUndefined <$> readProp "desc" json)
-      <*> readProp "sticky" json
-      <*> readProp "locked" json
-      <*> (runNullOrUndefined <$> readProp "poll" json)
-      <*> readProp "created_by" json
+      <*> readProp "entity_id" json
+      <*> readProp "gender" json
+      <*> readProp "birthdate" json
+      <*> (runNullOrUndefined <$> readProp "website" json)
+      <*> (runNullOrUndefined <$> readProp "location" json)
+      <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> readProp "karma_good" json
+      <*> readProp "karma_bad" json
       <*> readProp "created_at" json
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> readProp "modified_at" json
 
 
@@ -118,15 +119,15 @@ instance requestableProfileResponse :: Requestable ProfileResponse where
 instance isForeignProfileResponse :: IsForeign ProfileResponse where
   read f = mkProfileResponse
     <$> readProp "id" f
-    <*> readProp "board_id" f
-    <*> readProp "name" f
-    <*> (runNullOrUndefined <$> readProp "desc" f)
-    <*> readProp "sticky" f
-    <*> readProp "locked" f
-    <*> (runNullOrUndefined <$> readProp "poll" f)
-    <*> readProp "created_by" f
+    <*> readProp "entity_id" f
+    <*> readProp "gender" f
+    <*> readProp "birthdate" f
+    <*> (runNullOrUndefined <$> readProp "website" f)
+    <*> (runNullOrUndefined <$> readProp "location" f)
+    <*> (runNullOrUndefined <$> readProp "signature" f)
+    <*> readProp "karma_good" f
+    <*> readProp "karma_bad" f
     <*> readProp "created_at" f
-    <*> (runNullOrUndefined <$> readProp "modified_by" f)
     <*> readProp "modified_at" f
 
 
