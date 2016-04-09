@@ -106,12 +106,20 @@ yyyy_mm_dd (Date date) = y ++ "-" ++ m ++ "-" ++ d
            _ -> str
 
 
+{-
 instance decodeDate :: DecodeJson Date where
   decodeJson json = case toString json of
                     Nothing -> pure $ defaultDate
                     Just d  -> pure (fromJust $ dateFromString d)
+                    -}
+instance decodeDate :: DecodeJson Date where
+  decodeJson json = pure defaultDate
+
     {-
     obj <- decodeJson json
     d <- obj .? "date"
     pure $ (fromJust $ dateFromString d)
     -}
+
+instance encodeDate :: EncodeJson Date where
+  encodeJson d = encodeJson (toISOString d)
