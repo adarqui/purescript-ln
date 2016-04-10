@@ -5,7 +5,7 @@ module LN.Api.Packs.Thread where
 import LN.T.Prelude
 import LN.Api.Prelude
 import LN.Api.Internal
-import LN.T.Packs.Thread
+import LN.T.Pack.Thread
 
 
 

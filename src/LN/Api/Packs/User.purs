@@ -5,7 +5,7 @@ module LN.Api.Packs.User where
 import LN.T.Prelude
 import LN.Api.Prelude
 import LN.Api.Internal
-import LN.T.Packs.User
+import LN.T.Pack.User
 
 
 

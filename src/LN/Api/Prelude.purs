@@ -5,6 +5,8 @@ module LN.Api.Prelude (
 
 
 import LN.T.Prelude as A
+import LN.T.Api as A
+import LN.T.Param as A
 import Data.Maybe as A
 import Control.Monad.Aff as A
 import Control.Monad.Aff.Class as A
