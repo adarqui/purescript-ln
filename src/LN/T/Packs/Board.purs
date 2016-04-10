@@ -5,6 +5,7 @@ module LN.T.Packs.Board where
 import LN.T.Prelude.Argonaut
 import LN.T.Board
 import LN.T.Board.Response
+import LN.T.Board.Stat
 import LN.T.Thread
 import LN.T.Thread.Response
 import LN.T.ThreadPost
