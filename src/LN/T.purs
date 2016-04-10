@@ -60,8 +60,8 @@ import           LN.T.Splits               as A
 import           LN.T.Substitutions        as A
 import           LN.T.Team                 as A
 import           LN.T.Test                 as A
-import           LN.T.Thread               as A
 -}
+import           LN.T.Thread               as A
 import           LN.T.ThreadPost           as A
 import           LN.T.ThreadPost.PostData           as A
 import           LN.T.ThreadPost.Request           as A

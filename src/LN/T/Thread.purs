@@ -20,15 +20,5 @@ threadsTag = "threads"
 
 
 
-threadStatTag :: String
-threadStatTag = "thread_stat"
-
-
-
-threadsStatsTag :: String
-threadsStatsTag = "threads_stats"
-
-
-
 countsThreadsTag :: String
 countsThreadsTag = "counts" <> "/" <> threadsTag

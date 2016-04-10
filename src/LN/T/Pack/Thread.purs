@@ -7,6 +7,7 @@ import LN.T.Thread
 import LN.T.Thread.Response
 import LN.T.Thread
 import LN.T.Thread.Response
+import LN.T.Thread.Stat
 import LN.T.ThreadPost
 import LN.T.ThreadPost.Response
 import LN.T.User
