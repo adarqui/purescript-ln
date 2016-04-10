@@ -15,8 +15,9 @@ import           LN.T.Bucket               as A
 import           LN.T.Bucket.Request       as A
 import           LN.T.Bucket.Response      as A
 import           LN.T.Bucket.Stat          as A
-{-
 import           LN.T.Count                as A
+import           LN.T.Count.Response       as A
+{-
 import           LN.T.DepList              as A
 import           LN.T.Empty                as A
 import           LN.T.Error                as A
