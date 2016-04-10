@@ -58,8 +58,12 @@ import           LN.T.Resource             as A
 import           LN.T.Schema               as A
 import           LN.T.Splits               as A
 import           LN.T.Substitutions        as A
-import           LN.T.Team                 as A
 -}
+import           LN.T.Team                 as A
+import           LN.T.Team.Request                 as A
+import           LN.T.Team.Response                 as A
+import           LN.T.Team.Stat                 as A
+
 import           LN.T.Thread               as A
 import           LN.T.Thread.Request               as A
 import           LN.T.Thread.Response               as A
