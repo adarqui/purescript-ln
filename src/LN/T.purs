@@ -75,8 +75,9 @@ import           LN.T.User.Settings                 as A
 import           LN.T.User.Settings.Request                 as A
 import           LN.T.User.Settings.Response                 as A
 import           LN.T.User.Stat                 as A
-{-
 import           LN.T.Version              as A
 import           LN.T.Visibility           as A
 import           LN.T.Workout              as A
--}
+import           LN.T.Workout.Request              as A
+import           LN.T.Workout.Response              as A
+import           LN.T.Workout.Stat              as A

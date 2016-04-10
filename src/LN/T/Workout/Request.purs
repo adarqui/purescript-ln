@@ -1,1 +1,1 @@
-module LN.T.Workouts.Request where
+module LN.T.Workout.Request where
