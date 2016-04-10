@@ -10,13 +10,13 @@ import LN.T.DateMaybe
 
 newtype ThreadResponse = ThreadResponse {
   id   :: ThreadId,
+  userId :: Int,
   boardId :: Int,
   name :: String,
   description :: Maybe String,
   sticky :: Boolean,
   locked :: Boolean,
   poll :: Maybe String,
-  createdBy :: Int,
   createdAt :: DateMaybe,
   modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
@@ -24,13 +24,13 @@ newtype ThreadResponse = ThreadResponse {
 
 _ThreadResponse :: LensP ThreadResponse {
   id   :: ThreadId,
+  userId :: Int,
   boardId :: Int,
   name :: String,
   description :: Maybe String,
   sticky :: Boolean,
   locked :: Boolean,
   poll :: Maybe String,
-  createdBy :: Int,
   createdAt :: DateMaybe,
   modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
@@ -42,13 +42,13 @@ _ThreadResponse f (ThreadResponse o) = ThreadResponse <$> f o
 
 
 defaultThreadResponse :: ThreadResponse
-defaultThreadResponse = mkThreadResponse 0 0 "name" Nothing false false Nothing 0 defaultDate Nothing defaultDate
+defaultThreadResponse = mkThreadResponse 0 0 0 "name" Nothing false false Nothing defaultDate Nothing defaultDate
 
 
 
-mkThreadResponse :: Int -> Int -> String -> Maybe String -> Boolean -> Boolean -> Maybe String -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> ThreadResponse
-mkThreadResponse id boardId name description sticky locked poll createdBy createdAt modifiedBy modifiedAt =
-  ThreadResponse { id, boardId, name, description, sticky, locked, poll, createdBy, createdAt, modifiedBy, modifiedAt }
+mkThreadResponse :: Int -> Int -> Int -> String -> Maybe String -> Boolean -> Boolean -> Maybe String -> DateMaybe -> Maybe Int -> DateMaybe -> ThreadResponse
+mkThreadResponse id userId boardId name description sticky locked poll createdAt modifiedBy modifiedAt =
+  ThreadResponse { id, userId, boardId, name, description, sticky, locked, poll, createdAt, modifiedBy, modifiedAt }
 
 
 
@@ -56,13 +56,13 @@ mkThreadResponse id boardId name description sticky locked poll createdBy create
 instance encodeThreadResponse :: EncodeJson ThreadResponse where
   encodeJson (ThreadResponse u) =
        "id"    := u.id
+    ~> "user_id" := u.userId
     ~> "board_id" := u.boardId
     ~> "name" := u.name
     ~> "desc" := u.description
     ~> "sticky" := u.sticky
     ~> "locked" := u.locked
     ~> "poll" := u.poll
-    ~> "created_by" := u.createdBy
     ~> "created_at" := toISOString u.createdAt
     ~> "modified_by" := u.modifiedBy
     ~> "modified_at" := toISOString u.modifiedAt
@@ -74,17 +74,17 @@ instance decodeThreadResponse :: DecodeJson ThreadResponse where
   decodeJson json = do
     obj <- decodeJson json
     id <- obj .? "id"
+    userId <- obj .? "user_id"
     boardId <- obj .? "board_id"
     name <- obj .? "name"
     description <- obj .? "desc"
     sticky <- obj .? "sticky"
     locked <- obj .? "locked"
     poll <- obj .? "poll"
-    createdBy <- obj .? "created_by"
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
-    pure $ ThreadResponse {id, boardId, name, description, sticky, locked, poll, createdBy, createdAt, modifiedBy, modifiedAt}
+    pure $ ThreadResponse {id, userId, boardId, name, description, sticky, locked, poll, createdAt, modifiedBy, modifiedAt}
 
 
 
@@ -95,13 +95,13 @@ instance respondableThreadResponse :: Respondable ThreadResponse where
   fromResponse json =
     mkThreadResponse
       <$> readProp "id" json
+      <*> readProp "user_id" json
       <*> readProp "board_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "desc" json)
       <*> readProp "sticky" json
       <*> readProp "locked" json
       <*> (runNullOrUndefined <$> readProp "poll" json)
-      <*> readProp "created_by" json
       <*> readProp "created_at" json
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> readProp "modified_at" json
@@ -118,13 +118,13 @@ instance requestableThreadResponse :: Requestable ThreadResponse where
 instance isForeignThreadResponse :: IsForeign ThreadResponse where
   read f = mkThreadResponse
     <$> readProp "id" f
+    <*> readProp "user_id" f
     <*> readProp "board_id" f
     <*> readProp "name" f
     <*> (runNullOrUndefined <$> readProp "desc" f)
     <*> readProp "sticky" f
     <*> readProp "locked" f
     <*> (runNullOrUndefined <$> readProp "poll" f)
-    <*> readProp "created_by" f
     <*> readProp "created_at" f
     <*> (runNullOrUndefined <$> readProp "modified_by" f)
     <*> readProp "modified_at" f

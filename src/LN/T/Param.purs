@@ -107,7 +107,6 @@ orderFromString s =
 data OrderBy
   = OrderBy_UserId
   | OrderBy_CreatedAt
-  | OrderBy_CreatedBy
   | OrderBy_ModifiedAt
   | OrderBy_ModifiedBy
   | OrderBy_ActivityAt
@@ -124,7 +123,6 @@ data OrderBy
 instance orderByShow :: Show OrderBy where
   show OrderBy_UserId     = "user_id"
   show OrderBy_CreatedAt  = "created_at"
-  show OrderBy_CreatedBy  = "created_by"
   show OrderBy_ModifiedAt = "modified_at"
   show OrderBy_ModifiedBy = "modified_by"
   show OrderBy_ActivityAt = "activity_at"
@@ -143,7 +141,6 @@ orderByFromString s =
   case s of
     "user_id" -> OrderBy_UserId
     "created_at" -> OrderBy_CreatedAt
-    "created_by" -> OrderBy_CreatedBy
     "modified_at" -> OrderBy_ModifiedAt
     "modified_by" -> OrderBy_ModifiedBy
     "activity_at" -> OrderBy_ActivityAt
