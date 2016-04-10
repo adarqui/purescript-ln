@@ -16,6 +16,8 @@ newtype ThreadPostResponse = ThreadPostResponse {
   parentId :: Maybe Int,
   title :: Maybe String,
   body :: PostData,
+  tags :: Array String,
+  privateTags :: Array String,
   createdBy :: Int,
   createdAt :: DateMaybe,
   modifiedBy :: Maybe Int,
@@ -29,6 +31,8 @@ _ThreadPostResponse :: LensP ThreadPostResponse {
   parentId :: Maybe Int,
   title :: Maybe String,
   body :: PostData,
+  tags :: Array String,
+  privateTags :: Array String,
   createdBy :: Int,
   createdAt :: DateMaybe,
   modifiedBy :: Maybe Int,
@@ -40,29 +44,31 @@ _ThreadPostResponse f (ThreadPostResponse o) = ThreadPostResponse <$> f o
 
 
 defaultThreadPostResponse :: ThreadPostResponse
-defaultThreadPostResponse = mkThreadPostResponse 0 0 0 Nothing Nothing PostDataEmpty 0 defaultDate Nothing defaultDate
+defaultThreadPostResponse = mkThreadPostResponse 0 0 0 Nothing Nothing PostDataEmpty [] [] 0 defaultDate Nothing defaultDate
 
 
 
-mkThreadPostResponse :: Int -> Int -> Int -> Maybe Int -> Maybe String -> PostData -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> ThreadPostResponse
-mkThreadPostResponse id userId threadId parentId title body createdBy createdAt modifiedBy modifiedAt =
-  ThreadPostResponse { id, userId, threadId, parentId, title, body, createdBy, createdAt, modifiedBy, modifiedAt }
+mkThreadPostResponse :: Int -> Int -> Int -> Maybe Int -> Maybe String -> PostData -> Array String -> Array String -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> ThreadPostResponse
+mkThreadPostResponse id userId threadId parentId title body tags privateTags createdBy createdAt modifiedBy modifiedAt =
+  ThreadPostResponse { id, userId, threadId, parentId, title, body, tags, privateTags, createdBy, createdAt, modifiedBy, modifiedAt }
 
 
 
 
 instance encodeThreadPostResponse :: EncodeJson ThreadPostResponse where
-  encodeJson (ThreadPostResponse u) =
-       "id"    := u.id
-    ~> "user_id" := u.userId
-    ~> "thread_id" := u.threadId
-    ~> "parent_id" := u.parentId
-    ~> "title" := u.title
-    ~> "body" := u.body
-    ~> "created_by" := u.createdBy
-    ~> "created_at" := toISOString u.createdAt
-    ~> "modified_by" := u.modifiedBy
-    ~> "modified_at" := toISOString u.modifiedAt
+  encodeJson (ThreadPostResponse o) =
+       "id"    := o.id
+    ~> "user_id" := o.userId
+    ~> "thread_id" := o.threadId
+    ~> "parent_id" := o.parentId
+    ~> "title" := o.title
+    ~> "body" := o.body
+    ~> "tags" := o.tags
+    ~> "private_tags" := o.privateTags
+    ~> "created_by" := o.createdBy
+    ~> "created_at" := toISOString o.createdAt
+    ~> "modified_by" := o.modifiedBy
+    ~> "modified_at" := toISOString o.modifiedAt
     ~> jsonEmptyObject
 
 
@@ -76,11 +82,13 @@ instance decodeThreadPostResponse :: DecodeJson ThreadPostResponse where
     parentId <- obj .? "parent_id"
     title <- obj .? "title"
     body <- obj .? "body"
+    tags <- obj .? "tags"
+    privateTags <- obj .? "private_tags"
     createdBy <- obj .? "created_by"
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
-    pure $ ThreadPostResponse {id, userId, threadId, parentId, title, body, createdBy, createdAt, modifiedBy, modifiedAt}
+    pure $ ThreadPostResponse {id, userId, threadId, parentId, title, body, tags, privateTags, createdBy, createdAt, modifiedBy, modifiedAt}
 
 
 
@@ -95,6 +103,8 @@ instance respondableThreadPostResponse :: Respondable ThreadPostResponse where
       <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
+      <*> readProp "tags" json
+      <*> readProp "private_tags" json
       <*> readProp "created_by" json
       <*> readProp "created_at" json
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
@@ -117,6 +127,8 @@ instance isForeignThreadPostResponse :: IsForeign ThreadPostResponse where
     <*> (runNullOrUndefined <$> readProp "parent_id" f)
     <*> (runNullOrUndefined <$> readProp "title" f)
     <*> readProp "body" f
+    <*> readProp "tags" f
+    <*> readProp "private_tags" f
     <*> readProp "created_by" f
     <*> readProp "created_at" f
     <*> (runNullOrUndefined <$> readProp "modified_by" f)
