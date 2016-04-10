@@ -10,11 +10,11 @@ import LN.T.DateMaybe
 
 newtype BoardResponse = BoardResponse {
   id   :: BoardId,
+  userId :: Int,
   forumId :: Int,
   parentId :: Maybe Int,
   name :: String,
   description :: Maybe String,
-  createdBy :: Int,
   createdAt :: DateMaybe,
   modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
@@ -22,11 +22,11 @@ newtype BoardResponse = BoardResponse {
 
 _BoardResponse :: LensP BoardResponse {
     id   :: BoardId,
+    userId :: Int,
     forumId :: Int,
     parentId :: Maybe Int,
     name :: String,
     description :: Maybe String,
-    createdBy :: Int,
     createdAt :: DateMaybe,
     modifiedBy :: Maybe Int,
     modifiedAt :: DateMaybe
@@ -36,13 +36,13 @@ _BoardResponse f (BoardResponse o) = BoardResponse <$> f o
 
 
 defaultBoardResponse :: BoardResponse
-defaultBoardResponse = mkBoardResponse 0 0 Nothing "name" Nothing 0 defaultDate Nothing defaultDate
+defaultBoardResponse = mkBoardResponse 0 0 0 Nothing "name" Nothing defaultDate Nothing defaultDate
 
 
 
-mkBoardResponse :: Int -> Int -> Maybe Int -> String -> Maybe String -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> BoardResponse
-mkBoardResponse id forumId parentId name description createdBy createdAt modifiedBy modifiedAt =
-  BoardResponse { id, forumId, parentId, name, description, createdBy, createdAt, modifiedBy, modifiedAt }
+mkBoardResponse :: Int -> Int -> Int -> Maybe Int -> String -> Maybe String -> DateMaybe -> Maybe Int -> DateMaybe -> BoardResponse
+mkBoardResponse id userId forumId parentId name description createdAt modifiedBy modifiedAt =
+  BoardResponse { id, userId, forumId, parentId, name, description, createdAt, modifiedBy, modifiedAt }
 
 
 
@@ -50,11 +50,11 @@ mkBoardResponse id forumId parentId name description createdBy createdAt modifie
 instance encodeBoardResponse :: EncodeJson BoardResponse where
   encodeJson (BoardResponse u) =
        "id"    := u.id
+    ~> "user_id" := u.userId
     ~> "forum_id" := u.forumId
     ~> "parent_id" := u.parentId
     ~> "name" := u.name
     ~> "desc" := u.description
-    ~> "created_by" := u.createdBy
     ~> "created_at" := toISOString u.createdAt
     ~> "modified_by" := u.modifiedBy
     ~> "modified_at" := toISOString u.modifiedAt
@@ -66,15 +66,15 @@ instance decodeBoardResponse :: DecodeJson BoardResponse where
   decodeJson json = do
     obj <- decodeJson json
     id <- obj .? "id"
+    userId <- obj .? "user_id"
     forumId <- obj .? "forum_id"
     parentId <- obj .? "parent_id"
     name <- obj .? "name"
     description <- obj .? "desc"
-    createdBy <- obj .? "created_by"
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
-    pure $ BoardResponse {id, forumId, parentId, name, description, createdBy, createdAt, modifiedBy, modifiedAt}
+    pure $ BoardResponse {id, userId, forumId, parentId, name, description, createdAt, modifiedBy, modifiedAt}
 
 
 
@@ -84,11 +84,11 @@ instance respondableBoardResponse :: Respondable BoardResponse where
   fromResponse json =
     mkBoardResponse
       <$> readProp "id" json
+      <*> readProp "user_id" json
       <*> readProp "forum_id" json
       <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "desc" json)
-      <*> readProp "created_by" json
       <*> readProp "created_at" json
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> readProp "modified_at" json
@@ -105,11 +105,11 @@ instance requestableBoardResponse :: Requestable BoardResponse where
 instance isForeignBoardResponse :: IsForeign BoardResponse where
   read f = mkBoardResponse
     <$> readProp "id" f
+    <*> readProp "user_id" f
     <*> readProp "forum_id" f
     <*> (runNullOrUndefined <$> readProp "parent_id" f)
     <*> readProp "name" f
     <*> (runNullOrUndefined <$> readProp "desc" f)
-    <*> readProp "created_by" f
     <*> readProp "created_at" f
     <*> (runNullOrUndefined <$> readProp "modified_by" f)
     <*> readProp "modified_at" f
