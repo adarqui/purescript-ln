@@ -27,9 +27,15 @@ import           LN.T.Leuron.Request       as A
 import           LN.T.Leuron.Response      as A
 import           LN.T.Leuron.Stat          as A
 import           LN.T.Like                 as A
-{-
 import           LN.T.Me                   as A
 import           LN.T.Organization         as A
+import           LN.T.Organization.Request         as A
+import           LN.T.Organization.Response         as A
+import           LN.T.Organization.Settings         as A
+import           LN.T.Organization.Settings.Request         as A
+import           LN.T.Organization.Settings.Response         as A
+import           LN.T.Organization.Stat         as A
+{-
 import           LN.T.Pack.Board           as A
 import           LN.T.Pack.Forum           as A
 import           LN.T.Pack.Leuron          as A
