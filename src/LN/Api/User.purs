@@ -8,7 +8,7 @@ import LN.Api.Internal
 import LN.T.Count
 import LN.T.Count.Response
 import LN.T.User
-import LN.T.User.Response.Sanitized
+import LN.T.User.Sanitized.Response
 
 
 

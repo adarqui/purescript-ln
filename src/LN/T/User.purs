@@ -20,15 +20,5 @@ usersTag = "users"
 
 
 
-userSanitizedTag :: String
-userSanitizedTag = "user_sanitized"
-
-
-
-usersSanitizedTag :: String
-usersSanitizedTag = "users_sanitized"
-
-
-
 countsUsersTag :: String
 countsUsersTag = "counts" <> "/" <> usersTag

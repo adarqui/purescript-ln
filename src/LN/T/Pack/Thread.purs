@@ -10,7 +10,7 @@ import LN.T.Thread.Response
 import LN.T.ThreadPost
 import LN.T.ThreadPost.Response
 import LN.T.User
-import LN.T.User.Response.Sanitized
+import LN.T.User.Sanitized.Response
 import LN.T.DateMaybe
 
 

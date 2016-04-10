@@ -1,4 +1,4 @@
-module LN.T.User.Response.Sanitized where
+module LN.T.User.Sanitized.Response where
 
 
 

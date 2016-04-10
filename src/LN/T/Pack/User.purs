@@ -4,8 +4,8 @@ module LN.T.Packs.User where
 
 import LN.T.Prelude.Argonaut
 import LN.T.User
-import LN.T.User.Response.Sanitized
-import LN.T.User.Stat.Response.Sanitized
+import LN.T.User.Sanitized.Response
+import LN.T.User.Sanitized.Stat
 import LN.T.Profile
 import LN.T.Profile.Response
 import LN.T.DateMaybe

@@ -64,7 +64,18 @@ import           LN.T.Thread               as A
 import           LN.T.ThreadPost           as A
 import           LN.T.ThreadPostLike       as A
 import           LN.T.Time                 as A
+-}
 import           LN.T.User                 as A
+import           LN.T.User.Request                 as A
+import           LN.T.User.Response                 as A
+import           LN.T.User.Sanitized                 as A
+import           LN.T.User.Sanitized.Response                 as A
+import           LN.T.User.Sanitized.Stat                 as A
+import           LN.T.User.Settings                 as A
+import           LN.T.User.Settings.Request                 as A
+import           LN.T.User.Settings.Response                 as A
+import           LN.T.User.Stat                 as A
+{-
 import           LN.T.Version              as A
 import           LN.T.Visibility           as A
 import           LN.T.Workout              as A
