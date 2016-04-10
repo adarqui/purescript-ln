@@ -11,8 +11,11 @@ import           LN.T.Board                as A
 import           LN.T.Board.Request        as A
 import           LN.T.Board.Response       as A
 import           LN.T.Board.Stat           as A
-{-
 import           LN.T.Bucket               as A
+import           LN.T.Bucket.Request       as A
+import           LN.T.Bucket.Response      as A
+import           LN.T.Bucket.Stat          as A
+{-
 import           LN.T.Count                as A
 import           LN.T.DepList              as A
 import           LN.T.Empty                as A
