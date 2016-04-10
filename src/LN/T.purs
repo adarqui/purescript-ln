@@ -39,6 +39,7 @@ import           LN.T.Organization.Stat              as A
 import           LN.T.Pack.Board                     as A
 import           LN.T.Pack.Forum                     as A
 import           LN.T.Pack.Leuron                    as A
+import           LN.T.Pack.Me                        as A
 import           LN.T.Pack.Organization              as A
 import           LN.T.Pack.Resource                  as A
 import           LN.T.Pack.Team                      as A
