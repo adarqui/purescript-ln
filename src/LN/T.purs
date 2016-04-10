@@ -45,16 +45,19 @@ import           LN.T.Pack.Team            as A
 import           LN.T.Pack.Thread          as A
 import           LN.T.Pack.ThreadPost      as A
 import           LN.T.Pack.User            as A
-{-
 import           LN.T.Param                as A
-import           LN.T.PatternSynonyms      as A
 import           LN.T.Pm                   as A
+import           LN.T.Pm.Request                   as A
+import           LN.T.Pm.Response                   as A
 import           LN.T.PmIn                 as A
+import           LN.T.PmIn.Request                 as A
+import           LN.T.PmIn.Response                 as A
 import           LN.T.PmOut                as A
+import           LN.T.PmOut.Request                as A
+import           LN.T.PmOut.Response                as A
 import           LN.T.Profile              as A
-import           LN.T.Profile.Organization as A
-import           LN.T.Profile.User         as A
--}
+import           LN.T.Profile.Request              as A
+import           LN.T.Profile.Response              as A
 import           LN.T.Reminder             as A
 import           LN.T.Reminder.Request             as A
 import           LN.T.Reminder.Response             as A

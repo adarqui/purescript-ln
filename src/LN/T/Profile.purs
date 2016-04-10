@@ -21,16 +21,6 @@ profilesTag = "profiles"
 
 
 
-userProfileTag :: String
-userProfileTag = "user_profile"
-
-
-
-usersProfilesTag :: String
-usersProfilesTag = "users_profiles"
-
-
-
 data ProfileGender
   = GenderMale
   | GenderFemale
