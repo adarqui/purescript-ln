@@ -22,9 +22,11 @@ import           LN.T.Forum                as A
 import           LN.T.Forum.Request        as A
 import           LN.T.Forum.Response       as A
 import           LN.T.Forum.Stat           as A
-{-
-import           LN.T.GenericPretty        as A
 import           LN.T.Leuron               as A
+import           LN.T.Leuron.Request       as A
+import           LN.T.Leuron.Response      as A
+import           LN.T.Leuron.Stat          as A
+{-
 import           LN.T.Like                 as A
 import           LN.T.Me                   as A
 import           LN.T.Organization         as A
