@@ -18,7 +18,6 @@ newtype ThreadPostResponse = ThreadPostResponse {
   body :: PostData,
   tags :: Array String,
   privateTags :: Array String,
-  createdBy :: Int,
   createdAt :: DateMaybe,
   modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
@@ -33,7 +32,6 @@ _ThreadPostResponse :: LensP ThreadPostResponse {
   body :: PostData,
   tags :: Array String,
   privateTags :: Array String,
-  createdBy :: Int,
   createdAt :: DateMaybe,
   modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
@@ -44,13 +42,13 @@ _ThreadPostResponse f (ThreadPostResponse o) = ThreadPostResponse <$> f o
 
 
 defaultThreadPostResponse :: ThreadPostResponse
-defaultThreadPostResponse = mkThreadPostResponse 0 0 0 Nothing Nothing PostDataEmpty [] [] 0 defaultDate Nothing defaultDate
+defaultThreadPostResponse = mkThreadPostResponse 0 0 0 Nothing Nothing PostDataEmpty [] [] defaultDate Nothing defaultDate
 
 
 
-mkThreadPostResponse :: Int -> Int -> Int -> Maybe Int -> Maybe String -> PostData -> Array String -> Array String -> Int -> DateMaybe -> Maybe Int -> DateMaybe -> ThreadPostResponse
-mkThreadPostResponse id userId threadId parentId title body tags privateTags createdBy createdAt modifiedBy modifiedAt =
-  ThreadPostResponse { id, userId, threadId, parentId, title, body, tags, privateTags, createdBy, createdAt, modifiedBy, modifiedAt }
+mkThreadPostResponse :: Int -> Int -> Int -> Maybe Int -> Maybe String -> PostData -> Array String -> Array String -> DateMaybe -> Maybe Int -> DateMaybe -> ThreadPostResponse
+mkThreadPostResponse id userId threadId parentId title body tags privateTags createdAt modifiedBy modifiedAt =
+  ThreadPostResponse { id, userId, threadId, parentId, title, body, tags, privateTags, createdAt, modifiedBy, modifiedAt }
 
 
 
@@ -65,7 +63,6 @@ instance encodeThreadPostResponse :: EncodeJson ThreadPostResponse where
     ~> "body" := o.body
     ~> "tags" := o.tags
     ~> "private_tags" := o.privateTags
-    ~> "created_by" := o.createdBy
     ~> "created_at" := toISOString o.createdAt
     ~> "modified_by" := o.modifiedBy
     ~> "modified_at" := toISOString o.modifiedAt
@@ -84,11 +81,10 @@ instance decodeThreadPostResponse :: DecodeJson ThreadPostResponse where
     body <- obj .? "body"
     tags <- obj .? "tags"
     privateTags <- obj .? "private_tags"
-    createdBy <- obj .? "created_by"
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
-    pure $ ThreadPostResponse {id, userId, threadId, parentId, title, body, tags, privateTags, createdBy, createdAt, modifiedBy, modifiedAt}
+    pure $ ThreadPostResponse {id, userId, threadId, parentId, title, body, tags, privateTags, createdAt, modifiedBy, modifiedAt}
 
 
 
@@ -105,7 +101,6 @@ instance respondableThreadPostResponse :: Respondable ThreadPostResponse where
       <*> readProp "body" json
       <*> readProp "tags" json
       <*> readProp "private_tags" json
-      <*> readProp "created_by" json
       <*> readProp "created_at" json
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> readProp "modified_at" json
@@ -129,7 +124,6 @@ instance isForeignThreadPostResponse :: IsForeign ThreadPostResponse where
     <*> readProp "body" f
     <*> readProp "tags" f
     <*> readProp "private_tags" f
-    <*> readProp "created_by" f
     <*> readProp "created_at" f
     <*> (runNullOrUndefined <$> readProp "modified_by" f)
     <*> readProp "modified_at" f
