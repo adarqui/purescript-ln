@@ -1,4 +1,4 @@
-module LN.T.Packs.Board where
+module LN.T.Pack.Board where
 
 
 
