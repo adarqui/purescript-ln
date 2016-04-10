@@ -29,6 +29,7 @@ import           LN.T.Leuron.Stat          as A
 import           LN.T.Like                 as A
 import           LN.T.Me                   as A
 import           LN.T.Organization         as A
+import           LN.T.Organization.Profile         as A
 import           LN.T.Organization.Request         as A
 import           LN.T.Organization.Response         as A
 import           LN.T.Organization.Settings         as A
@@ -53,8 +54,11 @@ import           LN.T.PmOut                as A
 import           LN.T.Profile              as A
 import           LN.T.Profile.Organization as A
 import           LN.T.Profile.User         as A
-import           LN.T.Reminder             as A
 -}
+import           LN.T.Reminder             as A
+import           LN.T.Reminder.Request             as A
+import           LN.T.Reminder.Response             as A
+import           LN.T.Reminder.Stat             as A
 import           LN.T.Resource             as A
 import           LN.T.Resource.Request             as A
 import           LN.T.Resource.Response             as A
@@ -78,6 +82,7 @@ import           LN.T.ThreadPost.Stat as A
 import           LN.T.ThreadPostLike       as A
 import           LN.T.Time                 as A
 import           LN.T.User                 as A
+import           LN.T.User.Profile                 as A
 import           LN.T.User.Request                 as A
 import           LN.T.User.Response                 as A
 import           LN.T.User.Sanitized                 as A
