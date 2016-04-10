@@ -11,12 +11,16 @@ import LN.T.DateMaybe
 
 newtype ThreadPostRequest = ThreadPostRequest {
   title :: Maybe String,
-  body :: PostData
+  body :: PostData,
+  tags :: Array String,
+  privateTags :: Array String
 }
 
 _ThreadPostRequest :: LensP ThreadPostRequest {
   title :: Maybe String,
-  body :: PostData
+  body :: PostData,
+  tags :: Array String,
+  privateTags :: Array String
 }
 
 _ThreadPostRequest f (ThreadPostRequest o) = ThreadPostRequest <$> f o
@@ -24,20 +28,22 @@ _ThreadPostRequest f (ThreadPostRequest o) = ThreadPostRequest <$> f o
 
 
 defaultThreadPostRequest :: ThreadPostRequest
-defaultThreadPostRequest = mkThreadPostRequest Nothing PostDataEmpty
+defaultThreadPostRequest = mkThreadPostRequest Nothing PostDataEmpty [] []
 
 
 
-mkThreadPostRequest :: Maybe String -> PostData -> ThreadPostRequest
-mkThreadPostRequest title body =
-  ThreadPostRequest { title, body }
+mkThreadPostRequest :: Maybe String -> PostData -> Array String -> Array String -> ThreadPostRequest
+mkThreadPostRequest title body tags privateTags  =
+  ThreadPostRequest { title, body, tags, privateTags }
 
 
 
 instance encodeThreadPostRequest :: EncodeJson ThreadPostRequest where
-  encodeJson (ThreadPostRequest u) =
-       "title":= u.title
-    ~> "body" := u.body
+  encodeJson (ThreadPostRequest o) =
+       "title"        := o.title
+    ~> "body"         := o.body
+    ~> "tags"         := o.tags
+    ~> "private_tags" := o.privateTags
     ~> jsonEmptyObject
 
 
@@ -47,7 +53,9 @@ instance decodeThreadPostRequest :: DecodeJson ThreadPostRequest where
     obj <- decodeJson json
     title <- obj .? "title"
     body <- obj .? "body"
-    pure $ ThreadPostRequest {title, body}
+    tags <- obj .? "tags"
+    privateTags <- obj .? "private_tags"
+    pure $ ThreadPostRequest {title, body, tags, privateTags}
 
 
 
@@ -58,6 +66,8 @@ instance respondableThreadPostRequest :: Respondable ThreadPostRequest where
     mkThreadPostRequest
       <$> (runNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
+      <*> readProp "tags" json
+      <*> readProp "private_tags" json
 
 
 
@@ -72,3 +82,5 @@ instance isForeignThreadPostRequest :: IsForeign ThreadPostRequest where
   read f = mkThreadPostRequest
     <$> (runNullOrUndefined <$> readProp "title" f)
     <*> readProp "body" f
+    <*> readProp "tags" f
+    <*> readProp "private_tags" f
