@@ -66,6 +66,7 @@ import           LN.T.ThreadPost           as A
 import           LN.T.ThreadPost.PostData           as A
 import           LN.T.ThreadPost.Request           as A
 import           LN.T.ThreadPost.Response           as A
+import           LN.T.ThreadPost.Stat as A
 {-
 import           LN.T.ThreadPostLike       as A
 -}
