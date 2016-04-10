@@ -1,9 +1,11 @@
-module LN.T.Resource.Ajax (
+module LN.T.Resource.Ajax where
+  {-
   ajaxFetchResource,
   ajaxSaveResource,
   ajaxUpdateResource,
   ajaxFetchResources
 ) where
+  -}
 
 import Prelude
 import Data.Either
@@ -19,6 +21,7 @@ import Network.HTTP.MimeType
 import Network.HTTP.MimeType.Common
 import Network.HTTP.RequestHeader
 
+{-
 ajaxFetchResource :: forall eff. String -> Aff (ajax :: AJAX | eff) (Either String Resource)
 ajaxFetchResource rid = do
   res <- affjax $ defaultRequest { method = GET, url = ("/resources/" ++ rid), headers = [ContentType applicationJSON] }
@@ -42,3 +45,4 @@ ajaxFetchResources = do
   res <- affjax $ defaultRequest { method = GET, url = "/resources/", headers = [ContentType applicationJSON] }
   let le = eitherDecode res.response :: Either String (Array Resource)
   return le
+  -}

@@ -54,11 +54,13 @@ import           LN.T.Profile              as A
 import           LN.T.Profile.Organization as A
 import           LN.T.Profile.User         as A
 import           LN.T.Reminder             as A
+-}
 import           LN.T.Resource             as A
-import           LN.T.Schema               as A
+import           LN.T.Resource.Request             as A
+import           LN.T.Resource.Response             as A
+import           LN.T.Resource.Stat             as A
 import           LN.T.Splits               as A
 import           LN.T.Substitutions        as A
--}
 import           LN.T.Team                 as A
 import           LN.T.Team.Request                 as A
 import           LN.T.Team.Response                 as A
