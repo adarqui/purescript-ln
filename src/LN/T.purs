@@ -61,6 +61,9 @@ import           LN.T.Substitutions        as A
 import           LN.T.Team                 as A
 -}
 import           LN.T.Thread               as A
+import           LN.T.Thread.Request               as A
+import           LN.T.Thread.Response               as A
+import           LN.T.Thread.Stat               as A
 import           LN.T.ThreadPost           as A
 import           LN.T.ThreadPost.PostData           as A
 import           LN.T.ThreadPost.Request           as A
