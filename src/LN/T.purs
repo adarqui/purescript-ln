@@ -59,7 +59,6 @@ import           LN.T.Schema               as A
 import           LN.T.Splits               as A
 import           LN.T.Substitutions        as A
 import           LN.T.Team                 as A
-import           LN.T.Test                 as A
 -}
 import           LN.T.Thread               as A
 import           LN.T.ThreadPost           as A
@@ -67,9 +66,7 @@ import           LN.T.ThreadPost.PostData           as A
 import           LN.T.ThreadPost.Request           as A
 import           LN.T.ThreadPost.Response           as A
 import           LN.T.ThreadPost.Stat as A
-{-
 import           LN.T.ThreadPostLike       as A
--}
 import           LN.T.Time                 as A
 import           LN.T.User                 as A
 import           LN.T.User.Request                 as A
