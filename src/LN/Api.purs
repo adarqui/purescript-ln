@@ -12,6 +12,7 @@ import LN.Api.Organization as A
 import LN.Api.Pack.Board as A
 import LN.Api.Pack.Thread as A
 import LN.Api.Pack.User as A
+import LN.Api.Pack.Me as A
 import LN.Api.Prelude as A
 import LN.Api.Team as A
 import LN.Api.ThreadPost as A
