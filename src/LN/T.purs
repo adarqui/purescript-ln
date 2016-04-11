@@ -45,13 +45,13 @@ import           LN.T.Organization.Stat              as A
 import           LN.T.Pack.Board                     as A
 import           LN.T.Pack.Forum                     as A
 import           LN.T.Pack.Leuron                    as A
-import           LN.T.Pack.Me                        as A
 import           LN.T.Pack.Organization              as A
 import           LN.T.Pack.Resource                  as A
 import           LN.T.Pack.Team                      as A
 import           LN.T.Pack.Thread                    as A
 import           LN.T.Pack.ThreadPost                as A
 import           LN.T.Pack.User                      as A
+import           LN.T.Pack.Sanitized.User            as A
 import           LN.T.Param                          as A
 import           LN.T.Pm                             as A
 import           LN.T.Pm.Request                     as A

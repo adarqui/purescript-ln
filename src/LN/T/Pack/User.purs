@@ -4,7 +4,7 @@ module LN.T.Pack.User where
 
 import LN.T.Prelude.Argonaut
 import LN.T.User
-import LN.T.User.Sanitized.Response
+import LN.T.User.Response
 import LN.T.User.Sanitized.Stat
 import LN.T.Profile
 import LN.T.Profile.Response
@@ -13,17 +13,17 @@ import LN.T.DateMaybe
 
 
 userPackTag :: String
-userPackTag = "user_pack"
+userPackTag = "me_pack"
 
 
 
 usersPacksTag :: String
-usersPacksTag = "users_packs"
+usersPacksTag = "mes_packs"
 
 
 
 newtype UserPackResponse = UserPackResponse {
-  user :: UserSanitizedResponse,
+  user :: UserResponse,
   userStat :: UserSanitizedStatResponse,
   userProfile :: ProfileResponse
 }
@@ -31,7 +31,7 @@ newtype UserPackResponse = UserPackResponse {
 
 
 _UserPackResponse :: LensP UserPackResponse {
-    user :: UserSanitizedResponse,
+    user :: UserResponse,
     userStat :: UserSanitizedStatResponse,
     userProfile :: ProfileResponse
   }
@@ -41,11 +41,11 @@ _UserPackResponse f (UserPackResponse o) = UserPackResponse <$> f o
 
 defaultUserPackResponse :: UserPackResponse
 defaultUserPackResponse =
-  mkUserPackResponse defaultUserSanitizedResponse defaultUserSanitizedStatResponse defaultProfileResponse
+  mkUserPackResponse defaultUserResponse defaultUserSanitizedStatResponse defaultProfileResponse
 
 
 
-mkUserPackResponse :: UserSanitizedResponse -> UserSanitizedStatResponse -> ProfileResponse -> UserPackResponse
+mkUserPackResponse :: UserResponse -> UserSanitizedStatResponse -> ProfileResponse -> UserPackResponse
 mkUserPackResponse user userStat userProfile =
   UserPackResponse {user, userStat, userProfile}
 
