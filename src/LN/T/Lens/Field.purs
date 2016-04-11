@@ -161,3 +161,17 @@ views_ f o = o { views = _ } <$> f o.views
 id_ :: forall b a r. Lens { id :: a | r } { id :: b | r } a b
 id_ f o = o { id = _ } <$> f o.id
 -}
+
+
+user_ :: forall b a r. Lens { user :: a | r } { user :: b | r } a b
+user_ f o = o { user = _ } <$> f o.user
+
+
+
+userPack_ :: forall b a r. Lens { userPack :: a | r } { userPack :: b | r } a b
+userPack_ f o = o { userPack = _ } <$> f o.userPack
+
+
+
+userStat_ :: forall b a r. Lens { userStat :: a | r } { userStat :: b | r } a b
+userStat_ f o = o { userStat = _ } <$> f o.userStat
