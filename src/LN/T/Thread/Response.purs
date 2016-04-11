@@ -42,7 +42,7 @@ _ThreadResponse f (ThreadResponse o) = ThreadResponse <$> f o
 
 
 defaultThreadResponse :: ThreadResponse
-defaultThreadResponse = mkThreadResponse 0 0 0 "name" Nothing false false Nothing defaultDate Nothing defaultDate
+defaultThreadResponse = mkThreadResponse 0 0 0 "name" Nothing false false Nothing defaultDateMaybe Nothing defaultDateMaybe
 
 
 
@@ -63,9 +63,9 @@ instance encodeThreadResponse :: EncodeJson ThreadResponse where
     ~> "sticky" := u.sticky
     ~> "locked" := u.locked
     ~> "poll" := u.poll
-    ~> "created_at" := toISOString u.createdAt
+    ~> "created_at" := toISOStringMaybe u.createdAt
     ~> "modified_by" := u.modifiedBy
-    ~> "modified_at" := toISOString u.modifiedAt
+    ~> "modified_at" := toISOStringMaybe u.modifiedAt
     ~> jsonEmptyObject
 
 

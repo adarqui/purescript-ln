@@ -2,6 +2,6 @@
 
 // module LN.T.DateMaybe
 
-exports.jsDateMethod = function(method, date) {
+exports.jsDateMethodMaybe = function(method, date) {
     return date[method]();
 }

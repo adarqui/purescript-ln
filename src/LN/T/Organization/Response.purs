@@ -39,7 +39,7 @@ _OrganizationResponse f (OrganizationResponse o) = OrganizationResponse <$> f o
 
 
 defaultOrganizationResponse :: OrganizationResponse
-defaultOrganizationResponse = mkOrganizationResponse 0 0 "name" Nothing "company" "location" "email" "md5" defaultDate defaultDate
+defaultOrganizationResponse = mkOrganizationResponse 0 0 "name" Nothing "company" "location" "email" "md5" defaultDateMaybe defaultDateMaybe
 
 
 
@@ -59,8 +59,8 @@ instance encodeOrganizationResponse :: EncodeJson OrganizationResponse where
     ~> "location" := u.location
     ~> "email" := u.email
     ~> "email_md5" := u.emailMD5
-    ~> "created_at" := toISOString u.createdAt
-    ~> "modified_at" := toISOString u.modifiedAt
+    ~> "created_at" := toISOStringMaybe u.createdAt
+    ~> "modified_at" := toISOStringMaybe u.modifiedAt
     ~> jsonEmptyObject
 
 

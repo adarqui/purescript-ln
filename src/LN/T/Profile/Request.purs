@@ -4,7 +4,6 @@ module LN.T.Profile.Request where
 
 import LN.T.Prelude.Argonaut
 import LN.T.Profile
-import LN.T.DateMaybe
 import LN.T.Date as D
 
 

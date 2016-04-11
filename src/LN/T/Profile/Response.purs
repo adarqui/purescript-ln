@@ -43,7 +43,7 @@ _ProfileResponse f (ProfileResponse o) = ProfileResponse <$> f o
 
 
 defaultProfileResponse :: ProfileResponse
-defaultProfileResponse = mkProfileResponse 0 0 GenderUnknown D.defaultDate Nothing Nothing Nothing 0 0 defaultDate defaultDate
+defaultProfileResponse = mkProfileResponse 0 0 GenderUnknown D.defaultDate Nothing Nothing Nothing 0 0 defaultDateMaybe defaultDateMaybe
 
 
 
@@ -65,8 +65,8 @@ instance encodeProfileResponse :: EncodeJson ProfileResponse where
     ~> "signature" := u.signature
     ~> "karma_good" := u.karmaGood
     ~> "karma_bad" := u.karmaBad
-    ~> "created_at" := toISOString u.createdAt
-    ~> "modified_at" := toISOString u.modifiedAt
+    ~> "created_at" := toISOStringMaybe u.createdAt
+    ~> "modified_at" := toISOStringMaybe u.modifiedAt
     ~> jsonEmptyObject
 
 

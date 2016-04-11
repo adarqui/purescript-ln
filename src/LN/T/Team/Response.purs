@@ -23,7 +23,7 @@ newtype TeamResponse = TeamResponse {
 
 
 defaultTeamResponse :: TeamResponse
-defaultTeamResponse = mkTeamResponse 0 0 0 "name" Nothing defaultDate Nothing defaultDate
+defaultTeamResponse = mkTeamResponse 0 0 0 "name" Nothing defaultDateMaybe Nothing defaultDateMaybe
 
 
 
@@ -40,9 +40,9 @@ instance encodeTeamResponse :: EncodeJson TeamResponse where
     ~> "org_id" := u.orgId
     ~> "name"  := u.name
     ~> "desc" := u.description
-    ~> "created_at" := toISOString u.createdAt
+    ~> "created_at" := toISOStringMaybe u.createdAt
     ~> "modified_by" := u.modifiedBy
-    ~> "modified_at" := toISOString u.modifiedAt
+    ~> "modified_at" := toISOStringMaybe u.modifiedAt
     ~> jsonEmptyObject
 
 

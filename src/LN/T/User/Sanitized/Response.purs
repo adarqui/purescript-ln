@@ -29,7 +29,7 @@ _UserSanitizedResponse f (UserSanitizedResponse o) = UserSanitizedResponse <$> f
 
 
 defaultUserSanitizedResponse :: UserSanitizedResponse
-defaultUserSanitizedResponse = mkUserSanitizedResponse 0 "nick" "display_nick" "md5" false defaultDate
+defaultUserSanitizedResponse = mkUserSanitizedResponse 0 "nick" "display_nick" "md5" false defaultDateMaybe
 
 
 
@@ -46,7 +46,7 @@ instance encodeUserSanitizedResponse :: EncodeJson UserSanitizedResponse where
     ~> "display_nick" := u.displayNick
     ~> "email_md5" := u.emailMD5
     ~> "is_active" := u.isActive
-    ~> "created_at" := toISOString u.createdAt
+    ~> "created_at" := toISOStringMaybe u.createdAt
     ~> jsonEmptyObject
 
 

@@ -42,7 +42,7 @@ _ThreadPostResponse f (ThreadPostResponse o) = ThreadPostResponse <$> f o
 
 
 defaultThreadPostResponse :: ThreadPostResponse
-defaultThreadPostResponse = mkThreadPostResponse 0 0 0 Nothing Nothing PostDataEmpty [] [] defaultDate Nothing defaultDate
+defaultThreadPostResponse = mkThreadPostResponse 0 0 0 Nothing Nothing PostDataEmpty [] [] defaultDateMaybe Nothing defaultDateMaybe
 
 
 
@@ -63,9 +63,9 @@ instance encodeThreadPostResponse :: EncodeJson ThreadPostResponse where
     ~> "body" := o.body
     ~> "tags" := o.tags
     ~> "private_tags" := o.privateTags
-    ~> "created_at" := toISOString o.createdAt
+    ~> "created_at" := toISOStringMaybe o.createdAt
     ~> "modified_by" := o.modifiedBy
-    ~> "modified_at" := toISOString o.modifiedAt
+    ~> "modified_at" := toISOStringMaybe o.modifiedAt
     ~> jsonEmptyObject
 
 

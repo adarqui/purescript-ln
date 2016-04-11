@@ -36,7 +36,7 @@ _BoardResponse f (BoardResponse o) = BoardResponse <$> f o
 
 
 defaultBoardResponse :: BoardResponse
-defaultBoardResponse = mkBoardResponse 0 0 0 Nothing "name" Nothing defaultDate Nothing defaultDate
+defaultBoardResponse = mkBoardResponse 0 0 0 Nothing "name" Nothing defaultDateMaybe Nothing defaultDateMaybe
 
 
 
@@ -55,9 +55,9 @@ instance encodeBoardResponse :: EncodeJson BoardResponse where
     ~> "parent_id" := u.parentId
     ~> "name" := u.name
     ~> "desc" := u.description
-    ~> "created_at" := toISOString u.createdAt
+    ~> "created_at" := toISOStringMaybe u.createdAt
     ~> "modified_by" := u.modifiedBy
-    ~> "modified_at" := toISOString u.modifiedAt
+    ~> "modified_at" := toISOStringMaybe u.modifiedAt
     ~> jsonEmptyObject
 
 

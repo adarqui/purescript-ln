@@ -34,7 +34,7 @@ _ForumResponse f (ForumResponse o) = ForumResponse <$> f o
 
 
 defaultForumResponse :: ForumResponse
-defaultForumResponse = mkForumResponse 0 0 0 "name" Nothing defaultDate Nothing defaultDate
+defaultForumResponse = mkForumResponse 0 0 0 "name" Nothing defaultDateMaybe Nothing defaultDateMaybe
 
 
 
@@ -52,9 +52,9 @@ instance encodeForumResponse :: EncodeJson ForumResponse where
     ~> "org_id" := u.orgId
     ~> "name" := u.name
     ~> "desc" := u.description
-    ~> "created_at" := toISOString u.createdAt
+    ~> "created_at" := toISOStringMaybe u.createdAt
     ~> "modified_by" := u.modifiedBy
-    ~> "modified_at" := toISOString u.modifiedAt
+    ~> "modified_at" := toISOStringMaybe u.modifiedAt
     ~> jsonEmptyObject
 
 

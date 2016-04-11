@@ -77,9 +77,9 @@ readDateMaybe f =
 
 toISOStringMaybe :: DateMaybe -> String
 toISOStringMaybe (DateMaybe Nothing)  = "Invalid date."
-toISOStringMaybe (DateMaybe (Just d)) = runFn2 jsDateMethod "toISOString" (D.toJSDate d)
+toISOStringMaybe (DateMaybe (Just d)) = runFn2 jsDateMethodMaybe "toISOString" (D.toJSDate d)
 
-foreign import jsDateMethod :: forall a. Fn2 String D.JSDate a
+foreign import jsDateMethodMaybe :: forall a. Fn2 String D.JSDate a
 
 yyyy_mm_dd_Maybe :: DateMaybe -> String
 yyyy_mm_dd_Maybe (DateMaybe Nothing) = "empty"

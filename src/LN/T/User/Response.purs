@@ -23,7 +23,7 @@ newtype UserResponse = UserResponse {
 }
 
 defaultUserResponse :: UserResponse
-defaultUserResponse = mkUserResponse 0 "nick" "display_nick" "name" "email" "md5" "plugin" "ident" false defaultDate defaultDate defaultDate
+defaultUserResponse = mkUserResponse 0 "nick" "display_nick" "name" "email" "md5" "plugin" "ident" false defaultDateMaybe defaultDateMaybe defaultDateMaybe
 
 mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> String -> Boolean -> DateMaybe -> DateMaybe -> DateMaybe -> UserResponse
 mkUserResponse id nick displayNick name email emailMD5 plugin ident isActive createdAt modifiedAt deactivatedAt =
@@ -39,9 +39,9 @@ instance encodeUserResponse :: EncodeJson UserResponse where
     ~> "plugin" := u.plugin
     ~> "ident" := u.ident
     ~> "is_active" := u.isActive
-    ~> "created_at" := toISOString u.createdAt
-    ~> "modified_at" := toISOString u.modifiedAt
-    ~> "deactivated_at" := toISOString u.deactivatedAt
+    ~> "created_at" := toISOStringMaybe u.createdAt
+    ~> "modified_at" := toISOStringMaybe u.modifiedAt
+    ~> "deactivated_at" := toISOStringMaybe u.deactivatedAt
     ~> jsonEmptyObject
 
 {-
