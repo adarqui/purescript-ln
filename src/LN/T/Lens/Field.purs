@@ -175,3 +175,8 @@ userPack_ f o = o { userPack = _ } <$> f o.userPack
 
 userStat_ :: forall b a r. Lens { userStat :: a | r } { userStat :: b | r } a b
 userStat_ f o = o { userStat = _ } <$> f o.userStat
+
+
+
+userProfile_ :: forall b a r. Lens { userProfile :: a | r } { userProfile :: b | r } a b
+userProfile_ f o = o { userProfile = _ } <$> f o.userProfile
