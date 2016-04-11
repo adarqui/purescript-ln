@@ -1,7 +1,5 @@
 module LN.T.Date where
 
---import LN.T.Prelude
-
 import qualified Data.String as Str
 import Data.Foreign
 import Data.Foreign.Class

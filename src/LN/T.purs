@@ -3,7 +3,13 @@ module LN.T (
 ) where
 
 
+-- These are only found in purescript-ln
+--
+import           LN.T.Date                           as A
+import           LN.T.DateMaybe                      as A
 
+-- These are found in both purescript-ln and ln-types
+--
 import           LN.T.Api                            as A
 import           LN.T.Api.Request                    as A
 import           LN.T.Api.Response                   as A

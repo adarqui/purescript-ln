@@ -15,40 +15,40 @@ import Data.Moment.Simple
 newtype DateMaybe = DateMaybe (Maybe D.Date)
 
 instance eqDateMaybe :: Eq DateMaybe where
-  eq = eq `on` underlyingDate
+  eq = eq `on` underlyingDateMaybe
 
 instance ordDateMaybe :: Ord DateMaybe where
-  compare = compare `on` underlyingDate
+  compare = compare `on` underlyingDateMaybe
 
 instance showDateMaybe :: Show DateMaybe where
-  show = toISOString
+  show = toISOStringMaybe
 
-underlyingDate :: DateMaybe -> D.Date
-underlyingDate (DateMaybe (Just d)) = d
+underlyingDateMaybe :: DateMaybe -> D.Date
+underlyingDateMaybe (DateMaybe (Just d)) = d
 
-now :: forall e. Eff (now :: D.Now | e) DateMaybe
-now = (DateMaybe <<< Just) <$> D.now
+nowMaybe :: forall e. Eff (now :: D.Now | e) DateMaybe
+nowMaybe = (DateMaybe <<< Just) <$> D.now
 
-dateFromString :: String -> Maybe DateMaybe
-dateFromString str = (DateMaybe <<< Just) <$> D.fromString str
+dateMaybeFromString :: String -> Maybe DateMaybe
+dateMaybeFromString str = (DateMaybe <<< Just) <$> D.fromString str
 
-defaultDate :: DateMaybe
-defaultDate = DateMaybe $ D.fromString "01-01-2016"
+defaultDateMaybe :: DateMaybe
+defaultDateMaybe = DateMaybe $ D.fromString "01-01-2016"
 
-year :: DateMaybe -> D.Year
-year = U.year <<< underlyingDate
+yearMaybe :: DateMaybe -> D.Year
+yearMaybe = U.year <<< underlyingDateMaybe
 
-month :: DateMaybe -> D.Month
-month = U.month <<< underlyingDate
+monthMaybe :: DateMaybe -> D.Month
+monthMaybe = U.month <<< underlyingDateMaybe
 
-dayOfMonth :: DateMaybe -> D.DayOfMonth
-dayOfMonth = U.dayOfMonth <<< underlyingDate
+dayOfMonthMaybe :: DateMaybe -> D.DayOfMonth
+dayOfMonthMaybe = U.dayOfMonth <<< underlyingDateMaybe
 
-unYear :: D.Year -> Int
-unYear (D.Year n) = n
+unYearMaybe :: D.Year -> Int
+unYearMaybe (D.Year n) = n
 
-unDayOfMonth :: D.DayOfMonth -> Int
-unDayOfMonth (D.DayOfMonth n) = n
+unDayOfMonthMaybe :: D.DayOfMonth -> Int
+unDayOfMonthMaybe (D.DayOfMonth n) = n
 
 instance isForeignDateMaybe :: IsForeign DateMaybe where
   read = readDateMaybe
@@ -75,15 +75,15 @@ readDateMaybe f =
        _ -> Right (DateMaybe Nothing)
 --          Left (TypeMismatch "readDateMaybe: Expecting date" (tagOf f))
 
-toISOString :: DateMaybe -> String
-toISOString (DateMaybe Nothing)  = "Invalid date."
-toISOString (DateMaybe (Just d)) = runFn2 jsDateMethod "toISOString" (D.toJSDate d)
+toISOStringMaybe :: DateMaybe -> String
+toISOStringMaybe (DateMaybe Nothing)  = "Invalid date."
+toISOStringMaybe (DateMaybe (Just d)) = runFn2 jsDateMethod "toISOString" (D.toJSDate d)
 
 foreign import jsDateMethod :: forall a. Fn2 String D.JSDate a
 
-yyyy_mm_dd :: DateMaybe -> String
-yyyy_mm_dd (DateMaybe Nothing) = "empty"
-yyyy_mm_dd (DateMaybe (Just date)) = y ++ "-" ++ m ++ "-" ++ d
+yyyy_mm_dd_Maybe :: DateMaybe -> String
+yyyy_mm_dd_Maybe (DateMaybe Nothing) = "empty"
+yyyy_mm_dd_Maybe (DateMaybe (Just date)) = y ++ "-" ++ m ++ "-" ++ d
   where
     y = (ypad <<< show) case U.year date of D.Year n -> n
     m = pad (1 + (fromEnum $ U.month date))
@@ -102,7 +102,7 @@ yyyy_mm_dd (DateMaybe (Just date)) = y ++ "-" ++ m ++ "-" ++ d
 
 
 instance decodeDateMaybe :: DecodeJson DateMaybe where
-  decodeJson json = pure defaultDate
+  decodeJson json = pure defaultDateMaybe
 
   -- wtf how does this work ^^
 
@@ -120,6 +120,6 @@ instance decodeDateMaybe :: DecodeJson DateMaybe where
 
 
 -- moment :: DateMaybe -> String
-moment d = fromDate $ underlyingDate d
+moment d = fromDate $ underlyingDateMaybe d
 
-humanMoment d = calendar $ fromDate $ underlyingDate d
+humanMoment d = calendar $ fromDate $ underlyingDateMaybe d
