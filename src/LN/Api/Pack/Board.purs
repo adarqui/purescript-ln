@@ -1,4 +1,4 @@
-module LN.Api.Packs.Board where
+module LN.Api.Pack.Board where
 
 
 

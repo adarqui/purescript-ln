@@ -1,4 +1,4 @@
-module LN.Api.Packs.User where
+module LN.Api.Pack.User where
 
 
 

@@ -1,4 +1,4 @@
-module LN.Api.Packs.Thread where
+module LN.Api.Pack.Thread where
 
 
 
