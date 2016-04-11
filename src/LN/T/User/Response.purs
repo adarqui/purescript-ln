@@ -22,6 +22,24 @@ newtype UserResponse = UserResponse {
   deactivatedAt :: DateMaybe
 }
 
+_UserResponse :: LensP UserResponse {
+  id   :: UserId,
+  nick :: String,
+  displayNick :: String,
+  name :: String,
+  email :: String,
+  emailMD5 :: String,
+  plugin :: String,
+  ident :: String,
+  isActive :: Boolean,
+  createdAt :: DateMaybe,
+  modifiedAt :: DateMaybe,
+  deactivatedAt :: DateMaybe
+}
+_UserResponse f (UserResponse o) = UserResponse <$> f o
+
+
+
 defaultUserResponse :: UserResponse
 defaultUserResponse = mkUserResponse 0 "nick" "display_nick" "name" "email" "md5" "plugin" "ident" false defaultDateMaybe defaultDateMaybe defaultDateMaybe
 

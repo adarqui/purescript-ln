@@ -35,7 +35,6 @@ _ThreadResponse :: LensP ThreadResponse {
   modifiedBy :: Maybe Int,
   modifiedAt :: DateMaybe
 }
-
 _ThreadResponse f (ThreadResponse o) = ThreadResponse <$> f o
 
 
