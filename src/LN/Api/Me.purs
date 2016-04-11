@@ -9,5 +9,5 @@ import LN.T
 
 
 
-getMe :: ApiEff (Maybe UserPackResponse)
+getMe :: ApiEff (Maybe UserResponse)
 getMe = getAt [] [] [meTag]
