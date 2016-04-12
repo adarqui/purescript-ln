@@ -180,3 +180,38 @@ userStat_ f o = o { userStat = _ } <$> f o.userStat
 
 userProfile_ :: forall b a r. Lens { userProfile :: a | r } { userProfile :: b | r } a b
 userProfile_ f o = o { userProfile = _ } <$> f o.userProfile
+
+
+
+entityId_ :: forall b a r. Lens { entityId :: a | r } { entityId :: b | r } a b
+entityId_ f o = o { entityId = _ } <$> f o.entityId
+
+
+
+gender_ :: forall b a r. Lens { gender :: a | r } { gender :: b | r } a b
+gender_ f o = o { gender = _ } <$> f o.gender
+
+
+
+birthdate_ :: forall b a r. Lens { birthdate :: a | r } { birthdate :: b | r } a b
+birthdate_ f o = o { birthdate = _ } <$> f o.birthdate
+
+
+
+website_ :: forall b a r. Lens { website :: a | r } { website :: b | r } a b
+website_ f o = o { website = _ } <$> f o.website
+
+
+
+signature_ :: forall b a r. Lens { signature :: a | r } { signature :: b | r } a b
+signature_ f o = o { signature = _ } <$> f o.signature
+
+
+
+karmaGood_ :: forall b a r. Lens { karmaGood :: a | r } { karmaGood :: b | r } a b
+karmaGood_ f o = o { karmaGood = _ } <$> f o.karmaGood
+
+
+
+karmaBad_ :: forall b a r. Lens { karmaBad :: a | r } { karmaBad :: b | r } a b
+karmaBad_ f o = o { karmaBad = _ } <$> f o.karmaBad
