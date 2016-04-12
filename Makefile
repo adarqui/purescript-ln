@@ -1,6 +1,9 @@
 build:
 	pulp -w build
 
+build-psa:
+	pulp -w build --stash --censor-lib --censor-codes=ImplicitImport,UnusedExplicitImport,HidingImport
+
 tests:
 	pulp -w test
 
