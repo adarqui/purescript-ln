@@ -18,11 +18,11 @@ import Data.Tuple
 
 import Halogen
 import Halogen.Util (appendTo, appendToBody, onLoad)
-import qualified Halogen.HTML.Core as H
-import qualified Halogen.HTML.Indexed as H
-import qualified Halogen.HTML.Events.Indexed as E
-import qualified Halogen.HTML.Properties as PX
-import qualified Halogen.HTML.Properties.Indexed as P
+import Halogen.HTML.Core as H
+import Halogen.HTML.Indexed as H
+import Halogen.HTML.Events.Indexed as E
+import Halogen.HTML.Properties as PX
+import Halogen.HTML.Properties.Indexed as P
 
 import Network.HTTP.Affjax (AJAX(), post, affjax, defaultRequest)
 import Network.HTTP.Method
@@ -30,9 +30,9 @@ import Network.HTTP.MimeType
 import Network.HTTP.MimeType.Common
 import Network.HTTP.RequestHeader
 
-import qualified DOM.HTML.Location as DOM
-import qualified DOM.HTML.Window as DOM
-import qualified DOM.HTML as DOM
+import DOM.HTML.Location as DOM
+import DOM.HTML.Window as DOM
+import DOM.HTML as DOM
 
 import Control.Monad.Eff
 import Control.Monad.Eff.Class
