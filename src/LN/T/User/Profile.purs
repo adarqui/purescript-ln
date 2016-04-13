@@ -7,5 +7,5 @@ userProfileTag = "user_profile"
 
 
 
-usersProfileTag :: String
-usersProfileTag = "users_profile"
+usersProfilesTag :: String
+usersProfilesTag = "users_profile"
