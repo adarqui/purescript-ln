@@ -8,6 +8,7 @@ module LN.T (
 import           LN.T.Date                           as A
 import           LN.T.DateMaybe                      as A
 import           LN.T.Lens.Field                     as A
+import           LN.T.Profile.Helper                 as A
 import           LN.T.Size                           as A
 
 -- These are found in both purescript-ln and ln-types

@@ -61,7 +61,7 @@ getAt params by paths = do
 
 
 
--- | getAt [Tuple "user_name" "adarqui"] (route ["users"])
+-- | postAt [Tuple "user_name" "adarqui"] (route ["users"])
 --
 postAt :: forall eff a b. (Respondable a, Requestable b)
         => Array (Tuple String String)
@@ -72,6 +72,27 @@ postAt :: forall eff a b. (Respondable a, Requestable b)
 postAt params by paths body = do
     liftAff $ log ("postAt: " <> routeQueryBy paths params by)
     { response: response } <- AJ.post (routeQueryBy paths params by) body
+    let r = fromResponse response
+    case r of
+         (Left err) -> do
+           liftAff $ log $ ("error: " ++ show err)
+           return Nothing
+         (Right js) -> do
+           liftAff $ log "success"
+           return $ Just js
+
+
+
+
+updateAt :: forall eff a b. (Respondable a, Requestable b)
+        => Array (Tuple String String)
+        -> Array By
+        -> Array String
+        -> b
+        -> Aff (ajax :: AJAX, console :: CONSOLE | eff) (Maybe a)
+updateAt params by paths body = do
+    liftAff $ log ("updateAt: " <> routeQueryBy paths params by)
+    { response: response } <- AJ.put (routeQueryBy paths params by) body
     let r = fromResponse response
     case r of
          (Left err) -> do
