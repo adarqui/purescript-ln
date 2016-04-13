@@ -8,4 +8,4 @@ userProfileTag = "user_profile"
 
 
 usersProfilesTag :: String
-usersProfilesTag = "users_profile"
+usersProfilesTag = "users_profiles"
