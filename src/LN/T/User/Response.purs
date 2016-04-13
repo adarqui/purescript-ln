@@ -16,7 +16,7 @@ newtype UserResponse = UserResponse {
   emailMD5 :: String,
   plugin :: String,
   ident :: String,
-  isActive :: Boolean,
+  active :: Boolean,
   createdAt :: DateMaybe,
   modifiedAt :: DateMaybe,
   deactivatedAt :: DateMaybe
@@ -31,7 +31,7 @@ _UserResponse :: LensP UserResponse {
   emailMD5 :: String,
   plugin :: String,
   ident :: String,
-  isActive :: Boolean,
+  active :: Boolean,
   createdAt :: DateMaybe,
   modifiedAt :: DateMaybe,
   deactivatedAt :: DateMaybe
@@ -44,8 +44,8 @@ defaultUserResponse :: UserResponse
 defaultUserResponse = mkUserResponse 0 "nick" "display_nick" "name" "email" "md5" "plugin" "ident" false defaultDateMaybe defaultDateMaybe defaultDateMaybe
 
 mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> String -> Boolean -> DateMaybe -> DateMaybe -> DateMaybe -> UserResponse
-mkUserResponse id nick displayNick name email emailMD5 plugin ident isActive createdAt modifiedAt deactivatedAt =
-  UserResponse { id, nick, displayNick, name, email, emailMD5, plugin, ident, isActive, createdAt, modifiedAt, deactivatedAt }
+mkUserResponse id nick displayNick name email emailMD5 plugin ident active createdAt modifiedAt deactivatedAt =
+  UserResponse { id, nick, displayNick, name, email, emailMD5, plugin, ident, active, createdAt, modifiedAt, deactivatedAt }
 
 instance encodeUserResponse :: EncodeJson UserResponse where
   encodeJson (UserResponse u) =
@@ -56,7 +56,7 @@ instance encodeUserResponse :: EncodeJson UserResponse where
     ~> "email" := u.email
     ~> "plugin" := u.plugin
     ~> "ident" := u.ident
-    ~> "is_active" := u.isActive
+    ~> "active" := u.active
     ~> "created_at" := toISOStringMaybe u.createdAt
     ~> "modified_at" := toISOStringMaybe u.modifiedAt
     ~> "deactivated_at" := toISOStringMaybe u.deactivatedAt
@@ -77,11 +77,11 @@ instance decodeUserResponse :: DecodeJson UserResponse where
     emailMD5 <- obj .? "email_md5"
     plugin <- obj .? "plugin"
     ident <- obj .? "ident"
-    isActive <- obj .? "is_active"
+    active <- obj .? "active"
     createdAt <- obj .? "created_at"
     modifiedAt <- obj .? "modified_at"
     deactivatedAt <- obj .? "deactivated_at"
-    pure $ UserResponse {id, nick, displayNick, name, email, emailMD5, plugin, ident, isActive , createdAt, modifiedAt, deactivatedAt}
+    pure $ UserResponse {id, nick, displayNick, name, email, emailMD5, plugin, ident, active , createdAt, modifiedAt, deactivatedAt}
 
 instance respondableUserResponse :: Respondable UserResponse where
   responseType =
@@ -96,7 +96,7 @@ instance respondableUserResponse :: Respondable UserResponse where
       <*> readProp "email_md5" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
-      <*> readProp "is_active" json
+      <*> readProp "active" json
       <*> readProp "created_at" json
       <*> readProp "modified_at" json
       <*> readProp "deactivated_at" json
@@ -117,7 +117,7 @@ instance isForeignUserResponse :: IsForeign UserResponse where
     <*> readProp "email_md5" f
     <*> readProp "plugin" f
     <*> readProp "ident" f
-    <*> readProp "is_active" f
+    <*> readProp "active" f
     <*> readProp "created_at" f
     <*> readProp "modified_at" f
     <*> readProp "deactivated_at" f

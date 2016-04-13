@@ -12,7 +12,7 @@ newtype UserSanitizedResponse = UserSanitizedResponse {
   nick :: String,
   displayNick :: String,
   emailMD5 :: String,
-  isActive :: Boolean,
+  active :: Boolean,
   createdAt :: DateMaybe
 }
 
@@ -21,7 +21,7 @@ _UserSanitizedResponse :: LensP UserSanitizedResponse {
     nick :: String,
     displayNick :: String,
     emailMD5 :: String,
-    isActive :: Boolean,
+    active :: Boolean,
     createdAt :: DateMaybe
   }
 _UserSanitizedResponse f (UserSanitizedResponse o) = UserSanitizedResponse <$> f o
@@ -34,8 +34,8 @@ defaultUserSanitizedResponse = mkUserSanitizedResponse 0 "nick" "display_nick" "
 
 
 mkUserSanitizedResponse :: Int -> String -> String -> String -> Boolean -> DateMaybe -> UserSanitizedResponse
-mkUserSanitizedResponse id nick displayNick emailMD5 isActive createdAt =
-  UserSanitizedResponse { id, nick, displayNick, emailMD5, isActive, createdAt }
+mkUserSanitizedResponse id nick displayNick emailMD5 active createdAt =
+  UserSanitizedResponse { id, nick, displayNick, emailMD5, active, createdAt }
 
 
 
@@ -45,7 +45,7 @@ instance encodeUserSanitizedResponse :: EncodeJson UserSanitizedResponse where
     ~> "nick"  := u.nick
     ~> "display_nick" := u.displayNick
     ~> "email_md5" := u.emailMD5
-    ~> "is_active" := u.isActive
+    ~> "active" := u.active
     ~> "created_at" := toISOStringMaybe u.createdAt
     ~> jsonEmptyObject
 
@@ -58,9 +58,9 @@ instance decodeUserSanitizedResponse :: DecodeJson UserSanitizedResponse where
     nick <- obj .? "nick"
     displayNick <- obj .? "display_nick"
     emailMD5 <- obj .? "email_md5"
-    isActive <- obj .? "is_active"
+    active <- obj .? "active"
     createdAt <- obj .? "created_at"
-    pure $ UserSanitizedResponse {id, nick, displayNick, emailMD5, isActive, createdAt}
+    pure $ UserSanitizedResponse {id, nick, displayNick, emailMD5, active, createdAt}
 
 
 
@@ -73,7 +73,7 @@ instance respondableUserSanitizedResponse :: Respondable UserSanitizedResponse w
       <*> readProp "nick" json
       <*> readProp "display_nick" json
       <*> readProp "email_md5" json
-      <*> readProp "is_active" json
+      <*> readProp "active" json
       <*> readProp "created_at" json
 
 
@@ -91,7 +91,7 @@ instance isForeignUserSanitizedResponse :: IsForeign UserSanitizedResponse where
     <*> readProp "nick" f
     <*> readProp "display_nick" f
     <*> readProp "email_md5" f
-    <*> readProp "is_active" f
+    <*> readProp "active" f
     <*> readProp "created_at" f
 
 
