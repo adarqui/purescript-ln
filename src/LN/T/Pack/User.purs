@@ -3,12 +3,9 @@ module LN.T.Pack.User where
 
 
 import LN.T.Prelude.Argonaut
-import LN.T.User
 import LN.T.User.Response
 import LN.T.User.Sanitized.Stat
-import LN.T.Profile
 import LN.T.Profile.Response
-import LN.T.DateMaybe
 
 
 

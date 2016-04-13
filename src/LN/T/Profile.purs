@@ -3,7 +3,6 @@ module LN.T.Profile where
 
 
 import LN.T.Prelude.Argonaut
-import Data.Argonaut.Core
 
 
 
