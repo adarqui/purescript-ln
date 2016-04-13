@@ -26,6 +26,12 @@ data ProfileGender
   | GenderFemale
   | GenderUnknown
 
+instance profileGenderEq :: Eq ProfileGender where
+  eq GenderMale GenderMale       = true
+  eq GenderFemale GenderFemale   = true
+  eq GenderUnknown GenderUnknown = true
+  eq _             _             = false
+
 defaultProfileGender :: ProfileGender
 defaultProfileGender = GenderUnknown
 
