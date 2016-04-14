@@ -3,6 +3,7 @@ module LN.T.Pack.Sanitized.User where
 
 
 import LN.T.Prelude.Argonaut
+import LN.T.Lens.Field
 import LN.T.User
 import LN.T.User.Sanitized.Response
 import LN.T.User.Sanitized.Stat
@@ -27,6 +28,14 @@ newtype UserSanitizedPackResponse = UserSanitizedPackResponse {
   userStat :: UserSanitizedStatResponse,
   userProfile :: ProfileResponse
 }
+
+
+
+instance userSanitizedPackResponseEq :: Eq UserSanitizedPackResponse where
+  eq u1 u2 =
+    (u1 ^. _UserSanitizedPackResponse .. user_ ^. _UserSanitizedResponse .. id_)
+    ==
+    (u2 ^. _UserSanitizedPackResponse .. user_ ^. _UserSanitizedResponse .. id_)
 
 
 
