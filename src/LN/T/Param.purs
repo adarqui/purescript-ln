@@ -25,7 +25,7 @@ data By
   | ByParentId String
   | ByParentName String
   -- bulk
-  | ByUserIds (Array Int)
+  | ByUserIds (Array Int) -- TODO FIXME: change to ByUsersIds
   | ByThreadIds (Array Int)
   | ByThreadPostIds (Array Int)
 

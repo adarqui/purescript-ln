@@ -112,6 +112,11 @@ newtype UserSanitizedPackResponses = UserSanitizedPackResponses {
   usersSanitizedPacks :: Array UserSanitizedPackResponse
 }
 
+_UserSanitizedPackResponses :: LensP UserSanitizedPackResponses {
+    usersSanitizedPacks :: Array UserSanitizedPackResponse
+  }
+_UserSanitizedPackResponses f (UserSanitizedPackResponses o) = UserSanitizedPackResponses <$> f o
+
 defaultUserSanitizedPackResponses :: UserSanitizedPackResponses
 defaultUserSanitizedPackResponses = mkUserSanitizedPackResponses
 
