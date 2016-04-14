@@ -3,6 +3,7 @@ module LN.T.User.Sanitized.Response where
 
 
 import LN.T.Prelude.Argonaut
+import LN.T.Lens.Field
 import LN.T.User
 import LN.T.DateMaybe
 
@@ -16,6 +17,8 @@ newtype UserSanitizedResponse = UserSanitizedResponse {
   createdAt :: DateMaybe
 }
 
+
+
 _UserSanitizedResponse :: LensP UserSanitizedResponse {
     id   :: UserId,
     nick :: String,
@@ -26,6 +29,13 @@ _UserSanitizedResponse :: LensP UserSanitizedResponse {
   }
 _UserSanitizedResponse f (UserSanitizedResponse o) = UserSanitizedResponse <$> f o
 
+
+
+instance userSanitizedResponseEq :: Eq UserSanitizedResponse where
+  eq u1 u2 =
+    (u1 ^. _UserSanitizedResponse .. id_)
+    ==
+    (u2 ^. _UserSanitizedResponse .. id_)
 
 
 defaultUserSanitizedResponse :: UserSanitizedResponse

@@ -31,20 +31,20 @@ newtype UserSanitizedPackResponse = UserSanitizedPackResponse {
 
 
 
-instance userSanitizedPackResponseEq :: Eq UserSanitizedPackResponse where
-  eq u1 u2 =
-    (u1 ^. _UserSanitizedPackResponse .. user_ ^. _UserSanitizedResponse .. id_)
-    ==
-    (u2 ^. _UserSanitizedPackResponse .. user_ ^. _UserSanitizedResponse .. id_)
-
-
-
 _UserSanitizedPackResponse :: LensP UserSanitizedPackResponse {
     user :: UserSanitizedResponse,
     userStat :: UserSanitizedStatResponse,
     userProfile :: ProfileResponse
   }
 _UserSanitizedPackResponse f (UserSanitizedPackResponse o) = UserSanitizedPackResponse <$> f o
+
+
+
+instance userSanitizedPackResponseEq :: Eq UserSanitizedPackResponse where
+  eq u1 u2 =
+    (u1 ^. _UserSanitizedPackResponse .. user_ ^. _UserSanitizedResponse .. id_)
+    ==
+    (u2 ^. _UserSanitizedPackResponse .. user_ ^. _UserSanitizedResponse .. id_)
 
 
 
