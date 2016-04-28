@@ -82,6 +82,12 @@ getBoardStat params board_id = handleError <$> getAt params ["board_stat", show 
 getBoardStat' :: Int -> ApiEff (Either ApiError BoardStatResponse)
 getBoardStat' board_id = handleError <$> getAt ([] :: Array Boolean) ["board_stat", show board_id]
 
+getCountUsers :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getCountUsers params = handleError <$> getAt params ["count_users"]
+
+getCountUsers' :: ApiEff (Either ApiError CountResponses)
+getCountUsers'  = handleError <$> getAt ([] :: Array Boolean) ["count_users"]
+
 getForums :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ForumResponses)
 getForums params = handleError <$> getAt params ["forums"]
 
@@ -616,10 +622,10 @@ getUserSanitizedPacks_ByUsersIds params _ByUsersIds = handleError <$> getAt (map
 getUserSanitizedPacks_ByUsersIds' :: (Array  Int) -> ApiEff (Either ApiError UserSanitizedPackResponses)
 getUserSanitizedPacks_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["user_sanitized_packs"]
 
-getUsersSanitizedPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError UserSanitizedPackResponse)
-getUsersSanitizedPack params user_id = handleError <$> getAt params ["users_sanitized_pack", show user_id]
+getUserSanitizedPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError UserSanitizedPackResponse)
+getUserSanitizedPack params user_id = handleError <$> getAt params ["user_sanitized_pack", show user_id]
 
-getUsersSanitizedPack' :: Int -> ApiEff (Either ApiError UserSanitizedPackResponse)
-getUsersSanitizedPack' user_id = handleError <$> getAt ([] :: Array Boolean) ["users_sanitized_pack", show user_id]
+getUserSanitizedPack' :: Int -> ApiEff (Either ApiError UserSanitizedPackResponse)
+getUserSanitizedPack' user_id = handleError <$> getAt ([] :: Array Boolean) ["user_sanitized_pack", show user_id]
 
 -- footer
