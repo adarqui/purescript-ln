@@ -406,11 +406,11 @@ getThreadPosts params = handleError <$> getAt params ["thread_posts"]
 getThreadPosts' :: ApiEff (Either ApiError ThreadPostResponses)
 getThreadPosts'  = handleError <$> getAt ([] :: Array Boolean) ["thread_posts"]
 
-postThreadPost :: forall qp. QueryParam qp => Array qp -> ThreadPostRequest -> ApiEff (Either ApiError ThreadPostResponse)
-postThreadPost params thread_post_request = handleError <$> postAt params ["thread_post"] thread_post_request
+postThreadPost_ByThreadId :: forall qp. QueryParam qp => Array qp -> Int -> ThreadPostRequest -> ApiEff (Either ApiError ThreadPostResponse)
+postThreadPost_ByThreadId params _ByThreadId thread_post_request = handleError <$> postAt (map qp params ++ map qp [ByThreadId _ByThreadId]) ["thread_post"] thread_post_request
 
-postThreadPost' :: ThreadPostRequest -> ApiEff (Either ApiError ThreadPostResponse)
-postThreadPost' thread_post_request = handleError <$> postAt ([] :: Array Boolean) ["thread_post"] thread_post_request
+postThreadPost_ByThreadId' :: Int -> ThreadPostRequest -> ApiEff (Either ApiError ThreadPostResponse)
+postThreadPost_ByThreadId' _ByThreadId thread_post_request = handleError <$> postAt [ByThreadId _ByThreadId] ["thread_post"] thread_post_request
 
 getThreadPost :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostResponse)
 getThreadPost params thread_post_id = handleError <$> getAt params ["thread_post", show thread_post_id]
