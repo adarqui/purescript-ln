@@ -5677,6 +5677,97 @@ instance resourceResponsesIsForeign :: IsForeign ResourceResponses where
 instance resourceResponsesShow :: Show ResourceResponses where
     show (ResourceResponses o) = show "resourceResponses: " ++ show o.resourceResponses
 
+data Size
+  = XSmall 
+  | Small 
+  | Medium 
+  | Large 
+  | XLarge 
+
+
+
+instance sizeEncodeJson :: EncodeJson Size where
+  encodeJson (XSmall ) =
+       "tag" := "XSmall"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Small ) =
+       "tag" := "Small"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Medium ) =
+       "tag" := "Medium"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Large ) =
+       "tag" := "Large"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (XLarge ) =
+       "tag" := "XLarge"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance sizeDecodeJson :: DecodeJson Size where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "XSmall" -> do
+          return $ XSmall
+
+        "Small" -> do
+          return $ Small
+
+        "Medium" -> do
+          return $ Medium
+
+        "Large" -> do
+          return $ Large
+
+        "XLarge" -> do
+          return $ XLarge
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance sizeRequestable :: Requestable Size where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance sizeRespondable :: Respondable Size where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse f = case readString f of
+    Right s -> readJSON s
+    Left er -> Left er
+
+
+instance sizeIsForeign :: IsForeign Size where
+  read f = case readString f of
+    Right s -> readJSON s
+    Left er -> Left er
+
+
+instance sizeShow :: Show Size where
+  show (XSmall) = "XSmall"
+  show (Small) = "Small"
+  show (Medium) = "Medium"
+  show (Large) = "Large"
+  show (XLarge) = "XLarge"
+
+
+instance sizeEq :: Eq Size where
+  eq (XSmall) (XSmall) = true
+  eq (Small) (Small) = true
+  eq (Medium) (Medium) = true
+  eq (Large) (Large) = true
+  eq (XLarge) (XLarge) = true
+  eq _ _ = false
+
 data Splits
   = SplitAt Char String String
   | SplitNone 
