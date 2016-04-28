@@ -46,6 +46,18 @@ getBoards params = handleError <$> getAt params ["boards"]
 getBoards' :: ApiEff (Either ApiError BoardResponses)
 getBoards'  = handleError <$> getAt ([] :: Array Boolean) ["boards"]
 
+getBoards_ByBoardsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError BoardResponses)
+getBoards_ByBoardsIds params _ByBoardsIds = handleError <$> getAt (map qp params ++ map qp [ByBoardsIds _ByBoardsIds]) ["boards"]
+
+getBoards_ByBoardsIds' :: (Array  Int) -> ApiEff (Either ApiError BoardResponses)
+getBoards_ByBoardsIds' _ByBoardsIds = handleError <$> getAt [ByBoardsIds _ByBoardsIds] ["boards"]
+
+getBoards_ByForumId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError BoardResponses)
+getBoards_ByForumId params _ByForumId = handleError <$> getAt (map qp params ++ map qp [ByForumId _ByForumId]) ["boards"]
+
+getBoards_ByForumId' :: Int -> ApiEff (Either ApiError BoardResponses)
+getBoards_ByForumId' _ByForumId = handleError <$> getAt [ByForumId _ByForumId] ["boards"]
+
 postBoard :: forall qp. QueryParam qp => Array qp -> BoardRequest -> ApiEff (Either ApiError BoardResponse)
 postBoard params board_request = handleError <$> postAt params ["board"] board_request
 
@@ -88,11 +100,89 @@ getUsersCount params = handleError <$> getAt params ["users_count"]
 getUsersCount' :: ApiEff (Either ApiError CountResponses)
 getUsersCount'  = handleError <$> getAt ([] :: Array Boolean) ["users_count"]
 
+getOrganizationsCount :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getOrganizationsCount params = handleError <$> getAt params ["organizations_count"]
+
+getOrganizationsCount' :: ApiEff (Either ApiError CountResponses)
+getOrganizationsCount'  = handleError <$> getAt ([] :: Array Boolean) ["organizations_count"]
+
+getTeamsCount :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getTeamsCount params = handleError <$> getAt params ["teams_count"]
+
+getTeamsCount' :: ApiEff (Either ApiError CountResponses)
+getTeamsCount'  = handleError <$> getAt ([] :: Array Boolean) ["teams_count"]
+
+getForumsCount :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getForumsCount params = handleError <$> getAt params ["forums_count"]
+
+getForumsCount' :: ApiEff (Either ApiError CountResponses)
+getForumsCount'  = handleError <$> getAt ([] :: Array Boolean) ["forums_count"]
+
+getBoardsCount :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getBoardsCount params = handleError <$> getAt params ["boards_count"]
+
+getBoardsCount' :: ApiEff (Either ApiError CountResponses)
+getBoardsCount'  = handleError <$> getAt ([] :: Array Boolean) ["boards_count"]
+
+getThreadsCount :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getThreadsCount params = handleError <$> getAt params ["threads_count"]
+
+getThreadsCount' :: ApiEff (Either ApiError CountResponses)
+getThreadsCount'  = handleError <$> getAt ([] :: Array Boolean) ["threads_count"]
+
+getThreadsCount_ByBoardId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError CountResponses)
+getThreadsCount_ByBoardId params _ByBoardId = handleError <$> getAt (map qp params ++ map qp [ByBoardId _ByBoardId]) ["threads_count"]
+
+getThreadsCount_ByBoardId' :: Int -> ApiEff (Either ApiError CountResponses)
+getThreadsCount_ByBoardId' _ByBoardId = handleError <$> getAt [ByBoardId _ByBoardId] ["threads_count"]
+
+getThreadPostsCount :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getThreadPostsCount params = handleError <$> getAt params ["thread_posts_count"]
+
+getThreadPostsCount' :: ApiEff (Either ApiError CountResponses)
+getThreadPostsCount'  = handleError <$> getAt ([] :: Array Boolean) ["thread_posts_count"]
+
+getThreadPostsCount_ByThreadId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError CountResponses)
+getThreadPostsCount_ByThreadId params _ByThreadId = handleError <$> getAt (map qp params ++ map qp [ByThreadId _ByThreadId]) ["thread_posts_count"]
+
+getThreadPostsCount_ByThreadId' :: Int -> ApiEff (Either ApiError CountResponses)
+getThreadPostsCount_ByThreadId' _ByThreadId = handleError <$> getAt [ByThreadId _ByThreadId] ["thread_posts_count"]
+
+getResourcesCount :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getResourcesCount params = handleError <$> getAt params ["resources_count"]
+
+getResourcesCount' :: ApiEff (Either ApiError CountResponses)
+getResourcesCount'  = handleError <$> getAt ([] :: Array Boolean) ["resources_count"]
+
+getLeuronsCount :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getLeuronsCount params = handleError <$> getAt params ["leurons_count"]
+
+getLeuronsCount' :: ApiEff (Either ApiError CountResponses)
+getLeuronsCount'  = handleError <$> getAt ([] :: Array Boolean) ["leurons_count"]
+
 getForums :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ForumResponses)
 getForums params = handleError <$> getAt params ["forums"]
 
 getForums' :: ApiEff (Either ApiError ForumResponses)
 getForums'  = handleError <$> getAt ([] :: Array Boolean) ["forums"]
+
+getForums_ByOrganizationName :: forall qp. QueryParam qp => Array qp -> (Array  Char) -> ApiEff (Either ApiError ForumResponses)
+getForums_ByOrganizationName params _ByOrganizationName = handleError <$> getAt (map qp params ++ map qp [ByOrganizationName _ByOrganizationName]) ["forums"]
+
+getForums_ByOrganizationName' :: (Array  Char) -> ApiEff (Either ApiError ForumResponses)
+getForums_ByOrganizationName' _ByOrganizationName = handleError <$> getAt [ByOrganizationName _ByOrganizationName] ["forums"]
+
+getForums_ByForumsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ForumResponses)
+getForums_ByForumsIds params _ByForumsIds = handleError <$> getAt (map qp params ++ map qp [ByForumsIds _ByForumsIds]) ["forums"]
+
+getForums_ByForumsIds' :: (Array  Int) -> ApiEff (Either ApiError ForumResponses)
+getForums_ByForumsIds' _ByForumsIds = handleError <$> getAt [ByForumsIds _ByForumsIds] ["forums"]
+
+getForums_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ForumResponses)
+getForums_ByOrganizationId params _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["forums"]
+
+getForums_ByOrganizationId' :: Int -> ApiEff (Either ApiError ForumResponses)
+getForums_ByOrganizationId' _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["forums"]
 
 postForum :: forall qp. QueryParam qp => Array qp -> ForumRequest -> ApiEff (Either ApiError ForumResponse)
 postForum params forum_request = handleError <$> postAt params ["forum"] forum_request
@@ -370,11 +460,11 @@ getThreads params = handleError <$> getAt params ["threads"]
 getThreads' :: ApiEff (Either ApiError ThreadResponses)
 getThreads'  = handleError <$> getAt ([] :: Array Boolean) ["threads"]
 
-postThread :: forall qp. QueryParam qp => Array qp -> ThreadRequest -> ApiEff (Either ApiError ThreadResponse)
-postThread params thread_request = handleError <$> postAt params ["thread"] thread_request
+postThread_ByBoardId :: forall qp. QueryParam qp => Array qp -> Int -> ThreadRequest -> ApiEff (Either ApiError ThreadResponse)
+postThread_ByBoardId params _ByBoardId thread_request = handleError <$> postAt (map qp params ++ map qp [ByBoardId _ByBoardId]) ["thread"] thread_request
 
-postThread' :: ThreadRequest -> ApiEff (Either ApiError ThreadResponse)
-postThread' thread_request = handleError <$> postAt ([] :: Array Boolean) ["thread"] thread_request
+postThread_ByBoardId' :: Int -> ThreadRequest -> ApiEff (Either ApiError ThreadResponse)
+postThread_ByBoardId' _ByBoardId thread_request = handleError <$> postAt [ByBoardId _ByBoardId] ["thread"] thread_request
 
 getThread :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadResponse)
 getThread params thread_id = handleError <$> getAt params ["thread", show thread_id]
@@ -411,6 +501,12 @@ getThreadPosts params = handleError <$> getAt params ["thread_posts"]
 
 getThreadPosts' :: ApiEff (Either ApiError ThreadPostResponses)
 getThreadPosts'  = handleError <$> getAt ([] :: Array Boolean) ["thread_posts"]
+
+getThreadPosts_ByThreadId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostResponses)
+getThreadPosts_ByThreadId params _ByThreadId = handleError <$> getAt (map qp params ++ map qp [ByThreadId _ByThreadId]) ["thread_posts"]
+
+getThreadPosts_ByThreadId' :: Int -> ApiEff (Either ApiError ThreadPostResponses)
+getThreadPosts_ByThreadId' _ByThreadId = handleError <$> getAt [ByThreadId _ByThreadId] ["thread_posts"]
 
 postThreadPost_ByThreadId :: forall qp. QueryParam qp => Array qp -> Int -> ThreadPostRequest -> ApiEff (Either ApiError ThreadPostResponse)
 postThreadPost_ByThreadId params _ByThreadId thread_post_request = handleError <$> postAt (map qp params ++ map qp [ByThreadId _ByThreadId]) ["thread_post"] thread_post_request
@@ -567,6 +663,12 @@ getThreadPacks_ByThreadsIds params _ByThreadsIds = handleError <$> getAt (map qp
 
 getThreadPacks_ByThreadsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPackResponses)
 getThreadPacks_ByThreadsIds' _ByThreadsIds = handleError <$> getAt [ByThreadsIds _ByThreadsIds] ["thread_packs"]
+
+getThreadPacks_ByBoardId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPackResponses)
+getThreadPacks_ByBoardId params _ByBoardId = handleError <$> getAt (map qp params ++ map qp [ByBoardId _ByBoardId]) ["thread_packs"]
+
+getThreadPacks_ByBoardId' :: Int -> ApiEff (Either ApiError ThreadPackResponses)
+getThreadPacks_ByBoardId' _ByBoardId = handleError <$> getAt [ByBoardId _ByBoardId] ["thread_packs"]
 
 getThreadPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPackResponse)
 getThreadPack params thread_id = handleError <$> getAt params ["thread_pack", show thread_id]
