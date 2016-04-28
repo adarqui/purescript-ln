@@ -13,7 +13,6 @@ instance paramQueryParam :: QueryParam Param where
   qp (ByUsersIds users_ids)              = Tuple "users_ids" (show users_ids)
   qp (ByUserNick nick)                   = Tuple "user_nick" (show nick)
   qp (ByUsersNicks nicks)                = Tuple "users_nicks" (show nicks)
-  qp (ByUsersSanitizedIds users_ids)     = Tuple "users_sanitized_ids" (show users_ids)
   qp (ByForumId forum_id)                = Tuple "forum_id" (show forum_id)
   qp (ByForumsIds forums_ids)            = Tuple "forums_ids" (show forums_ids)
   qp (ByBoardId board_id)                = Tuple "board_id" (show board_id)

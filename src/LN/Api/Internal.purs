@@ -610,16 +610,16 @@ getUserSanitizedPacks params = handleError <$> getAt params ["user_sanitized_pac
 getUserSanitizedPacks' :: ApiEff (Either ApiError UserSanitizedPackResponses)
 getUserSanitizedPacks'  = handleError <$> getAt ([] :: Array Boolean) ["user_sanitized_packs"]
 
-getUserSanitizedPacks_ByUsersSanitizedIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError UserSanitizedPackResponses)
-getUserSanitizedPacks_ByUsersSanitizedIds params _ByUsersSanitizedIds = handleError <$> getAt (map qp params ++ map qp [ByUsersSanitizedIds _ByUsersSanitizedIds]) ["user_sanitized_packs"]
+getUserSanitizedPacks_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError UserSanitizedPackResponses)
+getUserSanitizedPacks_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params ++ map qp [ByUsersIds _ByUsersIds]) ["user_sanitized_packs"]
 
-getUserSanitizedPacks_ByUsersSanitizedIds' :: (Array  Int) -> ApiEff (Either ApiError UserSanitizedPackResponses)
-getUserSanitizedPacks_ByUsersSanitizedIds' _ByUsersSanitizedIds = handleError <$> getAt [ByUsersSanitizedIds _ByUsersSanitizedIds] ["user_sanitized_packs"]
+getUserSanitizedPacks_ByUsersIds' :: (Array  Int) -> ApiEff (Either ApiError UserSanitizedPackResponses)
+getUserSanitizedPacks_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["user_sanitized_packs"]
 
 getUsersSanitizedPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError UserSanitizedPackResponse)
-getUsersSanitizedPack params user_sanitized_id = handleError <$> getAt params ["users_sanitized_pack", show user_sanitized_id]
+getUsersSanitizedPack params user_id = handleError <$> getAt params ["users_sanitized_pack", show user_id]
 
 getUsersSanitizedPack' :: Int -> ApiEff (Either ApiError UserSanitizedPackResponse)
-getUsersSanitizedPack' user_sanitized_id = handleError <$> getAt ([] :: Array Boolean) ["users_sanitized_pack", show user_sanitized_id]
+getUsersSanitizedPack' user_id = handleError <$> getAt ([] :: Array Boolean) ["users_sanitized_pack", show user_id]
 
 -- footer

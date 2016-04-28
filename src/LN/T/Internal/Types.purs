@@ -3559,7 +3559,6 @@ data Param
   | ByUsersIds (Array  Int)
   | ByUserNick String
   | ByUsersNicks (Array  String)
-  | ByUsersSanitizedIds (Array  Int)
   | ByForumId Int
   | ByForumsIds (Array  Int)
   | ByBoardId Int
@@ -3614,10 +3613,6 @@ instance paramEncodeJson :: EncodeJson Param where
     ~> jsonEmptyObject
   encodeJson (ByUsersNicks x0) =
        "tag" := "ByUsersNicks"
-    ~> "contents" := encodeJson x0
-    ~> jsonEmptyObject
-  encodeJson (ByUsersSanitizedIds x0) =
-       "tag" := "ByUsersSanitizedIds"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
   encodeJson (ByForumId x0) =
@@ -3699,10 +3694,6 @@ instance paramDecodeJson :: DecodeJson Param where
         "ByUsersNicks" -> do
           x0 <- obj .? "contents"
           ByUsersNicks <$> decodeJson x0
-
-        "ByUsersSanitizedIds" -> do
-          x0 <- obj .? "contents"
-          ByUsersSanitizedIds <$> decodeJson x0
 
         "ByForumId" -> do
           x0 <- obj .? "contents"
@@ -9182,7 +9173,6 @@ instance paramQueryParam :: QueryParam Param where
   qp (ByUsersIds users_ids)              = Tuple "users_ids" (show users_ids)
   qp (ByUserNick nick)                   = Tuple "user_nick" (show nick)
   qp (ByUsersNicks nicks)                = Tuple "users_nicks" (show nicks)
-  qp (ByUsersSanitizedIds users_ids)     = Tuple "users_sanitized_ids" (show users_ids)
   qp (ByForumId forum_id)                = Tuple "forum_id" (show forum_id)
   qp (ByForumsIds forums_ids)            = Tuple "forums_ids" (show forums_ids)
   qp (ByBoardId board_id)                = Tuple "board_id" (show board_id)
