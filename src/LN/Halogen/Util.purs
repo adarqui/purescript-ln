@@ -25,9 +25,8 @@ import Halogen.HTML.Properties as PX
 import Halogen.HTML.Properties.Indexed as P
 
 import Network.HTTP.Affjax (AJAX(), post, affjax, defaultRequest)
-import Network.HTTP.Method
-import Network.HTTP.MimeType
-import Network.HTTP.MimeType.Common
+--import Network.HTTP.MimeType
+--import Network.HTTP.MimeType.Common
 import Network.HTTP.RequestHeader
 
 import DOM.HTML.Location as DOM

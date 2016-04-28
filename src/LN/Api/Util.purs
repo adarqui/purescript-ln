@@ -13,8 +13,7 @@ import Network.HTTP.Affjax
 import Network.HTTP.Affjax as AJ
 import Network.HTTP.Affjax.Request
 import Network.HTTP.Affjax.Response
-import Network.HTTP.Method
-import Network.HTTP.MimeType
+--import Network.HTTP.MimeType
 import Network.HTTP.RequestHeader
 
 -- | `foreignToEither` converts an object corresponding to an Aeson encoded
@@ -59,6 +58,7 @@ readEither
     -> F (Either e a)
 readEither f = Right <$> read f <|> Left <$> read f
 
+{-
 -- | This method wraps the Affjax defaultRequest and specializes it for the
 -- | LN application. Other functions in the file build on top of the
 -- | functionality presented here.
@@ -70,7 +70,7 @@ qlReqHeaders h p r =
         AJ.defaultRequest
             { url = p
             , method = POST
-            , headers = h <> [ ContentType (MimeType "application/json") ]
+-- TODO FIXME            , headers = h <> [ ContentType (MimeType "application/json") ]
             , content = Just r
             }
 
@@ -85,3 +85,4 @@ qlAuth
     :: forall eff r a. (Respondable r, Requestable a)
     => String -> String -> a -> Aff (ajax :: AJAX | eff) (AJ.AffjaxResponse r)
 qlAuth token = qlReqHeaders [RequestHeader "auth" token]
+-}
