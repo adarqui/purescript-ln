@@ -8,7 +8,9 @@ instance paramQueryParam :: QueryParam Param where
   qp OrderDsc                            = Tuple "order" ("dsc")
   qp OrderRand                           = Tuple "order" ("rand")
   qp (OrderBy order)                     = Tuple "order_by" (show order)
+  qp (ByOrganizationId org_id)           = Tuple "organization_id" (show org_id)
   qp (ByOrganizationsIds orgs_ids)       = Tuple "organizations_ids" (show orgs_ids)
+  qp (ByOrganizationName org_name)       = Tuple "organization_name" org_name
   qp (ByUserId user_id)                  = Tuple "user_id" (show user_id)
   qp (ByUsersIds users_ids)              = Tuple "users_ids" (show users_ids)
   qp (ByUserNick nick)                   = Tuple "user_nick" (show nick)

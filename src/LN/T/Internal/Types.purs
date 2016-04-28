@@ -3554,7 +3554,9 @@ data Param
   | OrderDsc 
   | OrderRand 
   | OrderBy OrderBy
+  | ByOrganizationId Int
   | ByOrganizationsIds (Array  Int)
+  | ByOrganizationName String
   | ByUserId Int
   | ByUsersIds (Array  Int)
   | ByUserNick String
@@ -3595,8 +3597,16 @@ instance paramEncodeJson :: EncodeJson Param where
        "tag" := "OrderBy"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
+  encodeJson (ByOrganizationId x0) =
+       "tag" := "ByOrganizationId"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
   encodeJson (ByOrganizationsIds x0) =
        "tag" := "ByOrganizationsIds"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByOrganizationName x0) =
+       "tag" := "ByOrganizationName"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
   encodeJson (ByUserId x0) =
@@ -3675,9 +3685,17 @@ instance paramDecodeJson :: DecodeJson Param where
           x0 <- obj .? "contents"
           OrderBy <$> decodeJson x0
 
+        "ByOrganizationId" -> do
+          x0 <- obj .? "contents"
+          ByOrganizationId <$> decodeJson x0
+
         "ByOrganizationsIds" -> do
           x0 <- obj .? "contents"
           ByOrganizationsIds <$> decodeJson x0
+
+        "ByOrganizationName" -> do
+          x0 <- obj .? "contents"
+          ByOrganizationName <$> decodeJson x0
 
         "ByUserId" -> do
           x0 <- obj .? "contents"
@@ -9168,7 +9186,9 @@ instance paramQueryParam :: QueryParam Param where
   qp OrderDsc                            = Tuple "order" ("dsc")
   qp OrderRand                           = Tuple "order" ("rand")
   qp (OrderBy order)                     = Tuple "order_by" (show order)
+  qp (ByOrganizationId org_id)           = Tuple "organization_id" (show org_id)
   qp (ByOrganizationsIds orgs_ids)       = Tuple "organizations_ids" (show orgs_ids)
+  qp (ByOrganizationName org_name)       = Tuple "organization_name" org_name
   qp (ByUserId user_id)                  = Tuple "user_id" (show user_id)
   qp (ByUsersIds users_ids)              = Tuple "users_ids" (show users_ids)
   qp (ByUserNick nick)                   = Tuple "user_nick" (show nick)

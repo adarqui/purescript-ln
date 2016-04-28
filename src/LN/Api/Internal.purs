@@ -166,10 +166,10 @@ getForums params = handleError <$> getAt params ["forums"]
 getForums' :: ApiEff (Either ApiError ForumResponses)
 getForums'  = handleError <$> getAt ([] :: Array Boolean) ["forums"]
 
-getForums_ByOrganizationName :: forall qp. QueryParam qp => Array qp -> (Array  Char) -> ApiEff (Either ApiError ForumResponses)
+getForums_ByOrganizationName :: forall qp. QueryParam qp => Array qp -> String -> ApiEff (Either ApiError ForumResponses)
 getForums_ByOrganizationName params _ByOrganizationName = handleError <$> getAt (map qp params ++ map qp [ByOrganizationName _ByOrganizationName]) ["forums"]
 
-getForums_ByOrganizationName' :: (Array  Char) -> ApiEff (Either ApiError ForumResponses)
+getForums_ByOrganizationName' :: String -> ApiEff (Either ApiError ForumResponses)
 getForums_ByOrganizationName' _ByOrganizationName = handleError <$> getAt [ByOrganizationName _ByOrganizationName] ["forums"]
 
 getForums_ByForumsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ForumResponses)
