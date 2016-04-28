@@ -154,6 +154,18 @@ deleteLeuron params leuron_id = handleError <$> deleteAt params ["leuron", show 
 deleteLeuron' :: Int -> ApiEff (Either ApiError Unit)
 deleteLeuron' leuron_id = handleError <$> deleteAt ([] :: Array Boolean) ["leuron", show leuron_id]
 
+getMe :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError UserResponse)
+getMe params = handleError <$> getAt params ["me"]
+
+getMe' :: ApiEff (Either ApiError UserResponse)
+getMe'  = handleError <$> getAt ([] :: Array Boolean) ["me"]
+
+getMePack :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError UserPackResponse)
+getMePack params = handleError <$> getAt params ["me_pack"]
+
+getMePack' :: ApiEff (Either ApiError UserPackResponse)
+getMePack'  = handleError <$> getAt ([] :: Array Boolean) ["me_pack"]
+
 getOrganizations :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError OrganizationResponses)
 getOrganizations params = handleError <$> getAt params ["organizations"]
 
