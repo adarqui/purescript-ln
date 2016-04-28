@@ -82,11 +82,11 @@ getBoardStat params board_id = handleError <$> getAt params ["board_stat", show 
 getBoardStat' :: Int -> ApiEff (Either ApiError BoardStatResponse)
 getBoardStat' board_id = handleError <$> getAt ([] :: Array Boolean) ["board_stat", show board_id]
 
-getCountUsers :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
-getCountUsers params = handleError <$> getAt params ["count_users"]
+getUsersCount :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError CountResponses)
+getUsersCount params = handleError <$> getAt params ["users_count"]
 
-getCountUsers' :: ApiEff (Either ApiError CountResponses)
-getCountUsers'  = handleError <$> getAt ([] :: Array Boolean) ["count_users"]
+getUsersCount' :: ApiEff (Either ApiError CountResponses)
+getUsersCount'  = handleError <$> getAt ([] :: Array Boolean) ["users_count"]
 
 getForums :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ForumResponses)
 getForums params = handleError <$> getAt params ["forums"]
