@@ -9071,6 +9071,8 @@ workouts_ :: forall b a r. Lens { workouts :: a | r } { workouts :: b | r } a b
 workouts_ f o = o { workouts = _ } <$> f o.workouts
 
 -- footer
+
+
 instance paramQueryParam :: QueryParam Param where
   qp (Limit limit)                       = Tuple "limit" (show limit)
   qp (Offset offset)                     = Tuple "offset" (show offset)
