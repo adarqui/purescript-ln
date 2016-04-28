@@ -4650,6 +4650,12 @@ instance profileGenderShow :: Show ProfileGender where
   show (GenderUnknown) = "GenderUnknown"
 
 
+instance profileGenderEq :: Eq ProfileGender where
+  eq (GenderMale) (GenderMale) = true
+  eq (GenderFemale) (GenderFemale) = true
+  eq (GenderUnknown) (GenderUnknown) = true
+  eq _ _ = false
+
 newtype ProfileRequest = ProfileRequest {
   gender :: ProfileGender,
   birthdate :: Date,
