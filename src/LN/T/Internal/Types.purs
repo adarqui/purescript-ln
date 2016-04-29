@@ -1485,7 +1485,7 @@ instance forumStatResponsesShow :: Show ForumStatResponses where
     show (ForumStatResponses o) = show "forumStatResponses: " ++ show o.forumStatResponses
 
 newtype LeuronRequest = LeuronRequest {
-  data' :: LeuronData,
+  dataP :: LeuronData,
   title :: (Maybe String),
   description :: (Maybe String),
   section :: (Maybe String),
@@ -1501,7 +1501,7 @@ newtype LeuronRequest = LeuronRequest {
 
 
 _LeuronRequest :: LensP LeuronRequest {
-  data' :: LeuronData,
+  dataP :: LeuronData,
   title :: (Maybe String),
   description :: (Maybe String),
   section :: (Maybe String),
@@ -1518,8 +1518,8 @@ _LeuronRequest f (LeuronRequest o) = LeuronRequest <$> f o
 
 
 mkLeuronRequest :: LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (DepList String) -> (Maybe (Array  Splits)) -> (Maybe (Array  Substitutions)) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> LeuronRequest
-mkLeuronRequest data' title description section page examples strengths categories splits substitutions tags style =
-  LeuronRequest{data', title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style}
+mkLeuronRequest dataP title description section page examples strengths categories splits substitutions tags style =
+  LeuronRequest{dataP, title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style}
 
 
 unwrapLeuronRequest (LeuronRequest r) = r
@@ -1527,7 +1527,7 @@ unwrapLeuronRequest (LeuronRequest r) = r
 instance leuronRequestEncodeJson :: EncodeJson LeuronRequest where
   encodeJson (LeuronRequest o) =
        "tag" := "LeuronRequest"
-    ~> "data'" := o.data'
+    ~> "data_p" := o.dataP
     ~> "title" := o.title
     ~> "description" := o.description
     ~> "section" := o.section
@@ -1545,7 +1545,7 @@ instance leuronRequestEncodeJson :: EncodeJson LeuronRequest where
 instance leuronRequestDecodeJson :: DecodeJson LeuronRequest where
   decodeJson o = do
     obj <- decodeJson o
-    data' <- obj .? "data'"
+    dataP <- obj .? "data_p"
     title <- obj .? "title"
     description <- obj .? "description"
     section <- obj .? "section"
@@ -1558,7 +1558,7 @@ instance leuronRequestDecodeJson :: DecodeJson LeuronRequest where
     tags <- obj .? "tags"
     style <- obj .? "style"
     pure $ LeuronRequest {
-      data',
+      dataP,
       title,
       description,
       section,
@@ -1594,13 +1594,13 @@ instance leuronRequestIsForeign :: IsForeign LeuronRequest where
 
 
 instance leuronRequestShow :: Show LeuronRequest where
-    show (LeuronRequest o) = show "data': " ++ show o.data' ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "section: " ++ show o.section ++ ", " ++ show "page: " ++ show o.page ++ ", " ++ show "examples: " ++ show o.examples ++ ", " ++ show "strengths: " ++ show o.strengths ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "splits: " ++ show o.splits ++ ", " ++ show "substitutions: " ++ show o.substitutions ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "style: " ++ show o.style
+    show (LeuronRequest o) = show "dataP: " ++ show o.dataP ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "section: " ++ show o.section ++ ", " ++ show "page: " ++ show o.page ++ ", " ++ show "examples: " ++ show o.examples ++ ", " ++ show "strengths: " ++ show o.strengths ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "splits: " ++ show o.splits ++ ", " ++ show "substitutions: " ++ show o.substitutions ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "style: " ++ show o.style
 
 newtype LeuronResponse = LeuronResponse {
   id :: Int,
   userId :: Int,
   resourceId :: Int,
-  data' :: LeuronData,
+  dataP :: LeuronData,
   title :: (Maybe String),
   description :: (Maybe String),
   section :: (Maybe String),
@@ -1621,7 +1621,7 @@ _LeuronResponse :: LensP LeuronResponse {
   id :: Int,
   userId :: Int,
   resourceId :: Int,
-  data' :: LeuronData,
+  dataP :: LeuronData,
   title :: (Maybe String),
   description :: (Maybe String),
   section :: (Maybe String),
@@ -1640,8 +1640,8 @@ _LeuronResponse f (LeuronResponse o) = LeuronResponse <$> f o
 
 
 mkLeuronResponse :: Int -> Int -> Int -> LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (DepList String) -> (Maybe (Array  Splits)) -> (Maybe (Array  Substitutions)) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (Maybe Date) -> (Maybe Date) -> LeuronResponse
-mkLeuronResponse id userId resourceId data' title description section page examples strengths categories splits substitutions tags style createdAt modifiedAt =
-  LeuronResponse{id, userId, resourceId, data', title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style, createdAt, modifiedAt}
+mkLeuronResponse id userId resourceId dataP title description section page examples strengths categories splits substitutions tags style createdAt modifiedAt =
+  LeuronResponse{id, userId, resourceId, dataP, title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style, createdAt, modifiedAt}
 
 
 unwrapLeuronResponse (LeuronResponse r) = r
@@ -1652,7 +1652,7 @@ instance leuronResponseEncodeJson :: EncodeJson LeuronResponse where
     ~> "id" := o.id
     ~> "user_id" := o.userId
     ~> "resource_id" := o.resourceId
-    ~> "data'" := o.data'
+    ~> "data_p" := o.dataP
     ~> "title" := o.title
     ~> "description" := o.description
     ~> "section" := o.section
@@ -1675,7 +1675,7 @@ instance leuronResponseDecodeJson :: DecodeJson LeuronResponse where
     id <- obj .? "id"
     userId <- obj .? "user_id"
     resourceId <- obj .? "resource_id"
-    data' <- obj .? "data'"
+    dataP <- obj .? "data_p"
     title <- obj .? "title"
     description <- obj .? "description"
     section <- obj .? "section"
@@ -1693,7 +1693,7 @@ instance leuronResponseDecodeJson :: DecodeJson LeuronResponse where
       id,
       userId,
       resourceId,
-      data',
+      dataP,
       title,
       description,
       section,
@@ -1731,7 +1731,7 @@ instance leuronResponseIsForeign :: IsForeign LeuronResponse where
 
 
 instance leuronResponseShow :: Show LeuronResponse where
-    show (LeuronResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "resourceId: " ++ show o.resourceId ++ ", " ++ show "data': " ++ show o.data' ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "section: " ++ show o.section ++ ", " ++ show "page: " ++ show o.page ++ ", " ++ show "examples: " ++ show o.examples ++ ", " ++ show "strengths: " ++ show o.strengths ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "splits: " ++ show o.splits ++ ", " ++ show "substitutions: " ++ show o.substitutions ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "style: " ++ show o.style ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (LeuronResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "resourceId: " ++ show o.resourceId ++ ", " ++ show "dataP: " ++ show o.dataP ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "section: " ++ show o.section ++ ", " ++ show "page: " ++ show o.page ++ ", " ++ show "examples: " ++ show o.examples ++ ", " ++ show "strengths: " ++ show o.strengths ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "splits: " ++ show o.splits ++ ", " ++ show "substitutions: " ++ show o.substitutions ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "style: " ++ show o.style ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype LeuronResponses = LeuronResponses {
   leuronResponses :: (Array  LeuronResponse)
@@ -4907,19 +4907,19 @@ instance profileResponsesShow :: Show ProfileResponses where
     show (ProfileResponses o) = show "profileResponses: " ++ show o.profileResponses
 
 newtype ReminderRequest = ReminderRequest {
-  data' :: String
+  dataP :: String
 }
 
 
 _ReminderRequest :: LensP ReminderRequest {
-  data' :: String
+  dataP :: String
 }
 _ReminderRequest f (ReminderRequest o) = ReminderRequest <$> f o
 
 
 mkReminderRequest :: String -> ReminderRequest
-mkReminderRequest data' =
-  ReminderRequest{data'}
+mkReminderRequest dataP =
+  ReminderRequest{dataP}
 
 
 unwrapReminderRequest (ReminderRequest r) = r
@@ -4927,16 +4927,16 @@ unwrapReminderRequest (ReminderRequest r) = r
 instance reminderRequestEncodeJson :: EncodeJson ReminderRequest where
   encodeJson (ReminderRequest o) =
        "tag" := "ReminderRequest"
-    ~> "data'" := o.data'
+    ~> "data_p" := o.dataP
     ~> jsonEmptyObject
 
 
 instance reminderRequestDecodeJson :: DecodeJson ReminderRequest where
   decodeJson o = do
     obj <- decodeJson o
-    data' <- obj .? "data'"
+    dataP <- obj .? "data_p"
     pure $ ReminderRequest {
-      data'
+      dataP
     }
 
 
@@ -4961,13 +4961,13 @@ instance reminderRequestIsForeign :: IsForeign ReminderRequest where
 
 
 instance reminderRequestShow :: Show ReminderRequest where
-    show (ReminderRequest o) = show "data': " ++ show o.data'
+    show (ReminderRequest o) = show "dataP: " ++ show o.dataP
 
 newtype ReminderResponse = ReminderResponse {
   id :: Int,
   userId :: Int,
   parentFolderId :: Int,
-  data' :: String,
+  dataP :: String,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
@@ -4977,7 +4977,7 @@ _ReminderResponse :: LensP ReminderResponse {
   id :: Int,
   userId :: Int,
   parentFolderId :: Int,
-  data' :: String,
+  dataP :: String,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
@@ -4985,8 +4985,8 @@ _ReminderResponse f (ReminderResponse o) = ReminderResponse <$> f o
 
 
 mkReminderResponse :: Int -> Int -> Int -> String -> (Maybe Date) -> (Maybe Date) -> ReminderResponse
-mkReminderResponse id userId parentFolderId data' createdAt modifiedAt =
-  ReminderResponse{id, userId, parentFolderId, data', createdAt, modifiedAt}
+mkReminderResponse id userId parentFolderId dataP createdAt modifiedAt =
+  ReminderResponse{id, userId, parentFolderId, dataP, createdAt, modifiedAt}
 
 
 unwrapReminderResponse (ReminderResponse r) = r
@@ -4997,7 +4997,7 @@ instance reminderResponseEncodeJson :: EncodeJson ReminderResponse where
     ~> "id" := o.id
     ~> "user_id" := o.userId
     ~> "parent_folder_id" := o.parentFolderId
-    ~> "data'" := o.data'
+    ~> "data_p" := o.dataP
     ~> "created_at" := o.createdAt
     ~> "modified_at" := o.modifiedAt
     ~> jsonEmptyObject
@@ -5009,14 +5009,14 @@ instance reminderResponseDecodeJson :: DecodeJson ReminderResponse where
     id <- obj .? "id"
     userId <- obj .? "user_id"
     parentFolderId <- obj .? "parent_folder_id"
-    data' <- obj .? "data'"
+    dataP <- obj .? "data_p"
     createdAt <- obj .? "created_at"
     modifiedAt <- obj .? "modified_at"
     pure $ ReminderResponse {
       id,
       userId,
       parentFolderId,
-      data',
+      dataP,
       createdAt,
       modifiedAt
     }
@@ -5043,7 +5043,7 @@ instance reminderResponseIsForeign :: IsForeign ReminderResponse where
 
 
 instance reminderResponseShow :: Show ReminderResponse where
-    show (ReminderResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "parentFolderId: " ++ show o.parentFolderId ++ ", " ++ show "data': " ++ show o.data' ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (ReminderResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "parentFolderId: " ++ show o.parentFolderId ++ ", " ++ show "dataP: " ++ show o.dataP ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype ReminderResponses = ReminderResponses {
   reminderResponses :: (Array  ReminderResponse)
@@ -8617,8 +8617,8 @@ createdAt_ :: forall b a r. Lens { createdAt :: a | r } { createdAt :: b | r } a
 createdAt_ f o = o { createdAt = _ } <$> f o.createdAt
 
 
-data'_ :: forall b a r. Lens { data' :: a | r } { data' :: b | r } a b
-data'_ f o = o { data' = _ } <$> f o.data'
+dataP_ :: forall b a r. Lens { dataP :: a | r } { dataP :: b | r } a b
+dataP_ f o = o { dataP = _ } <$> f o.dataP
 
 
 dcardBack_ :: forall b a r. Lens { dcardBack :: a | r } { dcardBack :: b | r } a b
