@@ -997,6 +997,7 @@ instance emptyRequestRespondable :: Respondable EmptyRequest where
 instance emptyRequestIsForeign :: IsForeign EmptyRequest where
   read = Right <<< unsafeFromForeign
 
+
 {-
 instance emptyRequestRespondable :: Respondable EmptyRequest where
   responseType =
@@ -1079,15 +1080,11 @@ instance emptyResponseRequestable :: Requestable EmptyResponse where
 instance emptyResponseRespondable :: Respondable EmptyResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance emptyResponseIsForeign :: IsForeign EmptyResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance emptyResponseShow :: Show EmptyResponse where
