@@ -10,6 +10,36 @@ import Prelude
 import Data.Either
 import LN.T.Internal.Types
 
+getEmptys :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError EmptyResponses)
+getEmptys params = handleError <$> getAt params ["emptys"]
+
+getEmptys' :: ApiEff (Either ApiError EmptyResponses)
+getEmptys'  = handleError <$> getAt ([] :: Array Boolean) ["emptys"]
+
+postEmpty :: forall qp. QueryParam qp => Array qp -> EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
+postEmpty params empty_request = handleError <$> postAt params ["empty"] empty_request
+
+postEmpty' :: EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
+postEmpty' empty_request = handleError <$> postAt ([] :: Array Boolean) ["empty"] empty_request
+
+getEmpty :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError EmptyResponse)
+getEmpty params empty_id = handleError <$> getAt params ["empty", show empty_id]
+
+getEmpty' :: Int -> ApiEff (Either ApiError EmptyResponse)
+getEmpty' empty_id = handleError <$> getAt ([] :: Array Boolean) ["empty", show empty_id]
+
+putEmpty :: forall qp. QueryParam qp => Array qp -> Int -> EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
+putEmpty params empty_id empty_request = handleError <$> putAt params ["empty", show empty_id] empty_request
+
+putEmpty' :: Int -> EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
+putEmpty' empty_id empty_request = handleError <$> putAt ([] :: Array Boolean) ["empty", show empty_id] empty_request
+
+deleteEmpty :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError Unit)
+deleteEmpty params empty_id = handleError <$> deleteAt params ["empty", show empty_id]
+
+deleteEmpty' :: Int -> ApiEff (Either ApiError Unit)
+deleteEmpty' empty_id = handleError <$> deleteAt ([] :: Array Boolean) ["empty", show empty_id]
+
 getApis :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ApiResponses)
 getApis params = handleError <$> getAt params ["apis"]
 
