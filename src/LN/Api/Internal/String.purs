@@ -22,40 +22,22 @@ getOrganization params organization_name = handleError <$> getAt params ["organi
 getOrganization' :: String -> ApiEff (Either ApiError OrganizationResponse)
 getOrganization' organization_name = handleError <$> getAt ([] :: Array Boolean) ["organization", show organization_name]
 
-getForum :: forall qp. QueryParam qp => Array qp -> String -> ApiEff (Either ApiError ForumResponse)
-getForum params forum_name = handleError <$> getAt params ["forum", show forum_name]
+getForum_ByOrganizationName :: forall qp. QueryParam qp => Array qp -> String -> String -> ApiEff (Either ApiError ForumResponse)
+getForum_ByOrganizationName params forum_name _ByOrganizationName = handleError <$> getAt (map qp params ++ map qp [ByOrganizationName _ByOrganizationName]) ["forum", show forum_name]
 
-getForum' :: String -> ApiEff (Either ApiError ForumResponse)
-getForum' forum_name = handleError <$> getAt ([] :: Array Boolean) ["forum", show forum_name]
+getForum_ByOrganizationName' :: String -> String -> ApiEff (Either ApiError ForumResponse)
+getForum_ByOrganizationName' forum_name _ByOrganizationName = handleError <$> getAt [ByOrganizationName _ByOrganizationName] ["forum", show forum_name]
 
-getForum_ByOrganizationName :: forall qp. QueryParam qp => Array qp -> String -> ApiEff (Either ApiError ForumResponse)
-getForum_ByOrganizationName params _ByOrganizationName = handleError <$> getAt (map qp params ++ map qp [ByOrganizationName _ByOrganizationName]) ["forum"]
+getBoard_ByForumId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError BoardResponse)
+getBoard_ByForumId params board_name _ByForumId = handleError <$> getAt (map qp params ++ map qp [ByForumId _ByForumId]) ["board", show board_name]
 
-getForum_ByOrganizationName' :: String -> ApiEff (Either ApiError ForumResponse)
-getForum_ByOrganizationName' _ByOrganizationName = handleError <$> getAt [ByOrganizationName _ByOrganizationName] ["forum"]
+getBoard_ByForumId' :: String -> Int -> ApiEff (Either ApiError BoardResponse)
+getBoard_ByForumId' board_name _ByForumId = handleError <$> getAt [ByForumId _ByForumId] ["board", show board_name]
 
-getBoard :: forall qp. QueryParam qp => Array qp -> String -> ApiEff (Either ApiError BoardResponse)
-getBoard params board_name = handleError <$> getAt params ["board", show board_name]
+getThread_ByBoardId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError ThreadResponse)
+getThread_ByBoardId params thread_name _ByBoardId = handleError <$> getAt (map qp params ++ map qp [ByBoardId _ByBoardId]) ["thread", show thread_name]
 
-getBoard' :: String -> ApiEff (Either ApiError BoardResponse)
-getBoard' board_name = handleError <$> getAt ([] :: Array Boolean) ["board", show board_name]
-
-getBoard_ByForumId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError BoardResponse)
-getBoard_ByForumId params _ByForumId = handleError <$> getAt (map qp params ++ map qp [ByForumId _ByForumId]) ["board"]
-
-getBoard_ByForumId' :: Int -> ApiEff (Either ApiError BoardResponse)
-getBoard_ByForumId' _ByForumId = handleError <$> getAt [ByForumId _ByForumId] ["board"]
-
-getThread :: forall qp. QueryParam qp => Array qp -> String -> ApiEff (Either ApiError ThreadResponse)
-getThread params thread_name = handleError <$> getAt params ["thread", show thread_name]
-
-getThread' :: String -> ApiEff (Either ApiError ThreadResponse)
-getThread' thread_name = handleError <$> getAt ([] :: Array Boolean) ["thread", show thread_name]
-
-getThread_ByBoardId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadResponse)
-getThread_ByBoardId params _ByBoardId = handleError <$> getAt (map qp params ++ map qp [ByBoardId _ByBoardId]) ["thread"]
-
-getThread_ByBoardId' :: Int -> ApiEff (Either ApiError ThreadResponse)
-getThread_ByBoardId' _ByBoardId = handleError <$> getAt [ByBoardId _ByBoardId] ["thread"]
+getThread_ByBoardId' :: String -> Int -> ApiEff (Either ApiError ThreadResponse)
+getThread_ByBoardId' thread_name _ByBoardId = handleError <$> getAt [ByBoardId _ByBoardId] ["thread", show thread_name]
 
 -- footer
