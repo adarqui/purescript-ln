@@ -9,7 +9,7 @@ import Data.Argonaut.Encode
 import Data.Argonaut.Printer
 import Data.Date.Helpers
 import Data.Either
-import Data.Foreign
+import Data.Foreign (unsafeFromForeign)
 import Data.Foreign.Class
 import Data.JSON
 import Data.List (List ())
@@ -67,15 +67,11 @@ instance apiRequestRequestable :: Requestable ApiRequest where
 instance apiRequestRespondable :: Respondable ApiRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance apiRequestIsForeign :: IsForeign ApiRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance apiRequestShow :: Show ApiRequest where
@@ -149,15 +145,11 @@ instance apiResponseRequestable :: Requestable ApiResponse where
 instance apiResponseRespondable :: Respondable ApiResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance apiResponseIsForeign :: IsForeign ApiResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance apiResponseShow :: Show ApiResponse where
@@ -206,15 +198,11 @@ instance apiResponsesRequestable :: Requestable ApiResponses where
 instance apiResponsesRespondable :: Respondable ApiResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance apiResponsesIsForeign :: IsForeign ApiResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance apiResponsesShow :: Show ApiResponses where
@@ -268,15 +256,11 @@ instance boardRequestRequestable :: Requestable BoardRequest where
 instance boardRequestRespondable :: Respondable BoardRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance boardRequestIsForeign :: IsForeign BoardRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance boardRequestShow :: Show BoardRequest where
@@ -365,15 +349,11 @@ instance boardResponseRequestable :: Requestable BoardResponse where
 instance boardResponseRespondable :: Respondable BoardResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance boardResponseIsForeign :: IsForeign BoardResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance boardResponseShow :: Show BoardResponse where
@@ -422,15 +402,11 @@ instance boardResponsesRequestable :: Requestable BoardResponses where
 instance boardResponsesRespondable :: Respondable BoardResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance boardResponsesIsForeign :: IsForeign BoardResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance boardResponsesShow :: Show BoardResponses where
@@ -494,15 +470,11 @@ instance boardStatResponseRequestable :: Requestable BoardStatResponse where
 instance boardStatResponseRespondable :: Respondable BoardStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance boardStatResponseIsForeign :: IsForeign BoardStatResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance boardStatResponseShow :: Show BoardStatResponse where
@@ -551,15 +523,11 @@ instance boardStatResponsesRequestable :: Requestable BoardStatResponses where
 instance boardStatResponsesRespondable :: Respondable BoardStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance boardStatResponsesIsForeign :: IsForeign BoardStatResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance boardStatResponsesShow :: Show BoardStatResponses where
@@ -643,15 +611,11 @@ instance bucketRequestRequestable :: Requestable BucketRequest where
 instance bucketRequestRespondable :: Respondable BucketRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance bucketRequestIsForeign :: IsForeign BucketRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance bucketRequestShow :: Show BucketRequest where
@@ -755,15 +719,11 @@ instance bucketResponseRequestable :: Requestable BucketResponse where
 instance bucketResponseRespondable :: Respondable BucketResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance bucketResponseIsForeign :: IsForeign BucketResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance bucketResponseShow :: Show BucketResponse where
@@ -812,15 +772,11 @@ instance bucketResponsesRequestable :: Requestable BucketResponses where
 instance bucketResponsesRespondable :: Respondable BucketResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance bucketResponsesIsForeign :: IsForeign BucketResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance bucketResponsesShow :: Show BucketResponses where
@@ -874,15 +830,11 @@ instance countResponseRequestable :: Requestable CountResponse where
 instance countResponseRespondable :: Respondable CountResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance countResponseIsForeign :: IsForeign CountResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance countResponseShow :: Show CountResponse where
@@ -931,15 +883,11 @@ instance countResponsesRequestable :: Requestable CountResponses where
 instance countResponsesRespondable :: Respondable CountResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance countResponsesIsForeign :: IsForeign CountResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance countResponsesShow :: Show CountResponses where
@@ -996,22 +944,6 @@ instance emptyRequestRespondable :: Respondable EmptyRequest where
 
 instance emptyRequestIsForeign :: IsForeign EmptyRequest where
   read = Right <<< unsafeFromForeign
-
-
-{-
-instance emptyRequestRespondable :: Respondable EmptyRequest where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
-
-
-instance emptyRequestIsForeign :: IsForeign EmptyRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
-    -}
 
 
 instance emptyRequestShow :: Show EmptyRequest where
@@ -1133,15 +1065,11 @@ instance emptyResponsesRequestable :: Requestable EmptyResponses where
 instance emptyResponsesRespondable :: Respondable EmptyResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance emptyResponsesIsForeign :: IsForeign EmptyResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance emptyResponsesShow :: Show EmptyResponses where
@@ -1195,15 +1123,11 @@ instance forumRequestRequestable :: Requestable ForumRequest where
 instance forumRequestRespondable :: Respondable ForumRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance forumRequestIsForeign :: IsForeign ForumRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance forumRequestShow :: Show ForumRequest where
@@ -1287,15 +1211,11 @@ instance forumResponseRequestable :: Requestable ForumResponse where
 instance forumResponseRespondable :: Respondable ForumResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance forumResponseIsForeign :: IsForeign ForumResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance forumResponseShow :: Show ForumResponse where
@@ -1344,15 +1264,11 @@ instance forumResponsesRequestable :: Requestable ForumResponses where
 instance forumResponsesRespondable :: Respondable ForumResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance forumResponsesIsForeign :: IsForeign ForumResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance forumResponsesShow :: Show ForumResponses where
@@ -1421,15 +1337,11 @@ instance forumStatResponseRequestable :: Requestable ForumStatResponse where
 instance forumStatResponseRespondable :: Respondable ForumStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance forumStatResponseIsForeign :: IsForeign ForumStatResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance forumStatResponseShow :: Show ForumStatResponse where
@@ -1478,15 +1390,11 @@ instance forumStatResponsesRequestable :: Requestable ForumStatResponses where
 instance forumStatResponsesRespondable :: Respondable ForumStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance forumStatResponsesIsForeign :: IsForeign ForumStatResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance forumStatResponsesShow :: Show ForumStatResponses where
@@ -1590,15 +1498,11 @@ instance leuronRequestRequestable :: Requestable LeuronRequest where
 instance leuronRequestRespondable :: Respondable LeuronRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance leuronRequestIsForeign :: IsForeign LeuronRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance leuronRequestShow :: Show LeuronRequest where
@@ -1727,15 +1631,11 @@ instance leuronResponseRequestable :: Requestable LeuronResponse where
 instance leuronResponseRespondable :: Respondable LeuronResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance leuronResponseIsForeign :: IsForeign LeuronResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance leuronResponseShow :: Show LeuronResponse where
@@ -1784,15 +1684,11 @@ instance leuronResponsesRequestable :: Requestable LeuronResponses where
 instance leuronResponsesRespondable :: Respondable LeuronResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance leuronResponsesIsForeign :: IsForeign LeuronResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance leuronResponsesShow :: Show LeuronResponses where
@@ -1964,15 +1860,11 @@ instance leuronDataRequestable :: Requestable LeuronData where
 instance leuronDataRespondable :: Respondable LeuronData where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance leuronDataIsForeign :: IsForeign LeuronData where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance leuronDataShow :: Show LeuronData where
@@ -2037,15 +1929,11 @@ instance factRequestable :: Requestable Fact where
 instance factRespondable :: Respondable Fact where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance factIsForeign :: IsForeign Fact where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance factShow :: Show Fact where
@@ -2099,15 +1987,11 @@ instance factListRequestable :: Requestable FactList where
 instance factListRespondable :: Respondable FactList where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance factListIsForeign :: IsForeign FactList where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance factListShow :: Show FactList where
@@ -2161,15 +2045,11 @@ instance cardRequestable :: Requestable Card where
 instance cardRespondable :: Respondable Card where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance cardIsForeign :: IsForeign Card where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance cardShow :: Show Card where
@@ -2223,15 +2103,11 @@ instance dCardRequestable :: Requestable DCard where
 instance dCardRespondable :: Respondable DCard where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance dCardIsForeign :: IsForeign DCard where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance dCardShow :: Show DCard where
@@ -2285,15 +2161,11 @@ instance dCardXRequestable :: Requestable DCardX where
 instance dCardXRespondable :: Respondable DCardX where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance dCardXIsForeign :: IsForeign DCardX where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance dCardXShow :: Show DCardX where
@@ -2347,15 +2219,11 @@ instance acronymRequestable :: Requestable Acronym where
 instance acronymRespondable :: Respondable Acronym where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance acronymIsForeign :: IsForeign Acronym where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance acronymShow :: Show Acronym where
@@ -2409,15 +2277,11 @@ instance synonymRequestable :: Requestable Synonym where
 instance synonymRespondable :: Respondable Synonym where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance synonymIsForeign :: IsForeign Synonym where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance synonymShow :: Show Synonym where
@@ -2471,15 +2335,11 @@ instance antonymRequestable :: Requestable Antonym where
 instance antonymRespondable :: Respondable Antonym where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance antonymIsForeign :: IsForeign Antonym where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance antonymShow :: Show Antonym where
@@ -2533,15 +2393,11 @@ instance templateRequestable :: Requestable Template where
 instance templateRespondable :: Respondable Template where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance templateIsForeign :: IsForeign Template where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance templateShow :: Show Template where
@@ -2603,15 +2459,11 @@ instance imageAssociationRequestable :: Requestable ImageAssociation where
 instance imageAssociationRespondable :: Respondable ImageAssociation where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance imageAssociationIsForeign :: IsForeign ImageAssociation where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance imageAssociationShow :: Show ImageAssociation where
@@ -2670,15 +2522,11 @@ instance scriptRequestable :: Requestable Script where
 instance scriptRespondable :: Respondable Script where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance scriptIsForeign :: IsForeign Script where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance scriptShow :: Show Script where
@@ -2741,15 +2589,11 @@ instance linearDemoRequestable :: Requestable LinearDemo where
 instance linearDemoRespondable :: Respondable LinearDemo where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance linearDemoIsForeign :: IsForeign LinearDemo where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance linearDemoShow :: Show LinearDemo where
@@ -2803,15 +2647,11 @@ instance qARequestable :: Requestable QA where
 instance qARespondable :: Respondable QA where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance qAIsForeign :: IsForeign QA where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance qAShow :: Show QA where
@@ -2870,15 +2710,11 @@ instance tableRequestable :: Requestable Table where
 instance tableRespondable :: Respondable Table where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance tableIsForeign :: IsForeign Table where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance tableShow :: Show Table where
@@ -2932,15 +2768,11 @@ instance likeRequestRequestable :: Requestable LikeRequest where
 instance likeRequestRespondable :: Respondable LikeRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance likeRequestIsForeign :: IsForeign LikeRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance likeRequestShow :: Show LikeRequest where
@@ -3029,15 +2861,11 @@ instance likeResponseRequestable :: Requestable LikeResponse where
 instance likeResponseRespondable :: Respondable LikeResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance likeResponseIsForeign :: IsForeign LikeResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance likeResponseShow :: Show LikeResponse where
@@ -3086,15 +2914,11 @@ instance likeResponsesRequestable :: Requestable LikeResponses where
 instance likeResponsesRespondable :: Respondable LikeResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance likeResponsesIsForeign :: IsForeign LikeResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance likeResponsesShow :: Show LikeResponses where
@@ -3148,15 +2972,11 @@ instance likeOptRequestable :: Requestable LikeOpt where
 instance likeOptRespondable :: Respondable LikeOpt where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance likeOptIsForeign :: IsForeign LikeOpt where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance likeOptShow :: Show LikeOpt where
@@ -3228,15 +3048,11 @@ instance organizationRequestRequestable :: Requestable OrganizationRequest where
 instance organizationRequestRespondable :: Respondable OrganizationRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationRequestIsForeign :: IsForeign OrganizationRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance organizationRequestShow :: Show OrganizationRequest where
@@ -3335,15 +3151,11 @@ instance organizationResponseRequestable :: Requestable OrganizationResponse whe
 instance organizationResponseRespondable :: Respondable OrganizationResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationResponseIsForeign :: IsForeign OrganizationResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance organizationResponseShow :: Show OrganizationResponse where
@@ -3392,15 +3204,11 @@ instance organizationResponsesRequestable :: Requestable OrganizationResponses w
 instance organizationResponsesRespondable :: Respondable OrganizationResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationResponsesIsForeign :: IsForeign OrganizationResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance organizationResponsesShow :: Show OrganizationResponses where
@@ -3484,15 +3292,11 @@ instance organizationStatResponseRequestable :: Requestable OrganizationStatResp
 instance organizationStatResponseRespondable :: Respondable OrganizationStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationStatResponseIsForeign :: IsForeign OrganizationStatResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance organizationStatResponseShow :: Show OrganizationStatResponse where
@@ -3541,15 +3345,11 @@ instance organizationStatResponsesRequestable :: Requestable OrganizationStatRes
 instance organizationStatResponsesRespondable :: Respondable OrganizationStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationStatResponsesIsForeign :: IsForeign OrganizationStatResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance organizationStatResponsesShow :: Show OrganizationStatResponses where
@@ -3765,15 +3565,11 @@ instance paramRequestable :: Requestable Param where
 instance paramRespondable :: Respondable Param where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance paramIsForeign :: IsForeign Param where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 data OrderBy
@@ -3896,15 +3692,11 @@ instance orderByRequestable :: Requestable OrderBy where
 instance orderByRespondable :: Respondable OrderBy where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance orderByIsForeign :: IsForeign OrderBy where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 newtype PmRequest = PmRequest {
@@ -3955,15 +3747,11 @@ instance pmRequestRequestable :: Requestable PmRequest where
 instance pmRequestRespondable :: Respondable PmRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance pmRequestIsForeign :: IsForeign PmRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance pmRequestShow :: Show PmRequest where
@@ -4042,15 +3830,11 @@ instance pmResponseRequestable :: Requestable PmResponse where
 instance pmResponseRespondable :: Respondable PmResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance pmResponseIsForeign :: IsForeign PmResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance pmResponseShow :: Show PmResponse where
@@ -4099,15 +3883,11 @@ instance pmResponsesRequestable :: Requestable PmResponses where
 instance pmResponsesRespondable :: Respondable PmResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance pmResponsesIsForeign :: IsForeign PmResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance pmResponsesShow :: Show PmResponses where
@@ -4166,15 +3946,11 @@ instance pmInRequestRequestable :: Requestable PmInRequest where
 instance pmInRequestRespondable :: Respondable PmInRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance pmInRequestIsForeign :: IsForeign PmInRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance pmInRequestShow :: Show PmInRequest where
@@ -4268,15 +4044,11 @@ instance pmInResponseRequestable :: Requestable PmInResponse where
 instance pmInResponseRespondable :: Respondable PmInResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance pmInResponseIsForeign :: IsForeign PmInResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance pmInResponseShow :: Show PmInResponse where
@@ -4325,15 +4097,11 @@ instance pmInResponsesRequestable :: Requestable PmInResponses where
 instance pmInResponsesRespondable :: Respondable PmInResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance pmInResponsesIsForeign :: IsForeign PmInResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance pmInResponsesShow :: Show PmInResponses where
@@ -4382,15 +4150,11 @@ instance pmOutRequestRequestable :: Requestable PmOutRequest where
 instance pmOutRequestRespondable :: Respondable PmOutRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance pmOutRequestIsForeign :: IsForeign PmOutRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance pmOutRequestShow :: Show PmOutRequest where
@@ -4469,15 +4233,11 @@ instance pmOutResponseRequestable :: Requestable PmOutResponse where
 instance pmOutResponseRespondable :: Respondable PmOutResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance pmOutResponseIsForeign :: IsForeign PmOutResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance pmOutResponseShow :: Show PmOutResponse where
@@ -4526,15 +4286,11 @@ instance pmOutResponsesRequestable :: Requestable PmOutResponses where
 instance pmOutResponsesRespondable :: Respondable PmOutResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance pmOutResponsesIsForeign :: IsForeign PmOutResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance pmOutResponsesShow :: Show PmOutResponses where
@@ -4588,15 +4344,11 @@ instance profileXRequestable :: Requestable ProfileX where
 instance profileXRespondable :: Respondable ProfileX where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance profileXIsForeign :: IsForeign ProfileX where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance profileXShow :: Show ProfileX where
@@ -4650,15 +4402,11 @@ instance profileGenderRequestable :: Requestable ProfileGender where
 instance profileGenderRespondable :: Respondable ProfileGender where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance profileGenderIsForeign :: IsForeign ProfileGender where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance profileGenderShow :: Show ProfileGender where
@@ -4736,15 +4484,11 @@ instance profileRequestRequestable :: Requestable ProfileRequest where
 instance profileRequestRespondable :: Respondable ProfileRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance profileRequestIsForeign :: IsForeign ProfileRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance profileRequestShow :: Show ProfileRequest where
@@ -4843,15 +4587,11 @@ instance profileResponseRequestable :: Requestable ProfileResponse where
 instance profileResponseRespondable :: Respondable ProfileResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance profileResponseIsForeign :: IsForeign ProfileResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance profileResponseShow :: Show ProfileResponse where
@@ -4900,15 +4640,11 @@ instance profileResponsesRequestable :: Requestable ProfileResponses where
 instance profileResponsesRespondable :: Respondable ProfileResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance profileResponsesIsForeign :: IsForeign ProfileResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance profileResponsesShow :: Show ProfileResponses where
@@ -4957,15 +4693,11 @@ instance reminderRequestRequestable :: Requestable ReminderRequest where
 instance reminderRequestRespondable :: Respondable ReminderRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance reminderRequestIsForeign :: IsForeign ReminderRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance reminderRequestShow :: Show ReminderRequest where
@@ -5039,15 +4771,11 @@ instance reminderResponseRequestable :: Requestable ReminderResponse where
 instance reminderResponseRespondable :: Respondable ReminderResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance reminderResponseIsForeign :: IsForeign ReminderResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance reminderResponseShow :: Show ReminderResponse where
@@ -5096,15 +4824,11 @@ instance reminderResponsesRequestable :: Requestable ReminderResponses where
 instance reminderResponsesRespondable :: Respondable ReminderResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance reminderResponsesIsForeign :: IsForeign ReminderResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance reminderResponsesShow :: Show ReminderResponses where
@@ -5163,15 +4887,11 @@ instance reminderFolderRequestRequestable :: Requestable ReminderFolderRequest w
 instance reminderFolderRequestRespondable :: Respondable ReminderFolderRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance reminderFolderRequestIsForeign :: IsForeign ReminderFolderRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance reminderFolderRequestShow :: Show ReminderFolderRequest where
@@ -5255,15 +4975,11 @@ instance reminderFolderResponseRequestable :: Requestable ReminderFolderResponse
 instance reminderFolderResponseRespondable :: Respondable ReminderFolderResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance reminderFolderResponseIsForeign :: IsForeign ReminderFolderResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance reminderFolderResponseShow :: Show ReminderFolderResponse where
@@ -5312,15 +5028,11 @@ instance reminderFolderResponsesRequestable :: Requestable ReminderFolderRespons
 instance reminderFolderResponsesRespondable :: Respondable ReminderFolderResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance reminderFolderResponsesIsForeign :: IsForeign ReminderFolderResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance reminderFolderResponsesShow :: Show ReminderFolderResponses where
@@ -5394,15 +5106,11 @@ instance resourceTypeRequestable :: Requestable ResourceType where
 instance resourceTypeRespondable :: Respondable ResourceType where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance resourceTypeIsForeign :: IsForeign ResourceType where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance resourceTypeShow :: Show ResourceType where
@@ -5501,15 +5209,11 @@ instance resourceRequestRequestable :: Requestable ResourceRequest where
 instance resourceRequestRespondable :: Respondable ResourceRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance resourceRequestIsForeign :: IsForeign ResourceRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance resourceRequestShow :: Show ResourceRequest where
@@ -5623,15 +5327,11 @@ instance resourceResponseRequestable :: Requestable ResourceResponse where
 instance resourceResponseRespondable :: Respondable ResourceResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance resourceResponseIsForeign :: IsForeign ResourceResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance resourceResponseShow :: Show ResourceResponse where
@@ -5680,15 +5380,11 @@ instance resourceResponsesRequestable :: Requestable ResourceResponses where
 instance resourceResponsesRespondable :: Respondable ResourceResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance resourceResponsesIsForeign :: IsForeign ResourceResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance resourceResponsesShow :: Show ResourceResponses where
@@ -5758,15 +5454,11 @@ instance sizeRequestable :: Requestable Size where
 instance sizeRespondable :: Respondable Size where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance sizeIsForeign :: IsForeign Size where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance sizeShow :: Show Size where
@@ -5826,15 +5518,11 @@ instance splitsRequestable :: Requestable Splits where
 instance splitsRespondable :: Respondable Splits where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance splitsIsForeign :: IsForeign Splits where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance splitsShow :: Show Splits where
@@ -5902,15 +5590,11 @@ instance substitutionsRequestable :: Requestable Substitutions where
 instance substitutionsRespondable :: Respondable Substitutions where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance substitutionsIsForeign :: IsForeign Substitutions where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance substitutionsShow :: Show Substitutions where
@@ -5968,15 +5652,11 @@ instance teamRequestRequestable :: Requestable TeamRequest where
 instance teamRequestRespondable :: Respondable TeamRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance teamRequestIsForeign :: IsForeign TeamRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance teamRequestShow :: Show TeamRequest where
@@ -6060,15 +5740,11 @@ instance teamResponseRequestable :: Requestable TeamResponse where
 instance teamResponseRespondable :: Respondable TeamResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance teamResponseIsForeign :: IsForeign TeamResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance teamResponseShow :: Show TeamResponse where
@@ -6117,15 +5793,11 @@ instance teamResponsesRequestable :: Requestable TeamResponses where
 instance teamResponsesRespondable :: Respondable TeamResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance teamResponsesIsForeign :: IsForeign TeamResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance teamResponsesShow :: Show TeamResponses where
@@ -6174,15 +5846,11 @@ instance testRequestRequestable :: Requestable TestRequest where
 instance testRequestRespondable :: Respondable TestRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance testRequestIsForeign :: IsForeign TestRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance testRequestShow :: Show TestRequest where
@@ -6251,15 +5919,11 @@ instance testResponseRequestable :: Requestable TestResponse where
 instance testResponseRespondable :: Respondable TestResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance testResponseIsForeign :: IsForeign TestResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance testResponseShow :: Show TestResponse where
@@ -6308,15 +5972,11 @@ instance testResponsesRequestable :: Requestable TestResponses where
 instance testResponsesRespondable :: Respondable TestResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance testResponsesIsForeign :: IsForeign TestResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance testResponsesShow :: Show TestResponses where
@@ -6385,15 +6045,11 @@ instance threadRequestRequestable :: Requestable ThreadRequest where
 instance threadRequestRespondable :: Respondable ThreadRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadRequestIsForeign :: IsForeign ThreadRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadRequestShow :: Show ThreadRequest where
@@ -6497,15 +6153,11 @@ instance threadResponseRequestable :: Requestable ThreadResponse where
 instance threadResponseRespondable :: Respondable ThreadResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadResponseIsForeign :: IsForeign ThreadResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadResponseShow :: Show ThreadResponse where
@@ -6554,15 +6206,11 @@ instance threadResponsesRequestable :: Requestable ThreadResponses where
 instance threadResponsesRespondable :: Respondable ThreadResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadResponsesIsForeign :: IsForeign ThreadResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadResponsesShow :: Show ThreadResponses where
@@ -6621,15 +6269,11 @@ instance threadStatResponseRequestable :: Requestable ThreadStatResponse where
 instance threadStatResponseRespondable :: Respondable ThreadStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadStatResponseIsForeign :: IsForeign ThreadStatResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadStatResponseShow :: Show ThreadStatResponse where
@@ -6678,15 +6322,11 @@ instance threadStatResponsesRequestable :: Requestable ThreadStatResponses where
 instance threadStatResponsesRespondable :: Respondable ThreadStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadStatResponsesIsForeign :: IsForeign ThreadStatResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadStatResponsesShow :: Show ThreadStatResponses where
@@ -6769,15 +6409,11 @@ instance postDataRequestable :: Requestable PostData where
 instance postDataRespondable :: Respondable PostData where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance postDataIsForeign :: IsForeign PostData where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance postDataShow :: Show PostData where
@@ -6847,15 +6483,11 @@ instance threadPostRequestRequestable :: Requestable ThreadPostRequest where
 instance threadPostRequestRespondable :: Respondable ThreadPostRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadPostRequestIsForeign :: IsForeign ThreadPostRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadPostRequestShow :: Show ThreadPostRequest where
@@ -6954,15 +6586,11 @@ instance threadPostResponseRequestable :: Requestable ThreadPostResponse where
 instance threadPostResponseRespondable :: Respondable ThreadPostResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadPostResponseIsForeign :: IsForeign ThreadPostResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadPostResponseShow :: Show ThreadPostResponse where
@@ -7011,15 +6639,11 @@ instance threadPostResponsesRequestable :: Requestable ThreadPostResponses where
 instance threadPostResponsesRespondable :: Respondable ThreadPostResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadPostResponsesIsForeign :: IsForeign ThreadPostResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadPostResponsesShow :: Show ThreadPostResponses where
@@ -7088,15 +6712,11 @@ instance threadPostStatResponseRequestable :: Requestable ThreadPostStatResponse
 instance threadPostStatResponseRespondable :: Respondable ThreadPostStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadPostStatResponseIsForeign :: IsForeign ThreadPostStatResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadPostStatResponseShow :: Show ThreadPostStatResponse where
@@ -7145,15 +6765,11 @@ instance threadPostStatResponsesRequestable :: Requestable ThreadPostStatRespons
 instance threadPostStatResponsesRespondable :: Respondable ThreadPostStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadPostStatResponsesIsForeign :: IsForeign ThreadPostStatResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadPostStatResponsesShow :: Show ThreadPostStatResponses where
@@ -7227,15 +6843,11 @@ instance userRequestRequestable :: Requestable UserRequest where
 instance userRequestRespondable :: Respondable UserRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userRequestIsForeign :: IsForeign UserRequest where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userRequestShow :: Show UserRequest where
@@ -7339,15 +6951,11 @@ instance userResponseRequestable :: Requestable UserResponse where
 instance userResponseRespondable :: Respondable UserResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userResponseIsForeign :: IsForeign UserResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userResponseShow :: Show UserResponse where
@@ -7396,15 +7004,11 @@ instance userResponsesRequestable :: Requestable UserResponses where
 instance userResponsesRespondable :: Respondable UserResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userResponsesIsForeign :: IsForeign UserResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userResponsesShow :: Show UserResponses where
@@ -7478,15 +7082,11 @@ instance userSanitizedResponseRequestable :: Requestable UserSanitizedResponse w
 instance userSanitizedResponseRespondable :: Respondable UserSanitizedResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userSanitizedResponseIsForeign :: IsForeign UserSanitizedResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userSanitizedResponseShow :: Show UserSanitizedResponse where
@@ -7535,15 +7135,11 @@ instance userSanitizedResponsesRequestable :: Requestable UserSanitizedResponses
 instance userSanitizedResponsesRespondable :: Respondable UserSanitizedResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userSanitizedResponsesIsForeign :: IsForeign UserSanitizedResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userSanitizedResponsesShow :: Show UserSanitizedResponses where
@@ -7622,15 +7218,11 @@ instance userSanitizedStatResponseRequestable :: Requestable UserSanitizedStatRe
 instance userSanitizedStatResponseRespondable :: Respondable UserSanitizedStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userSanitizedStatResponseIsForeign :: IsForeign UserSanitizedStatResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userSanitizedStatResponseShow :: Show UserSanitizedStatResponse where
@@ -7679,15 +7271,11 @@ instance userSanitizedStatResponsesRequestable :: Requestable UserSanitizedStatR
 instance userSanitizedStatResponsesRespondable :: Respondable UserSanitizedStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userSanitizedStatResponsesIsForeign :: IsForeign UserSanitizedStatResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userSanitizedStatResponsesShow :: Show UserSanitizedStatResponses where
@@ -7733,15 +7321,11 @@ instance visibilityRequestable :: Requestable Visibility where
 instance visibilityRespondable :: Respondable Visibility where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance visibilityIsForeign :: IsForeign Visibility where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance visibilityShow :: Show Visibility where
@@ -7812,15 +7396,11 @@ instance boardPackResponseRequestable :: Requestable BoardPackResponse where
 instance boardPackResponseRespondable :: Respondable BoardPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance boardPackResponseIsForeign :: IsForeign BoardPackResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance boardPackResponseShow :: Show BoardPackResponse where
@@ -7869,15 +7449,11 @@ instance boardPackResponsesRequestable :: Requestable BoardPackResponses where
 instance boardPackResponsesRespondable :: Respondable BoardPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance boardPackResponsesIsForeign :: IsForeign BoardPackResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance boardPackResponsesShow :: Show BoardPackResponses where
@@ -7931,15 +7507,11 @@ instance organizationPackResponseRequestable :: Requestable OrganizationPackResp
 instance organizationPackResponseRespondable :: Respondable OrganizationPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance organizationPackResponseShow :: Show OrganizationPackResponse where
@@ -7988,15 +7560,11 @@ instance organizationPackResponsesRequestable :: Requestable OrganizationPackRes
 instance organizationPackResponsesRespondable :: Respondable OrganizationPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationPackResponsesIsForeign :: IsForeign OrganizationPackResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance organizationPackResponsesShow :: Show OrganizationPackResponses where
@@ -8065,15 +7633,11 @@ instance threadPackResponseRequestable :: Requestable ThreadPackResponse where
 instance threadPackResponseRespondable :: Respondable ThreadPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadPackResponseIsForeign :: IsForeign ThreadPackResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadPackResponseShow :: Show ThreadPackResponse where
@@ -8122,15 +7686,11 @@ instance threadPackResponsesRequestable :: Requestable ThreadPackResponses where
 instance threadPackResponsesRespondable :: Respondable ThreadPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadPackResponsesIsForeign :: IsForeign ThreadPackResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadPackResponsesShow :: Show ThreadPackResponses where
@@ -8194,15 +7754,11 @@ instance threadPostPackResponseRequestable :: Requestable ThreadPostPackResponse
 instance threadPostPackResponseRespondable :: Respondable ThreadPostPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadPostPackResponseIsForeign :: IsForeign ThreadPostPackResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadPostPackResponseShow :: Show ThreadPostPackResponse where
@@ -8251,15 +7807,11 @@ instance threadPostPackResponsesRequestable :: Requestable ThreadPostPackRespons
 instance threadPostPackResponsesRespondable :: Respondable ThreadPostPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance threadPostPackResponsesIsForeign :: IsForeign ThreadPostPackResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance threadPostPackResponsesShow :: Show ThreadPostPackResponses where
@@ -8318,15 +7870,11 @@ instance userPackResponseRequestable :: Requestable UserPackResponse where
 instance userPackResponseRespondable :: Respondable UserPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userPackResponseIsForeign :: IsForeign UserPackResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userPackResponseShow :: Show UserPackResponse where
@@ -8375,15 +7923,11 @@ instance userPackResponsesRequestable :: Requestable UserPackResponses where
 instance userPackResponsesRespondable :: Respondable UserPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userPackResponsesIsForeign :: IsForeign UserPackResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userPackResponsesShow :: Show UserPackResponses where
@@ -8442,15 +7986,11 @@ instance userSanitizedPackResponseRequestable :: Requestable UserSanitizedPackRe
 instance userSanitizedPackResponseRespondable :: Respondable UserSanitizedPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userSanitizedPackResponseIsForeign :: IsForeign UserSanitizedPackResponse where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userSanitizedPackResponseShow :: Show UserSanitizedPackResponse where
@@ -8499,15 +8039,11 @@ instance userSanitizedPackResponsesRequestable :: Requestable UserSanitizedPackR
 instance userSanitizedPackResponsesRespondable :: Respondable UserSanitizedPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  fromResponse = Right <<< unsafeFromForeign
 
 
 instance userSanitizedPackResponsesIsForeign :: IsForeign UserSanitizedPackResponses where
-  read f = case readString f of
-    Right s -> readJSON s
-    Left er -> Left er
+  read = Right <<< unsafeFromForeign
 
 
 instance userSanitizedPackResponsesShow :: Show UserSanitizedPackResponses where
