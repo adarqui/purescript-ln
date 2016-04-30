@@ -153,22 +153,22 @@ instance apiResponseRespondable :: Respondable ApiResponse where
   fromResponse json =
       mkApiResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "key" json
       <*> (runNullOrUndefined <$> readProp "comment" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance apiResponseIsForeign :: IsForeign ApiResponse where
   read json =
       mkApiResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "key" json
       <*> (runNullOrUndefined <$> readProp "comment" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance apiResponseShow :: Show ApiResponse where
@@ -219,13 +219,13 @@ instance apiResponsesRespondable :: Respondable ApiResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkApiResponses
-      <$> readProp "apiResponses" json
+      <$> readProp "api_responses" json
 
 
 instance apiResponsesIsForeign :: IsForeign ApiResponses where
   read json =
       mkApiResponses
-      <$> readProp "apiResponses" json
+      <$> readProp "api_responses" json
 
 
 instance apiResponsesShow :: Show ApiResponses where
@@ -381,28 +381,28 @@ instance boardResponseRespondable :: Respondable BoardResponse where
   fromResponse json =
       mkBoardResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "forumId" json
-      <*> (runNullOrUndefined <$> readProp "parentId" json)
+      <*> readProp "user_id" json
+      <*> readProp "forum_id" json
+      <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance boardResponseIsForeign :: IsForeign BoardResponse where
   read json =
       mkBoardResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "forumId" json
-      <*> (runNullOrUndefined <$> readProp "parentId" json)
+      <*> readProp "user_id" json
+      <*> readProp "forum_id" json
+      <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance boardResponseShow :: Show BoardResponse where
@@ -453,13 +453,13 @@ instance boardResponsesRespondable :: Respondable BoardResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkBoardResponses
-      <$> readProp "boardResponses" json
+      <$> readProp "board_responses" json
 
 
 instance boardResponsesIsForeign :: IsForeign BoardResponses where
   read json =
       mkBoardResponses
-      <$> readProp "boardResponses" json
+      <$> readProp "board_responses" json
 
 
 instance boardResponsesShow :: Show BoardResponses where
@@ -525,18 +525,18 @@ instance boardStatResponseRespondable :: Respondable BoardStatResponse where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkBoardStatResponse
-      <$> readProp "boardId" json
+      <$> readProp "board_id" json
       <*> readProp "threads" json
-      <*> readProp "threadPosts" json
+      <*> readProp "thread_posts" json
       <*> readProp "views" json
 
 
 instance boardStatResponseIsForeign :: IsForeign BoardStatResponse where
   read json =
       mkBoardStatResponse
-      <$> readProp "boardId" json
+      <$> readProp "board_id" json
       <*> readProp "threads" json
-      <*> readProp "threadPosts" json
+      <*> readProp "thread_posts" json
       <*> readProp "views" json
 
 
@@ -588,13 +588,13 @@ instance boardStatResponsesRespondable :: Respondable BoardStatResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkBoardStatResponses
-      <$> readProp "boardStatResponses" json
+      <$> readProp "board_stat_responses" json
 
 
 instance boardStatResponsesIsForeign :: IsForeign BoardStatResponses where
   read json =
       mkBoardStatResponses
-      <$> readProp "boardStatResponses" json
+      <$> readProp "board_stat_responses" json
 
 
 instance boardStatResponsesShow :: Show BoardStatResponses where
@@ -682,8 +682,8 @@ instance bucketRequestRespondable :: Respondable BucketRequest where
       mkBucketRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> readProp "scoreLo" json
-      <*> readProp "scoreHi" json
+      <*> readProp "score_lo" json
+      <*> readProp "score_hi" json
       <*> readProp "leurons" json
       <*> readProp "resources" json
       <*> readProp "categories" json
@@ -695,8 +695,8 @@ instance bucketRequestIsForeign :: IsForeign BucketRequest where
       mkBucketRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> readProp "scoreLo" json
-      <*> readProp "scoreHi" json
+      <*> readProp "score_lo" json
+      <*> readProp "score_hi" json
       <*> readProp "leurons" json
       <*> readProp "resources" json
       <*> readProp "categories" json
@@ -807,34 +807,34 @@ instance bucketResponseRespondable :: Respondable BucketResponse where
   fromResponse json =
       mkBucketResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> readProp "scoreLo" json
-      <*> readProp "scoreHi" json
+      <*> readProp "score_lo" json
+      <*> readProp "score_hi" json
       <*> readProp "leurons" json
       <*> readProp "resources" json
       <*> readProp "categories" json
       <*> readProp "filters" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance bucketResponseIsForeign :: IsForeign BucketResponse where
   read json =
       mkBucketResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> readProp "scoreLo" json
-      <*> readProp "scoreHi" json
+      <*> readProp "score_lo" json
+      <*> readProp "score_hi" json
       <*> readProp "leurons" json
       <*> readProp "resources" json
       <*> readProp "categories" json
       <*> readProp "filters" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance bucketResponseShow :: Show BucketResponse where
@@ -885,13 +885,13 @@ instance bucketResponsesRespondable :: Respondable BucketResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkBucketResponses
-      <$> readProp "bucketResponses" json
+      <$> readProp "bucket_responses" json
 
 
 instance bucketResponsesIsForeign :: IsForeign BucketResponses where
   read json =
       mkBucketResponses
-      <$> readProp "bucketResponses" json
+      <$> readProp "bucket_responses" json
 
 
 instance bucketResponsesShow :: Show BucketResponses where
@@ -1006,13 +1006,13 @@ instance countResponsesRespondable :: Respondable CountResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkCountResponses
-      <$> readProp "countResponses" json
+      <$> readProp "count_responses" json
 
 
 instance countResponsesIsForeign :: IsForeign CountResponses where
   read json =
       mkCountResponses
-      <$> readProp "countResponses" json
+      <$> readProp "count_responses" json
 
 
 instance countResponsesShow :: Show CountResponses where
@@ -1144,20 +1144,20 @@ instance emptyResponseRespondable :: Respondable EmptyResponse where
   fromResponse json =
       mkEmptyResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "value" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance emptyResponseIsForeign :: IsForeign EmptyResponse where
   read json =
       mkEmptyResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "value" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance emptyResponseShow :: Show EmptyResponse where
@@ -1208,13 +1208,13 @@ instance emptyResponsesRespondable :: Respondable EmptyResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkEmptyResponses
-      <$> readProp "emptyResponses" json
+      <$> readProp "empty_responses" json
 
 
 instance emptyResponsesIsForeign :: IsForeign EmptyResponses where
   read json =
       mkEmptyResponses
-      <$> readProp "emptyResponses" json
+      <$> readProp "empty_responses" json
 
 
 instance emptyResponsesShow :: Show EmptyResponses where
@@ -1365,26 +1365,26 @@ instance forumResponseRespondable :: Respondable ForumResponse where
   fromResponse json =
       mkForumResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "orgId" json
+      <*> readProp "user_id" json
+      <*> readProp "org_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance forumResponseIsForeign :: IsForeign ForumResponse where
   read json =
       mkForumResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "orgId" json
+      <*> readProp "user_id" json
+      <*> readProp "org_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance forumResponseShow :: Show ForumResponse where
@@ -1435,13 +1435,13 @@ instance forumResponsesRespondable :: Respondable ForumResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkForumResponses
-      <$> readProp "forumResponses" json
+      <$> readProp "forum_responses" json
 
 
 instance forumResponsesIsForeign :: IsForeign ForumResponses where
   read json =
       mkForumResponses
-      <$> readProp "forumResponses" json
+      <$> readProp "forum_responses" json
 
 
 instance forumResponsesShow :: Show ForumResponses where
@@ -1512,20 +1512,20 @@ instance forumStatResponseRespondable :: Respondable ForumStatResponse where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkForumStatResponse
-      <$> readProp "forumId" json
+      <$> readProp "forum_id" json
       <*> readProp "boards" json
       <*> readProp "threads" json
-      <*> readProp "threadPosts" json
+      <*> readProp "thread_posts" json
       <*> readProp "views" json
 
 
 instance forumStatResponseIsForeign :: IsForeign ForumStatResponse where
   read json =
       mkForumStatResponse
-      <$> readProp "forumId" json
+      <$> readProp "forum_id" json
       <*> readProp "boards" json
       <*> readProp "threads" json
-      <*> readProp "threadPosts" json
+      <*> readProp "thread_posts" json
       <*> readProp "views" json
 
 
@@ -1577,13 +1577,13 @@ instance forumStatResponsesRespondable :: Respondable ForumStatResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkForumStatResponses
-      <$> readProp "forumStatResponses" json
+      <$> readProp "forum_stat_responses" json
 
 
 instance forumStatResponsesIsForeign :: IsForeign ForumStatResponses where
   read json =
       mkForumStatResponses
-      <$> readProp "forumStatResponses" json
+      <$> readProp "forum_stat_responses" json
 
 
 instance forumStatResponsesShow :: Show ForumStatResponses where
@@ -1689,7 +1689,7 @@ instance leuronRequestRespondable :: Respondable LeuronRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkLeuronRequest
-      <$> readProp "dataP" json
+      <$> readProp "data_p" json
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> (runNullOrUndefined <$> readProp "section" json)
@@ -1706,7 +1706,7 @@ instance leuronRequestRespondable :: Respondable LeuronRequest where
 instance leuronRequestIsForeign :: IsForeign LeuronRequest where
   read json =
       mkLeuronRequest
-      <$> readProp "dataP" json
+      <$> readProp "data_p" json
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> (runNullOrUndefined <$> readProp "section" json)
@@ -1849,9 +1849,9 @@ instance leuronResponseRespondable :: Respondable LeuronResponse where
   fromResponse json =
       mkLeuronResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "resourceId" json
-      <*> readProp "dataP" json
+      <*> readProp "user_id" json
+      <*> readProp "resource_id" json
+      <*> readProp "data_p" json
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> (runNullOrUndefined <$> readProp "section" json)
@@ -1863,17 +1863,17 @@ instance leuronResponseRespondable :: Respondable LeuronResponse where
       <*> (runNullOrUndefined <$> readProp "substitutions" json)
       <*> (runNullOrUndefined <$> readProp "tags" json)
       <*> (runNullOrUndefined <$> readProp "style" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance leuronResponseIsForeign :: IsForeign LeuronResponse where
   read json =
       mkLeuronResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "resourceId" json
-      <*> readProp "dataP" json
+      <*> readProp "user_id" json
+      <*> readProp "resource_id" json
+      <*> readProp "data_p" json
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> (runNullOrUndefined <$> readProp "section" json)
@@ -1885,8 +1885,8 @@ instance leuronResponseIsForeign :: IsForeign LeuronResponse where
       <*> (runNullOrUndefined <$> readProp "substitutions" json)
       <*> (runNullOrUndefined <$> readProp "tags" json)
       <*> (runNullOrUndefined <$> readProp "style" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance leuronResponseShow :: Show LeuronResponse where
@@ -1937,13 +1937,13 @@ instance leuronResponsesRespondable :: Respondable LeuronResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkLeuronResponses
-      <$> readProp "leuronResponses" json
+      <$> readProp "leuron_responses" json
 
 
 instance leuronResponsesIsForeign :: IsForeign LeuronResponses where
   read json =
       mkLeuronResponses
-      <$> readProp "leuronResponses" json
+      <$> readProp "leuron_responses" json
 
 
 instance leuronResponsesShow :: Show LeuronResponses where
@@ -1958,10 +1958,10 @@ data LeuronData
   | LnAcronym Acronym
   | LnSynonym Synonym
   | LnAntonym Antonym
---  | LnTemplate Template
+  | LnTemplate Template
   | LnImageAssociation ImageAssociation
   | LnLinearDemo LinearDemo
---  | LnTable Table
+  | LnTable Table
   | LnScript Script
   | LnQA QA
   | LnExamples 
@@ -2002,12 +2002,10 @@ instance leuronDataEncodeJson :: EncodeJson LeuronData where
        "tag" := "LnAntonym"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-    {-
   encodeJson (LnTemplate x0) =
        "tag" := "LnTemplate"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-    -}
   encodeJson (LnImageAssociation x0) =
        "tag" := "LnImageAssociation"
     ~> "contents" := encodeJson x0
@@ -2016,12 +2014,10 @@ instance leuronDataEncodeJson :: EncodeJson LeuronData where
        "tag" := "LnLinearDemo"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-    {-
   encodeJson (LnTable x0) =
        "tag" := "LnTable"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-    -}
   encodeJson (LnScript x0) =
        "tag" := "LnScript"
     ~> "contents" := encodeJson x0
@@ -2077,11 +2073,9 @@ instance leuronDataDecodeJson :: DecodeJson LeuronData where
           x0 <- obj .? "contents"
           LnAntonym <$> decodeJson x0
 
-{-
         "LnTemplate" -> do
           x0 <- obj .? "contents"
           LnTemplate <$> decodeJson x0
-          -}
 
         "LnImageAssociation" -> do
           x0 <- obj .? "contents"
@@ -2091,11 +2085,9 @@ instance leuronDataDecodeJson :: DecodeJson LeuronData where
           x0 <- obj .? "contents"
           LnLinearDemo <$> decodeJson x0
 
-{-
         "LnTable" -> do
           x0 <- obj .? "contents"
           LnTable <$> decodeJson x0
-          -}
 
         "LnScript" -> do
           x0 <- obj .? "contents"
@@ -2158,11 +2150,9 @@ instance leuronDataRespondable :: Respondable LeuronData where
           x0 <- readProp "contents" json
           LnAntonym <$> read x0
 
-{-
         "LnTemplate" -> do
           x0 <- readProp "contents" json
           LnTemplate <$> read x0
-          -}
 
         "LnImageAssociation" -> do
           x0 <- readProp "contents" json
@@ -2172,11 +2162,9 @@ instance leuronDataRespondable :: Respondable LeuronData where
           x0 <- readProp "contents" json
           LnLinearDemo <$> read x0
 
-{-
         "LnTable" -> do
           x0 <- readProp "contents" json
           LnTable <$> read x0
-          -}
 
         "LnScript" -> do
           x0 <- readProp "contents" json
@@ -2230,11 +2218,9 @@ instance leuronDataIsForeign :: IsForeign LeuronData where
           x0 <- readProp "contents" json
           LnAntonym <$> read x0
 
-{-
         "LnTemplate" -> do
           x0 <- readProp "contents" json
           LnTemplate <$> read x0
-          -}
 
         "LnImageAssociation" -> do
           x0 <- readProp "contents" json
@@ -2244,11 +2230,9 @@ instance leuronDataIsForeign :: IsForeign LeuronData where
           x0 <- readProp "contents" json
           LnLinearDemo <$> read x0
 
-{-
         "LnTable" -> do
           x0 <- readProp "contents" json
           LnTable <$> read x0
-          -}
 
         "LnScript" -> do
           x0 <- readProp "contents" json
@@ -2275,10 +2259,10 @@ instance leuronDataShow :: Show LeuronData where
   show (LnAcronym x0) = "LnAcronym: " ++ show x0
   show (LnSynonym x0) = "LnSynonym: " ++ show x0
   show (LnAntonym x0) = "LnAntonym: " ++ show x0
---  show (LnTemplate x0) = "LnTemplate: " ++ show x0
+  show (LnTemplate x0) = "LnTemplate: " ++ show x0
   show (LnImageAssociation x0) = "LnImageAssociation: " ++ show x0
   show (LnLinearDemo x0) = "LnLinearDemo: " ++ show x0
---  show (LnTable x0) = "LnTable: " ++ show x0
+  show (LnTable x0) = "LnTable: " ++ show x0
   show (LnScript x0) = "LnScript: " ++ show x0
   show (LnQA x0) = "LnQA: " ++ show x0
   show (LnExamples) = "LnExamples"
@@ -2520,15 +2504,15 @@ instance dCardRespondable :: Respondable DCard where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkDCard
-      <$> readProp "dcardFront" json
-      <*> readProp "dcardBack" json
+      <$> readProp "dcard_front" json
+      <*> readProp "dcard_back" json
 
 
 instance dCardIsForeign :: IsForeign DCard where
   read json =
       mkDCard
-      <$> readProp "dcardFront" json
-      <*> readProp "dcardBack" json
+      <$> readProp "dcard_front" json
+      <*> readProp "dcard_back" json
 
 
 instance dCardShow :: Show DCard where
@@ -2584,15 +2568,15 @@ instance dCardXRespondable :: Respondable DCardX where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkDCardX
-      <$> readProp "dcardxFront" json
-      <*> readProp "dcardxBack" json
+      <$> readProp "dcardx_front" json
+      <*> readProp "dcardx_back" json
 
 
 instance dCardXIsForeign :: IsForeign DCardX where
   read json =
       mkDCardX
-      <$> readProp "dcardxFront" json
-      <*> readProp "dcardxBack" json
+      <$> readProp "dcardx_front" json
+      <*> readProp "dcardx_back" json
 
 
 instance dCardXShow :: Show DCardX where
@@ -2790,7 +2774,6 @@ instance antonymIsForeign :: IsForeign Antonym where
 instance antonymShow :: Show Antonym where
     show (Antonym o) = show "a: " ++ show o.a ++ ", " ++ show "b: " ++ show o.b
 
-{-
 newtype Template = Template {
   template :: String,
   values :: (Array  TemplateValue)
@@ -2856,7 +2839,6 @@ instance templateShow :: Show Template where
     show (Template o) = show "template: " ++ show o.template ++ ", " ++ show "values: " ++ show o.values
 
 type TemplateValue = ((Tuple  String) (Array  String))
--}
 
 
 newtype ImageAssociation = ImageAssociation {
@@ -2914,17 +2896,17 @@ instance imageAssociationRespondable :: Respondable ImageAssociation where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkImageAssociation
-      <$> readProp "imageUrl" json
-      <*> readProp "assocBy" json
-      <*> readProp "assocResult" json
+      <$> readProp "image_url" json
+      <*> readProp "assoc_by" json
+      <*> readProp "assoc_result" json
 
 
 instance imageAssociationIsForeign :: IsForeign ImageAssociation where
   read json =
       mkImageAssociation
-      <$> readProp "imageUrl" json
-      <*> readProp "assocBy" json
-      <*> readProp "assocResult" json
+      <$> readProp "image_url" json
+      <*> readProp "assoc_by" json
+      <*> readProp "assoc_result" json
 
 
 instance imageAssociationShow :: Show ImageAssociation where
@@ -3055,12 +3037,6 @@ instance linearDemoRequestable :: Requestable LinearDemo where
     in toRequest str
 
 
-{-
-instance k :: IsForeign a => IsForeign (Maybe a) where
-  read f = readString f
-  -}
-
-
 instance linearDemoRespondable :: Respondable LinearDemo where
   responseType =
     Tuple Nothing JSONResponse
@@ -3130,21 +3106,20 @@ instance qARespondable :: Respondable QA where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkQA
-      <$> readProp "qaQuestion" json
-      <*> readProp "qaAnswer" json
+      <$> readProp "qa_question" json
+      <*> readProp "qa_answer" json
 
 
 instance qAIsForeign :: IsForeign QA where
   read json =
       mkQA
-      <$> readProp "qaQuestion" json
-      <*> readProp "qaAnswer" json
+      <$> readProp "qa_question" json
+      <*> readProp "qa_answer" json
 
 
 instance qAShow :: Show QA where
     show (QA o) = show "qaQuestion: " ++ show o.qaQuestion ++ ", " ++ show "qaAnswer: " ++ show o.qaAnswer
 
-{-
 newtype Table = Table {
   title :: String,
   columns :: (Array  String),
@@ -3215,8 +3190,6 @@ instance tableIsForeign :: IsForeign Table where
 
 instance tableShow :: Show Table where
     show (Table o) = show "title: " ++ show o.title ++ ", " ++ show "columns: " ++ show o.columns ++ ", " ++ show "rows: " ++ show o.rows
-
--}
 
 newtype LikeRequest = LikeRequest {
   opt :: LikeOpt,
@@ -3368,28 +3341,28 @@ instance likeResponseRespondable :: Respondable LikeResponse where
   fromResponse json =
       mkLikeResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "entityName" json
-      <*> readProp "entityId" json
+      <*> readProp "user_id" json
+      <*> readProp "entity_name" json
+      <*> readProp "entity_id" json
       <*> readProp "opt" json
       <*> readProp "score" json
       <*> (runNullOrUndefined <$> readProp "reason" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance likeResponseIsForeign :: IsForeign LikeResponse where
   read json =
       mkLikeResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "entityName" json
-      <*> readProp "entityId" json
+      <*> readProp "user_id" json
+      <*> readProp "entity_name" json
+      <*> readProp "entity_id" json
       <*> readProp "opt" json
       <*> readProp "score" json
       <*> (runNullOrUndefined <$> readProp "reason" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance likeResponseShow :: Show LikeResponse where
@@ -3440,13 +3413,13 @@ instance likeResponsesRespondable :: Respondable LikeResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkLikeResponses
-      <$> readProp "likeResponses" json
+      <$> readProp "like_responses" json
 
 
 instance likeResponsesIsForeign :: IsForeign LikeResponses where
   read json =
       mkLikeResponses
-      <$> readProp "likeResponses" json
+      <$> readProp "like_responses" json
 
 
 instance likeResponsesShow :: Show LikeResponses where
@@ -3716,32 +3689,32 @@ instance organizationResponseRespondable :: Respondable OrganizationResponse whe
   fromResponse json =
       mkOrganizationResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "company" json
       <*> readProp "location" json
       <*> readProp "email" json
-      <*> readProp "emailMD5" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "email_md5" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance organizationResponseIsForeign :: IsForeign OrganizationResponse where
   read json =
       mkOrganizationResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "company" json
       <*> readProp "location" json
       <*> readProp "email" json
-      <*> readProp "emailMD5" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "email_md5" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance organizationResponseShow :: Show OrganizationResponse where
@@ -3884,26 +3857,26 @@ instance organizationStatResponseRespondable :: Respondable OrganizationStatResp
     Tuple Nothing JSONResponse
   fromResponse json =
       mkOrganizationStatResponse
-      <$> readProp "organizationId" json
+      <$> readProp "organization_id" json
       <*> readProp "teams" json
       <*> readProp "members" json
       <*> readProp "forums" json
       <*> readProp "boards" json
       <*> readProp "threads" json
-      <*> readProp "threadPosts" json
+      <*> readProp "thread_posts" json
       <*> readProp "views" json
 
 
 instance organizationStatResponseIsForeign :: IsForeign OrganizationStatResponse where
   read json =
       mkOrganizationStatResponse
-      <$> readProp "organizationId" json
+      <$> readProp "organization_id" json
       <*> readProp "teams" json
       <*> readProp "members" json
       <*> readProp "forums" json
       <*> readProp "boards" json
       <*> readProp "threads" json
-      <*> readProp "threadPosts" json
+      <*> readProp "thread_posts" json
       <*> readProp "views" json
 
 
@@ -3955,13 +3928,13 @@ instance organizationStatResponsesRespondable :: Respondable OrganizationStatRes
     Tuple Nothing JSONResponse
   fromResponse json =
       mkOrganizationStatResponses
-      <$> readProp "organizationStatResponses" json
+      <$> readProp "organization_stat_responses" json
 
 
 instance organizationStatResponsesIsForeign :: IsForeign OrganizationStatResponses where
   read json =
       mkOrganizationStatResponses
-      <$> readProp "organizationStatResponses" json
+      <$> readProp "organization_stat_responses" json
 
 
 instance organizationStatResponsesShow :: Show OrganizationStatResponses where
@@ -4693,24 +4666,24 @@ instance pmResponseRespondable :: Respondable PmResponse where
   fromResponse json =
       mkPmResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "toUserId" json
+      <*> readProp "user_id" json
+      <*> readProp "to_user_id" json
       <*> readProp "subject" json
       <*> readProp "body" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmResponseIsForeign :: IsForeign PmResponse where
   read json =
       mkPmResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "toUserId" json
+      <*> readProp "user_id" json
+      <*> readProp "to_user_id" json
       <*> readProp "subject" json
       <*> readProp "body" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmResponseShow :: Show PmResponse where
@@ -4761,13 +4734,13 @@ instance pmResponsesRespondable :: Respondable PmResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkPmResponses
-      <$> readProp "pmResponses" json
+      <$> readProp "pm_responses" json
 
 
 instance pmResponsesIsForeign :: IsForeign PmResponses where
   read json =
       mkPmResponses
-      <$> readProp "pmResponses" json
+      <$> readProp "pm_responses" json
 
 
 instance pmResponsesShow :: Show PmResponses where
@@ -4829,16 +4802,16 @@ instance pmInRequestRespondable :: Respondable PmInRequest where
   fromResponse json =
       mkPmInRequest
       <$> (runNullOrUndefined <$> readProp "label" json)
-      <*> readProp "isRead" json
-      <*> readProp "isStarred" json
+      <*> readProp "is_read" json
+      <*> readProp "is_starred" json
 
 
 instance pmInRequestIsForeign :: IsForeign PmInRequest where
   read json =
       mkPmInRequest
       <$> (runNullOrUndefined <$> readProp "label" json)
-      <*> readProp "isRead" json
-      <*> readProp "isStarred" json
+      <*> readProp "is_read" json
+      <*> readProp "is_starred" json
 
 
 instance pmInRequestShow :: Show PmInRequest where
@@ -4935,30 +4908,30 @@ instance pmInResponseRespondable :: Respondable PmInResponse where
   fromResponse json =
       mkPmInResponse
       <$> readProp "id" json
-      <*> readProp "pmId" json
-      <*> readProp "userId" json
+      <*> readProp "pm_id" json
+      <*> readProp "user_id" json
       <*> (runNullOrUndefined <$> readProp "label" json)
-      <*> readProp "isRead" json
-      <*> readProp "isStarred" json
-      <*> readProp "isNew" json
-      <*> readProp "isSaved" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "is_read" json
+      <*> readProp "is_starred" json
+      <*> readProp "is_new" json
+      <*> readProp "is_saved" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmInResponseIsForeign :: IsForeign PmInResponse where
   read json =
       mkPmInResponse
       <$> readProp "id" json
-      <*> readProp "pmId" json
-      <*> readProp "userId" json
+      <*> readProp "pm_id" json
+      <*> readProp "user_id" json
       <*> (runNullOrUndefined <$> readProp "label" json)
-      <*> readProp "isRead" json
-      <*> readProp "isStarred" json
-      <*> readProp "isNew" json
-      <*> readProp "isSaved" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "is_read" json
+      <*> readProp "is_starred" json
+      <*> readProp "is_new" json
+      <*> readProp "is_saved" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmInResponseShow :: Show PmInResponse where
@@ -5009,13 +4982,13 @@ instance pmInResponsesRespondable :: Respondable PmInResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkPmInResponses
-      <$> readProp "pmInResponses" json
+      <$> readProp "pm_in_responses" json
 
 
 instance pmInResponsesIsForeign :: IsForeign PmInResponses where
   read json =
       mkPmInResponses
-      <$> readProp "pmInResponses" json
+      <$> readProp "pm_in_responses" json
 
 
 instance pmInResponsesShow :: Show PmInResponses where
@@ -5154,24 +5127,24 @@ instance pmOutResponseRespondable :: Respondable PmOutResponse where
   fromResponse json =
       mkPmOutResponse
       <$> readProp "id" json
-      <*> readProp "pmId" json
-      <*> readProp "userId" json
+      <*> readProp "pm_id" json
+      <*> readProp "user_id" json
       <*> (runNullOrUndefined <$> readProp "label" json)
-      <*> readProp "isSaved" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "is_saved" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmOutResponseIsForeign :: IsForeign PmOutResponse where
   read json =
       mkPmOutResponse
       <$> readProp "id" json
-      <*> readProp "pmId" json
-      <*> readProp "userId" json
+      <*> readProp "pm_id" json
+      <*> readProp "user_id" json
       <*> (runNullOrUndefined <$> readProp "label" json)
-      <*> readProp "isSaved" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "is_saved" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmOutResponseShow :: Show PmOutResponse where
@@ -5222,13 +5195,13 @@ instance pmOutResponsesRespondable :: Respondable PmOutResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkPmOutResponses
-      <$> readProp "pmOutResponses" json
+      <$> readProp "pm_out_responses" json
 
 
 instance pmOutResponsesIsForeign :: IsForeign PmOutResponses where
   read json =
       mkPmOutResponses
-      <$> readProp "pmOutResponses" json
+      <$> readProp "pm_out_responses" json
 
 
 instance pmOutResponsesShow :: Show PmOutResponses where
@@ -5284,15 +5257,15 @@ instance profileXRespondable :: Respondable ProfileX where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkProfileX
-      <$> readProp "profileName" json
-      <*> readProp "profileEmail" json
+      <$> readProp "profile_name" json
+      <*> readProp "profile_email" json
 
 
 instance profileXIsForeign :: IsForeign ProfileX where
   read json =
       mkProfileX
-      <$> readProp "profileName" json
-      <*> readProp "profileEmail" json
+      <$> readProp "profile_name" json
+      <*> readProp "profile_email" json
 
 
 instance profileXShow :: Show ProfileX where
@@ -5568,32 +5541,32 @@ instance profileResponseRespondable :: Respondable ProfileResponse where
   fromResponse json =
       mkProfileResponse
       <$> readProp "id" json
-      <*> readProp "entityId" json
+      <*> readProp "entity_id" json
       <*> readProp "gender" json
       <*> readProp "birthdate" json
       <*> (runNullOrUndefined <$> readProp "website" json)
       <*> (runNullOrUndefined <$> readProp "location" json)
       <*> (runNullOrUndefined <$> readProp "signature" json)
-      <*> readProp "karmaGood" json
-      <*> readProp "karmaBad" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "karma_good" json
+      <*> readProp "karma_bad" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance profileResponseIsForeign :: IsForeign ProfileResponse where
   read json =
       mkProfileResponse
       <$> readProp "id" json
-      <*> readProp "entityId" json
+      <*> readProp "entity_id" json
       <*> readProp "gender" json
       <*> readProp "birthdate" json
       <*> (runNullOrUndefined <$> readProp "website" json)
       <*> (runNullOrUndefined <$> readProp "location" json)
       <*> (runNullOrUndefined <$> readProp "signature" json)
-      <*> readProp "karmaGood" json
-      <*> readProp "karmaBad" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "karma_good" json
+      <*> readProp "karma_bad" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance profileResponseShow :: Show ProfileResponse where
@@ -5644,13 +5617,13 @@ instance profileResponsesRespondable :: Respondable ProfileResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkProfileResponses
-      <$> readProp "profileResponses" json
+      <$> readProp "profile_responses" json
 
 
 instance profileResponsesIsForeign :: IsForeign ProfileResponses where
   read json =
       mkProfileResponses
-      <$> readProp "profileResponses" json
+      <$> readProp "profile_responses" json
 
 
 instance profileResponsesShow :: Show ProfileResponses where
@@ -5701,13 +5674,13 @@ instance reminderRequestRespondable :: Respondable ReminderRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkReminderRequest
-      <$> readProp "dataP" json
+      <$> readProp "data_p" json
 
 
 instance reminderRequestIsForeign :: IsForeign ReminderRequest where
   read json =
       mkReminderRequest
-      <$> readProp "dataP" json
+      <$> readProp "data_p" json
 
 
 instance reminderRequestShow :: Show ReminderRequest where
@@ -5784,22 +5757,22 @@ instance reminderResponseRespondable :: Respondable ReminderResponse where
   fromResponse json =
       mkReminderResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "parentFolderId" json
-      <*> readProp "dataP" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "user_id" json
+      <*> readProp "parent_folder_id" json
+      <*> readProp "data_p" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance reminderResponseIsForeign :: IsForeign ReminderResponse where
   read json =
       mkReminderResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "parentFolderId" json
-      <*> readProp "dataP" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "user_id" json
+      <*> readProp "parent_folder_id" json
+      <*> readProp "data_p" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance reminderResponseShow :: Show ReminderResponse where
@@ -5850,13 +5823,13 @@ instance reminderResponsesRespondable :: Respondable ReminderResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkReminderResponses
-      <$> readProp "reminderResponses" json
+      <$> readProp "reminder_responses" json
 
 
 instance reminderResponsesIsForeign :: IsForeign ReminderResponses where
   read json =
       mkReminderResponses
-      <$> readProp "reminderResponses" json
+      <$> readProp "reminder_responses" json
 
 
 instance reminderResponsesShow :: Show ReminderResponses where
@@ -6014,26 +5987,26 @@ instance reminderFolderResponseRespondable :: Respondable ReminderFolderResponse
   fromResponse json =
       mkReminderFolderResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> (runNullOrUndefined <$> readProp "parentFolderId" json)
+      <*> readProp "user_id" json
+      <*> (runNullOrUndefined <$> readProp "parent_folder_id" json)
       <*> readProp "name" json
       <*> readProp "visibility" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance reminderFolderResponseIsForeign :: IsForeign ReminderFolderResponse where
   read json =
       mkReminderFolderResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> (runNullOrUndefined <$> readProp "parentFolderId" json)
+      <*> readProp "user_id" json
+      <*> (runNullOrUndefined <$> readProp "parent_folder_id" json)
       <*> readProp "name" json
       <*> readProp "visibility" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance reminderFolderResponseShow :: Show ReminderFolderResponse where
@@ -6084,13 +6057,13 @@ instance reminderFolderResponsesRespondable :: Respondable ReminderFolderRespons
     Tuple Nothing JSONResponse
   fromResponse json =
       mkReminderFolderResponses
-      <$> readProp "reminderFolderResponses" json
+      <$> readProp "reminder_folder_responses" json
 
 
 instance reminderFolderResponsesIsForeign :: IsForeign ReminderFolderResponses where
   read json =
       mkReminderFolderResponses
-      <$> readProp "reminderFolderResponses" json
+      <$> readProp "reminder_folder_responses" json
 
 
 instance reminderFolderResponsesShow :: Show ReminderFolderResponses where
@@ -6452,7 +6425,7 @@ instance resourceResponseRespondable :: Respondable ResourceResponse where
   fromResponse json =
       mkResourceResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "title" json
       <*> readProp "description" json
       <*> readProp "source" json
@@ -6463,15 +6436,15 @@ instance resourceResponseRespondable :: Respondable ResourceResponse where
       <*> readProp "counter" json
       <*> (runNullOrUndefined <$> readProp "version" json)
       <*> (runNullOrUndefined <$> readProp "urls" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance resourceResponseIsForeign :: IsForeign ResourceResponse where
   read json =
       mkResourceResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "title" json
       <*> readProp "description" json
       <*> readProp "source" json
@@ -6482,8 +6455,8 @@ instance resourceResponseIsForeign :: IsForeign ResourceResponse where
       <*> readProp "counter" json
       <*> (runNullOrUndefined <$> readProp "version" json)
       <*> (runNullOrUndefined <$> readProp "urls" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance resourceResponseShow :: Show ResourceResponse where
@@ -6534,13 +6507,13 @@ instance resourceResponsesRespondable :: Respondable ResourceResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkResourceResponses
-      <$> readProp "resourceResponses" json
+      <$> readProp "resource_responses" json
 
 
 instance resourceResponsesIsForeign :: IsForeign ResourceResponses where
   read json =
       mkResourceResponses
-      <$> readProp "resourceResponses" json
+      <$> readProp "resource_responses" json
 
 
 instance resourceResponsesShow :: Show ResourceResponses where
@@ -6993,26 +6966,26 @@ instance teamResponseRespondable :: Respondable TeamResponse where
   fromResponse json =
       mkTeamResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "orgId" json
+      <*> readProp "user_id" json
+      <*> readProp "org_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance teamResponseIsForeign :: IsForeign TeamResponse where
   read json =
       mkTeamResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "orgId" json
+      <*> readProp "user_id" json
+      <*> readProp "org_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance teamResponseShow :: Show TeamResponse where
@@ -7063,13 +7036,13 @@ instance teamResponsesRespondable :: Respondable TeamResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkTeamResponses
-      <$> readProp "teamResponses" json
+      <$> readProp "team_responses" json
 
 
 instance teamResponsesIsForeign :: IsForeign TeamResponses where
   read json =
       mkTeamResponses
-      <$> readProp "teamResponses" json
+      <$> readProp "team_responses" json
 
 
 instance teamResponsesShow :: Show TeamResponses where
@@ -7198,20 +7171,20 @@ instance testResponseRespondable :: Respondable TestResponse where
   fromResponse json =
       mkTestResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "msg" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance testResponseIsForeign :: IsForeign TestResponse where
   read json =
       mkTestResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
+      <*> readProp "user_id" json
       <*> readProp "msg" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance testResponseShow :: Show TestResponse where
@@ -7262,13 +7235,13 @@ instance testResponsesRespondable :: Respondable TestResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkTestResponses
-      <$> readProp "testResponses" json
+      <$> readProp "test_responses" json
 
 
 instance testResponsesIsForeign :: IsForeign TestResponses where
   read json =
       mkTestResponses
-      <$> readProp "testResponses" json
+      <$> readProp "test_responses" json
 
 
 instance testResponsesShow :: Show TestResponses where
@@ -7460,34 +7433,34 @@ instance threadResponseRespondable :: Respondable ThreadResponse where
   fromResponse json =
       mkThreadResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "boardId" json
+      <*> readProp "user_id" json
+      <*> readProp "board_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "sticky" json
       <*> readProp "locked" json
       <*> (runNullOrUndefined <$> readProp "poll" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
-      <*> (runNullOrUndefined <$> readProp "activityAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance threadResponseIsForeign :: IsForeign ThreadResponse where
   read json =
       mkThreadResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "boardId" json
+      <*> readProp "user_id" json
+      <*> readProp "board_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "sticky" json
       <*> readProp "locked" json
       <*> (runNullOrUndefined <$> readProp "poll" json)
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
-      <*> (runNullOrUndefined <$> readProp "activityAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance threadResponseShow :: Show ThreadResponse where
@@ -7538,13 +7511,13 @@ instance threadResponsesRespondable :: Respondable ThreadResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadResponses
-      <$> readProp "threadResponses" json
+      <$> readProp "thread_responses" json
 
 
 instance threadResponsesIsForeign :: IsForeign ThreadResponses where
   read json =
       mkThreadResponses
-      <$> readProp "threadResponses" json
+      <$> readProp "thread_responses" json
 
 
 instance threadResponsesShow :: Show ThreadResponses where
@@ -7605,16 +7578,16 @@ instance threadStatResponseRespondable :: Respondable ThreadStatResponse where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadStatResponse
-      <$> readProp "threadId" json
-      <*> readProp "threadPosts" json
+      <$> readProp "thread_id" json
+      <*> readProp "thread_posts" json
       <*> readProp "views" json
 
 
 instance threadStatResponseIsForeign :: IsForeign ThreadStatResponse where
   read json =
       mkThreadStatResponse
-      <$> readProp "threadId" json
-      <*> readProp "threadPosts" json
+      <$> readProp "thread_id" json
+      <*> readProp "thread_posts" json
       <*> readProp "views" json
 
 
@@ -7666,13 +7639,13 @@ instance threadStatResponsesRespondable :: Respondable ThreadStatResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadStatResponses
-      <$> readProp "threadStatResponses" json
+      <$> readProp "thread_stat_responses" json
 
 
 instance threadStatResponsesIsForeign :: IsForeign ThreadStatResponses where
   read json =
       mkThreadStatResponses
-      <$> readProp "threadStatResponses" json
+      <$> readProp "thread_stat_responses" json
 
 
 instance threadStatResponsesShow :: Show ThreadStatResponses where
@@ -7884,7 +7857,7 @@ instance threadPostRequestRespondable :: Respondable ThreadPostRequest where
       <$> (runNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
       <*> readProp "tags" json
-      <*> readProp "privateTags" json
+      <*> readProp "private_tags" json
 
 
 instance threadPostRequestIsForeign :: IsForeign ThreadPostRequest where
@@ -7893,7 +7866,7 @@ instance threadPostRequestIsForeign :: IsForeign ThreadPostRequest where
       <$> (runNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
       <*> readProp "tags" json
-      <*> readProp "privateTags" json
+      <*> readProp "private_tags" json
 
 
 instance threadPostRequestShow :: Show ThreadPostRequest where
@@ -7995,32 +7968,32 @@ instance threadPostResponseRespondable :: Respondable ThreadPostResponse where
   fromResponse json =
       mkThreadPostResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "threadId" json
-      <*> (runNullOrUndefined <$> readProp "parentId" json)
+      <*> readProp "user_id" json
+      <*> readProp "thread_id" json
+      <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
       <*> readProp "tags" json
-      <*> readProp "privateTags" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "private_tags" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance threadPostResponseIsForeign :: IsForeign ThreadPostResponse where
   read json =
       mkThreadPostResponse
       <$> readProp "id" json
-      <*> readProp "userId" json
-      <*> readProp "threadId" json
-      <*> (runNullOrUndefined <$> readProp "parentId" json)
+      <*> readProp "user_id" json
+      <*> readProp "thread_id" json
+      <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
       <*> readProp "tags" json
-      <*> readProp "privateTags" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> readProp "private_tags" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance threadPostResponseShow :: Show ThreadPostResponse where
@@ -8071,13 +8044,13 @@ instance threadPostResponsesRespondable :: Respondable ThreadPostResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadPostResponses
-      <$> readProp "threadPostResponses" json
+      <$> readProp "thread_post_responses" json
 
 
 instance threadPostResponsesIsForeign :: IsForeign ThreadPostResponses where
   read json =
       mkThreadPostResponses
-      <$> readProp "threadPostResponses" json
+      <$> readProp "thread_post_responses" json
 
 
 instance threadPostResponsesShow :: Show ThreadPostResponses where
@@ -8148,7 +8121,7 @@ instance threadPostStatResponseRespondable :: Respondable ThreadPostStatResponse
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadPostStatResponse
-      <$> readProp "threadPostId" json
+      <$> readProp "thread_post_id" json
       <*> readProp "likes" json
       <*> readProp "dislikes" json
       <*> readProp "starred" json
@@ -8158,7 +8131,7 @@ instance threadPostStatResponseRespondable :: Respondable ThreadPostStatResponse
 instance threadPostStatResponseIsForeign :: IsForeign ThreadPostStatResponse where
   read json =
       mkThreadPostStatResponse
-      <$> readProp "threadPostId" json
+      <$> readProp "thread_post_id" json
       <*> readProp "likes" json
       <*> readProp "dislikes" json
       <*> readProp "starred" json
@@ -8213,13 +8186,13 @@ instance threadPostStatResponsesRespondable :: Respondable ThreadPostStatRespons
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadPostStatResponses
-      <$> readProp "threadPostStatResponses" json
+      <$> readProp "thread_post_stat_responses" json
 
 
 instance threadPostStatResponsesIsForeign :: IsForeign ThreadPostStatResponses where
   read json =
       mkThreadPostStatResponses
-      <$> readProp "threadPostStatResponses" json
+      <$> readProp "thread_post_stat_responses" json
 
 
 instance threadPostStatResponsesShow :: Show ThreadPostStatResponses where
@@ -8296,7 +8269,7 @@ instance userRequestRespondable :: Respondable UserRequest where
   fromResponse json =
       mkUserRequest
       <$> readProp "nick" json
-      <*> readProp "displayNick" json
+      <*> readProp "display_nick" json
       <*> readProp "name" json
       <*> readProp "email" json
       <*> readProp "plugin" json
@@ -8307,7 +8280,7 @@ instance userRequestIsForeign :: IsForeign UserRequest where
   read json =
       mkUserRequest
       <$> readProp "nick" json
-      <*> readProp "displayNick" json
+      <*> readProp "display_nick" json
       <*> readProp "name" json
       <*> readProp "email" json
       <*> readProp "plugin" json
@@ -8419,16 +8392,16 @@ instance userResponseRespondable :: Respondable UserResponse where
       mkUserResponse
       <$> readProp "id" json
       <*> readProp "nick" json
-      <*> readProp "displayNick" json
+      <*> readProp "display_nick" json
       <*> readProp "name" json
       <*> readProp "email" json
-      <*> readProp "emailMD5" json
+      <*> readProp "email_md5" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
       <*> readProp "active" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
-      <*> (runNullOrUndefined <$> readProp "deactivatedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "deactivated_at" json)
 
 
 instance userResponseIsForeign :: IsForeign UserResponse where
@@ -8436,16 +8409,16 @@ instance userResponseIsForeign :: IsForeign UserResponse where
       mkUserResponse
       <$> readProp "id" json
       <*> readProp "nick" json
-      <*> readProp "displayNick" json
+      <*> readProp "display_nick" json
       <*> readProp "name" json
       <*> readProp "email" json
-      <*> readProp "emailMD5" json
+      <*> readProp "email_md5" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
       <*> readProp "active" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
-      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
-      <*> (runNullOrUndefined <$> readProp "deactivatedAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "deactivated_at" json)
 
 
 instance userResponseShow :: Show UserResponse where
@@ -8496,13 +8469,13 @@ instance userResponsesRespondable :: Respondable UserResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkUserResponses
-      <$> readProp "userResponses" json
+      <$> readProp "user_responses" json
 
 
 instance userResponsesIsForeign :: IsForeign UserResponses where
   read json =
       mkUserResponses
-      <$> readProp "userResponses" json
+      <$> readProp "user_responses" json
 
 
 instance userResponsesShow :: Show UserResponses where
@@ -8580,10 +8553,10 @@ instance userSanitizedResponseRespondable :: Respondable UserSanitizedResponse w
       mkUserSanitizedResponse
       <$> readProp "id" json
       <*> readProp "nick" json
-      <*> readProp "displayNick" json
-      <*> readProp "emailMD5" json
+      <*> readProp "display_nick" json
+      <*> readProp "email_md5" json
       <*> readProp "active" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
 
 
 instance userSanitizedResponseIsForeign :: IsForeign UserSanitizedResponse where
@@ -8591,10 +8564,10 @@ instance userSanitizedResponseIsForeign :: IsForeign UserSanitizedResponse where
       mkUserSanitizedResponse
       <$> readProp "id" json
       <*> readProp "nick" json
-      <*> readProp "displayNick" json
-      <*> readProp "emailMD5" json
+      <*> readProp "display_nick" json
+      <*> readProp "email_md5" json
       <*> readProp "active" json
-      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
 
 
 instance userSanitizedResponseShow :: Show UserSanitizedResponse where
@@ -8645,13 +8618,13 @@ instance userSanitizedResponsesRespondable :: Respondable UserSanitizedResponses
     Tuple Nothing JSONResponse
   fromResponse json =
       mkUserSanitizedResponses
-      <$> readProp "userSanitizedResponses" json
+      <$> readProp "user_sanitized_responses" json
 
 
 instance userSanitizedResponsesIsForeign :: IsForeign UserSanitizedResponses where
   read json =
       mkUserSanitizedResponses
-      <$> readProp "userSanitizedResponses" json
+      <$> readProp "user_sanitized_responses" json
 
 
 instance userSanitizedResponsesShow :: Show UserSanitizedResponses where
@@ -8732,9 +8705,9 @@ instance userSanitizedStatResponseRespondable :: Respondable UserSanitizedStatRe
     Tuple Nothing JSONResponse
   fromResponse json =
       mkUserSanitizedStatResponse
-      <$> readProp "userId" json
+      <$> readProp "user_id" json
       <*> readProp "threads" json
-      <*> readProp "threadPosts" json
+      <*> readProp "thread_posts" json
       <*> readProp "respect" json
       <*> readProp "resources" json
       <*> readProp "leurons" json
@@ -8744,9 +8717,9 @@ instance userSanitizedStatResponseRespondable :: Respondable UserSanitizedStatRe
 instance userSanitizedStatResponseIsForeign :: IsForeign UserSanitizedStatResponse where
   read json =
       mkUserSanitizedStatResponse
-      <$> readProp "userId" json
+      <$> readProp "user_id" json
       <*> readProp "threads" json
-      <*> readProp "threadPosts" json
+      <*> readProp "thread_posts" json
       <*> readProp "respect" json
       <*> readProp "resources" json
       <*> readProp "leurons" json
@@ -8801,13 +8774,13 @@ instance userSanitizedStatResponsesRespondable :: Respondable UserSanitizedStatR
     Tuple Nothing JSONResponse
   fromResponse json =
       mkUserSanitizedStatResponses
-      <$> readProp "userSanitizedStatResponses" json
+      <$> readProp "user_sanitized_stat_responses" json
 
 
 instance userSanitizedStatResponsesIsForeign :: IsForeign UserSanitizedStatResponses where
   read json =
       mkUserSanitizedStatResponses
-      <$> readProp "userSanitizedStatResponses" json
+      <$> readProp "user_sanitized_stat_responses" json
 
 
 instance userSanitizedStatResponsesShow :: Show UserSanitizedStatResponses where
@@ -8947,20 +8920,20 @@ instance boardPackResponseRespondable :: Respondable BoardPackResponse where
   fromResponse json =
       mkBoardPackResponse
       <$> readProp "board" json
-      <*> readProp "boardStat" json
-      <*> (runNullOrUndefined <$> readProp "latestThread" json)
-      <*> (runNullOrUndefined <$> readProp "latestThreadPost" json)
-      <*> (runNullOrUndefined <$> readProp "latestThreadPostUser" json)
+      <*> readProp "board_stat" json
+      <*> (runNullOrUndefined <$> readProp "latest_thread" json)
+      <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
+      <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
 
 
 instance boardPackResponseIsForeign :: IsForeign BoardPackResponse where
   read json =
       mkBoardPackResponse
       <$> readProp "board" json
-      <*> readProp "boardStat" json
-      <*> (runNullOrUndefined <$> readProp "latestThread" json)
-      <*> (runNullOrUndefined <$> readProp "latestThreadPost" json)
-      <*> (runNullOrUndefined <$> readProp "latestThreadPostUser" json)
+      <*> readProp "board_stat" json
+      <*> (runNullOrUndefined <$> readProp "latest_thread" json)
+      <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
+      <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
 
 
 instance boardPackResponseShow :: Show BoardPackResponse where
@@ -9011,13 +8984,13 @@ instance boardPackResponsesRespondable :: Respondable BoardPackResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkBoardPackResponses
-      <$> readProp "boardPackResponses" json
+      <$> readProp "board_pack_responses" json
 
 
 instance boardPackResponsesIsForeign :: IsForeign BoardPackResponses where
   read json =
       mkBoardPackResponses
-      <$> readProp "boardPackResponses" json
+      <$> readProp "board_pack_responses" json
 
 
 instance boardPackResponsesShow :: Show BoardPackResponses where
@@ -9074,14 +9047,14 @@ instance organizationPackResponseRespondable :: Respondable OrganizationPackResp
   fromResponse json =
       mkOrganizationPackResponse
       <$> readProp "organization" json
-      <*> readProp "organizationStat" json
+      <*> readProp "organization_stat" json
 
 
 instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse where
   read json =
       mkOrganizationPackResponse
       <$> readProp "organization" json
-      <*> readProp "organizationStat" json
+      <*> readProp "organization_stat" json
 
 
 instance organizationPackResponseShow :: Show OrganizationPackResponse where
@@ -9132,13 +9105,13 @@ instance organizationPackResponsesRespondable :: Respondable OrganizationPackRes
     Tuple Nothing JSONResponse
   fromResponse json =
       mkOrganizationPackResponses
-      <$> readProp "organizationPackResponses" json
+      <$> readProp "organization_pack_responses" json
 
 
 instance organizationPackResponsesIsForeign :: IsForeign OrganizationPackResponses where
   read json =
       mkOrganizationPackResponses
-      <$> readProp "organizationPackResponses" json
+      <$> readProp "organization_pack_responses" json
 
 
 instance organizationPackResponsesShow :: Show OrganizationPackResponses where
@@ -9210,20 +9183,20 @@ instance threadPackResponseRespondable :: Respondable ThreadPackResponse where
   fromResponse json =
       mkThreadPackResponse
       <$> readProp "thread" json
-      <*> readProp "threadUser" json
-      <*> readProp "threadStat" json
-      <*> (runNullOrUndefined <$> readProp "latestThreadPost" json)
-      <*> (runNullOrUndefined <$> readProp "latestThreadPostUser" json)
+      <*> readProp "thread_user" json
+      <*> readProp "thread_stat" json
+      <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
+      <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
 
 
 instance threadPackResponseIsForeign :: IsForeign ThreadPackResponse where
   read json =
       mkThreadPackResponse
       <$> readProp "thread" json
-      <*> readProp "threadUser" json
-      <*> readProp "threadStat" json
-      <*> (runNullOrUndefined <$> readProp "latestThreadPost" json)
-      <*> (runNullOrUndefined <$> readProp "latestThreadPostUser" json)
+      <*> readProp "thread_user" json
+      <*> readProp "thread_stat" json
+      <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
+      <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
 
 
 instance threadPackResponseShow :: Show ThreadPackResponse where
@@ -9274,13 +9247,13 @@ instance threadPackResponsesRespondable :: Respondable ThreadPackResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadPackResponses
-      <$> readProp "threadPackResponses" json
+      <$> readProp "thread_pack_responses" json
 
 
 instance threadPackResponsesIsForeign :: IsForeign ThreadPackResponses where
   read json =
       mkThreadPackResponses
-      <$> readProp "threadPackResponses" json
+      <$> readProp "thread_pack_responses" json
 
 
 instance threadPackResponsesShow :: Show ThreadPackResponses where
@@ -9346,7 +9319,7 @@ instance threadPostPackResponseRespondable :: Respondable ThreadPostPackResponse
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadPostPackResponse
-      <$> readProp "threadPost" json
+      <$> readProp "thread_post" json
       <*> readProp "user" json
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
@@ -9355,7 +9328,7 @@ instance threadPostPackResponseRespondable :: Respondable ThreadPostPackResponse
 instance threadPostPackResponseIsForeign :: IsForeign ThreadPostPackResponse where
   read json =
       mkThreadPostPackResponse
-      <$> readProp "threadPost" json
+      <$> readProp "thread_post" json
       <*> readProp "user" json
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
@@ -9409,13 +9382,13 @@ instance threadPostPackResponsesRespondable :: Respondable ThreadPostPackRespons
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadPostPackResponses
-      <$> readProp "threadPostPackResponses" json
+      <$> readProp "thread_post_pack_responses" json
 
 
 instance threadPostPackResponsesIsForeign :: IsForeign ThreadPostPackResponses where
   read json =
       mkThreadPostPackResponses
-      <$> readProp "threadPostPackResponses" json
+      <$> readProp "thread_post_pack_responses" json
 
 
 instance threadPostPackResponsesShow :: Show ThreadPostPackResponses where
@@ -9477,16 +9450,16 @@ instance userPackResponseRespondable :: Respondable UserPackResponse where
   fromResponse json =
       mkUserPackResponse
       <$> readProp "user" json
-      <*> readProp "userStat" json
-      <*> readProp "userProfile" json
+      <*> readProp "user_stat" json
+      <*> readProp "user_profile" json
 
 
 instance userPackResponseIsForeign :: IsForeign UserPackResponse where
   read json =
       mkUserPackResponse
       <$> readProp "user" json
-      <*> readProp "userStat" json
-      <*> readProp "userProfile" json
+      <*> readProp "user_stat" json
+      <*> readProp "user_profile" json
 
 
 instance userPackResponseShow :: Show UserPackResponse where
@@ -9537,13 +9510,13 @@ instance userPackResponsesRespondable :: Respondable UserPackResponses where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkUserPackResponses
-      <$> readProp "userPackResponses" json
+      <$> readProp "user_pack_responses" json
 
 
 instance userPackResponsesIsForeign :: IsForeign UserPackResponses where
   read json =
       mkUserPackResponses
-      <$> readProp "userPackResponses" json
+      <$> readProp "user_pack_responses" json
 
 
 instance userPackResponsesShow :: Show UserPackResponses where
@@ -9605,16 +9578,16 @@ instance userSanitizedPackResponseRespondable :: Respondable UserSanitizedPackRe
   fromResponse json =
       mkUserSanitizedPackResponse
       <$> readProp "user" json
-      <*> readProp "userStat" json
-      <*> readProp "userProfile" json
+      <*> readProp "user_stat" json
+      <*> readProp "user_profile" json
 
 
 instance userSanitizedPackResponseIsForeign :: IsForeign UserSanitizedPackResponse where
   read json =
       mkUserSanitizedPackResponse
       <$> readProp "user" json
-      <*> readProp "userStat" json
-      <*> readProp "userProfile" json
+      <*> readProp "user_stat" json
+      <*> readProp "user_profile" json
 
 
 instance userSanitizedPackResponseShow :: Show UserSanitizedPackResponse where
@@ -9665,13 +9638,13 @@ instance userSanitizedPackResponsesRespondable :: Respondable UserSanitizedPackR
     Tuple Nothing JSONResponse
   fromResponse json =
       mkUserSanitizedPackResponses
-      <$> readProp "userSanitizedPackResponses" json
+      <$> readProp "user_sanitized_pack_responses" json
 
 
 instance userSanitizedPackResponsesIsForeign :: IsForeign UserSanitizedPackResponses where
   read json =
       mkUserSanitizedPackResponses
-      <$> readProp "userSanitizedPackResponses" json
+      <$> readProp "user_sanitized_pack_responses" json
 
 
 instance userSanitizedPackResponsesShow :: Show UserSanitizedPackResponses where
