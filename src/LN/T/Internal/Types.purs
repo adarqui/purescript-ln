@@ -3226,27 +3226,27 @@ instance organizationResponsesRequestable :: Requestable OrganizationResponses w
 instance organizationResponsesRespondable :: Respondable OrganizationResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
---  fromResponse f = decodeJson (jsonParser (show f))
-{-
   fromResponse f =
-    case (jsonParser (show f)) of
-         Left s -> pure (Left (JSONError s))
-         Right j -> case decodeJson j of
-                         Left s' -> return $ Left (JSONError "hi")
-                         Right v -> return $ Right v
-                         -}
+    case (jsonParser (unsafeFromForeign f)) of
+         Left s -> Left (JSONError s)
+         Right j -> case (decodeJson j) of
+                         Left s' -> Left (JSONError s')
+                         Right v -> pure v
 
---  fromResponse f = decodeJson f
---  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationResponsesIsForeign :: IsForeign OrganizationResponses where
-  read = Right <<< unsafeFromForeign
+  read f =
+    case (jsonParser (unsafeFromForeign f)) of
+         Left s -> Left (JSONError s)
+         Right j -> case (decodeJson j) of
+                         Left s' -> Left (JSONError s')
+                         Right v -> pure v
 
 
 instance organizationResponsesShow :: Show OrganizationResponses where
     show (OrganizationResponses o) = show "organizationResponses: " ++ show o.organizationResponses
+
 
 newtype OrganizationStatResponse = OrganizationStatResponse {
   organizationId :: Int,
