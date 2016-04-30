@@ -3792,13 +3792,13 @@ instance organizationResponsesRespondable :: Respondable OrganizationResponses w
     Tuple Nothing JSONResponse
   fromResponse json =
       mkOrganizationResponses
-      <$> readProp "organizationResponses" json
+      <$> readProp "organization_responses" json
 
 
 instance organizationResponsesIsForeign :: IsForeign OrganizationResponses where
   read json =
       mkOrganizationResponses
-      <$> readProp "organizationResponses" json
+      <$> readProp "organization_responses" json
 
 
 instance organizationResponsesShow :: Show OrganizationResponses where
