@@ -7,11 +7,10 @@ import Data.Argonaut.Core
 import Data.Argonaut.Decode
 import Data.Argonaut.Encode
 import Data.Argonaut.Printer
-import Data.Argonaut.Parser
 import Data.Date.Helpers
 import Data.Either
 import Data.Foreign
-import Data.Foreign (unsafeFromForeign)
+import Data.Foreign.NullOrUndefined
 import Data.Foreign.Class
 import Data.JSON
 import Data.List (List ())
@@ -69,11 +68,15 @@ instance apiRequestRequestable :: Requestable ApiRequest where
 instance apiRequestRespondable :: Respondable ApiRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkApiRequest
+      <$> (runNullOrUndefined <$> readProp "comment" json)
 
 
 instance apiRequestIsForeign :: IsForeign ApiRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkApiRequest
+      <$> (runNullOrUndefined <$> readProp "comment" json)
 
 
 instance apiRequestShow :: Show ApiRequest where
@@ -147,11 +150,25 @@ instance apiResponseRequestable :: Requestable ApiResponse where
 instance apiResponseRespondable :: Respondable ApiResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkApiResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "key" json
+      <*> (runNullOrUndefined <$> readProp "comment" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance apiResponseIsForeign :: IsForeign ApiResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkApiResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "key" json
+      <*> (runNullOrUndefined <$> readProp "comment" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance apiResponseShow :: Show ApiResponse where
@@ -200,11 +217,15 @@ instance apiResponsesRequestable :: Requestable ApiResponses where
 instance apiResponsesRespondable :: Respondable ApiResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkApiResponses
+      <$> readProp "apiResponses" json
 
 
 instance apiResponsesIsForeign :: IsForeign ApiResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkApiResponses
+      <$> readProp "apiResponses" json
 
 
 instance apiResponsesShow :: Show ApiResponses where
@@ -258,11 +279,17 @@ instance boardRequestRequestable :: Requestable BoardRequest where
 instance boardRequestRespondable :: Respondable BoardRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBoardRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
 
 
 instance boardRequestIsForeign :: IsForeign BoardRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBoardRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
 
 
 instance boardRequestShow :: Show BoardRequest where
@@ -351,11 +378,31 @@ instance boardResponseRequestable :: Requestable BoardResponse where
 instance boardResponseRespondable :: Respondable BoardResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBoardResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "forumId" json
+      <*> (runNullOrUndefined <$> readProp "parentId" json)
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance boardResponseIsForeign :: IsForeign BoardResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBoardResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "forumId" json
+      <*> (runNullOrUndefined <$> readProp "parentId" json)
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance boardResponseShow :: Show BoardResponse where
@@ -404,11 +451,15 @@ instance boardResponsesRequestable :: Requestable BoardResponses where
 instance boardResponsesRespondable :: Respondable BoardResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBoardResponses
+      <$> readProp "boardResponses" json
 
 
 instance boardResponsesIsForeign :: IsForeign BoardResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBoardResponses
+      <$> readProp "boardResponses" json
 
 
 instance boardResponsesShow :: Show BoardResponses where
@@ -472,11 +523,21 @@ instance boardStatResponseRequestable :: Requestable BoardStatResponse where
 instance boardStatResponseRespondable :: Respondable BoardStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBoardStatResponse
+      <$> readProp "boardId" json
+      <*> readProp "threads" json
+      <*> readProp "threadPosts" json
+      <*> readProp "views" json
 
 
 instance boardStatResponseIsForeign :: IsForeign BoardStatResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBoardStatResponse
+      <$> readProp "boardId" json
+      <*> readProp "threads" json
+      <*> readProp "threadPosts" json
+      <*> readProp "views" json
 
 
 instance boardStatResponseShow :: Show BoardStatResponse where
@@ -525,11 +586,15 @@ instance boardStatResponsesRequestable :: Requestable BoardStatResponses where
 instance boardStatResponsesRespondable :: Respondable BoardStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBoardStatResponses
+      <$> readProp "boardStatResponses" json
 
 
 instance boardStatResponsesIsForeign :: IsForeign BoardStatResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBoardStatResponses
+      <$> readProp "boardStatResponses" json
 
 
 instance boardStatResponsesShow :: Show BoardStatResponses where
@@ -613,11 +678,29 @@ instance bucketRequestRequestable :: Requestable BucketRequest where
 instance bucketRequestRespondable :: Respondable BucketRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBucketRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "scoreLo" json
+      <*> readProp "scoreHi" json
+      <*> readProp "leurons" json
+      <*> readProp "resources" json
+      <*> readProp "categories" json
+      <*> readProp "filters" json
 
 
 instance bucketRequestIsForeign :: IsForeign BucketRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBucketRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "scoreLo" json
+      <*> readProp "scoreHi" json
+      <*> readProp "leurons" json
+      <*> readProp "resources" json
+      <*> readProp "categories" json
+      <*> readProp "filters" json
 
 
 instance bucketRequestShow :: Show BucketRequest where
@@ -721,11 +804,37 @@ instance bucketResponseRequestable :: Requestable BucketResponse where
 instance bucketResponseRespondable :: Respondable BucketResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBucketResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "scoreLo" json
+      <*> readProp "scoreHi" json
+      <*> readProp "leurons" json
+      <*> readProp "resources" json
+      <*> readProp "categories" json
+      <*> readProp "filters" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance bucketResponseIsForeign :: IsForeign BucketResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBucketResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "scoreLo" json
+      <*> readProp "scoreHi" json
+      <*> readProp "leurons" json
+      <*> readProp "resources" json
+      <*> readProp "categories" json
+      <*> readProp "filters" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance bucketResponseShow :: Show BucketResponse where
@@ -774,11 +883,15 @@ instance bucketResponsesRequestable :: Requestable BucketResponses where
 instance bucketResponsesRespondable :: Respondable BucketResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBucketResponses
+      <$> readProp "bucketResponses" json
 
 
 instance bucketResponsesIsForeign :: IsForeign BucketResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBucketResponses
+      <$> readProp "bucketResponses" json
 
 
 instance bucketResponsesShow :: Show BucketResponses where
@@ -832,11 +945,17 @@ instance countResponseRequestable :: Requestable CountResponse where
 instance countResponseRespondable :: Respondable CountResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkCountResponse
+      <$> readProp "id" json
+      <*> readProp "n" json
 
 
 instance countResponseIsForeign :: IsForeign CountResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkCountResponse
+      <$> readProp "id" json
+      <*> readProp "n" json
 
 
 instance countResponseShow :: Show CountResponse where
@@ -885,11 +1004,15 @@ instance countResponsesRequestable :: Requestable CountResponses where
 instance countResponsesRespondable :: Respondable CountResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkCountResponses
+      <$> readProp "countResponses" json
 
 
 instance countResponsesIsForeign :: IsForeign CountResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkCountResponses
+      <$> readProp "countResponses" json
 
 
 instance countResponsesShow :: Show CountResponses where
@@ -941,17 +1064,15 @@ instance emptyRequestRequestable :: Requestable EmptyRequest where
 instance emptyRequestRespondable :: Respondable EmptyRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f =
-    Left (JSONError "error")
---    pure (mkEmptyRequest false)
-
-    {-
-  fromResponse = Right <<< unsafeFromForeign
-  -}
+  fromResponse json =
+      mkEmptyRequest
+      <$> readProp "value" json
 
 
 instance emptyRequestIsForeign :: IsForeign EmptyRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkEmptyRequest
+      <$> readProp "value" json
 
 
 instance emptyRequestShow :: Show EmptyRequest where
@@ -1020,11 +1141,23 @@ instance emptyResponseRequestable :: Requestable EmptyResponse where
 instance emptyResponseRespondable :: Respondable EmptyResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkEmptyResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "value" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance emptyResponseIsForeign :: IsForeign EmptyResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkEmptyResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "value" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance emptyResponseShow :: Show EmptyResponse where
@@ -1073,11 +1206,15 @@ instance emptyResponsesRequestable :: Requestable EmptyResponses where
 instance emptyResponsesRespondable :: Respondable EmptyResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkEmptyResponses
+      <$> readProp "emptyResponses" json
 
 
 instance emptyResponsesIsForeign :: IsForeign EmptyResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkEmptyResponses
+      <$> readProp "emptyResponses" json
 
 
 instance emptyResponsesShow :: Show EmptyResponses where
@@ -1131,11 +1268,17 @@ instance forumRequestRequestable :: Requestable ForumRequest where
 instance forumRequestRespondable :: Respondable ForumRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkForumRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
 
 
 instance forumRequestIsForeign :: IsForeign ForumRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkForumRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
 
 
 instance forumRequestShow :: Show ForumRequest where
@@ -1219,11 +1362,29 @@ instance forumResponseRequestable :: Requestable ForumResponse where
 instance forumResponseRespondable :: Respondable ForumResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkForumResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "orgId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance forumResponseIsForeign :: IsForeign ForumResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkForumResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "orgId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance forumResponseShow :: Show ForumResponse where
@@ -1272,11 +1433,15 @@ instance forumResponsesRequestable :: Requestable ForumResponses where
 instance forumResponsesRespondable :: Respondable ForumResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkForumResponses
+      <$> readProp "forumResponses" json
 
 
 instance forumResponsesIsForeign :: IsForeign ForumResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkForumResponses
+      <$> readProp "forumResponses" json
 
 
 instance forumResponsesShow :: Show ForumResponses where
@@ -1345,11 +1510,23 @@ instance forumStatResponseRequestable :: Requestable ForumStatResponse where
 instance forumStatResponseRespondable :: Respondable ForumStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkForumStatResponse
+      <$> readProp "forumId" json
+      <*> readProp "boards" json
+      <*> readProp "threads" json
+      <*> readProp "threadPosts" json
+      <*> readProp "views" json
 
 
 instance forumStatResponseIsForeign :: IsForeign ForumStatResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkForumStatResponse
+      <$> readProp "forumId" json
+      <*> readProp "boards" json
+      <*> readProp "threads" json
+      <*> readProp "threadPosts" json
+      <*> readProp "views" json
 
 
 instance forumStatResponseShow :: Show ForumStatResponse where
@@ -1398,11 +1575,15 @@ instance forumStatResponsesRequestable :: Requestable ForumStatResponses where
 instance forumStatResponsesRespondable :: Respondable ForumStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkForumStatResponses
+      <$> readProp "forumStatResponses" json
 
 
 instance forumStatResponsesIsForeign :: IsForeign ForumStatResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkForumStatResponses
+      <$> readProp "forumStatResponses" json
 
 
 instance forumStatResponsesShow :: Show ForumStatResponses where
@@ -1506,11 +1687,37 @@ instance leuronRequestRequestable :: Requestable LeuronRequest where
 instance leuronRequestRespondable :: Respondable LeuronRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkLeuronRequest
+      <$> readProp "dataP" json
+      <*> (runNullOrUndefined <$> readProp "title" json)
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "section" json)
+      <*> (runNullOrUndefined <$> readProp "page" json)
+      <*> (runNullOrUndefined <$> readProp "examples" json)
+      <*> (runNullOrUndefined <$> readProp "strengths" json)
+      <*> readProp "categories" json
+      <*> (runNullOrUndefined <$> readProp "splits" json)
+      <*> (runNullOrUndefined <$> readProp "substitutions" json)
+      <*> (runNullOrUndefined <$> readProp "tags" json)
+      <*> (runNullOrUndefined <$> readProp "style" json)
 
 
 instance leuronRequestIsForeign :: IsForeign LeuronRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkLeuronRequest
+      <$> readProp "dataP" json
+      <*> (runNullOrUndefined <$> readProp "title" json)
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "section" json)
+      <*> (runNullOrUndefined <$> readProp "page" json)
+      <*> (runNullOrUndefined <$> readProp "examples" json)
+      <*> (runNullOrUndefined <$> readProp "strengths" json)
+      <*> readProp "categories" json
+      <*> (runNullOrUndefined <$> readProp "splits" json)
+      <*> (runNullOrUndefined <$> readProp "substitutions" json)
+      <*> (runNullOrUndefined <$> readProp "tags" json)
+      <*> (runNullOrUndefined <$> readProp "style" json)
 
 
 instance leuronRequestShow :: Show LeuronRequest where
@@ -1639,11 +1846,47 @@ instance leuronResponseRequestable :: Requestable LeuronResponse where
 instance leuronResponseRespondable :: Respondable LeuronResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkLeuronResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "resourceId" json
+      <*> readProp "dataP" json
+      <*> (runNullOrUndefined <$> readProp "title" json)
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "section" json)
+      <*> (runNullOrUndefined <$> readProp "page" json)
+      <*> (runNullOrUndefined <$> readProp "examples" json)
+      <*> (runNullOrUndefined <$> readProp "strengths" json)
+      <*> readProp "categories" json
+      <*> (runNullOrUndefined <$> readProp "splits" json)
+      <*> (runNullOrUndefined <$> readProp "substitutions" json)
+      <*> (runNullOrUndefined <$> readProp "tags" json)
+      <*> (runNullOrUndefined <$> readProp "style" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance leuronResponseIsForeign :: IsForeign LeuronResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkLeuronResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "resourceId" json
+      <*> readProp "dataP" json
+      <*> (runNullOrUndefined <$> readProp "title" json)
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "section" json)
+      <*> (runNullOrUndefined <$> readProp "page" json)
+      <*> (runNullOrUndefined <$> readProp "examples" json)
+      <*> (runNullOrUndefined <$> readProp "strengths" json)
+      <*> readProp "categories" json
+      <*> (runNullOrUndefined <$> readProp "splits" json)
+      <*> (runNullOrUndefined <$> readProp "substitutions" json)
+      <*> (runNullOrUndefined <$> readProp "tags" json)
+      <*> (runNullOrUndefined <$> readProp "style" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance leuronResponseShow :: Show LeuronResponse where
@@ -1692,11 +1935,15 @@ instance leuronResponsesRequestable :: Requestable LeuronResponses where
 instance leuronResponsesRespondable :: Respondable LeuronResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkLeuronResponses
+      <$> readProp "leuronResponses" json
 
 
 instance leuronResponsesIsForeign :: IsForeign LeuronResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkLeuronResponses
+      <$> readProp "leuronResponses" json
 
 
 instance leuronResponsesShow :: Show LeuronResponses where
@@ -1711,10 +1958,10 @@ data LeuronData
   | LnAcronym Acronym
   | LnSynonym Synonym
   | LnAntonym Antonym
-  | LnTemplate Template
+--  | LnTemplate Template
   | LnImageAssociation ImageAssociation
   | LnLinearDemo LinearDemo
-  | LnTable Table
+--  | LnTable Table
   | LnScript Script
   | LnQA QA
   | LnExamples 
@@ -1755,10 +2002,12 @@ instance leuronDataEncodeJson :: EncodeJson LeuronData where
        "tag" := "LnAntonym"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
+    {-
   encodeJson (LnTemplate x0) =
        "tag" := "LnTemplate"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
+    -}
   encodeJson (LnImageAssociation x0) =
        "tag" := "LnImageAssociation"
     ~> "contents" := encodeJson x0
@@ -1767,10 +2016,12 @@ instance leuronDataEncodeJson :: EncodeJson LeuronData where
        "tag" := "LnLinearDemo"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
+    {-
   encodeJson (LnTable x0) =
        "tag" := "LnTable"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
+    -}
   encodeJson (LnScript x0) =
        "tag" := "LnScript"
     ~> "contents" := encodeJson x0
@@ -1826,9 +2077,11 @@ instance leuronDataDecodeJson :: DecodeJson LeuronData where
           x0 <- obj .? "contents"
           LnAntonym <$> decodeJson x0
 
+{-
         "LnTemplate" -> do
           x0 <- obj .? "contents"
           LnTemplate <$> decodeJson x0
+          -}
 
         "LnImageAssociation" -> do
           x0 <- obj .? "contents"
@@ -1838,9 +2091,11 @@ instance leuronDataDecodeJson :: DecodeJson LeuronData where
           x0 <- obj .? "contents"
           LnLinearDemo <$> decodeJson x0
 
+{-
         "LnTable" -> do
           x0 <- obj .? "contents"
           LnTable <$> decodeJson x0
+          -}
 
         "LnScript" -> do
           x0 <- obj .? "contents"
@@ -1851,10 +2106,10 @@ instance leuronDataDecodeJson :: DecodeJson LeuronData where
           LnQA <$> decodeJson x0
 
         "LnExamples" -> do
-          return $ LnExamples
+          return LnExamples
 
         "LnEmpty" -> do
-          return $ LnEmpty
+          return LnEmpty
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -1868,11 +2123,147 @@ instance leuronDataRequestable :: Requestable LeuronData where
 instance leuronDataRespondable :: Respondable LeuronData where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "LnFact" -> do
+          x0 <- readProp "contents" json
+          LnFact <$> read x0
+
+        "LnFactList" -> do
+          x0 <- readProp "contents" json
+          LnFactList <$> read x0
+
+        "LnCard" -> do
+          x0 <- readProp "contents" json
+          LnCard <$> read x0
+
+        "LnDCard" -> do
+          x0 <- readProp "contents" json
+          LnDCard <$> read x0
+
+        "LnDCardX" -> do
+          x0 <- readProp "contents" json
+          LnDCardX <$> read x0
+
+        "LnAcronym" -> do
+          x0 <- readProp "contents" json
+          LnAcronym <$> read x0
+
+        "LnSynonym" -> do
+          x0 <- readProp "contents" json
+          LnSynonym <$> read x0
+
+        "LnAntonym" -> do
+          x0 <- readProp "contents" json
+          LnAntonym <$> read x0
+
+{-
+        "LnTemplate" -> do
+          x0 <- readProp "contents" json
+          LnTemplate <$> read x0
+          -}
+
+        "LnImageAssociation" -> do
+          x0 <- readProp "contents" json
+          LnImageAssociation <$> read x0
+
+        "LnLinearDemo" -> do
+          x0 <- readProp "contents" json
+          LnLinearDemo <$> read x0
+
+{-
+        "LnTable" -> do
+          x0 <- readProp "contents" json
+          LnTable <$> read x0
+          -}
+
+        "LnScript" -> do
+          x0 <- readProp "contents" json
+          LnScript <$> read x0
+
+        "LnQA" -> do
+          x0 <- readProp "contents" json
+          LnQA <$> read x0
+
+        "LnExamples" -> do
+          return LnExamples
+
+        "LnEmpty" -> do
+          return LnEmpty
+
 
 
 instance leuronDataIsForeign :: IsForeign LeuronData where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "LnFact" -> do
+          x0 <- readProp "contents" json
+          LnFact <$> read x0
+
+        "LnFactList" -> do
+          x0 <- readProp "contents" json
+          LnFactList <$> read x0
+
+        "LnCard" -> do
+          x0 <- readProp "contents" json
+          LnCard <$> read x0
+
+        "LnDCard" -> do
+          x0 <- readProp "contents" json
+          LnDCard <$> read x0
+
+        "LnDCardX" -> do
+          x0 <- readProp "contents" json
+          LnDCardX <$> read x0
+
+        "LnAcronym" -> do
+          x0 <- readProp "contents" json
+          LnAcronym <$> read x0
+
+        "LnSynonym" -> do
+          x0 <- readProp "contents" json
+          LnSynonym <$> read x0
+
+        "LnAntonym" -> do
+          x0 <- readProp "contents" json
+          LnAntonym <$> read x0
+
+{-
+        "LnTemplate" -> do
+          x0 <- readProp "contents" json
+          LnTemplate <$> read x0
+          -}
+
+        "LnImageAssociation" -> do
+          x0 <- readProp "contents" json
+          LnImageAssociation <$> read x0
+
+        "LnLinearDemo" -> do
+          x0 <- readProp "contents" json
+          LnLinearDemo <$> read x0
+
+{-
+        "LnTable" -> do
+          x0 <- readProp "contents" json
+          LnTable <$> read x0
+          -}
+
+        "LnScript" -> do
+          x0 <- readProp "contents" json
+          LnScript <$> read x0
+
+        "LnQA" -> do
+          x0 <- readProp "contents" json
+          LnQA <$> read x0
+
+        "LnExamples" -> do
+          return LnExamples
+
+        "LnEmpty" -> do
+          return LnEmpty
+
 
 
 instance leuronDataShow :: Show LeuronData where
@@ -1884,10 +2275,10 @@ instance leuronDataShow :: Show LeuronData where
   show (LnAcronym x0) = "LnAcronym: " ++ show x0
   show (LnSynonym x0) = "LnSynonym: " ++ show x0
   show (LnAntonym x0) = "LnAntonym: " ++ show x0
-  show (LnTemplate x0) = "LnTemplate: " ++ show x0
+--  show (LnTemplate x0) = "LnTemplate: " ++ show x0
   show (LnImageAssociation x0) = "LnImageAssociation: " ++ show x0
   show (LnLinearDemo x0) = "LnLinearDemo: " ++ show x0
-  show (LnTable x0) = "LnTable: " ++ show x0
+--  show (LnTable x0) = "LnTable: " ++ show x0
   show (LnScript x0) = "LnScript: " ++ show x0
   show (LnQA x0) = "LnQA: " ++ show x0
   show (LnExamples) = "LnExamples"
@@ -1937,11 +2328,15 @@ instance factRequestable :: Requestable Fact where
 instance factRespondable :: Respondable Fact where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkFact
+      <$> readProp "text" json
 
 
 instance factIsForeign :: IsForeign Fact where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkFact
+      <$> readProp "text" json
 
 
 instance factShow :: Show Fact where
@@ -1995,11 +2390,17 @@ instance factListRequestable :: Requestable FactList where
 instance factListRespondable :: Respondable FactList where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkFactList
+      <$> readProp "fact" json
+      <*> readProp "list" json
 
 
 instance factListIsForeign :: IsForeign FactList where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkFactList
+      <$> readProp "fact" json
+      <*> readProp "list" json
 
 
 instance factListShow :: Show FactList where
@@ -2053,11 +2454,17 @@ instance cardRequestable :: Requestable Card where
 instance cardRespondable :: Respondable Card where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkCard
+      <$> readProp "front" json
+      <*> readProp "back" json
 
 
 instance cardIsForeign :: IsForeign Card where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkCard
+      <$> readProp "front" json
+      <*> readProp "back" json
 
 
 instance cardShow :: Show Card where
@@ -2111,11 +2518,17 @@ instance dCardRequestable :: Requestable DCard where
 instance dCardRespondable :: Respondable DCard where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkDCard
+      <$> readProp "dcardFront" json
+      <*> readProp "dcardBack" json
 
 
 instance dCardIsForeign :: IsForeign DCard where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkDCard
+      <$> readProp "dcardFront" json
+      <*> readProp "dcardBack" json
 
 
 instance dCardShow :: Show DCard where
@@ -2169,11 +2582,17 @@ instance dCardXRequestable :: Requestable DCardX where
 instance dCardXRespondable :: Respondable DCardX where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkDCardX
+      <$> readProp "dcardxFront" json
+      <*> readProp "dcardxBack" json
 
 
 instance dCardXIsForeign :: IsForeign DCardX where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkDCardX
+      <$> readProp "dcardxFront" json
+      <*> readProp "dcardxBack" json
 
 
 instance dCardXShow :: Show DCardX where
@@ -2227,11 +2646,17 @@ instance acronymRequestable :: Requestable Acronym where
 instance acronymRespondable :: Respondable Acronym where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkAcronym
+      <$> readProp "abbreviation" json
+      <*> readProp "meaning" json
 
 
 instance acronymIsForeign :: IsForeign Acronym where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkAcronym
+      <$> readProp "abbreviation" json
+      <*> readProp "meaning" json
 
 
 instance acronymShow :: Show Acronym where
@@ -2285,11 +2710,17 @@ instance synonymRequestable :: Requestable Synonym where
 instance synonymRespondable :: Respondable Synonym where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkSynonym
+      <$> readProp "a" json
+      <*> readProp "b" json
 
 
 instance synonymIsForeign :: IsForeign Synonym where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkSynonym
+      <$> readProp "a" json
+      <*> readProp "b" json
 
 
 instance synonymShow :: Show Synonym where
@@ -2343,16 +2774,23 @@ instance antonymRequestable :: Requestable Antonym where
 instance antonymRespondable :: Respondable Antonym where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkAntonym
+      <$> readProp "a" json
+      <*> readProp "b" json
 
 
 instance antonymIsForeign :: IsForeign Antonym where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkAntonym
+      <$> readProp "a" json
+      <*> readProp "b" json
 
 
 instance antonymShow :: Show Antonym where
     show (Antonym o) = show "a: " ++ show o.a ++ ", " ++ show "b: " ++ show o.b
 
+{-
 newtype Template = Template {
   template :: String,
   values :: (Array  TemplateValue)
@@ -2401,17 +2839,24 @@ instance templateRequestable :: Requestable Template where
 instance templateRespondable :: Respondable Template where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkTemplate
+      <$> readProp "template" json
+      <*> readProp "values" json
 
 
 instance templateIsForeign :: IsForeign Template where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkTemplate
+      <$> readProp "template" json
+      <*> readProp "values" json
 
 
 instance templateShow :: Show Template where
     show (Template o) = show "template: " ++ show o.template ++ ", " ++ show "values: " ++ show o.values
 
 type TemplateValue = ((Tuple  String) (Array  String))
+-}
 
 
 newtype ImageAssociation = ImageAssociation {
@@ -2467,11 +2912,19 @@ instance imageAssociationRequestable :: Requestable ImageAssociation where
 instance imageAssociationRespondable :: Respondable ImageAssociation where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkImageAssociation
+      <$> readProp "imageUrl" json
+      <*> readProp "assocBy" json
+      <*> readProp "assocResult" json
 
 
 instance imageAssociationIsForeign :: IsForeign ImageAssociation where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkImageAssociation
+      <$> readProp "imageUrl" json
+      <*> readProp "assocBy" json
+      <*> readProp "assocResult" json
 
 
 instance imageAssociationShow :: Show ImageAssociation where
@@ -2530,11 +2983,19 @@ instance scriptRequestable :: Requestable Script where
 instance scriptRespondable :: Respondable Script where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkScript
+      <$> readProp "title" json
+      <*> readProp "desc" json
+      <*> readProp "url" json
 
 
 instance scriptIsForeign :: IsForeign Script where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkScript
+      <$> readProp "title" json
+      <*> readProp "desc" json
+      <*> readProp "url" json
 
 
 instance scriptShow :: Show Script where
@@ -2594,14 +3055,26 @@ instance linearDemoRequestable :: Requestable LinearDemo where
     in toRequest str
 
 
+{-
+instance k :: IsForeign a => IsForeign (Maybe a) where
+  read f = readString f
+  -}
+
+
 instance linearDemoRespondable :: Respondable LinearDemo where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkLinearDemo
+      <$> readProp "label" json
+      <*> readProp "content" json
 
 
 instance linearDemoIsForeign :: IsForeign LinearDemo where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkLinearDemo
+      <$> readProp "label" json
+      <*> readProp "content" json
 
 
 instance linearDemoShow :: Show LinearDemo where
@@ -2655,16 +3128,23 @@ instance qARequestable :: Requestable QA where
 instance qARespondable :: Respondable QA where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkQA
+      <$> readProp "qaQuestion" json
+      <*> readProp "qaAnswer" json
 
 
 instance qAIsForeign :: IsForeign QA where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkQA
+      <$> readProp "qaQuestion" json
+      <*> readProp "qaAnswer" json
 
 
 instance qAShow :: Show QA where
     show (QA o) = show "qaQuestion: " ++ show o.qaQuestion ++ ", " ++ show "qaAnswer: " ++ show o.qaAnswer
 
+{-
 newtype Table = Table {
   title :: String,
   columns :: (Array  String),
@@ -2718,15 +3198,25 @@ instance tableRequestable :: Requestable Table where
 instance tableRespondable :: Respondable Table where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkTable
+      <$> readProp "title" json
+      <*> readProp "columns" json
+      <*> readProp "rows" json
 
 
 instance tableIsForeign :: IsForeign Table where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkTable
+      <$> readProp "title" json
+      <*> readProp "columns" json
+      <*> readProp "rows" json
 
 
 instance tableShow :: Show Table where
     show (Table o) = show "title: " ++ show o.title ++ ", " ++ show "columns: " ++ show o.columns ++ ", " ++ show "rows: " ++ show o.rows
+
+-}
 
 newtype LikeRequest = LikeRequest {
   opt :: LikeOpt,
@@ -2776,11 +3266,17 @@ instance likeRequestRequestable :: Requestable LikeRequest where
 instance likeRequestRespondable :: Respondable LikeRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkLikeRequest
+      <$> readProp "opt" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
 
 
 instance likeRequestIsForeign :: IsForeign LikeRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkLikeRequest
+      <$> readProp "opt" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
 
 
 instance likeRequestShow :: Show LikeRequest where
@@ -2869,11 +3365,31 @@ instance likeResponseRequestable :: Requestable LikeResponse where
 instance likeResponseRespondable :: Respondable LikeResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkLikeResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "entityName" json
+      <*> readProp "entityId" json
+      <*> readProp "opt" json
+      <*> readProp "score" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance likeResponseIsForeign :: IsForeign LikeResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkLikeResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "entityName" json
+      <*> readProp "entityId" json
+      <*> readProp "opt" json
+      <*> readProp "score" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance likeResponseShow :: Show LikeResponse where
@@ -2922,11 +3438,15 @@ instance likeResponsesRequestable :: Requestable LikeResponses where
 instance likeResponsesRespondable :: Respondable LikeResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkLikeResponses
+      <$> readProp "likeResponses" json
 
 
 instance likeResponsesIsForeign :: IsForeign LikeResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkLikeResponses
+      <$> readProp "likeResponses" json
 
 
 instance likeResponsesShow :: Show LikeResponses where
@@ -2960,13 +3480,13 @@ instance likeOptDecodeJson :: DecodeJson LikeOpt where
     tag <- obj .? "tag"
     case tag of
         "Like" -> do
-          return $ Like
+          return Like
 
         "Neutral" -> do
-          return $ Neutral
+          return Neutral
 
         "DontLike" -> do
-          return $ DontLike
+          return DontLike
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -2980,11 +3500,33 @@ instance likeOptRequestable :: Requestable LikeOpt where
 instance likeOptRespondable :: Respondable LikeOpt where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Like" -> do
+          return Like
+
+        "Neutral" -> do
+          return Neutral
+
+        "DontLike" -> do
+          return DontLike
+
 
 
 instance likeOptIsForeign :: IsForeign LikeOpt where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Like" -> do
+          return Like
+
+        "Neutral" -> do
+          return Neutral
+
+        "DontLike" -> do
+          return DontLike
+
 
 
 instance likeOptShow :: Show LikeOpt where
@@ -3056,11 +3598,23 @@ instance organizationRequestRequestable :: Requestable OrganizationRequest where
 instance organizationRequestRespondable :: Respondable OrganizationRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkOrganizationRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "company" json
+      <*> readProp "location" json
+      <*> readProp "email" json
 
 
 instance organizationRequestIsForeign :: IsForeign OrganizationRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkOrganizationRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "company" json
+      <*> readProp "location" json
+      <*> readProp "email" json
 
 
 instance organizationRequestShow :: Show OrganizationRequest where
@@ -3159,25 +3713,35 @@ instance organizationResponseRequestable :: Requestable OrganizationResponse whe
 instance organizationResponseRespondable :: Respondable OrganizationResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f =
-    case (jsonParser (unsafeFromForeign f)) of
-         Left s -> Left (JSONError s)
-         Right j -> case (decodeJson j) of
-                         Left s' -> Left (JSONError s')
-                         Right v -> pure v
-
-
-
---  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkOrganizationResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "company" json
+      <*> readProp "location" json
+      <*> readProp "email" json
+      <*> readProp "emailMD5" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance organizationResponseIsForeign :: IsForeign OrganizationResponse where
-  read f =
-    case (jsonParser (unsafeFromForeign f)) of
-         Left s -> Left (JSONError s)
-         Right j -> case (decodeJson j) of
-                         Left s' -> Left (JSONError s')
-                         Right v -> pure v
+  read json =
+      mkOrganizationResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "company" json
+      <*> readProp "location" json
+      <*> readProp "email" json
+      <*> readProp "emailMD5" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance organizationResponseShow :: Show OrganizationResponse where
@@ -3226,27 +3790,19 @@ instance organizationResponsesRequestable :: Requestable OrganizationResponses w
 instance organizationResponsesRespondable :: Respondable OrganizationResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse f =
-    case (jsonParser (unsafeFromForeign f)) of
-         Left s -> Left (JSONError s)
-         Right j -> case (decodeJson j) of
-                         Left s' -> Left (JSONError s')
-                         Right v -> pure v
-
+  fromResponse json =
+      mkOrganizationResponses
+      <$> readProp "organizationResponses" json
 
 
 instance organizationResponsesIsForeign :: IsForeign OrganizationResponses where
-  read f =
-    case (jsonParser (unsafeFromForeign f)) of
-         Left s -> Left (JSONError s)
-         Right j -> case (decodeJson j) of
-                         Left s' -> Left (JSONError s')
-                         Right v -> pure v
+  read json =
+      mkOrganizationResponses
+      <$> readProp "organizationResponses" json
 
 
 instance organizationResponsesShow :: Show OrganizationResponses where
     show (OrganizationResponses o) = show "organizationResponses: " ++ show o.organizationResponses
-
 
 newtype OrganizationStatResponse = OrganizationStatResponse {
   organizationId :: Int,
@@ -3326,11 +3882,29 @@ instance organizationStatResponseRequestable :: Requestable OrganizationStatResp
 instance organizationStatResponseRespondable :: Respondable OrganizationStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkOrganizationStatResponse
+      <$> readProp "organizationId" json
+      <*> readProp "teams" json
+      <*> readProp "members" json
+      <*> readProp "forums" json
+      <*> readProp "boards" json
+      <*> readProp "threads" json
+      <*> readProp "threadPosts" json
+      <*> readProp "views" json
 
 
 instance organizationStatResponseIsForeign :: IsForeign OrganizationStatResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkOrganizationStatResponse
+      <$> readProp "organizationId" json
+      <*> readProp "teams" json
+      <*> readProp "members" json
+      <*> readProp "forums" json
+      <*> readProp "boards" json
+      <*> readProp "threads" json
+      <*> readProp "threadPosts" json
+      <*> readProp "views" json
 
 
 instance organizationStatResponseShow :: Show OrganizationStatResponse where
@@ -3379,11 +3953,15 @@ instance organizationStatResponsesRequestable :: Requestable OrganizationStatRes
 instance organizationStatResponsesRespondable :: Respondable OrganizationStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkOrganizationStatResponses
+      <$> readProp "organizationStatResponses" json
 
 
 instance organizationStatResponsesIsForeign :: IsForeign OrganizationStatResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkOrganizationStatResponses
+      <$> readProp "organizationStatResponses" json
 
 
 instance organizationStatResponsesShow :: Show OrganizationStatResponses where
@@ -3515,13 +4093,13 @@ instance paramDecodeJson :: DecodeJson Param where
           Offset <$> decodeJson x0
 
         "OrderAsc" -> do
-          return $ OrderAsc
+          return OrderAsc
 
         "OrderDsc" -> do
-          return $ OrderDsc
+          return OrderDsc
 
         "OrderRand" -> do
-          return $ OrderRand
+          return OrderRand
 
         "OrderBy" -> do
           x0 <- obj .? "contents"
@@ -3599,11 +4177,177 @@ instance paramRequestable :: Requestable Param where
 instance paramRespondable :: Respondable Param where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Limit" -> do
+          x0 <- readProp "contents" json
+          Limit <$> read x0
+
+        "Offset" -> do
+          x0 <- readProp "contents" json
+          Offset <$> read x0
+
+        "OrderAsc" -> do
+          return OrderAsc
+
+        "OrderDsc" -> do
+          return OrderDsc
+
+        "OrderRand" -> do
+          return OrderRand
+
+        "OrderBy" -> do
+          x0 <- readProp "contents" json
+          OrderBy <$> read x0
+
+        "ByOrganizationId" -> do
+          x0 <- readProp "contents" json
+          ByOrganizationId <$> read x0
+
+        "ByOrganizationsIds" -> do
+          x0 <- readProp "contents" json
+          ByOrganizationsIds <$> read x0
+
+        "ByOrganizationName" -> do
+          x0 <- readProp "contents" json
+          ByOrganizationName <$> read x0
+
+        "ByUserId" -> do
+          x0 <- readProp "contents" json
+          ByUserId <$> read x0
+
+        "ByUsersIds" -> do
+          x0 <- readProp "contents" json
+          ByUsersIds <$> read x0
+
+        "ByUserNick" -> do
+          x0 <- readProp "contents" json
+          ByUserNick <$> read x0
+
+        "ByUsersNicks" -> do
+          x0 <- readProp "contents" json
+          ByUsersNicks <$> read x0
+
+        "ByForumId" -> do
+          x0 <- readProp "contents" json
+          ByForumId <$> read x0
+
+        "ByForumsIds" -> do
+          x0 <- readProp "contents" json
+          ByForumsIds <$> read x0
+
+        "ByBoardId" -> do
+          x0 <- readProp "contents" json
+          ByBoardId <$> read x0
+
+        "ByBoardsIds" -> do
+          x0 <- readProp "contents" json
+          ByBoardsIds <$> read x0
+
+        "ByThreadId" -> do
+          x0 <- readProp "contents" json
+          ByThreadId <$> read x0
+
+        "ByThreadsIds" -> do
+          x0 <- readProp "contents" json
+          ByThreadsIds <$> read x0
+
+        "ByThreadPostId" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostId <$> read x0
+
+        "ByThreadPostsIds" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostsIds <$> read x0
+
 
 
 instance paramIsForeign :: IsForeign Param where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Limit" -> do
+          x0 <- readProp "contents" json
+          Limit <$> read x0
+
+        "Offset" -> do
+          x0 <- readProp "contents" json
+          Offset <$> read x0
+
+        "OrderAsc" -> do
+          return OrderAsc
+
+        "OrderDsc" -> do
+          return OrderDsc
+
+        "OrderRand" -> do
+          return OrderRand
+
+        "OrderBy" -> do
+          x0 <- readProp "contents" json
+          OrderBy <$> read x0
+
+        "ByOrganizationId" -> do
+          x0 <- readProp "contents" json
+          ByOrganizationId <$> read x0
+
+        "ByOrganizationsIds" -> do
+          x0 <- readProp "contents" json
+          ByOrganizationsIds <$> read x0
+
+        "ByOrganizationName" -> do
+          x0 <- readProp "contents" json
+          ByOrganizationName <$> read x0
+
+        "ByUserId" -> do
+          x0 <- readProp "contents" json
+          ByUserId <$> read x0
+
+        "ByUsersIds" -> do
+          x0 <- readProp "contents" json
+          ByUsersIds <$> read x0
+
+        "ByUserNick" -> do
+          x0 <- readProp "contents" json
+          ByUserNick <$> read x0
+
+        "ByUsersNicks" -> do
+          x0 <- readProp "contents" json
+          ByUsersNicks <$> read x0
+
+        "ByForumId" -> do
+          x0 <- readProp "contents" json
+          ByForumId <$> read x0
+
+        "ByForumsIds" -> do
+          x0 <- readProp "contents" json
+          ByForumsIds <$> read x0
+
+        "ByBoardId" -> do
+          x0 <- readProp "contents" json
+          ByBoardId <$> read x0
+
+        "ByBoardsIds" -> do
+          x0 <- readProp "contents" json
+          ByBoardsIds <$> read x0
+
+        "ByThreadId" -> do
+          x0 <- readProp "contents" json
+          ByThreadId <$> read x0
+
+        "ByThreadsIds" -> do
+          x0 <- readProp "contents" json
+          ByThreadsIds <$> read x0
+
+        "ByThreadPostId" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostId <$> read x0
+
+        "ByThreadPostsIds" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostsIds <$> read x0
+
 
 
 data OrderBy
@@ -3679,40 +4423,40 @@ instance orderByDecodeJson :: DecodeJson OrderBy where
     tag <- obj .? "tag"
     case tag of
         "OrderBy_UserId" -> do
-          return $ OrderBy_UserId
+          return OrderBy_UserId
 
         "OrderBy_CreatedAt" -> do
-          return $ OrderBy_CreatedAt
+          return OrderBy_CreatedAt
 
         "OrderBy_ModifiedAt" -> do
-          return $ OrderBy_ModifiedAt
+          return OrderBy_ModifiedAt
 
         "OrderBy_ModifiedBy" -> do
-          return $ OrderBy_ModifiedBy
+          return OrderBy_ModifiedBy
 
         "OrderBy_ActivityAt" -> do
-          return $ OrderBy_ActivityAt
+          return OrderBy_ActivityAt
 
         "OrderBy_OrganizationId" -> do
-          return $ OrderBy_OrganizationId
+          return OrderBy_OrganizationId
 
         "OrderBy_TeamId" -> do
-          return $ OrderBy_TeamId
+          return OrderBy_TeamId
 
         "OrderBy_ForumId" -> do
-          return $ OrderBy_ForumId
+          return OrderBy_ForumId
 
         "OrderBy_BoardId" -> do
-          return $ OrderBy_BoardId
+          return OrderBy_BoardId
 
         "OrderBy_ThreadId" -> do
-          return $ OrderBy_ThreadId
+          return OrderBy_ThreadId
 
         "OrderBy_Id" -> do
-          return $ OrderBy_Id
+          return OrderBy_Id
 
         "OrderBy_None" -> do
-          return $ OrderBy_None
+          return OrderBy_None
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -3726,11 +4470,87 @@ instance orderByRequestable :: Requestable OrderBy where
 instance orderByRespondable :: Respondable OrderBy where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "OrderBy_UserId" -> do
+          return OrderBy_UserId
+
+        "OrderBy_CreatedAt" -> do
+          return OrderBy_CreatedAt
+
+        "OrderBy_ModifiedAt" -> do
+          return OrderBy_ModifiedAt
+
+        "OrderBy_ModifiedBy" -> do
+          return OrderBy_ModifiedBy
+
+        "OrderBy_ActivityAt" -> do
+          return OrderBy_ActivityAt
+
+        "OrderBy_OrganizationId" -> do
+          return OrderBy_OrganizationId
+
+        "OrderBy_TeamId" -> do
+          return OrderBy_TeamId
+
+        "OrderBy_ForumId" -> do
+          return OrderBy_ForumId
+
+        "OrderBy_BoardId" -> do
+          return OrderBy_BoardId
+
+        "OrderBy_ThreadId" -> do
+          return OrderBy_ThreadId
+
+        "OrderBy_Id" -> do
+          return OrderBy_Id
+
+        "OrderBy_None" -> do
+          return OrderBy_None
+
 
 
 instance orderByIsForeign :: IsForeign OrderBy where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "OrderBy_UserId" -> do
+          return OrderBy_UserId
+
+        "OrderBy_CreatedAt" -> do
+          return OrderBy_CreatedAt
+
+        "OrderBy_ModifiedAt" -> do
+          return OrderBy_ModifiedAt
+
+        "OrderBy_ModifiedBy" -> do
+          return OrderBy_ModifiedBy
+
+        "OrderBy_ActivityAt" -> do
+          return OrderBy_ActivityAt
+
+        "OrderBy_OrganizationId" -> do
+          return OrderBy_OrganizationId
+
+        "OrderBy_TeamId" -> do
+          return OrderBy_TeamId
+
+        "OrderBy_ForumId" -> do
+          return OrderBy_ForumId
+
+        "OrderBy_BoardId" -> do
+          return OrderBy_BoardId
+
+        "OrderBy_ThreadId" -> do
+          return OrderBy_ThreadId
+
+        "OrderBy_Id" -> do
+          return OrderBy_Id
+
+        "OrderBy_None" -> do
+          return OrderBy_None
+
 
 
 newtype PmRequest = PmRequest {
@@ -3781,11 +4601,17 @@ instance pmRequestRequestable :: Requestable PmRequest where
 instance pmRequestRespondable :: Respondable PmRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkPmRequest
+      <$> readProp "subject" json
+      <*> readProp "body" json
 
 
 instance pmRequestIsForeign :: IsForeign PmRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkPmRequest
+      <$> readProp "subject" json
+      <*> readProp "body" json
 
 
 instance pmRequestShow :: Show PmRequest where
@@ -3864,11 +4690,27 @@ instance pmResponseRequestable :: Requestable PmResponse where
 instance pmResponseRespondable :: Respondable PmResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkPmResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "toUserId" json
+      <*> readProp "subject" json
+      <*> readProp "body" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance pmResponseIsForeign :: IsForeign PmResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkPmResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "toUserId" json
+      <*> readProp "subject" json
+      <*> readProp "body" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance pmResponseShow :: Show PmResponse where
@@ -3917,11 +4759,15 @@ instance pmResponsesRequestable :: Requestable PmResponses where
 instance pmResponsesRespondable :: Respondable PmResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkPmResponses
+      <$> readProp "pmResponses" json
 
 
 instance pmResponsesIsForeign :: IsForeign PmResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkPmResponses
+      <$> readProp "pmResponses" json
 
 
 instance pmResponsesShow :: Show PmResponses where
@@ -3980,11 +4826,19 @@ instance pmInRequestRequestable :: Requestable PmInRequest where
 instance pmInRequestRespondable :: Respondable PmInRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkPmInRequest
+      <$> (runNullOrUndefined <$> readProp "label" json)
+      <*> readProp "isRead" json
+      <*> readProp "isStarred" json
 
 
 instance pmInRequestIsForeign :: IsForeign PmInRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkPmInRequest
+      <$> (runNullOrUndefined <$> readProp "label" json)
+      <*> readProp "isRead" json
+      <*> readProp "isStarred" json
 
 
 instance pmInRequestShow :: Show PmInRequest where
@@ -4078,11 +4932,33 @@ instance pmInResponseRequestable :: Requestable PmInResponse where
 instance pmInResponseRespondable :: Respondable PmInResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkPmInResponse
+      <$> readProp "id" json
+      <*> readProp "pmId" json
+      <*> readProp "userId" json
+      <*> (runNullOrUndefined <$> readProp "label" json)
+      <*> readProp "isRead" json
+      <*> readProp "isStarred" json
+      <*> readProp "isNew" json
+      <*> readProp "isSaved" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance pmInResponseIsForeign :: IsForeign PmInResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkPmInResponse
+      <$> readProp "id" json
+      <*> readProp "pmId" json
+      <*> readProp "userId" json
+      <*> (runNullOrUndefined <$> readProp "label" json)
+      <*> readProp "isRead" json
+      <*> readProp "isStarred" json
+      <*> readProp "isNew" json
+      <*> readProp "isSaved" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance pmInResponseShow :: Show PmInResponse where
@@ -4131,11 +5007,15 @@ instance pmInResponsesRequestable :: Requestable PmInResponses where
 instance pmInResponsesRespondable :: Respondable PmInResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkPmInResponses
+      <$> readProp "pmInResponses" json
 
 
 instance pmInResponsesIsForeign :: IsForeign PmInResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkPmInResponses
+      <$> readProp "pmInResponses" json
 
 
 instance pmInResponsesShow :: Show PmInResponses where
@@ -4184,11 +5064,15 @@ instance pmOutRequestRequestable :: Requestable PmOutRequest where
 instance pmOutRequestRespondable :: Respondable PmOutRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkPmOutRequest
+      <$> (runNullOrUndefined <$> readProp "label" json)
 
 
 instance pmOutRequestIsForeign :: IsForeign PmOutRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkPmOutRequest
+      <$> (runNullOrUndefined <$> readProp "label" json)
 
 
 instance pmOutRequestShow :: Show PmOutRequest where
@@ -4267,11 +5151,27 @@ instance pmOutResponseRequestable :: Requestable PmOutResponse where
 instance pmOutResponseRespondable :: Respondable PmOutResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkPmOutResponse
+      <$> readProp "id" json
+      <*> readProp "pmId" json
+      <*> readProp "userId" json
+      <*> (runNullOrUndefined <$> readProp "label" json)
+      <*> readProp "isSaved" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance pmOutResponseIsForeign :: IsForeign PmOutResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkPmOutResponse
+      <$> readProp "id" json
+      <*> readProp "pmId" json
+      <*> readProp "userId" json
+      <*> (runNullOrUndefined <$> readProp "label" json)
+      <*> readProp "isSaved" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance pmOutResponseShow :: Show PmOutResponse where
@@ -4320,11 +5220,15 @@ instance pmOutResponsesRequestable :: Requestable PmOutResponses where
 instance pmOutResponsesRespondable :: Respondable PmOutResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkPmOutResponses
+      <$> readProp "pmOutResponses" json
 
 
 instance pmOutResponsesIsForeign :: IsForeign PmOutResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkPmOutResponses
+      <$> readProp "pmOutResponses" json
 
 
 instance pmOutResponsesShow :: Show PmOutResponses where
@@ -4378,11 +5282,17 @@ instance profileXRequestable :: Requestable ProfileX where
 instance profileXRespondable :: Respondable ProfileX where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkProfileX
+      <$> readProp "profileName" json
+      <*> readProp "profileEmail" json
 
 
 instance profileXIsForeign :: IsForeign ProfileX where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkProfileX
+      <$> readProp "profileName" json
+      <*> readProp "profileEmail" json
 
 
 instance profileXShow :: Show ProfileX where
@@ -4416,13 +5326,13 @@ instance profileGenderDecodeJson :: DecodeJson ProfileGender where
     tag <- obj .? "tag"
     case tag of
         "GenderMale" -> do
-          return $ GenderMale
+          return GenderMale
 
         "GenderFemale" -> do
-          return $ GenderFemale
+          return GenderFemale
 
         "GenderUnknown" -> do
-          return $ GenderUnknown
+          return GenderUnknown
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -4436,11 +5346,33 @@ instance profileGenderRequestable :: Requestable ProfileGender where
 instance profileGenderRespondable :: Respondable ProfileGender where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "GenderMale" -> do
+          return GenderMale
+
+        "GenderFemale" -> do
+          return GenderFemale
+
+        "GenderUnknown" -> do
+          return GenderUnknown
+
 
 
 instance profileGenderIsForeign :: IsForeign ProfileGender where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "GenderMale" -> do
+          return GenderMale
+
+        "GenderFemale" -> do
+          return GenderFemale
+
+        "GenderUnknown" -> do
+          return GenderUnknown
+
 
 
 instance profileGenderShow :: Show ProfileGender where
@@ -4518,11 +5450,23 @@ instance profileRequestRequestable :: Requestable ProfileRequest where
 instance profileRequestRespondable :: Respondable ProfileRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkProfileRequest
+      <$> readProp "gender" json
+      <*> readProp "birthdate" json
+      <*> (runNullOrUndefined <$> readProp "website" json)
+      <*> (runNullOrUndefined <$> readProp "location" json)
+      <*> (runNullOrUndefined <$> readProp "signature" json)
 
 
 instance profileRequestIsForeign :: IsForeign ProfileRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkProfileRequest
+      <$> readProp "gender" json
+      <*> readProp "birthdate" json
+      <*> (runNullOrUndefined <$> readProp "website" json)
+      <*> (runNullOrUndefined <$> readProp "location" json)
+      <*> (runNullOrUndefined <$> readProp "signature" json)
 
 
 instance profileRequestShow :: Show ProfileRequest where
@@ -4621,11 +5565,35 @@ instance profileResponseRequestable :: Requestable ProfileResponse where
 instance profileResponseRespondable :: Respondable ProfileResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkProfileResponse
+      <$> readProp "id" json
+      <*> readProp "entityId" json
+      <*> readProp "gender" json
+      <*> readProp "birthdate" json
+      <*> (runNullOrUndefined <$> readProp "website" json)
+      <*> (runNullOrUndefined <$> readProp "location" json)
+      <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> readProp "karmaGood" json
+      <*> readProp "karmaBad" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance profileResponseIsForeign :: IsForeign ProfileResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkProfileResponse
+      <$> readProp "id" json
+      <*> readProp "entityId" json
+      <*> readProp "gender" json
+      <*> readProp "birthdate" json
+      <*> (runNullOrUndefined <$> readProp "website" json)
+      <*> (runNullOrUndefined <$> readProp "location" json)
+      <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> readProp "karmaGood" json
+      <*> readProp "karmaBad" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance profileResponseShow :: Show ProfileResponse where
@@ -4674,11 +5642,15 @@ instance profileResponsesRequestable :: Requestable ProfileResponses where
 instance profileResponsesRespondable :: Respondable ProfileResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkProfileResponses
+      <$> readProp "profileResponses" json
 
 
 instance profileResponsesIsForeign :: IsForeign ProfileResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkProfileResponses
+      <$> readProp "profileResponses" json
 
 
 instance profileResponsesShow :: Show ProfileResponses where
@@ -4727,11 +5699,15 @@ instance reminderRequestRequestable :: Requestable ReminderRequest where
 instance reminderRequestRespondable :: Respondable ReminderRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkReminderRequest
+      <$> readProp "dataP" json
 
 
 instance reminderRequestIsForeign :: IsForeign ReminderRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkReminderRequest
+      <$> readProp "dataP" json
 
 
 instance reminderRequestShow :: Show ReminderRequest where
@@ -4805,11 +5781,25 @@ instance reminderResponseRequestable :: Requestable ReminderResponse where
 instance reminderResponseRespondable :: Respondable ReminderResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkReminderResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "parentFolderId" json
+      <*> readProp "dataP" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance reminderResponseIsForeign :: IsForeign ReminderResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkReminderResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "parentFolderId" json
+      <*> readProp "dataP" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance reminderResponseShow :: Show ReminderResponse where
@@ -4858,11 +5848,15 @@ instance reminderResponsesRequestable :: Requestable ReminderResponses where
 instance reminderResponsesRespondable :: Respondable ReminderResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkReminderResponses
+      <$> readProp "reminderResponses" json
 
 
 instance reminderResponsesIsForeign :: IsForeign ReminderResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkReminderResponses
+      <$> readProp "reminderResponses" json
 
 
 instance reminderResponsesShow :: Show ReminderResponses where
@@ -4921,11 +5915,19 @@ instance reminderFolderRequestRequestable :: Requestable ReminderFolderRequest w
 instance reminderFolderRequestRespondable :: Respondable ReminderFolderRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkReminderFolderRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "visibility" json
 
 
 instance reminderFolderRequestIsForeign :: IsForeign ReminderFolderRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkReminderFolderRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "visibility" json
 
 
 instance reminderFolderRequestShow :: Show ReminderFolderRequest where
@@ -5009,11 +6011,29 @@ instance reminderFolderResponseRequestable :: Requestable ReminderFolderResponse
 instance reminderFolderResponseRespondable :: Respondable ReminderFolderResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkReminderFolderResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> (runNullOrUndefined <$> readProp "parentFolderId" json)
+      <*> readProp "name" json
+      <*> readProp "visibility" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance reminderFolderResponseIsForeign :: IsForeign ReminderFolderResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkReminderFolderResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> (runNullOrUndefined <$> readProp "parentFolderId" json)
+      <*> readProp "name" json
+      <*> readProp "visibility" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance reminderFolderResponseShow :: Show ReminderFolderResponse where
@@ -5062,11 +6082,15 @@ instance reminderFolderResponsesRequestable :: Requestable ReminderFolderRespons
 instance reminderFolderResponsesRespondable :: Respondable ReminderFolderResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkReminderFolderResponses
+      <$> readProp "reminderFolderResponses" json
 
 
 instance reminderFolderResponsesIsForeign :: IsForeign ReminderFolderResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkReminderFolderResponses
+      <$> readProp "reminderFolderResponses" json
 
 
 instance reminderFolderResponsesShow :: Show ReminderFolderResponses where
@@ -5126,7 +6150,7 @@ instance resourceTypeDecodeJson :: DecodeJson ResourceType where
           URL <$> decodeJson x0
 
         "SourceNone" -> do
-          return $ SourceNone
+          return SourceNone
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -5140,11 +6164,53 @@ instance resourceTypeRequestable :: Requestable ResourceType where
 instance resourceTypeRespondable :: Respondable ResourceType where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "ISBN13" -> do
+          x0 <- readProp "contents" json
+          ISBN13 <$> read x0
+
+        "ISBN10" -> do
+          x0 <- readProp "contents" json
+          ISBN10 <$> read x0
+
+        "ISBN" -> do
+          x0 <- readProp "contents" json
+          ISBN <$> read x0
+
+        "URL" -> do
+          x0 <- readProp "contents" json
+          URL <$> read x0
+
+        "SourceNone" -> do
+          return SourceNone
+
 
 
 instance resourceTypeIsForeign :: IsForeign ResourceType where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "ISBN13" -> do
+          x0 <- readProp "contents" json
+          ISBN13 <$> read x0
+
+        "ISBN10" -> do
+          x0 <- readProp "contents" json
+          ISBN10 <$> read x0
+
+        "ISBN" -> do
+          x0 <- readProp "contents" json
+          ISBN <$> read x0
+
+        "URL" -> do
+          x0 <- readProp "contents" json
+          URL <$> read x0
+
+        "SourceNone" -> do
+          return SourceNone
+
 
 
 instance resourceTypeShow :: Show ResourceType where
@@ -5243,11 +6309,33 @@ instance resourceRequestRequestable :: Requestable ResourceRequest where
 instance resourceRequestRespondable :: Respondable ResourceRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkResourceRequest
+      <$> readProp "title" json
+      <*> readProp "description" json
+      <*> readProp "source" json
+      <*> (runNullOrUndefined <$> readProp "author" json)
+      <*> readProp "prerequisites" json
+      <*> readProp "categories" json
+      <*> readProp "visibility" json
+      <*> readProp "counter" json
+      <*> (runNullOrUndefined <$> readProp "version" json)
+      <*> (runNullOrUndefined <$> readProp "urls" json)
 
 
 instance resourceRequestIsForeign :: IsForeign ResourceRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkResourceRequest
+      <$> readProp "title" json
+      <*> readProp "description" json
+      <*> readProp "source" json
+      <*> (runNullOrUndefined <$> readProp "author" json)
+      <*> readProp "prerequisites" json
+      <*> readProp "categories" json
+      <*> readProp "visibility" json
+      <*> readProp "counter" json
+      <*> (runNullOrUndefined <$> readProp "version" json)
+      <*> (runNullOrUndefined <$> readProp "urls" json)
 
 
 instance resourceRequestShow :: Show ResourceRequest where
@@ -5361,11 +6449,41 @@ instance resourceResponseRequestable :: Requestable ResourceResponse where
 instance resourceResponseRespondable :: Respondable ResourceResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkResourceResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "title" json
+      <*> readProp "description" json
+      <*> readProp "source" json
+      <*> (runNullOrUndefined <$> readProp "author" json)
+      <*> readProp "prerequisites" json
+      <*> readProp "categories" json
+      <*> readProp "visibility" json
+      <*> readProp "counter" json
+      <*> (runNullOrUndefined <$> readProp "version" json)
+      <*> (runNullOrUndefined <$> readProp "urls" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance resourceResponseIsForeign :: IsForeign ResourceResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkResourceResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "title" json
+      <*> readProp "description" json
+      <*> readProp "source" json
+      <*> (runNullOrUndefined <$> readProp "author" json)
+      <*> readProp "prerequisites" json
+      <*> readProp "categories" json
+      <*> readProp "visibility" json
+      <*> readProp "counter" json
+      <*> (runNullOrUndefined <$> readProp "version" json)
+      <*> (runNullOrUndefined <$> readProp "urls" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance resourceResponseShow :: Show ResourceResponse where
@@ -5414,11 +6532,15 @@ instance resourceResponsesRequestable :: Requestable ResourceResponses where
 instance resourceResponsesRespondable :: Respondable ResourceResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkResourceResponses
+      <$> readProp "resourceResponses" json
 
 
 instance resourceResponsesIsForeign :: IsForeign ResourceResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkResourceResponses
+      <$> readProp "resourceResponses" json
 
 
 instance resourceResponsesShow :: Show ResourceResponses where
@@ -5462,19 +6584,19 @@ instance sizeDecodeJson :: DecodeJson Size where
     tag <- obj .? "tag"
     case tag of
         "XSmall" -> do
-          return $ XSmall
+          return XSmall
 
         "Small" -> do
-          return $ Small
+          return Small
 
         "Medium" -> do
-          return $ Medium
+          return Medium
 
         "Large" -> do
-          return $ Large
+          return Large
 
         "XLarge" -> do
-          return $ XLarge
+          return XLarge
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -5488,11 +6610,45 @@ instance sizeRequestable :: Requestable Size where
 instance sizeRespondable :: Respondable Size where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "XSmall" -> do
+          return XSmall
+
+        "Small" -> do
+          return Small
+
+        "Medium" -> do
+          return Medium
+
+        "Large" -> do
+          return Large
+
+        "XLarge" -> do
+          return XLarge
+
 
 
 instance sizeIsForeign :: IsForeign Size where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "XSmall" -> do
+          return XSmall
+
+        "Small" -> do
+          return Small
+
+        "Medium" -> do
+          return Medium
+
+        "Large" -> do
+          return Large
+
+        "XLarge" -> do
+          return XLarge
+
 
 
 instance sizeShow :: Show Size where
@@ -5538,7 +6694,7 @@ instance splitsDecodeJson :: DecodeJson Splits where
           SplitAt <$> decodeJson x0 <*> decodeJson x1 <*> decodeJson x2
 
         "SplitNone" -> do
-          return $ SplitNone
+          return SplitNone
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -5552,11 +6708,29 @@ instance splitsRequestable :: Requestable Splits where
 instance splitsRespondable :: Respondable Splits where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "SplitAt" -> do
+          [x0, x1, x2] <- readProp "contents" json
+          SplitAt <$> read x0 <*> read x1 <*> read x2
+
+        "SplitNone" -> do
+          return SplitNone
+
 
 
 instance splitsIsForeign :: IsForeign Splits where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "SplitAt" -> do
+          [x0, x1, x2] <- readProp "contents" json
+          SplitAt <$> read x0 <*> read x1 <*> read x2
+
+        "SplitNone" -> do
+          return SplitNone
+
 
 
 instance splitsShow :: Show Splits where
@@ -5624,11 +6798,47 @@ instance substitutionsRequestable :: Requestable Substitutions where
 instance substitutionsRespondable :: Respondable Substitutions where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "SubsExpr" -> do
+          [x0, x1] <- readProp "contents" json
+          SubsExpr <$> read x0 <*> read x1
+
+        "SubsOneOf" -> do
+          x0 <- readProp "contents" json
+          SubsOneOf <$> read x0
+
+        "SubsAllOf" -> do
+          x0 <- readProp "contents" json
+          SubsAllOf <$> read x0
+
+        "SubsBoth" -> do
+          [x0, x1] <- readProp "contents" json
+          SubsBoth <$> read x0 <*> read x1
+
 
 
 instance substitutionsIsForeign :: IsForeign Substitutions where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "SubsExpr" -> do
+          [x0, x1] <- readProp "contents" json
+          SubsExpr <$> read x0 <*> read x1
+
+        "SubsOneOf" -> do
+          x0 <- readProp "contents" json
+          SubsOneOf <$> read x0
+
+        "SubsAllOf" -> do
+          x0 <- readProp "contents" json
+          SubsAllOf <$> read x0
+
+        "SubsBoth" -> do
+          [x0, x1] <- readProp "contents" json
+          SubsBoth <$> read x0 <*> read x1
+
 
 
 instance substitutionsShow :: Show Substitutions where
@@ -5686,11 +6896,17 @@ instance teamRequestRequestable :: Requestable TeamRequest where
 instance teamRequestRespondable :: Respondable TeamRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkTeamRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
 
 
 instance teamRequestIsForeign :: IsForeign TeamRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkTeamRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
 
 
 instance teamRequestShow :: Show TeamRequest where
@@ -5774,11 +6990,29 @@ instance teamResponseRequestable :: Requestable TeamResponse where
 instance teamResponseRespondable :: Respondable TeamResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkTeamResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "orgId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance teamResponseIsForeign :: IsForeign TeamResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkTeamResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "orgId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance teamResponseShow :: Show TeamResponse where
@@ -5827,11 +7061,15 @@ instance teamResponsesRequestable :: Requestable TeamResponses where
 instance teamResponsesRespondable :: Respondable TeamResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkTeamResponses
+      <$> readProp "teamResponses" json
 
 
 instance teamResponsesIsForeign :: IsForeign TeamResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkTeamResponses
+      <$> readProp "teamResponses" json
 
 
 instance teamResponsesShow :: Show TeamResponses where
@@ -5880,11 +7118,15 @@ instance testRequestRequestable :: Requestable TestRequest where
 instance testRequestRespondable :: Respondable TestRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkTestRequest
+      <$> readProp "msg" json
 
 
 instance testRequestIsForeign :: IsForeign TestRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkTestRequest
+      <$> readProp "msg" json
 
 
 instance testRequestShow :: Show TestRequest where
@@ -5953,11 +7195,23 @@ instance testResponseRequestable :: Requestable TestResponse where
 instance testResponseRespondable :: Respondable TestResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkTestResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "msg" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance testResponseIsForeign :: IsForeign TestResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkTestResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "msg" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance testResponseShow :: Show TestResponse where
@@ -6006,11 +7260,15 @@ instance testResponsesRequestable :: Requestable TestResponses where
 instance testResponsesRespondable :: Respondable TestResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkTestResponses
+      <$> readProp "testResponses" json
 
 
 instance testResponsesIsForeign :: IsForeign TestResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkTestResponses
+      <$> readProp "testResponses" json
 
 
 instance testResponsesShow :: Show TestResponses where
@@ -6079,11 +7337,23 @@ instance threadRequestRequestable :: Requestable ThreadRequest where
 instance threadRequestRespondable :: Respondable ThreadRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "sticky" json
+      <*> readProp "locked" json
+      <*> (runNullOrUndefined <$> readProp "poll" json)
 
 
 instance threadRequestIsForeign :: IsForeign ThreadRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadRequest
+      <$> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "sticky" json
+      <*> readProp "locked" json
+      <*> (runNullOrUndefined <$> readProp "poll" json)
 
 
 instance threadRequestShow :: Show ThreadRequest where
@@ -6187,11 +7457,37 @@ instance threadResponseRequestable :: Requestable ThreadResponse where
 instance threadResponseRespondable :: Respondable ThreadResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "boardId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "sticky" json
+      <*> readProp "locked" json
+      <*> (runNullOrUndefined <$> readProp "poll" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "activityAt" json)
 
 
 instance threadResponseIsForeign :: IsForeign ThreadResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "boardId" json
+      <*> readProp "name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "sticky" json
+      <*> readProp "locked" json
+      <*> (runNullOrUndefined <$> readProp "poll" json)
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "activityAt" json)
 
 
 instance threadResponseShow :: Show ThreadResponse where
@@ -6240,11 +7536,15 @@ instance threadResponsesRequestable :: Requestable ThreadResponses where
 instance threadResponsesRespondable :: Respondable ThreadResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadResponses
+      <$> readProp "threadResponses" json
 
 
 instance threadResponsesIsForeign :: IsForeign ThreadResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadResponses
+      <$> readProp "threadResponses" json
 
 
 instance threadResponsesShow :: Show ThreadResponses where
@@ -6303,11 +7603,19 @@ instance threadStatResponseRequestable :: Requestable ThreadStatResponse where
 instance threadStatResponseRespondable :: Respondable ThreadStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadStatResponse
+      <$> readProp "threadId" json
+      <*> readProp "threadPosts" json
+      <*> readProp "views" json
 
 
 instance threadStatResponseIsForeign :: IsForeign ThreadStatResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadStatResponse
+      <$> readProp "threadId" json
+      <*> readProp "threadPosts" json
+      <*> readProp "views" json
 
 
 instance threadStatResponseShow :: Show ThreadStatResponse where
@@ -6356,11 +7664,15 @@ instance threadStatResponsesRequestable :: Requestable ThreadStatResponses where
 instance threadStatResponsesRespondable :: Respondable ThreadStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadStatResponses
+      <$> readProp "threadStatResponses" json
 
 
 instance threadStatResponsesIsForeign :: IsForeign ThreadStatResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadStatResponses
+      <$> readProp "threadStatResponses" json
 
 
 instance threadStatResponsesShow :: Show ThreadStatResponses where
@@ -6429,7 +7741,7 @@ instance postDataDecodeJson :: DecodeJson PostData where
           PostDataOther <$> decodeJson x0 <*> decodeJson x1
 
         "PostDataEmpty" -> do
-          return $ PostDataEmpty
+          return PostDataEmpty
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -6443,11 +7755,61 @@ instance postDataRequestable :: Requestable PostData where
 instance postDataRespondable :: Respondable PostData where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "PostDataRaw" -> do
+          x0 <- readProp "contents" json
+          PostDataRaw <$> read x0
+
+        "PostDataMarkdown" -> do
+          x0 <- readProp "contents" json
+          PostDataMarkdown <$> read x0
+
+        "PostDataBBCode" -> do
+          x0 <- readProp "contents" json
+          PostDataBBCode <$> read x0
+
+        "PostDataCode" -> do
+          [x0, x1] <- readProp "contents" json
+          PostDataCode <$> read x0 <*> read x1
+
+        "PostDataOther" -> do
+          [x0, x1] <- readProp "contents" json
+          PostDataOther <$> read x0 <*> read x1
+
+        "PostDataEmpty" -> do
+          return PostDataEmpty
+
 
 
 instance postDataIsForeign :: IsForeign PostData where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "PostDataRaw" -> do
+          x0 <- readProp "contents" json
+          PostDataRaw <$> read x0
+
+        "PostDataMarkdown" -> do
+          x0 <- readProp "contents" json
+          PostDataMarkdown <$> read x0
+
+        "PostDataBBCode" -> do
+          x0 <- readProp "contents" json
+          PostDataBBCode <$> read x0
+
+        "PostDataCode" -> do
+          [x0, x1] <- readProp "contents" json
+          PostDataCode <$> read x0 <*> read x1
+
+        "PostDataOther" -> do
+          [x0, x1] <- readProp "contents" json
+          PostDataOther <$> read x0 <*> read x1
+
+        "PostDataEmpty" -> do
+          return PostDataEmpty
+
 
 
 instance postDataShow :: Show PostData where
@@ -6517,11 +7879,21 @@ instance threadPostRequestRequestable :: Requestable ThreadPostRequest where
 instance threadPostRequestRespondable :: Respondable ThreadPostRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadPostRequest
+      <$> (runNullOrUndefined <$> readProp "title" json)
+      <*> readProp "body" json
+      <*> readProp "tags" json
+      <*> readProp "privateTags" json
 
 
 instance threadPostRequestIsForeign :: IsForeign ThreadPostRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadPostRequest
+      <$> (runNullOrUndefined <$> readProp "title" json)
+      <*> readProp "body" json
+      <*> readProp "tags" json
+      <*> readProp "privateTags" json
 
 
 instance threadPostRequestShow :: Show ThreadPostRequest where
@@ -6620,11 +7992,35 @@ instance threadPostResponseRequestable :: Requestable ThreadPostResponse where
 instance threadPostResponseRespondable :: Respondable ThreadPostResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadPostResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "threadId" json
+      <*> (runNullOrUndefined <$> readProp "parentId" json)
+      <*> (runNullOrUndefined <$> readProp "title" json)
+      <*> readProp "body" json
+      <*> readProp "tags" json
+      <*> readProp "privateTags" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance threadPostResponseIsForeign :: IsForeign ThreadPostResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadPostResponse
+      <$> readProp "id" json
+      <*> readProp "userId" json
+      <*> readProp "threadId" json
+      <*> (runNullOrUndefined <$> readProp "parentId" json)
+      <*> (runNullOrUndefined <$> readProp "title" json)
+      <*> readProp "body" json
+      <*> readProp "tags" json
+      <*> readProp "privateTags" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedBy" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
 
 
 instance threadPostResponseShow :: Show ThreadPostResponse where
@@ -6673,11 +8069,15 @@ instance threadPostResponsesRequestable :: Requestable ThreadPostResponses where
 instance threadPostResponsesRespondable :: Respondable ThreadPostResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadPostResponses
+      <$> readProp "threadPostResponses" json
 
 
 instance threadPostResponsesIsForeign :: IsForeign ThreadPostResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadPostResponses
+      <$> readProp "threadPostResponses" json
 
 
 instance threadPostResponsesShow :: Show ThreadPostResponses where
@@ -6746,11 +8146,23 @@ instance threadPostStatResponseRequestable :: Requestable ThreadPostStatResponse
 instance threadPostStatResponseRespondable :: Respondable ThreadPostStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadPostStatResponse
+      <$> readProp "threadPostId" json
+      <*> readProp "likes" json
+      <*> readProp "dislikes" json
+      <*> readProp "starred" json
+      <*> readProp "views" json
 
 
 instance threadPostStatResponseIsForeign :: IsForeign ThreadPostStatResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadPostStatResponse
+      <$> readProp "threadPostId" json
+      <*> readProp "likes" json
+      <*> readProp "dislikes" json
+      <*> readProp "starred" json
+      <*> readProp "views" json
 
 
 instance threadPostStatResponseShow :: Show ThreadPostStatResponse where
@@ -6799,11 +8211,15 @@ instance threadPostStatResponsesRequestable :: Requestable ThreadPostStatRespons
 instance threadPostStatResponsesRespondable :: Respondable ThreadPostStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadPostStatResponses
+      <$> readProp "threadPostStatResponses" json
 
 
 instance threadPostStatResponsesIsForeign :: IsForeign ThreadPostStatResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadPostStatResponses
+      <$> readProp "threadPostStatResponses" json
 
 
 instance threadPostStatResponsesShow :: Show ThreadPostStatResponses where
@@ -6877,11 +8293,25 @@ instance userRequestRequestable :: Requestable UserRequest where
 instance userRequestRespondable :: Respondable UserRequest where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserRequest
+      <$> readProp "nick" json
+      <*> readProp "displayNick" json
+      <*> readProp "name" json
+      <*> readProp "email" json
+      <*> readProp "plugin" json
+      <*> readProp "ident" json
 
 
 instance userRequestIsForeign :: IsForeign UserRequest where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserRequest
+      <$> readProp "nick" json
+      <*> readProp "displayNick" json
+      <*> readProp "name" json
+      <*> readProp "email" json
+      <*> readProp "plugin" json
+      <*> readProp "ident" json
 
 
 instance userRequestShow :: Show UserRequest where
@@ -6985,11 +8415,37 @@ instance userResponseRequestable :: Requestable UserResponse where
 instance userResponseRespondable :: Respondable UserResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserResponse
+      <$> readProp "id" json
+      <*> readProp "nick" json
+      <*> readProp "displayNick" json
+      <*> readProp "name" json
+      <*> readProp "email" json
+      <*> readProp "emailMD5" json
+      <*> readProp "plugin" json
+      <*> readProp "ident" json
+      <*> readProp "active" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "deactivatedAt" json)
 
 
 instance userResponseIsForeign :: IsForeign UserResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserResponse
+      <$> readProp "id" json
+      <*> readProp "nick" json
+      <*> readProp "displayNick" json
+      <*> readProp "name" json
+      <*> readProp "email" json
+      <*> readProp "emailMD5" json
+      <*> readProp "plugin" json
+      <*> readProp "ident" json
+      <*> readProp "active" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
+      <*> (runNullOrUndefined <$> readProp "modifiedAt" json)
+      <*> (runNullOrUndefined <$> readProp "deactivatedAt" json)
 
 
 instance userResponseShow :: Show UserResponse where
@@ -7038,11 +8494,15 @@ instance userResponsesRequestable :: Requestable UserResponses where
 instance userResponsesRespondable :: Respondable UserResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserResponses
+      <$> readProp "userResponses" json
 
 
 instance userResponsesIsForeign :: IsForeign UserResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserResponses
+      <$> readProp "userResponses" json
 
 
 instance userResponsesShow :: Show UserResponses where
@@ -7116,11 +8576,25 @@ instance userSanitizedResponseRequestable :: Requestable UserSanitizedResponse w
 instance userSanitizedResponseRespondable :: Respondable UserSanitizedResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserSanitizedResponse
+      <$> readProp "id" json
+      <*> readProp "nick" json
+      <*> readProp "displayNick" json
+      <*> readProp "emailMD5" json
+      <*> readProp "active" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
 
 
 instance userSanitizedResponseIsForeign :: IsForeign UserSanitizedResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserSanitizedResponse
+      <$> readProp "id" json
+      <*> readProp "nick" json
+      <*> readProp "displayNick" json
+      <*> readProp "emailMD5" json
+      <*> readProp "active" json
+      <*> (runNullOrUndefined <$> readProp "createdAt" json)
 
 
 instance userSanitizedResponseShow :: Show UserSanitizedResponse where
@@ -7169,11 +8643,15 @@ instance userSanitizedResponsesRequestable :: Requestable UserSanitizedResponses
 instance userSanitizedResponsesRespondable :: Respondable UserSanitizedResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserSanitizedResponses
+      <$> readProp "userSanitizedResponses" json
 
 
 instance userSanitizedResponsesIsForeign :: IsForeign UserSanitizedResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserSanitizedResponses
+      <$> readProp "userSanitizedResponses" json
 
 
 instance userSanitizedResponsesShow :: Show UserSanitizedResponses where
@@ -7252,11 +8730,27 @@ instance userSanitizedStatResponseRequestable :: Requestable UserSanitizedStatRe
 instance userSanitizedStatResponseRespondable :: Respondable UserSanitizedStatResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserSanitizedStatResponse
+      <$> readProp "userId" json
+      <*> readProp "threads" json
+      <*> readProp "threadPosts" json
+      <*> readProp "respect" json
+      <*> readProp "resources" json
+      <*> readProp "leurons" json
+      <*> readProp "workouts" json
 
 
 instance userSanitizedStatResponseIsForeign :: IsForeign UserSanitizedStatResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserSanitizedStatResponse
+      <$> readProp "userId" json
+      <*> readProp "threads" json
+      <*> readProp "threadPosts" json
+      <*> readProp "respect" json
+      <*> readProp "resources" json
+      <*> readProp "leurons" json
+      <*> readProp "workouts" json
 
 
 instance userSanitizedStatResponseShow :: Show UserSanitizedStatResponse where
@@ -7305,11 +8799,15 @@ instance userSanitizedStatResponsesRequestable :: Requestable UserSanitizedStatR
 instance userSanitizedStatResponsesRespondable :: Respondable UserSanitizedStatResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserSanitizedStatResponses
+      <$> readProp "userSanitizedStatResponses" json
 
 
 instance userSanitizedStatResponsesIsForeign :: IsForeign UserSanitizedStatResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserSanitizedStatResponses
+      <$> readProp "userSanitizedStatResponses" json
 
 
 instance userSanitizedStatResponsesShow :: Show UserSanitizedStatResponses where
@@ -7338,10 +8836,10 @@ instance visibilityDecodeJson :: DecodeJson Visibility where
     tag <- obj .? "tag"
     case tag of
         "Public" -> do
-          return $ Public
+          return Public
 
         "Private" -> do
-          return $ Private
+          return Private
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -7355,11 +8853,27 @@ instance visibilityRequestable :: Requestable Visibility where
 instance visibilityRespondable :: Respondable Visibility where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Public" -> do
+          return Public
+
+        "Private" -> do
+          return Private
+
 
 
 instance visibilityIsForeign :: IsForeign Visibility where
-  read = Right <<< unsafeFromForeign
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Public" -> do
+          return Public
+
+        "Private" -> do
+          return Private
+
 
 
 instance visibilityShow :: Show Visibility where
@@ -7430,11 +8944,23 @@ instance boardPackResponseRequestable :: Requestable BoardPackResponse where
 instance boardPackResponseRespondable :: Respondable BoardPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBoardPackResponse
+      <$> readProp "board" json
+      <*> readProp "boardStat" json
+      <*> (runNullOrUndefined <$> readProp "latestThread" json)
+      <*> (runNullOrUndefined <$> readProp "latestThreadPost" json)
+      <*> (runNullOrUndefined <$> readProp "latestThreadPostUser" json)
 
 
 instance boardPackResponseIsForeign :: IsForeign BoardPackResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBoardPackResponse
+      <$> readProp "board" json
+      <*> readProp "boardStat" json
+      <*> (runNullOrUndefined <$> readProp "latestThread" json)
+      <*> (runNullOrUndefined <$> readProp "latestThreadPost" json)
+      <*> (runNullOrUndefined <$> readProp "latestThreadPostUser" json)
 
 
 instance boardPackResponseShow :: Show BoardPackResponse where
@@ -7483,11 +9009,15 @@ instance boardPackResponsesRequestable :: Requestable BoardPackResponses where
 instance boardPackResponsesRespondable :: Respondable BoardPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkBoardPackResponses
+      <$> readProp "boardPackResponses" json
 
 
 instance boardPackResponsesIsForeign :: IsForeign BoardPackResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkBoardPackResponses
+      <$> readProp "boardPackResponses" json
 
 
 instance boardPackResponsesShow :: Show BoardPackResponses where
@@ -7541,11 +9071,17 @@ instance organizationPackResponseRequestable :: Requestable OrganizationPackResp
 instance organizationPackResponseRespondable :: Respondable OrganizationPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkOrganizationPackResponse
+      <$> readProp "organization" json
+      <*> readProp "organizationStat" json
 
 
 instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkOrganizationPackResponse
+      <$> readProp "organization" json
+      <*> readProp "organizationStat" json
 
 
 instance organizationPackResponseShow :: Show OrganizationPackResponse where
@@ -7594,11 +9130,15 @@ instance organizationPackResponsesRequestable :: Requestable OrganizationPackRes
 instance organizationPackResponsesRespondable :: Respondable OrganizationPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkOrganizationPackResponses
+      <$> readProp "organizationPackResponses" json
 
 
 instance organizationPackResponsesIsForeign :: IsForeign OrganizationPackResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkOrganizationPackResponses
+      <$> readProp "organizationPackResponses" json
 
 
 instance organizationPackResponsesShow :: Show OrganizationPackResponses where
@@ -7667,11 +9207,23 @@ instance threadPackResponseRequestable :: Requestable ThreadPackResponse where
 instance threadPackResponseRespondable :: Respondable ThreadPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadPackResponse
+      <$> readProp "thread" json
+      <*> readProp "threadUser" json
+      <*> readProp "threadStat" json
+      <*> (runNullOrUndefined <$> readProp "latestThreadPost" json)
+      <*> (runNullOrUndefined <$> readProp "latestThreadPostUser" json)
 
 
 instance threadPackResponseIsForeign :: IsForeign ThreadPackResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadPackResponse
+      <$> readProp "thread" json
+      <*> readProp "threadUser" json
+      <*> readProp "threadStat" json
+      <*> (runNullOrUndefined <$> readProp "latestThreadPost" json)
+      <*> (runNullOrUndefined <$> readProp "latestThreadPostUser" json)
 
 
 instance threadPackResponseShow :: Show ThreadPackResponse where
@@ -7720,11 +9272,15 @@ instance threadPackResponsesRequestable :: Requestable ThreadPackResponses where
 instance threadPackResponsesRespondable :: Respondable ThreadPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadPackResponses
+      <$> readProp "threadPackResponses" json
 
 
 instance threadPackResponsesIsForeign :: IsForeign ThreadPackResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadPackResponses
+      <$> readProp "threadPackResponses" json
 
 
 instance threadPackResponsesShow :: Show ThreadPackResponses where
@@ -7788,11 +9344,21 @@ instance threadPostPackResponseRequestable :: Requestable ThreadPostPackResponse
 instance threadPostPackResponseRespondable :: Respondable ThreadPostPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadPostPackResponse
+      <$> readProp "threadPost" json
+      <*> readProp "user" json
+      <*> readProp "stat" json
+      <*> (runNullOrUndefined <$> readProp "like" json)
 
 
 instance threadPostPackResponseIsForeign :: IsForeign ThreadPostPackResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadPostPackResponse
+      <$> readProp "threadPost" json
+      <*> readProp "user" json
+      <*> readProp "stat" json
+      <*> (runNullOrUndefined <$> readProp "like" json)
 
 
 instance threadPostPackResponseShow :: Show ThreadPostPackResponse where
@@ -7841,11 +9407,15 @@ instance threadPostPackResponsesRequestable :: Requestable ThreadPostPackRespons
 instance threadPostPackResponsesRespondable :: Respondable ThreadPostPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkThreadPostPackResponses
+      <$> readProp "threadPostPackResponses" json
 
 
 instance threadPostPackResponsesIsForeign :: IsForeign ThreadPostPackResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkThreadPostPackResponses
+      <$> readProp "threadPostPackResponses" json
 
 
 instance threadPostPackResponsesShow :: Show ThreadPostPackResponses where
@@ -7904,11 +9474,19 @@ instance userPackResponseRequestable :: Requestable UserPackResponse where
 instance userPackResponseRespondable :: Respondable UserPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserPackResponse
+      <$> readProp "user" json
+      <*> readProp "userStat" json
+      <*> readProp "userProfile" json
 
 
 instance userPackResponseIsForeign :: IsForeign UserPackResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserPackResponse
+      <$> readProp "user" json
+      <*> readProp "userStat" json
+      <*> readProp "userProfile" json
 
 
 instance userPackResponseShow :: Show UserPackResponse where
@@ -7957,11 +9535,15 @@ instance userPackResponsesRequestable :: Requestable UserPackResponses where
 instance userPackResponsesRespondable :: Respondable UserPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserPackResponses
+      <$> readProp "userPackResponses" json
 
 
 instance userPackResponsesIsForeign :: IsForeign UserPackResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserPackResponses
+      <$> readProp "userPackResponses" json
 
 
 instance userPackResponsesShow :: Show UserPackResponses where
@@ -8020,11 +9602,19 @@ instance userSanitizedPackResponseRequestable :: Requestable UserSanitizedPackRe
 instance userSanitizedPackResponseRespondable :: Respondable UserSanitizedPackResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserSanitizedPackResponse
+      <$> readProp "user" json
+      <*> readProp "userStat" json
+      <*> readProp "userProfile" json
 
 
 instance userSanitizedPackResponseIsForeign :: IsForeign UserSanitizedPackResponse where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserSanitizedPackResponse
+      <$> readProp "user" json
+      <*> readProp "userStat" json
+      <*> readProp "userProfile" json
 
 
 instance userSanitizedPackResponseShow :: Show UserSanitizedPackResponse where
@@ -8073,11 +9663,15 @@ instance userSanitizedPackResponsesRequestable :: Requestable UserSanitizedPackR
 instance userSanitizedPackResponsesRespondable :: Respondable UserSanitizedPackResponses where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse json =
+      mkUserSanitizedPackResponses
+      <$> readProp "userSanitizedPackResponses" json
 
 
 instance userSanitizedPackResponsesIsForeign :: IsForeign UserSanitizedPackResponses where
-  read = Right <<< unsafeFromForeign
+  read json =
+      mkUserSanitizedPackResponses
+      <$> readProp "userSanitizedPackResponses" json
 
 
 instance userSanitizedPackResponsesShow :: Show UserSanitizedPackResponses where
