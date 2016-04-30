@@ -7,8 +7,10 @@ import Data.Argonaut.Core
 import Data.Argonaut.Decode
 import Data.Argonaut.Encode
 import Data.Argonaut.Printer
+import Data.Argonaut.Parser
 import Data.Date.Helpers
 import Data.Either
+import Data.Foreign
 import Data.Foreign (unsafeFromForeign)
 import Data.Foreign.Class
 import Data.JSON
@@ -939,7 +941,13 @@ instance emptyRequestRequestable :: Requestable EmptyRequest where
 instance emptyRequestRespondable :: Respondable EmptyRequest where
   responseType =
     Tuple Nothing JSONResponse
+  fromResponse f =
+    Left (JSONError "error")
+--    pure (mkEmptyRequest false)
+
+    {-
   fromResponse = Right <<< unsafeFromForeign
+  -}
 
 
 instance emptyRequestIsForeign :: IsForeign EmptyRequest where
@@ -3151,11 +3159,25 @@ instance organizationResponseRequestable :: Requestable OrganizationResponse whe
 instance organizationResponseRespondable :: Respondable OrganizationResponse where
   responseType =
     Tuple Nothing JSONResponse
-  fromResponse = Right <<< unsafeFromForeign
+  fromResponse f =
+    case (jsonParser (unsafeFromForeign f)) of
+         Left s -> Left (JSONError s)
+         Right j -> case (decodeJson j) of
+                         Left s' -> Left (JSONError s')
+                         Right v -> pure v
+
+
+
+--  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationResponseIsForeign :: IsForeign OrganizationResponse where
-  read = Right <<< unsafeFromForeign
+  read f =
+    case (jsonParser (unsafeFromForeign f)) of
+         Left s -> Left (JSONError s)
+         Right j -> case (decodeJson j) of
+                         Left s' -> Left (JSONError s')
+                         Right v -> pure v
 
 
 instance organizationResponseShow :: Show OrganizationResponse where
@@ -3205,6 +3227,18 @@ instance organizationResponsesRespondable :: Respondable OrganizationResponses w
   responseType =
     Tuple Nothing JSONResponse
   fromResponse = Right <<< unsafeFromForeign
+--  fromResponse f = decodeJson (jsonParser (show f))
+{-
+  fromResponse f =
+    case (jsonParser (show f)) of
+         Left s -> pure (Left (JSONError s))
+         Right j -> case decodeJson j of
+                         Left s' -> return $ Left (JSONError "hi")
+                         Right v -> return $ Right v
+                         -}
+
+--  fromResponse f = decodeJson f
+--  fromResponse = Right <<< unsafeFromForeign
 
 
 instance organizationResponsesIsForeign :: IsForeign OrganizationResponses where
