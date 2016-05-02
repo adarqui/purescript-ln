@@ -1,4 +1,7 @@
-module LN.T.Param where
+module LN.T.Param (
+  sortOrderFromString,
+  orderFromString
+) where
 
 
 
@@ -6,8 +9,8 @@ import LN.T.Internal.Types
 
 
 
-orderFromString :: String -> SortOrderBy
-orderFromString s =
+sortOrderFromString :: String -> SortOrderBy
+sortOrderFromString s =
   case s of
     "asc"  -> SortOrderBy_Asc
     "dsc"  -> SortOrderBy_Dsc
@@ -16,8 +19,8 @@ orderFromString s =
 
 
 
-orderByFromString :: String -> OrderBy
-orderByFromString s =
+orderFromString :: String -> OrderBy
+orderFromString s =
   case s of
     "user_id"     -> OrderBy_UserId
     "created_at"  -> OrderBy_CreatedAt
