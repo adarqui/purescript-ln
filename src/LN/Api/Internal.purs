@@ -640,6 +640,24 @@ getUserSanitized params user_id = handleError <$> getAt params ["user_sanitized"
 getUserSanitized' :: Int -> ApiEff (Either ApiError UserSanitizedResponse)
 getUserSanitized' user_id = handleError <$> getAt ([] :: Array Boolean) ["user_sanitized", show user_id]
 
+getUserSanitizedStats :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError UserSanitizedStatResponse)
+getUserSanitizedStats params = handleError <$> getAt params ["user_sanitized_stats"]
+
+getUserSanitizedStats' :: ApiEff (Either ApiError UserSanitizedStatResponse)
+getUserSanitizedStats'  = handleError <$> getAt ([] :: Array Boolean) ["user_sanitized_stats"]
+
+getUserSanitizedStats_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError UserSanitizedStatResponse)
+getUserSanitizedStats_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params ++ map qp [ByUsersIds _ByUsersIds]) ["user_sanitized_stats"]
+
+getUserSanitizedStats_ByUsersIds' :: (Array  Int) -> ApiEff (Either ApiError UserSanitizedStatResponse)
+getUserSanitizedStats_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["user_sanitized_stats"]
+
+getUserSanitizedStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError UserSanitizedStatResponse)
+getUserSanitizedStat params user_id = handleError <$> getAt params ["user_sanitized_stat", show user_id]
+
+getUserSanitizedStat' :: Int -> ApiEff (Either ApiError UserSanitizedStatResponse)
+getUserSanitizedStat' user_id = handleError <$> getAt ([] :: Array Boolean) ["user_sanitized_stat", show user_id]
+
 getBoardPacks :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError BoardPackResponses)
 getBoardPacks params = handleError <$> getAt params ["board_packs"]
 
