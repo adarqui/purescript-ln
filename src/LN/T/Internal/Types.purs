@@ -3943,10 +3943,8 @@ instance organizationStatResponsesShow :: Show OrganizationStatResponses where
 data Param
   = Limit Int
   | Offset Int
-  | OrderAsc 
-  | OrderDsc 
-  | OrderRand 
-  | OrderBy OrderBy
+  | SortOrder SortOrderBy
+  | Order OrderBy
   | ByOrganizationId Int
   | ByOrganizationsIds (Array  Int)
   | ByOrganizationName String
@@ -4000,20 +3998,12 @@ instance paramEncodeJson :: EncodeJson Param where
        "tag" := "Offset"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-  encodeJson (OrderAsc ) =
-       "tag" := "OrderAsc"
-    ~> "contents" := ([] :: Array String)
+  encodeJson (SortOrder x0) =
+       "tag" := "SortOrder"
+    ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-  encodeJson (OrderDsc ) =
-       "tag" := "OrderDsc"
-    ~> "contents" := ([] :: Array String)
-    ~> jsonEmptyObject
-  encodeJson (OrderRand ) =
-       "tag" := "OrderRand"
-    ~> "contents" := ([] :: Array String)
-    ~> jsonEmptyObject
-  encodeJson (OrderBy x0) =
-       "tag" := "OrderBy"
+  encodeJson (Order x0) =
+       "tag" := "Order"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
   encodeJson (ByOrganizationId x0) =
@@ -4195,18 +4185,13 @@ instance paramDecodeJson :: DecodeJson Param where
           x0 <- obj .? "contents"
           Offset <$> decodeJson x0
 
-        "OrderAsc" -> do
-          return OrderAsc
-
-        "OrderDsc" -> do
-          return OrderDsc
-
-        "OrderRand" -> do
-          return OrderRand
-
-        "OrderBy" -> do
+        "SortOrder" -> do
           x0 <- obj .? "contents"
-          OrderBy <$> decodeJson x0
+          SortOrder <$> decodeJson x0
+
+        "Order" -> do
+          x0 <- obj .? "contents"
+          Order <$> decodeJson x0
 
         "ByOrganizationId" -> do
           x0 <- obj .? "contents"
@@ -4395,18 +4380,13 @@ instance paramRespondable :: Respondable Param where
           x0 <- readProp "contents" json
           Offset <$> read x0
 
-        "OrderAsc" -> do
-          return OrderAsc
-
-        "OrderDsc" -> do
-          return OrderDsc
-
-        "OrderRand" -> do
-          return OrderRand
-
-        "OrderBy" -> do
+        "SortOrder" -> do
           x0 <- readProp "contents" json
-          OrderBy <$> read x0
+          SortOrder <$> read x0
+
+        "Order" -> do
+          x0 <- readProp "contents" json
+          Order <$> read x0
 
         "ByOrganizationId" -> do
           x0 <- readProp "contents" json
@@ -4586,18 +4566,13 @@ instance paramIsForeign :: IsForeign Param where
           x0 <- readProp "contents" json
           Offset <$> read x0
 
-        "OrderAsc" -> do
-          return OrderAsc
-
-        "OrderDsc" -> do
-          return OrderDsc
-
-        "OrderRand" -> do
-          return OrderRand
-
-        "OrderBy" -> do
+        "SortOrder" -> do
           x0 <- readProp "contents" json
-          OrderBy <$> read x0
+          SortOrder <$> read x0
+
+        "Order" -> do
+          x0 <- readProp "contents" json
+          Order <$> read x0
 
         "ByOrganizationId" -> do
           x0 <- readProp "contents" json
@@ -4768,10 +4743,8 @@ instance paramIsForeign :: IsForeign Param where
 data ParamTag
   = ParamTag_Limit 
   | ParamTag_Offset 
-  | ParamTag_OrderAsc 
-  | ParamTag_OrderDsc 
-  | ParamTag_OrderRand 
-  | ParamTag_OrderBy 
+  | ParamTag_SortOrder 
+  | ParamTag_Order 
   | ParamTag_ByOrganizationId 
   | ParamTag_ByOrganizationsIds 
   | ParamTag_ByOrganizationName 
@@ -4825,20 +4798,12 @@ instance paramTagEncodeJson :: EncodeJson ParamTag where
        "tag" := "ParamTag_Offset"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
-  encodeJson (ParamTag_OrderAsc ) =
-       "tag" := "ParamTag_OrderAsc"
+  encodeJson (ParamTag_SortOrder ) =
+       "tag" := "ParamTag_SortOrder"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
-  encodeJson (ParamTag_OrderDsc ) =
-       "tag" := "ParamTag_OrderDsc"
-    ~> "contents" := ([] :: Array String)
-    ~> jsonEmptyObject
-  encodeJson (ParamTag_OrderRand ) =
-       "tag" := "ParamTag_OrderRand"
-    ~> "contents" := ([] :: Array String)
-    ~> jsonEmptyObject
-  encodeJson (ParamTag_OrderBy ) =
-       "tag" := "ParamTag_OrderBy"
+  encodeJson (ParamTag_Order ) =
+       "tag" := "ParamTag_Order"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (ParamTag_ByOrganizationId ) =
@@ -5018,17 +4983,11 @@ instance paramTagDecodeJson :: DecodeJson ParamTag where
         "ParamTag_Offset" -> do
           return ParamTag_Offset
 
-        "ParamTag_OrderAsc" -> do
-          return ParamTag_OrderAsc
+        "ParamTag_SortOrder" -> do
+          return ParamTag_SortOrder
 
-        "ParamTag_OrderDsc" -> do
-          return ParamTag_OrderDsc
-
-        "ParamTag_OrderRand" -> do
-          return ParamTag_OrderRand
-
-        "ParamTag_OrderBy" -> do
-          return ParamTag_OrderBy
+        "ParamTag_Order" -> do
+          return ParamTag_Order
 
         "ParamTag_ByOrganizationId" -> do
           return ParamTag_ByOrganizationId
@@ -5174,17 +5133,11 @@ instance paramTagRespondable :: Respondable ParamTag where
         "ParamTag_Offset" -> do
           return ParamTag_Offset
 
-        "ParamTag_OrderAsc" -> do
-          return ParamTag_OrderAsc
+        "ParamTag_SortOrder" -> do
+          return ParamTag_SortOrder
 
-        "ParamTag_OrderDsc" -> do
-          return ParamTag_OrderDsc
-
-        "ParamTag_OrderRand" -> do
-          return ParamTag_OrderRand
-
-        "ParamTag_OrderBy" -> do
-          return ParamTag_OrderBy
+        "ParamTag_Order" -> do
+          return ParamTag_Order
 
         "ParamTag_ByOrganizationId" -> do
           return ParamTag_ByOrganizationId
@@ -5321,17 +5274,11 @@ instance paramTagIsForeign :: IsForeign ParamTag where
         "ParamTag_Offset" -> do
           return ParamTag_Offset
 
-        "ParamTag_OrderAsc" -> do
-          return ParamTag_OrderAsc
+        "ParamTag_SortOrder" -> do
+          return ParamTag_SortOrder
 
-        "ParamTag_OrderDsc" -> do
-          return ParamTag_OrderDsc
-
-        "ParamTag_OrderRand" -> do
-          return ParamTag_OrderRand
-
-        "ParamTag_OrderBy" -> do
-          return ParamTag_OrderBy
+        "ParamTag_Order" -> do
+          return ParamTag_Order
 
         "ParamTag_ByOrganizationId" -> do
           return ParamTag_ByOrganizationId
@@ -5455,6 +5402,97 @@ instance paramTagIsForeign :: IsForeign ParamTag where
 
         "ParamTag_IP" -> do
           return ParamTag_IP
+
+
+
+data SortOrderBy
+  = SortOrderBy_Asc 
+  | SortOrderBy_Dsc 
+  | SortOrderBy_Rnd 
+  | SortOrderBy_None 
+
+
+
+instance sortOrderByEncodeJson :: EncodeJson SortOrderBy where
+  encodeJson (SortOrderBy_Asc ) =
+       "tag" := "SortOrderBy_Asc"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (SortOrderBy_Dsc ) =
+       "tag" := "SortOrderBy_Dsc"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (SortOrderBy_Rnd ) =
+       "tag" := "SortOrderBy_Rnd"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (SortOrderBy_None ) =
+       "tag" := "SortOrderBy_None"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance sortOrderByDecodeJson :: DecodeJson SortOrderBy where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "SortOrderBy_Asc" -> do
+          return SortOrderBy_Asc
+
+        "SortOrderBy_Dsc" -> do
+          return SortOrderBy_Dsc
+
+        "SortOrderBy_Rnd" -> do
+          return SortOrderBy_Rnd
+
+        "SortOrderBy_None" -> do
+          return SortOrderBy_None
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance sortOrderByRequestable :: Requestable SortOrderBy where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance sortOrderByRespondable :: Respondable SortOrderBy where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "SortOrderBy_Asc" -> do
+          return SortOrderBy_Asc
+
+        "SortOrderBy_Dsc" -> do
+          return SortOrderBy_Dsc
+
+        "SortOrderBy_Rnd" -> do
+          return SortOrderBy_Rnd
+
+        "SortOrderBy_None" -> do
+          return SortOrderBy_None
+
+
+
+instance sortOrderByIsForeign :: IsForeign SortOrderBy where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "SortOrderBy_Asc" -> do
+          return SortOrderBy_Asc
+
+        "SortOrderBy_Dsc" -> do
+          return SortOrderBy_Dsc
+
+        "SortOrderBy_Rnd" -> do
+          return SortOrderBy_Rnd
+
+        "SortOrderBy_None" -> do
+          return SortOrderBy_None
 
 
 
@@ -11462,10 +11500,8 @@ workouts_ f o = o { workouts = _ } <$> f o.workouts
 instance paramQueryParam :: QueryParam Param where
   qp (Limit limit)                       = Tuple "limit" (show limit)
   qp (Offset offset)                     = Tuple "offset" (show offset)
-  qp OrderAsc                            = Tuple "order" ("asc")
-  qp OrderDsc                            = Tuple "order" ("dsc")
-  qp OrderRand                           = Tuple "order" ("rand")
-  qp (OrderBy order)                     = Tuple "order_by" (show order)
+  qp (SortOrder sort_order_by)           = Tuple "sort_order" (show sort_order_by)
+  qp (Order order_by)                    = Tuple "order_by" (show order_by)
   qp (ByOrganizationId org_id)           = Tuple "organization_id" (show org_id)
   qp (ByOrganizationsIds orgs_ids)       = Tuple "organizations_ids" (show orgs_ids)
   qp (ByOrganizationName org_name)       = Tuple "organization_name" (org_name)
@@ -11507,6 +11543,14 @@ instance paramQueryParam :: QueryParam Param where
   qp (CreatedAtUnixTimestamp created_at) = Tuple "created_at_unix_ts" (show created_at)
   qp (RealIP real_ip)                    = Tuple "real_ip" (real_ip)
   qp (IP ip)                             = Tuple "ip" (ip)
+
+
+
+instance sortOrderByShow :: Show SortOrderBy where
+  show SortOrderBy_Asc  = "asc"
+  show SortOrderBy_Dsc  = "dsc"
+  show SortOrderBy_Rnd  = "rnd"
+  show SortOrderBy_None = "none"
 
 
 

@@ -4,10 +4,8 @@
 instance paramQueryParam :: QueryParam Param where
   qp (Limit limit)                       = Tuple "limit" (show limit)
   qp (Offset offset)                     = Tuple "offset" (show offset)
-  qp OrderAsc                            = Tuple "order" ("asc")
-  qp OrderDsc                            = Tuple "order" ("dsc")
-  qp OrderRand                           = Tuple "order" ("rand")
-  qp (OrderBy order)                     = Tuple "order_by" (show order)
+  qp (SortOrder sort_order_by)           = Tuple "sort_order" (show sort_order_by)
+  qp (Order order_by)                    = Tuple "order_by" (show order_by)
   qp (ByOrganizationId org_id)           = Tuple "organization_id" (show org_id)
   qp (ByOrganizationsIds orgs_ids)       = Tuple "organizations_ids" (show orgs_ids)
   qp (ByOrganizationName org_name)       = Tuple "organization_name" (org_name)
@@ -49,6 +47,14 @@ instance paramQueryParam :: QueryParam Param where
   qp (CreatedAtUnixTimestamp created_at) = Tuple "created_at_unix_ts" (show created_at)
   qp (RealIP real_ip)                    = Tuple "real_ip" (real_ip)
   qp (IP ip)                             = Tuple "ip" (ip)
+
+
+
+instance sortOrderByShow :: Show SortOrderBy where
+  show SortOrderBy_Asc  = "asc"
+  show SortOrderBy_Dsc  = "dsc"
+  show SortOrderBy_Rnd  = "rnd"
+  show SortOrderBy_None = "none"
 
 
 

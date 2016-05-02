@@ -6,13 +6,13 @@ import LN.T.Internal.Types
 
 
 
-orderFromString :: String -> Param
+orderFromString :: String -> SortOrderBy
 orderFromString s =
   case s of
-    "asc"  -> OrderAsc
-    "dsc"  -> OrderDsc
-    "rand" -> OrderRand
-    _      -> OrderAsc
+    "asc"  -> SortOrderBy_Asc
+    "dsc"  -> SortOrderBy_Dsc
+    "rand" -> SortOrderBy_Rnd
+    _      -> SortOrderBy_None
 
 
 
