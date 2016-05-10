@@ -3191,389 +3191,6 @@ instance tableIsForeign :: IsForeign Table where
 instance tableShow :: Show Table where
     show (Table o) = show "title: " ++ show o.title ++ ", " ++ show "columns: " ++ show o.columns ++ ", " ++ show "rows: " ++ show o.rows
 
-newtype LikeRequest = LikeRequest {
-  opt :: LikeOpt,
-  reason :: (Maybe String)
-}
-
-
-_LikeRequest :: LensP LikeRequest {
-  opt :: LikeOpt,
-  reason :: (Maybe String)
-}
-_LikeRequest f (LikeRequest o) = LikeRequest <$> f o
-
-
-mkLikeRequest :: LikeOpt -> (Maybe String) -> LikeRequest
-mkLikeRequest opt reason =
-  LikeRequest{opt, reason}
-
-
-unwrapLikeRequest (LikeRequest r) = r
-
-instance likeRequestEncodeJson :: EncodeJson LikeRequest where
-  encodeJson (LikeRequest o) =
-       "tag" := "LikeRequest"
-    ~> "opt" := o.opt
-    ~> "reason" := o.reason
-    ~> jsonEmptyObject
-
-
-instance likeRequestDecodeJson :: DecodeJson LikeRequest where
-  decodeJson o = do
-    obj <- decodeJson o
-    opt <- obj .? "opt"
-    reason <- obj .? "reason"
-    pure $ LikeRequest {
-      opt,
-      reason
-    }
-
-
-instance likeRequestRequestable :: Requestable LikeRequest where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance likeRequestRespondable :: Respondable LikeRequest where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkLikeRequest
-      <$> readProp "opt" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
-
-
-instance likeRequestIsForeign :: IsForeign LikeRequest where
-  read json =
-      mkLikeRequest
-      <$> readProp "opt" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
-
-
-instance likeRequestShow :: Show LikeRequest where
-    show (LikeRequest o) = show "opt: " ++ show o.opt ++ ", " ++ show "reason: " ++ show o.reason
-
-newtype LikeResponse = LikeResponse {
-  id :: Int,
-  userId :: Int,
-  entityName :: String,
-  entityId :: Int,
-  opt :: LikeOpt,
-  score :: Int,
-  reason :: (Maybe String),
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-
-
-_LikeResponse :: LensP LikeResponse {
-  id :: Int,
-  userId :: Int,
-  entityName :: String,
-  entityId :: Int,
-  opt :: LikeOpt,
-  score :: Int,
-  reason :: (Maybe String),
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_LikeResponse f (LikeResponse o) = LikeResponse <$> f o
-
-
-mkLikeResponse :: Int -> Int -> String -> Int -> LikeOpt -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> LikeResponse
-mkLikeResponse id userId entityName entityId opt score reason createdAt modifiedAt =
-  LikeResponse{id, userId, entityName, entityId, opt, score, reason, createdAt, modifiedAt}
-
-
-unwrapLikeResponse (LikeResponse r) = r
-
-instance likeResponseEncodeJson :: EncodeJson LikeResponse where
-  encodeJson (LikeResponse o) =
-       "tag" := "LikeResponse"
-    ~> "id" := o.id
-    ~> "user_id" := o.userId
-    ~> "entity_name" := o.entityName
-    ~> "entity_id" := o.entityId
-    ~> "opt" := o.opt
-    ~> "score" := o.score
-    ~> "reason" := o.reason
-    ~> "created_at" := o.createdAt
-    ~> "modified_at" := o.modifiedAt
-    ~> jsonEmptyObject
-
-
-instance likeResponseDecodeJson :: DecodeJson LikeResponse where
-  decodeJson o = do
-    obj <- decodeJson o
-    id <- obj .? "id"
-    userId <- obj .? "user_id"
-    entityName <- obj .? "entity_name"
-    entityId <- obj .? "entity_id"
-    opt <- obj .? "opt"
-    score <- obj .? "score"
-    reason <- obj .? "reason"
-    createdAt <- obj .? "created_at"
-    modifiedAt <- obj .? "modified_at"
-    pure $ LikeResponse {
-      id,
-      userId,
-      entityName,
-      entityId,
-      opt,
-      score,
-      reason,
-      createdAt,
-      modifiedAt
-    }
-
-
-instance likeResponseRequestable :: Requestable LikeResponse where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance likeResponseRespondable :: Respondable LikeResponse where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkLikeResponse
-      <$> readProp "id" json
-      <*> readProp "user_id" json
-      <*> readProp "entity_name" json
-      <*> readProp "entity_id" json
-      <*> readProp "opt" json
-      <*> readProp "score" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-
-
-instance likeResponseIsForeign :: IsForeign LikeResponse where
-  read json =
-      mkLikeResponse
-      <$> readProp "id" json
-      <*> readProp "user_id" json
-      <*> readProp "entity_name" json
-      <*> readProp "entity_id" json
-      <*> readProp "opt" json
-      <*> readProp "score" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-
-
-instance likeResponseShow :: Show LikeResponse where
-    show (LikeResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "entityName: " ++ show o.entityName ++ ", " ++ show "entityId: " ++ show o.entityId ++ ", " ++ show "opt: " ++ show o.opt ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
-
-newtype LikeResponses = LikeResponses {
-  likeResponses :: (Array  LikeResponse)
-}
-
-
-_LikeResponses :: LensP LikeResponses {
-  likeResponses :: (Array  LikeResponse)
-}
-_LikeResponses f (LikeResponses o) = LikeResponses <$> f o
-
-
-mkLikeResponses :: (Array  LikeResponse) -> LikeResponses
-mkLikeResponses likeResponses =
-  LikeResponses{likeResponses}
-
-
-unwrapLikeResponses (LikeResponses r) = r
-
-instance likeResponsesEncodeJson :: EncodeJson LikeResponses where
-  encodeJson (LikeResponses o) =
-       "tag" := "LikeResponses"
-    ~> "like_responses" := o.likeResponses
-    ~> jsonEmptyObject
-
-
-instance likeResponsesDecodeJson :: DecodeJson LikeResponses where
-  decodeJson o = do
-    obj <- decodeJson o
-    likeResponses <- obj .? "like_responses"
-    pure $ LikeResponses {
-      likeResponses
-    }
-
-
-instance likeResponsesRequestable :: Requestable LikeResponses where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance likeResponsesRespondable :: Respondable LikeResponses where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkLikeResponses
-      <$> readProp "like_responses" json
-
-
-instance likeResponsesIsForeign :: IsForeign LikeResponses where
-  read json =
-      mkLikeResponses
-      <$> readProp "like_responses" json
-
-
-instance likeResponsesShow :: Show LikeResponses where
-    show (LikeResponses o) = show "likeResponses: " ++ show o.likeResponses
-
-newtype LikeStatResponse = LikeStatResponse {
-  id :: Int,
-  entityName :: String,
-  entityId :: String,
-  score :: Int,
-  like :: Int,
-  dislike :: Int
-}
-
-
-_LikeStatResponse :: LensP LikeStatResponse {
-  id :: Int,
-  entityName :: String,
-  entityId :: String,
-  score :: Int,
-  like :: Int,
-  dislike :: Int
-}
-_LikeStatResponse f (LikeStatResponse o) = LikeStatResponse <$> f o
-
-
-mkLikeStatResponse :: Int -> String -> String -> Int -> Int -> Int -> LikeStatResponse
-mkLikeStatResponse id entityName entityId score like dislike =
-  LikeStatResponse{id, entityName, entityId, score, like, dislike}
-
-
-unwrapLikeStatResponse (LikeStatResponse r) = r
-
-instance likeStatResponseEncodeJson :: EncodeJson LikeStatResponse where
-  encodeJson (LikeStatResponse o) =
-       "tag" := "LikeStatResponse"
-    ~> "id" := o.id
-    ~> "entity_name" := o.entityName
-    ~> "entity_id" := o.entityId
-    ~> "score" := o.score
-    ~> "like" := o.like
-    ~> "dislike" := o.dislike
-    ~> jsonEmptyObject
-
-
-instance likeStatResponseDecodeJson :: DecodeJson LikeStatResponse where
-  decodeJson o = do
-    obj <- decodeJson o
-    id <- obj .? "id"
-    entityName <- obj .? "entity_name"
-    entityId <- obj .? "entity_id"
-    score <- obj .? "score"
-    like <- obj .? "like"
-    dislike <- obj .? "dislike"
-    pure $ LikeStatResponse {
-      id,
-      entityName,
-      entityId,
-      score,
-      like,
-      dislike
-    }
-
-
-instance likeStatResponseRequestable :: Requestable LikeStatResponse where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance likeStatResponseRespondable :: Respondable LikeStatResponse where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkLikeStatResponse
-      <$> readProp "id" json
-      <*> readProp "entity_name" json
-      <*> readProp "entity_id" json
-      <*> readProp "score" json
-      <*> readProp "like" json
-      <*> readProp "dislike" json
-
-
-instance likeStatResponseIsForeign :: IsForeign LikeStatResponse where
-  read json =
-      mkLikeStatResponse
-      <$> readProp "id" json
-      <*> readProp "entity_name" json
-      <*> readProp "entity_id" json
-      <*> readProp "score" json
-      <*> readProp "like" json
-      <*> readProp "dislike" json
-
-
-instance likeStatResponseShow :: Show LikeStatResponse where
-    show (LikeStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entityName: " ++ show o.entityName ++ ", " ++ show "entityId: " ++ show o.entityId ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "dislike: " ++ show o.dislike
-
-newtype LikeStatResponses = LikeStatResponses {
-  likeStatResponses :: (Array  LikeStatResponse)
-}
-
-
-_LikeStatResponses :: LensP LikeStatResponses {
-  likeStatResponses :: (Array  LikeStatResponse)
-}
-_LikeStatResponses f (LikeStatResponses o) = LikeStatResponses <$> f o
-
-
-mkLikeStatResponses :: (Array  LikeStatResponse) -> LikeStatResponses
-mkLikeStatResponses likeStatResponses =
-  LikeStatResponses{likeStatResponses}
-
-
-unwrapLikeStatResponses (LikeStatResponses r) = r
-
-instance likeStatResponsesEncodeJson :: EncodeJson LikeStatResponses where
-  encodeJson (LikeStatResponses o) =
-       "tag" := "LikeStatResponses"
-    ~> "like_stat_responses" := o.likeStatResponses
-    ~> jsonEmptyObject
-
-
-instance likeStatResponsesDecodeJson :: DecodeJson LikeStatResponses where
-  decodeJson o = do
-    obj <- decodeJson o
-    likeStatResponses <- obj .? "like_stat_responses"
-    pure $ LikeStatResponses {
-      likeStatResponses
-    }
-
-
-instance likeStatResponsesRequestable :: Requestable LikeStatResponses where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance likeStatResponsesRespondable :: Respondable LikeStatResponses where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkLikeStatResponses
-      <$> readProp "like_stat_responses" json
-
-
-instance likeStatResponsesIsForeign :: IsForeign LikeStatResponses where
-  read json =
-      mkLikeStatResponses
-      <$> readProp "like_stat_responses" json
-
-
-instance likeStatResponsesShow :: Show LikeStatResponses where
-    show (LikeStatResponses o) = show "likeStatResponses: " ++ show o.likeStatResponses
-
 data LikeOpt
   = Like 
   | Neutral 
@@ -9582,6 +9199,368 @@ instance threadPostStatResponsesIsForeign :: IsForeign ThreadPostStatResponses w
 instance threadPostStatResponsesShow :: Show ThreadPostStatResponses where
     show (ThreadPostStatResponses o) = show "threadPostStatResponses: " ++ show o.threadPostStatResponses
 
+newtype ThreadPostLikeRequest = ThreadPostLikeRequest {
+  opt :: LikeOpt,
+  reason :: (Maybe String)
+}
+
+
+_ThreadPostLikeRequest :: LensP ThreadPostLikeRequest {
+  opt :: LikeOpt,
+  reason :: (Maybe String)
+}
+_ThreadPostLikeRequest f (ThreadPostLikeRequest o) = ThreadPostLikeRequest <$> f o
+
+
+mkThreadPostLikeRequest :: LikeOpt -> (Maybe String) -> ThreadPostLikeRequest
+mkThreadPostLikeRequest opt reason =
+  ThreadPostLikeRequest{opt, reason}
+
+
+unwrapThreadPostLikeRequest (ThreadPostLikeRequest r) = r
+
+instance threadPostLikeRequestEncodeJson :: EncodeJson ThreadPostLikeRequest where
+  encodeJson (ThreadPostLikeRequest o) =
+       "tag" := "ThreadPostLikeRequest"
+    ~> "opt" := o.opt
+    ~> "reason" := o.reason
+    ~> jsonEmptyObject
+
+
+instance threadPostLikeRequestDecodeJson :: DecodeJson ThreadPostLikeRequest where
+  decodeJson o = do
+    obj <- decodeJson o
+    opt <- obj .? "opt"
+    reason <- obj .? "reason"
+    pure $ ThreadPostLikeRequest {
+      opt,
+      reason
+    }
+
+
+instance threadPostLikeRequestRequestable :: Requestable ThreadPostLikeRequest where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostLikeRequestRespondable :: Respondable ThreadPostLikeRequest where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostLikeRequest
+      <$> readProp "opt" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+
+
+instance threadPostLikeRequestIsForeign :: IsForeign ThreadPostLikeRequest where
+  read json =
+      mkThreadPostLikeRequest
+      <$> readProp "opt" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+
+
+instance threadPostLikeRequestShow :: Show ThreadPostLikeRequest where
+    show (ThreadPostLikeRequest o) = show "opt: " ++ show o.opt ++ ", " ++ show "reason: " ++ show o.reason
+
+newtype ThreadPostLikeResponse = ThreadPostLikeResponse {
+  id :: Int,
+  threadPostId :: Int,
+  userId :: Int,
+  opt :: LikeOpt,
+  score :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+
+
+_ThreadPostLikeResponse :: LensP ThreadPostLikeResponse {
+  id :: Int,
+  threadPostId :: Int,
+  userId :: Int,
+  opt :: LikeOpt,
+  score :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+_ThreadPostLikeResponse f (ThreadPostLikeResponse o) = ThreadPostLikeResponse <$> f o
+
+
+mkThreadPostLikeResponse :: Int -> Int -> Int -> LikeOpt -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> ThreadPostLikeResponse
+mkThreadPostLikeResponse id threadPostId userId opt score reason createdAt modifiedAt =
+  ThreadPostLikeResponse{id, threadPostId, userId, opt, score, reason, createdAt, modifiedAt}
+
+
+unwrapThreadPostLikeResponse (ThreadPostLikeResponse r) = r
+
+instance threadPostLikeResponseEncodeJson :: EncodeJson ThreadPostLikeResponse where
+  encodeJson (ThreadPostLikeResponse o) =
+       "tag" := "ThreadPostLikeResponse"
+    ~> "id" := o.id
+    ~> "thread_post_id" := o.threadPostId
+    ~> "user_id" := o.userId
+    ~> "opt" := o.opt
+    ~> "score" := o.score
+    ~> "reason" := o.reason
+    ~> "created_at" := o.createdAt
+    ~> "modified_at" := o.modifiedAt
+    ~> jsonEmptyObject
+
+
+instance threadPostLikeResponseDecodeJson :: DecodeJson ThreadPostLikeResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    threadPostId <- obj .? "thread_post_id"
+    userId <- obj .? "user_id"
+    opt <- obj .? "opt"
+    score <- obj .? "score"
+    reason <- obj .? "reason"
+    createdAt <- obj .? "created_at"
+    modifiedAt <- obj .? "modified_at"
+    pure $ ThreadPostLikeResponse {
+      id,
+      threadPostId,
+      userId,
+      opt,
+      score,
+      reason,
+      createdAt,
+      modifiedAt
+    }
+
+
+instance threadPostLikeResponseRequestable :: Requestable ThreadPostLikeResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostLikeResponseRespondable :: Respondable ThreadPostLikeResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostLikeResponse
+      <$> readProp "id" json
+      <*> readProp "thread_post_id" json
+      <*> readProp "user_id" json
+      <*> readProp "opt" json
+      <*> readProp "score" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance threadPostLikeResponseIsForeign :: IsForeign ThreadPostLikeResponse where
+  read json =
+      mkThreadPostLikeResponse
+      <$> readProp "id" json
+      <*> readProp "thread_post_id" json
+      <*> readProp "user_id" json
+      <*> readProp "opt" json
+      <*> readProp "score" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance threadPostLikeResponseShow :: Show ThreadPostLikeResponse where
+    show (ThreadPostLikeResponse o) = show "id: " ++ show o.id ++ ", " ++ show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "opt: " ++ show o.opt ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+
+newtype ThreadPostLikeResponses = ThreadPostLikeResponses {
+  threadPostLikeResponses :: (Array  ThreadPostLikeResponse)
+}
+
+
+_ThreadPostLikeResponses :: LensP ThreadPostLikeResponses {
+  threadPostLikeResponses :: (Array  ThreadPostLikeResponse)
+}
+_ThreadPostLikeResponses f (ThreadPostLikeResponses o) = ThreadPostLikeResponses <$> f o
+
+
+mkThreadPostLikeResponses :: (Array  ThreadPostLikeResponse) -> ThreadPostLikeResponses
+mkThreadPostLikeResponses threadPostLikeResponses =
+  ThreadPostLikeResponses{threadPostLikeResponses}
+
+
+unwrapThreadPostLikeResponses (ThreadPostLikeResponses r) = r
+
+instance threadPostLikeResponsesEncodeJson :: EncodeJson ThreadPostLikeResponses where
+  encodeJson (ThreadPostLikeResponses o) =
+       "tag" := "ThreadPostLikeResponses"
+    ~> "thread_post_like_responses" := o.threadPostLikeResponses
+    ~> jsonEmptyObject
+
+
+instance threadPostLikeResponsesDecodeJson :: DecodeJson ThreadPostLikeResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    threadPostLikeResponses <- obj .? "thread_post_like_responses"
+    pure $ ThreadPostLikeResponses {
+      threadPostLikeResponses
+    }
+
+
+instance threadPostLikeResponsesRequestable :: Requestable ThreadPostLikeResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostLikeResponsesRespondable :: Respondable ThreadPostLikeResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostLikeResponses
+      <$> readProp "thread_post_like_responses" json
+
+
+instance threadPostLikeResponsesIsForeign :: IsForeign ThreadPostLikeResponses where
+  read json =
+      mkThreadPostLikeResponses
+      <$> readProp "thread_post_like_responses" json
+
+
+instance threadPostLikeResponsesShow :: Show ThreadPostLikeResponses where
+    show (ThreadPostLikeResponses o) = show "threadPostLikeResponses: " ++ show o.threadPostLikeResponses
+
+newtype ThreadPostLikeStatResponse = ThreadPostLikeStatResponse {
+  id :: Int,
+  score :: Int,
+  like :: Int,
+  dislike :: Int
+}
+
+
+_ThreadPostLikeStatResponse :: LensP ThreadPostLikeStatResponse {
+  id :: Int,
+  score :: Int,
+  like :: Int,
+  dislike :: Int
+}
+_ThreadPostLikeStatResponse f (ThreadPostLikeStatResponse o) = ThreadPostLikeStatResponse <$> f o
+
+
+mkThreadPostLikeStatResponse :: Int -> Int -> Int -> Int -> ThreadPostLikeStatResponse
+mkThreadPostLikeStatResponse id score like dislike =
+  ThreadPostLikeStatResponse{id, score, like, dislike}
+
+
+unwrapThreadPostLikeStatResponse (ThreadPostLikeStatResponse r) = r
+
+instance threadPostLikeStatResponseEncodeJson :: EncodeJson ThreadPostLikeStatResponse where
+  encodeJson (ThreadPostLikeStatResponse o) =
+       "tag" := "ThreadPostLikeStatResponse"
+    ~> "id" := o.id
+    ~> "score" := o.score
+    ~> "like" := o.like
+    ~> "dislike" := o.dislike
+    ~> jsonEmptyObject
+
+
+instance threadPostLikeStatResponseDecodeJson :: DecodeJson ThreadPostLikeStatResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    score <- obj .? "score"
+    like <- obj .? "like"
+    dislike <- obj .? "dislike"
+    pure $ ThreadPostLikeStatResponse {
+      id,
+      score,
+      like,
+      dislike
+    }
+
+
+instance threadPostLikeStatResponseRequestable :: Requestable ThreadPostLikeStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostLikeStatResponseRespondable :: Respondable ThreadPostLikeStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostLikeStatResponse
+      <$> readProp "id" json
+      <*> readProp "score" json
+      <*> readProp "like" json
+      <*> readProp "dislike" json
+
+
+instance threadPostLikeStatResponseIsForeign :: IsForeign ThreadPostLikeStatResponse where
+  read json =
+      mkThreadPostLikeStatResponse
+      <$> readProp "id" json
+      <*> readProp "score" json
+      <*> readProp "like" json
+      <*> readProp "dislike" json
+
+
+instance threadPostLikeStatResponseShow :: Show ThreadPostLikeStatResponse where
+    show (ThreadPostLikeStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "dislike: " ++ show o.dislike
+
+newtype ThreadPostLikeStatResponses = ThreadPostLikeStatResponses {
+  threadPostLikeStatResponses :: (Array  ThreadPostLikeStatResponse)
+}
+
+
+_ThreadPostLikeStatResponses :: LensP ThreadPostLikeStatResponses {
+  threadPostLikeStatResponses :: (Array  ThreadPostLikeStatResponse)
+}
+_ThreadPostLikeStatResponses f (ThreadPostLikeStatResponses o) = ThreadPostLikeStatResponses <$> f o
+
+
+mkThreadPostLikeStatResponses :: (Array  ThreadPostLikeStatResponse) -> ThreadPostLikeStatResponses
+mkThreadPostLikeStatResponses threadPostLikeStatResponses =
+  ThreadPostLikeStatResponses{threadPostLikeStatResponses}
+
+
+unwrapThreadPostLikeStatResponses (ThreadPostLikeStatResponses r) = r
+
+instance threadPostLikeStatResponsesEncodeJson :: EncodeJson ThreadPostLikeStatResponses where
+  encodeJson (ThreadPostLikeStatResponses o) =
+       "tag" := "ThreadPostLikeStatResponses"
+    ~> "thread_post_like_stat_responses" := o.threadPostLikeStatResponses
+    ~> jsonEmptyObject
+
+
+instance threadPostLikeStatResponsesDecodeJson :: DecodeJson ThreadPostLikeStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    threadPostLikeStatResponses <- obj .? "thread_post_like_stat_responses"
+    pure $ ThreadPostLikeStatResponses {
+      threadPostLikeStatResponses
+    }
+
+
+instance threadPostLikeStatResponsesRequestable :: Requestable ThreadPostLikeStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostLikeStatResponsesRespondable :: Respondable ThreadPostLikeStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostLikeStatResponses
+      <$> readProp "thread_post_like_stat_responses" json
+
+
+instance threadPostLikeStatResponsesIsForeign :: IsForeign ThreadPostLikeStatResponses where
+  read json =
+      mkThreadPostLikeStatResponses
+      <$> readProp "thread_post_like_stat_responses" json
+
+
+instance threadPostLikeStatResponsesShow :: Show ThreadPostLikeStatResponses where
+    show (ThreadPostLikeStatResponses o) = show "threadPostLikeStatResponses: " ++ show o.threadPostLikeStatResponses
+
 newtype UserRequest = UserRequest {
   nick :: String,
   displayNick :: String,
@@ -10647,7 +10626,7 @@ newtype ThreadPostPackResponse = ThreadPostPackResponse {
   threadPost :: ThreadPostResponse,
   user :: UserSanitizedResponse,
   stat :: ThreadPostStatResponse,
-  like :: (Maybe LikeResponse)
+  like :: (Maybe ThreadPostLikeResponse)
 }
 
 
@@ -10655,12 +10634,12 @@ _ThreadPostPackResponse :: LensP ThreadPostPackResponse {
   threadPost :: ThreadPostResponse,
   user :: UserSanitizedResponse,
   stat :: ThreadPostStatResponse,
-  like :: (Maybe LikeResponse)
+  like :: (Maybe ThreadPostLikeResponse)
 }
 _ThreadPostPackResponse f (ThreadPostPackResponse o) = ThreadPostPackResponse <$> f o
 
 
-mkThreadPostPackResponse :: ThreadPostResponse -> UserSanitizedResponse -> ThreadPostStatResponse -> (Maybe LikeResponse) -> ThreadPostPackResponse
+mkThreadPostPackResponse :: ThreadPostResponse -> UserSanitizedResponse -> ThreadPostStatResponse -> (Maybe ThreadPostLikeResponse) -> ThreadPostPackResponse
 mkThreadPostPackResponse threadPost user stat like =
   ThreadPostPackResponse{threadPost, user, stat, like}
 
@@ -11206,10 +11185,6 @@ entityId_ :: forall b a r. Lens { entityId :: a | r } { entityId :: b | r } a b
 entityId_ f o = o { entityId = _ } <$> f o.entityId
 
 
-entityName_ :: forall b a r. Lens { entityName :: a | r } { entityName :: b | r } a b
-entityName_ f o = o { entityName = _ } <$> f o.entityName
-
-
 examples_ :: forall b a r. Lens { examples :: a | r } { examples :: b | r } a b
 examples_ f o = o { examples = _ } <$> f o.examples
 
@@ -11312,14 +11287,6 @@ leurons_ f o = o { leurons = _ } <$> f o.leurons
 
 like_ :: forall b a r. Lens { like :: a | r } { like :: b | r } a b
 like_ f o = o { like = _ } <$> f o.like
-
-
-likeResponses_ :: forall b a r. Lens { likeResponses :: a | r } { likeResponses :: b | r } a b
-likeResponses_ f o = o { likeResponses = _ } <$> f o.likeResponses
-
-
-likeStatResponses_ :: forall b a r. Lens { likeStatResponses :: a | r } { likeStatResponses :: b | r } a b
-likeStatResponses_ f o = o { likeStatResponses = _ } <$> f o.likeStatResponses
 
 
 likes_ :: forall b a r. Lens { likes :: a | r } { likes :: b | r } a b
@@ -11596,6 +11563,14 @@ threadPost_ f o = o { threadPost = _ } <$> f o.threadPost
 
 threadPostId_ :: forall b a r. Lens { threadPostId :: a | r } { threadPostId :: b | r } a b
 threadPostId_ f o = o { threadPostId = _ } <$> f o.threadPostId
+
+
+threadPostLikeResponses_ :: forall b a r. Lens { threadPostLikeResponses :: a | r } { threadPostLikeResponses :: b | r } a b
+threadPostLikeResponses_ f o = o { threadPostLikeResponses = _ } <$> f o.threadPostLikeResponses
+
+
+threadPostLikeStatResponses_ :: forall b a r. Lens { threadPostLikeStatResponses :: a | r } { threadPostLikeStatResponses :: b | r } a b
+threadPostLikeStatResponses_ f o = o { threadPostLikeStatResponses = _ } <$> f o.threadPostLikeStatResponses
 
 
 threadPostPackResponses_ :: forall b a r. Lens { threadPostPackResponses :: a | r } { threadPostPackResponses :: b | r } a b
