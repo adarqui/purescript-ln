@@ -562,17 +562,83 @@ deleteThreadPost params thread_post_id = handleError <$> deleteAt params ["threa
 deleteThreadPost' :: Int -> ApiEff (Either ApiError Unit)
 deleteThreadPost' thread_post_id = handleError <$> deleteAt ([] :: Array Boolean) ["thread_post", show thread_post_id]
 
-getThreadPostStats :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ThreadPostStatResponses)
-getThreadPostStats params = handleError <$> getAt params ["thread_post_stats"]
+getThreadPostStats_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ThreadPostStatResponses)
+getThreadPostStats_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["thread_post_stats"]
 
-getThreadPostStats' :: ApiEff (Either ApiError ThreadPostStatResponses)
-getThreadPostStats'  = handleError <$> getAt ([] :: Array Boolean) ["thread_post_stats"]
+getThreadPostStats_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPostStatResponses)
+getThreadPostStats_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["thread_post_stats"]
 
 getThreadPostStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostStatResponse)
 getThreadPostStat params thread_post_id = handleError <$> getAt params ["thread_post_stat", show thread_post_id]
 
 getThreadPostStat' :: Int -> ApiEff (Either ApiError ThreadPostStatResponse)
 getThreadPostStat' thread_post_id = handleError <$> getAt ([] :: Array Boolean) ["thread_post_stat", show thread_post_id]
+
+getThreadPostLikes :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError LikeResponses)
+getThreadPostLikes params = handleError <$> getAt params ["thread_post_likes"]
+
+getThreadPostLikes' :: ApiEff (Either ApiError LikeResponses)
+getThreadPostLikes'  = handleError <$> getAt ([] :: Array Boolean) ["thread_post_likes"]
+
+getThreadPostLikes_ByThreadPostLikesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LikeResponses)
+getThreadPostLikes_ByThreadPostLikesIds params _ByThreadPostLikesIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostLikesIds _ByThreadPostLikesIds]) ["thread_post_likes"]
+
+getThreadPostLikes_ByThreadPostLikesIds' :: (Array  Int) -> ApiEff (Either ApiError LikeResponses)
+getThreadPostLikes_ByThreadPostLikesIds' _ByThreadPostLikesIds = handleError <$> getAt [ByThreadPostLikesIds _ByThreadPostLikesIds] ["thread_post_likes"]
+
+getThreadPostLikes_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LikeResponses)
+getThreadPostLikes_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["thread_post_likes"]
+
+getThreadPostLikes_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError LikeResponses)
+getThreadPostLikes_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["thread_post_likes"]
+
+getThreadPostLikes_ByThreadPostId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LikeResponses)
+getThreadPostLikes_ByThreadPostId params _ByThreadPostId = handleError <$> getAt (map qp params ++ map qp [ByThreadPostId _ByThreadPostId]) ["thread_post_likes"]
+
+getThreadPostLikes_ByThreadPostId' :: Int -> ApiEff (Either ApiError LikeResponses)
+getThreadPostLikes_ByThreadPostId' _ByThreadPostId = handleError <$> getAt [ByThreadPostId _ByThreadPostId] ["thread_post_likes"]
+
+postThreadPostLike_ByThreadPostId :: forall qp. QueryParam qp => Array qp -> Int -> LikeRequest -> ApiEff (Either ApiError LikeResponse)
+postThreadPostLike_ByThreadPostId params _ByThreadPostId like_request = handleError <$> postAt (map qp params ++ map qp [ByThreadPostId _ByThreadPostId]) ["thread_post_like"] like_request
+
+postThreadPostLike_ByThreadPostId' :: Int -> LikeRequest -> ApiEff (Either ApiError LikeResponse)
+postThreadPostLike_ByThreadPostId' _ByThreadPostId like_request = handleError <$> postAt [ByThreadPostId _ByThreadPostId] ["thread_post_like"] like_request
+
+getThreadPostLike :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LikeResponse)
+getThreadPostLike params thread_post_like_id = handleError <$> getAt params ["thread_post_like", show thread_post_like_id]
+
+getThreadPostLike' :: Int -> ApiEff (Either ApiError LikeResponse)
+getThreadPostLike' thread_post_like_id = handleError <$> getAt ([] :: Array Boolean) ["thread_post_like", show thread_post_like_id]
+
+putThreadPostLike :: forall qp. QueryParam qp => Array qp -> Int -> LikeRequest -> ApiEff (Either ApiError LikeResponse)
+putThreadPostLike params thread_post_like_id like_request = handleError <$> putAt params ["thread_post_like", show thread_post_like_id] like_request
+
+putThreadPostLike' :: Int -> LikeRequest -> ApiEff (Either ApiError LikeResponse)
+putThreadPostLike' thread_post_like_id like_request = handleError <$> putAt ([] :: Array Boolean) ["thread_post_like", show thread_post_like_id] like_request
+
+deleteThreadPostLike :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError Unit)
+deleteThreadPostLike params thread_post_like_id = handleError <$> deleteAt params ["thread_post_like", show thread_post_like_id]
+
+deleteThreadPostLike' :: Int -> ApiEff (Either ApiError Unit)
+deleteThreadPostLike' thread_post_like_id = handleError <$> deleteAt ([] :: Array Boolean) ["thread_post_like", show thread_post_like_id]
+
+getThreadPostLikeStats_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LikeStatResponses)
+getThreadPostLikeStats_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["thread_post_like_stats"]
+
+getThreadPostLikeStats_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError LikeStatResponses)
+getThreadPostLikeStats_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["thread_post_like_stats"]
+
+getThreadPostLikeStats_ByThreadPostLikesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LikeStatResponses)
+getThreadPostLikeStats_ByThreadPostLikesIds params _ByThreadPostLikesIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostLikesIds _ByThreadPostLikesIds]) ["thread_post_like_stats"]
+
+getThreadPostLikeStats_ByThreadPostLikesIds' :: (Array  Int) -> ApiEff (Either ApiError LikeStatResponses)
+getThreadPostLikeStats_ByThreadPostLikesIds' _ByThreadPostLikesIds = handleError <$> getAt [ByThreadPostLikesIds _ByThreadPostLikesIds] ["thread_post_like_stats"]
+
+getThreadPostLikeStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LikeStatResponse)
+getThreadPostLikeStat params thread_post_like_id = handleError <$> getAt params ["thread_post_like_stat", show thread_post_like_id]
+
+getThreadPostLikeStat' :: Int -> ApiEff (Either ApiError LikeStatResponse)
+getThreadPostLikeStat' thread_post_like_id = handleError <$> getAt ([] :: Array Boolean) ["thread_post_like_stat", show thread_post_like_id]
 
 getUsers :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError UserResponses)
 getUsers params = handleError <$> getAt params ["users"]

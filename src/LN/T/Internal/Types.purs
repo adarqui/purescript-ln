@@ -3425,6 +3425,155 @@ instance likeResponsesIsForeign :: IsForeign LikeResponses where
 instance likeResponsesShow :: Show LikeResponses where
     show (LikeResponses o) = show "likeResponses: " ++ show o.likeResponses
 
+newtype LikeStatResponse = LikeStatResponse {
+  id :: Int,
+  entityName :: String,
+  entityId :: String,
+  score :: Int,
+  like :: Int,
+  dislike :: Int
+}
+
+
+_LikeStatResponse :: LensP LikeStatResponse {
+  id :: Int,
+  entityName :: String,
+  entityId :: String,
+  score :: Int,
+  like :: Int,
+  dislike :: Int
+}
+_LikeStatResponse f (LikeStatResponse o) = LikeStatResponse <$> f o
+
+
+mkLikeStatResponse :: Int -> String -> String -> Int -> Int -> Int -> LikeStatResponse
+mkLikeStatResponse id entityName entityId score like dislike =
+  LikeStatResponse{id, entityName, entityId, score, like, dislike}
+
+
+unwrapLikeStatResponse (LikeStatResponse r) = r
+
+instance likeStatResponseEncodeJson :: EncodeJson LikeStatResponse where
+  encodeJson (LikeStatResponse o) =
+       "tag" := "LikeStatResponse"
+    ~> "id" := o.id
+    ~> "entity_name" := o.entityName
+    ~> "entity_id" := o.entityId
+    ~> "score" := o.score
+    ~> "like" := o.like
+    ~> "dislike" := o.dislike
+    ~> jsonEmptyObject
+
+
+instance likeStatResponseDecodeJson :: DecodeJson LikeStatResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    entityName <- obj .? "entity_name"
+    entityId <- obj .? "entity_id"
+    score <- obj .? "score"
+    like <- obj .? "like"
+    dislike <- obj .? "dislike"
+    pure $ LikeStatResponse {
+      id,
+      entityName,
+      entityId,
+      score,
+      like,
+      dislike
+    }
+
+
+instance likeStatResponseRequestable :: Requestable LikeStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance likeStatResponseRespondable :: Respondable LikeStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLikeStatResponse
+      <$> readProp "id" json
+      <*> readProp "entity_name" json
+      <*> readProp "entity_id" json
+      <*> readProp "score" json
+      <*> readProp "like" json
+      <*> readProp "dislike" json
+
+
+instance likeStatResponseIsForeign :: IsForeign LikeStatResponse where
+  read json =
+      mkLikeStatResponse
+      <$> readProp "id" json
+      <*> readProp "entity_name" json
+      <*> readProp "entity_id" json
+      <*> readProp "score" json
+      <*> readProp "like" json
+      <*> readProp "dislike" json
+
+
+instance likeStatResponseShow :: Show LikeStatResponse where
+    show (LikeStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entityName: " ++ show o.entityName ++ ", " ++ show "entityId: " ++ show o.entityId ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "dislike: " ++ show o.dislike
+
+newtype LikeStatResponses = LikeStatResponses {
+  likeStatResponses :: (Array  LikeStatResponse)
+}
+
+
+_LikeStatResponses :: LensP LikeStatResponses {
+  likeStatResponses :: (Array  LikeStatResponse)
+}
+_LikeStatResponses f (LikeStatResponses o) = LikeStatResponses <$> f o
+
+
+mkLikeStatResponses :: (Array  LikeStatResponse) -> LikeStatResponses
+mkLikeStatResponses likeStatResponses =
+  LikeStatResponses{likeStatResponses}
+
+
+unwrapLikeStatResponses (LikeStatResponses r) = r
+
+instance likeStatResponsesEncodeJson :: EncodeJson LikeStatResponses where
+  encodeJson (LikeStatResponses o) =
+       "tag" := "LikeStatResponses"
+    ~> "like_stat_responses" := o.likeStatResponses
+    ~> jsonEmptyObject
+
+
+instance likeStatResponsesDecodeJson :: DecodeJson LikeStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    likeStatResponses <- obj .? "like_stat_responses"
+    pure $ LikeStatResponses {
+      likeStatResponses
+    }
+
+
+instance likeStatResponsesRequestable :: Requestable LikeStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance likeStatResponsesRespondable :: Respondable LikeStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLikeStatResponses
+      <$> readProp "like_stat_responses" json
+
+
+instance likeStatResponsesIsForeign :: IsForeign LikeStatResponses where
+  read json =
+      mkLikeStatResponses
+      <$> readProp "like_stat_responses" json
+
+
+instance likeStatResponsesShow :: Show LikeStatResponses where
+    show (LikeStatResponses o) = show "likeStatResponses: " ++ show o.likeStatResponses
+
 data LikeOpt
   = Like 
   | Neutral 
@@ -3967,6 +4116,8 @@ data Param
   | ByThreadPostId Int
   | ByThreadPostsIds (Array  Int)
   | ByThreadPostName String
+  | ByThreadPostLikeId Int
+  | ByThreadPostLikesIds (Array  Int)
   | ByBucketId Int
   | ByResourceId Int
   | ByResourcesIds (Array  Int)
@@ -4092,6 +4243,14 @@ instance paramEncodeJson :: EncodeJson Param where
     ~> jsonEmptyObject
   encodeJson (ByThreadPostName x0) =
        "tag" := "ByThreadPostName"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByThreadPostLikeId x0) =
+       "tag" := "ByThreadPostLikeId"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByThreadPostLikesIds x0) =
+       "tag" := "ByThreadPostLikesIds"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
   encodeJson (ByBucketId x0) =
@@ -4280,6 +4439,14 @@ instance paramDecodeJson :: DecodeJson Param where
         "ByThreadPostName" -> do
           x0 <- obj .? "contents"
           ByThreadPostName <$> decodeJson x0
+
+        "ByThreadPostLikeId" -> do
+          x0 <- obj .? "contents"
+          ByThreadPostLikeId <$> decodeJson x0
+
+        "ByThreadPostLikesIds" -> do
+          x0 <- obj .? "contents"
+          ByThreadPostLikesIds <$> decodeJson x0
 
         "ByBucketId" -> do
           x0 <- obj .? "contents"
@@ -4476,6 +4643,14 @@ instance paramRespondable :: Respondable Param where
           x0 <- readProp "contents" json
           ByThreadPostName <$> read x0
 
+        "ByThreadPostLikeId" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostLikeId <$> read x0
+
+        "ByThreadPostLikesIds" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostLikesIds <$> read x0
+
         "ByBucketId" -> do
           x0 <- readProp "contents" json
           ByBucketId <$> read x0
@@ -4662,6 +4837,14 @@ instance paramIsForeign :: IsForeign Param where
           x0 <- readProp "contents" json
           ByThreadPostName <$> read x0
 
+        "ByThreadPostLikeId" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostLikeId <$> read x0
+
+        "ByThreadPostLikesIds" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostLikesIds <$> read x0
+
         "ByBucketId" -> do
           x0 <- readProp "contents" json
           ByBucketId <$> read x0
@@ -4767,6 +4950,8 @@ data ParamTag
   | ParamTag_ByThreadPostId 
   | ParamTag_ByThreadPostsIds 
   | ParamTag_ByThreadPostName 
+  | ParamTag_ByThreadPostLikeId 
+  | ParamTag_ByThreadPostLikesIds 
   | ParamTag_ByBucketId 
   | ParamTag_ByResourceId 
   | ParamTag_ByResourcesIds 
@@ -4892,6 +5077,14 @@ instance paramTagEncodeJson :: EncodeJson ParamTag where
     ~> jsonEmptyObject
   encodeJson (ParamTag_ByThreadPostName ) =
        "tag" := "ParamTag_ByThreadPostName"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByThreadPostLikeId ) =
+       "tag" := "ParamTag_ByThreadPostLikeId"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByThreadPostLikesIds ) =
+       "tag" := "ParamTag_ByThreadPostLikesIds"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (ParamTag_ByBucketId ) =
@@ -5055,6 +5248,12 @@ instance paramTagDecodeJson :: DecodeJson ParamTag where
         "ParamTag_ByThreadPostName" -> do
           return ParamTag_ByThreadPostName
 
+        "ParamTag_ByThreadPostLikeId" -> do
+          return ParamTag_ByThreadPostLikeId
+
+        "ParamTag_ByThreadPostLikesIds" -> do
+          return ParamTag_ByThreadPostLikesIds
+
         "ParamTag_ByBucketId" -> do
           return ParamTag_ByBucketId
 
@@ -5205,6 +5404,12 @@ instance paramTagRespondable :: Respondable ParamTag where
         "ParamTag_ByThreadPostName" -> do
           return ParamTag_ByThreadPostName
 
+        "ParamTag_ByThreadPostLikeId" -> do
+          return ParamTag_ByThreadPostLikeId
+
+        "ParamTag_ByThreadPostLikesIds" -> do
+          return ParamTag_ByThreadPostLikesIds
+
         "ParamTag_ByBucketId" -> do
           return ParamTag_ByBucketId
 
@@ -5345,6 +5550,12 @@ instance paramTagIsForeign :: IsForeign ParamTag where
 
         "ParamTag_ByThreadPostName" -> do
           return ParamTag_ByThreadPostName
+
+        "ParamTag_ByThreadPostLikeId" -> do
+          return ParamTag_ByThreadPostLikeId
+
+        "ParamTag_ByThreadPostLikesIds" -> do
+          return ParamTag_ByThreadPostLikesIds
 
         "ParamTag_ByBucketId" -> do
           return ParamTag_ByBucketId
@@ -10967,6 +11178,10 @@ description_ :: forall b a r. Lens { description :: a | r } { description :: b |
 description_ f o = o { description = _ } <$> f o.description
 
 
+dislike_ :: forall b a r. Lens { dislike :: a | r } { dislike :: b | r } a b
+dislike_ f o = o { dislike = _ } <$> f o.dislike
+
+
 dislikes_ :: forall b a r. Lens { dislikes :: a | r } { dislikes :: b | r } a b
 dislikes_ f o = o { dislikes = _ } <$> f o.dislikes
 
@@ -11101,6 +11316,10 @@ like_ f o = o { like = _ } <$> f o.like
 
 likeResponses_ :: forall b a r. Lens { likeResponses :: a | r } { likeResponses :: b | r } a b
 likeResponses_ f o = o { likeResponses = _ } <$> f o.likeResponses
+
+
+likeStatResponses_ :: forall b a r. Lens { likeStatResponses :: a | r } { likeStatResponses :: b | r } a b
+likeStatResponses_ f o = o { likeStatResponses = _ } <$> f o.likeStatResponses
 
 
 likes_ :: forall b a r. Lens { likes :: a | r } { likes :: b | r } a b
@@ -11524,6 +11743,8 @@ instance paramQueryParam :: QueryParam Param where
   qp (ByThreadPostId thread_post_id)     = Tuple "thread_post_id" (show thread_post_id)
   qp (ByThreadPostsIds thread_posts_ids) = Tuple "thread_posts_ids" (show thread_posts_ids)
   qp (ByThreadPostName thread_post_name) = Tuple "thread_post_name" (thread_post_name)
+  qp (ByThreadPostLikeId like_id)        = Tuple "thread_post_like_id" (show like_id)
+  qp (ByThreadPostLikesIds likes_ids)    = Tuple "thread_post_likes_ids" (show likes_ids)
   qp (ByBucketId bucket_id)              = Tuple "bucket_id" (show bucket_id)
   qp (ByResourceId resource_id)          = Tuple "resource_id" (show resource_id)
   qp (ByResourcesIds resources_ids)      = Tuple "resources_ids" (show resources_ids)
@@ -11547,51 +11768,53 @@ instance paramQueryParam :: QueryParam Param where
 
 
 instance paramTagShow :: Show ParamTag where
-  show ParamTag_Limit               = "limit"
-  show ParamTag_Offset              = "offset"
-  show ParamTag_SortOrder           = "sort_order"
-  show ParamTag_Order               = "order"
-  show ParamTag_ByOrganizationId    = "organization_id"
-  show ParamTag_ByOrganizationsIds  = "organizations_ids"
-  show ParamTag_ByOrganizationName  = "organization_name"
-  show ParamTag_ByTeamId            = "team_id"
-  show ParamTag_ByTeamsIds          = "teams_ids"
-  show ParamTag_ByTeamName          = "team_name"
-  show ParamTag_ByUserId            = "user_id"
-  show ParamTag_ByUsersIds          = "users_ids"
-  show ParamTag_ByUserNick          = "user_nick"
-  show ParamTag_ByUsersNicks        = "users_nicks"
-  show ParamTag_ByForumId           = "forum_id"
-  show ParamTag_ByForumsIds         = "forums_ids"
-  show ParamTag_ByForumName         = "forum_name"
-  show ParamTag_ByBoardId           = "board_id"
-  show ParamTag_ByBoardsIds         = "boards_ids"
-  show ParamTag_ByBoardName         = "board_name"
-  show ParamTag_ByThreadId          = "thread_id"
-  show ParamTag_ByThreadsIds        = "threads_ids"
-  show ParamTag_ByThreadName        = "thread_name"
-  show ParamTag_ByThreadPostId      = "thread_post_id"
-  show ParamTag_ByThreadPostsIds    = "thread_posts_ids"
-  show ParamTag_ByThreadPostName    = "thread_post_name"
-  show ParamTag_ByBucketId          = "bucket_id"
-  show ParamTag_ByResourceId        = "resource_id"
-  show ParamTag_ByResourcesIds      = "resources_ids"
-  show ParamTag_ByResourceName      = "resource_name"
-  show ParamTag_ByLeuronId          = "leuron_id"
-  show ParamTag_ByLeuronsIds        = "leurons_ids"
-  show ParamTag_ByPmId              = "pm_id"
-  show ParamTag_ByPmsIds            = "pms_ids"
-  show ParamTag_ByReminderId        = "reminder_id"
-  show ParamTag_ByReminderFolderId  = "reminder_folder_id"
-  show ParamTag_ByParentId          = "parent_id"
-  show ParamTag_ByParentsIds        = "parents_ids"
-  show ParamTag_ByParentName        = "parent_name"
-  show ParamTag_Timestamp           = "ts"
-  show ParamTag_UnixTimestamp       = "unix_ts"
-  show ParamTag_CreatedAtTimestamp  = "created_at_ts"
+  show ParamTag_Limit                  = "limit"
+  show ParamTag_Offset                 = "offset"
+  show ParamTag_SortOrder              = "sort_order"
+  show ParamTag_Order                  = "order"
+  show ParamTag_ByOrganizationId       = "organization_id"
+  show ParamTag_ByOrganizationsIds     = "organizations_ids"
+  show ParamTag_ByOrganizationName     = "organization_name"
+  show ParamTag_ByTeamId               = "team_id"
+  show ParamTag_ByTeamsIds             = "teams_ids"
+  show ParamTag_ByTeamName             = "team_name"
+  show ParamTag_ByUserId               = "user_id"
+  show ParamTag_ByUsersIds             = "users_ids"
+  show ParamTag_ByUserNick             = "user_nick"
+  show ParamTag_ByUsersNicks           = "users_nicks"
+  show ParamTag_ByForumId              = "forum_id"
+  show ParamTag_ByForumsIds            = "forums_ids"
+  show ParamTag_ByForumName            = "forum_name"
+  show ParamTag_ByBoardId              = "board_id"
+  show ParamTag_ByBoardsIds            = "boards_ids"
+  show ParamTag_ByBoardName            = "board_name"
+  show ParamTag_ByThreadId             = "thread_id"
+  show ParamTag_ByThreadsIds           = "threads_ids"
+  show ParamTag_ByThreadName           = "thread_name"
+  show ParamTag_ByThreadPostId         = "thread_post_id"
+  show ParamTag_ByThreadPostsIds       = "thread_posts_ids"
+  show ParamTag_ByThreadPostName       = "thread_post_name"
+  show ParamTag_ByThreadPostLikeId     = "thread_post_like_id"
+  show ParamTag_ByThreadPostLikesIds   = "thread_post_likes_ids"
+  show ParamTag_ByBucketId             = "bucket_id"
+  show ParamTag_ByResourceId           = "resource_id"
+  show ParamTag_ByResourcesIds         = "resources_ids"
+  show ParamTag_ByResourceName         = "resource_name"
+  show ParamTag_ByLeuronId             = "leuron_id"
+  show ParamTag_ByLeuronsIds           = "leurons_ids"
+  show ParamTag_ByPmId                 = "pm_id"
+  show ParamTag_ByPmsIds               = "pms_ids"
+  show ParamTag_ByReminderId           = "reminder_id"
+  show ParamTag_ByReminderFolderId     = "reminder_folder_id"
+  show ParamTag_ByParentId             = "parent_id"
+  show ParamTag_ByParentsIds           = "parents_ids"
+  show ParamTag_ByParentName           = "parent_name"
+  show ParamTag_Timestamp              = "ts"
+  show ParamTag_UnixTimestamp          = "unix_ts"
+  show ParamTag_CreatedAtTimestamp     = "created_at_ts"
   show ParamTag_CreatedAtUnixTimestamp = "created_at_unix_ts"
-  show ParamTag_RealIP              = "real_ip"
-  show ParamTag_IP                  = "ip"
+  show ParamTag_RealIP                 = "real_ip"
+  show ParamTag_IP                     = "ip"
 
 
 
