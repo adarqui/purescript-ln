@@ -802,6 +802,12 @@ getThreadPostPacks_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> g
 getThreadPostPacks_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPostPackResponses)
 getThreadPostPacks_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["thread_post_packs"]
 
+getThreadPostPacks_ByThreadId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostPackResponses)
+getThreadPostPacks_ByThreadId params _ByThreadId = handleError <$> getAt (map qp params ++ map qp [ByThreadId _ByThreadId]) ["thread_post_packs"]
+
+getThreadPostPacks_ByThreadId' :: Int -> ApiEff (Either ApiError ThreadPostPackResponses)
+getThreadPostPacks_ByThreadId' _ByThreadId = handleError <$> getAt [ByThreadId _ByThreadId] ["thread_post_packs"]
+
 getThreadPostPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostPackResponse)
 getThreadPostPack params thread_post_id = handleError <$> getAt params ["thread_post_pack", show thread_post_id]
 
