@@ -3194,7 +3194,7 @@ instance tableShow :: Show Table where
 data LikeOpt
   = Like 
   | Neutral 
-  | DontLike 
+  | Dislike 
 
 
 
@@ -3207,8 +3207,8 @@ instance likeOptEncodeJson :: EncodeJson LikeOpt where
        "tag" := "Neutral"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
-  encodeJson (DontLike ) =
-       "tag" := "DontLike"
+  encodeJson (Dislike ) =
+       "tag" := "Dislike"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
 
@@ -3224,8 +3224,8 @@ instance likeOptDecodeJson :: DecodeJson LikeOpt where
         "Neutral" -> do
           return Neutral
 
-        "DontLike" -> do
-          return DontLike
+        "Dislike" -> do
+          return Dislike
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -3248,8 +3248,8 @@ instance likeOptRespondable :: Respondable LikeOpt where
         "Neutral" -> do
           return Neutral
 
-        "DontLike" -> do
-          return DontLike
+        "Dislike" -> do
+          return Dislike
 
 
 
@@ -3263,15 +3263,15 @@ instance likeOptIsForeign :: IsForeign LikeOpt where
         "Neutral" -> do
           return Neutral
 
-        "DontLike" -> do
-          return DontLike
+        "Dislike" -> do
+          return Dislike
 
 
 
 instance likeOptShow :: Show LikeOpt where
   show (Like) = "Like"
   show (Neutral) = "Neutral"
-  show (DontLike) = "DontLike"
+  show (Dislike) = "Dislike"
 
 
 newtype OrganizationRequest = OrganizationRequest {
