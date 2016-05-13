@@ -9062,7 +9062,7 @@ newtype ThreadPostStatResponse = ThreadPostStatResponse {
   likes :: Int,
   neutral :: Int,
   dislikes :: Int,
-  starred :: Int,
+  stars :: Int,
   views :: Int
 }
 
@@ -9072,15 +9072,15 @@ _ThreadPostStatResponse :: LensP ThreadPostStatResponse {
   likes :: Int,
   neutral :: Int,
   dislikes :: Int,
-  starred :: Int,
+  stars :: Int,
   views :: Int
 }
 _ThreadPostStatResponse f (ThreadPostStatResponse o) = ThreadPostStatResponse <$> f o
 
 
 mkThreadPostStatResponse :: Int -> Int -> Int -> Int -> Int -> Int -> ThreadPostStatResponse
-mkThreadPostStatResponse threadPostId likes neutral dislikes starred views =
-  ThreadPostStatResponse{threadPostId, likes, neutral, dislikes, starred, views}
+mkThreadPostStatResponse threadPostId likes neutral dislikes stars views =
+  ThreadPostStatResponse{threadPostId, likes, neutral, dislikes, stars, views}
 
 
 unwrapThreadPostStatResponse (ThreadPostStatResponse r) = r
@@ -9092,7 +9092,7 @@ instance threadPostStatResponseEncodeJson :: EncodeJson ThreadPostStatResponse w
     ~> "likes" := o.likes
     ~> "neutral" := o.neutral
     ~> "dislikes" := o.dislikes
-    ~> "starred" := o.starred
+    ~> "stars" := o.stars
     ~> "views" := o.views
     ~> jsonEmptyObject
 
@@ -9104,14 +9104,14 @@ instance threadPostStatResponseDecodeJson :: DecodeJson ThreadPostStatResponse w
     likes <- obj .? "likes"
     neutral <- obj .? "neutral"
     dislikes <- obj .? "dislikes"
-    starred <- obj .? "starred"
+    stars <- obj .? "stars"
     views <- obj .? "views"
     pure $ ThreadPostStatResponse {
       threadPostId,
       likes,
       neutral,
       dislikes,
-      starred,
+      stars,
       views
     }
 
@@ -9131,7 +9131,7 @@ instance threadPostStatResponseRespondable :: Respondable ThreadPostStatResponse
       <*> readProp "likes" json
       <*> readProp "neutral" json
       <*> readProp "dislikes" json
-      <*> readProp "starred" json
+      <*> readProp "stars" json
       <*> readProp "views" json
 
 
@@ -9142,12 +9142,12 @@ instance threadPostStatResponseIsForeign :: IsForeign ThreadPostStatResponse whe
       <*> readProp "likes" json
       <*> readProp "neutral" json
       <*> readProp "dislikes" json
-      <*> readProp "starred" json
+      <*> readProp "stars" json
       <*> readProp "views" json
 
 
 instance threadPostStatResponseShow :: Show ThreadPostStatResponse where
-    show (ThreadPostStatResponse o) = show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "starred: " ++ show o.starred ++ ", " ++ show "views: " ++ show o.views
+    show (ThreadPostStatResponse o) = show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "stars: " ++ show o.stars ++ ", " ++ show "views: " ++ show o.views
 
 newtype ThreadPostStatResponses = ThreadPostStatResponses {
   threadPostStatResponses :: (Array  ThreadPostStatResponse)
@@ -9567,6 +9567,333 @@ instance threadPostLikeStatResponsesIsForeign :: IsForeign ThreadPostLikeStatRes
 
 instance threadPostLikeStatResponsesShow :: Show ThreadPostLikeStatResponses where
     show (ThreadPostLikeStatResponses o) = show "threadPostLikeStatResponses: " ++ show o.threadPostLikeStatResponses
+
+newtype ThreadPostStarRequest = ThreadPostStarRequest {
+  reason :: (Maybe String)
+}
+
+
+_ThreadPostStarRequest :: LensP ThreadPostStarRequest {
+  reason :: (Maybe String)
+}
+_ThreadPostStarRequest f (ThreadPostStarRequest o) = ThreadPostStarRequest <$> f o
+
+
+mkThreadPostStarRequest :: (Maybe String) -> ThreadPostStarRequest
+mkThreadPostStarRequest reason =
+  ThreadPostStarRequest{reason}
+
+
+unwrapThreadPostStarRequest (ThreadPostStarRequest r) = r
+
+instance threadPostStarRequestEncodeJson :: EncodeJson ThreadPostStarRequest where
+  encodeJson (ThreadPostStarRequest o) =
+       "tag" := "ThreadPostStarRequest"
+    ~> "reason" := o.reason
+    ~> jsonEmptyObject
+
+
+instance threadPostStarRequestDecodeJson :: DecodeJson ThreadPostStarRequest where
+  decodeJson o = do
+    obj <- decodeJson o
+    reason <- obj .? "reason"
+    pure $ ThreadPostStarRequest {
+      reason
+    }
+
+
+instance threadPostStarRequestRequestable :: Requestable ThreadPostStarRequest where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostStarRequestRespondable :: Respondable ThreadPostStarRequest where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostStarRequest
+      <$> (runNullOrUndefined <$> readProp "reason" json)
+
+
+instance threadPostStarRequestIsForeign :: IsForeign ThreadPostStarRequest where
+  read json =
+      mkThreadPostStarRequest
+      <$> (runNullOrUndefined <$> readProp "reason" json)
+
+
+instance threadPostStarRequestShow :: Show ThreadPostStarRequest where
+    show (ThreadPostStarRequest o) = show "reason: " ++ show o.reason
+
+newtype ThreadPostStarResponse = ThreadPostStarResponse {
+  id :: Int,
+  threadPostId :: Int,
+  userId :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+
+
+_ThreadPostStarResponse :: LensP ThreadPostStarResponse {
+  id :: Int,
+  threadPostId :: Int,
+  userId :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+_ThreadPostStarResponse f (ThreadPostStarResponse o) = ThreadPostStarResponse <$> f o
+
+
+mkThreadPostStarResponse :: Int -> Int -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> ThreadPostStarResponse
+mkThreadPostStarResponse id threadPostId userId reason createdAt modifiedAt =
+  ThreadPostStarResponse{id, threadPostId, userId, reason, createdAt, modifiedAt}
+
+
+unwrapThreadPostStarResponse (ThreadPostStarResponse r) = r
+
+instance threadPostStarResponseEncodeJson :: EncodeJson ThreadPostStarResponse where
+  encodeJson (ThreadPostStarResponse o) =
+       "tag" := "ThreadPostStarResponse"
+    ~> "id" := o.id
+    ~> "thread_post_id" := o.threadPostId
+    ~> "user_id" := o.userId
+    ~> "reason" := o.reason
+    ~> "created_at" := o.createdAt
+    ~> "modified_at" := o.modifiedAt
+    ~> jsonEmptyObject
+
+
+instance threadPostStarResponseDecodeJson :: DecodeJson ThreadPostStarResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    threadPostId <- obj .? "thread_post_id"
+    userId <- obj .? "user_id"
+    reason <- obj .? "reason"
+    createdAt <- obj .? "created_at"
+    modifiedAt <- obj .? "modified_at"
+    pure $ ThreadPostStarResponse {
+      id,
+      threadPostId,
+      userId,
+      reason,
+      createdAt,
+      modifiedAt
+    }
+
+
+instance threadPostStarResponseRequestable :: Requestable ThreadPostStarResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostStarResponseRespondable :: Respondable ThreadPostStarResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostStarResponse
+      <$> readProp "id" json
+      <*> readProp "thread_post_id" json
+      <*> readProp "user_id" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance threadPostStarResponseIsForeign :: IsForeign ThreadPostStarResponse where
+  read json =
+      mkThreadPostStarResponse
+      <$> readProp "id" json
+      <*> readProp "thread_post_id" json
+      <*> readProp "user_id" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance threadPostStarResponseShow :: Show ThreadPostStarResponse where
+    show (ThreadPostStarResponse o) = show "id: " ++ show o.id ++ ", " ++ show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+
+newtype ThreadPostStarResponses = ThreadPostStarResponses {
+  threadPostStarResponses :: (Array  ThreadPostStarResponse)
+}
+
+
+_ThreadPostStarResponses :: LensP ThreadPostStarResponses {
+  threadPostStarResponses :: (Array  ThreadPostStarResponse)
+}
+_ThreadPostStarResponses f (ThreadPostStarResponses o) = ThreadPostStarResponses <$> f o
+
+
+mkThreadPostStarResponses :: (Array  ThreadPostStarResponse) -> ThreadPostStarResponses
+mkThreadPostStarResponses threadPostStarResponses =
+  ThreadPostStarResponses{threadPostStarResponses}
+
+
+unwrapThreadPostStarResponses (ThreadPostStarResponses r) = r
+
+instance threadPostStarResponsesEncodeJson :: EncodeJson ThreadPostStarResponses where
+  encodeJson (ThreadPostStarResponses o) =
+       "tag" := "ThreadPostStarResponses"
+    ~> "thread_post_star_responses" := o.threadPostStarResponses
+    ~> jsonEmptyObject
+
+
+instance threadPostStarResponsesDecodeJson :: DecodeJson ThreadPostStarResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    threadPostStarResponses <- obj .? "thread_post_star_responses"
+    pure $ ThreadPostStarResponses {
+      threadPostStarResponses
+    }
+
+
+instance threadPostStarResponsesRequestable :: Requestable ThreadPostStarResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostStarResponsesRespondable :: Respondable ThreadPostStarResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostStarResponses
+      <$> readProp "thread_post_star_responses" json
+
+
+instance threadPostStarResponsesIsForeign :: IsForeign ThreadPostStarResponses where
+  read json =
+      mkThreadPostStarResponses
+      <$> readProp "thread_post_star_responses" json
+
+
+instance threadPostStarResponsesShow :: Show ThreadPostStarResponses where
+    show (ThreadPostStarResponses o) = show "threadPostStarResponses: " ++ show o.threadPostStarResponses
+
+newtype ThreadPostStarStatResponse = ThreadPostStarStatResponse {
+  id :: Int,
+  stars :: Int
+}
+
+
+_ThreadPostStarStatResponse :: LensP ThreadPostStarStatResponse {
+  id :: Int,
+  stars :: Int
+}
+_ThreadPostStarStatResponse f (ThreadPostStarStatResponse o) = ThreadPostStarStatResponse <$> f o
+
+
+mkThreadPostStarStatResponse :: Int -> Int -> ThreadPostStarStatResponse
+mkThreadPostStarStatResponse id stars =
+  ThreadPostStarStatResponse{id, stars}
+
+
+unwrapThreadPostStarStatResponse (ThreadPostStarStatResponse r) = r
+
+instance threadPostStarStatResponseEncodeJson :: EncodeJson ThreadPostStarStatResponse where
+  encodeJson (ThreadPostStarStatResponse o) =
+       "tag" := "ThreadPostStarStatResponse"
+    ~> "id" := o.id
+    ~> "stars" := o.stars
+    ~> jsonEmptyObject
+
+
+instance threadPostStarStatResponseDecodeJson :: DecodeJson ThreadPostStarStatResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    stars <- obj .? "stars"
+    pure $ ThreadPostStarStatResponse {
+      id,
+      stars
+    }
+
+
+instance threadPostStarStatResponseRequestable :: Requestable ThreadPostStarStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostStarStatResponseRespondable :: Respondable ThreadPostStarStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostStarStatResponse
+      <$> readProp "id" json
+      <*> readProp "stars" json
+
+
+instance threadPostStarStatResponseIsForeign :: IsForeign ThreadPostStarStatResponse where
+  read json =
+      mkThreadPostStarStatResponse
+      <$> readProp "id" json
+      <*> readProp "stars" json
+
+
+instance threadPostStarStatResponseShow :: Show ThreadPostStarStatResponse where
+    show (ThreadPostStarStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "stars: " ++ show o.stars
+
+newtype ThreadPostStarStatResponses = ThreadPostStarStatResponses {
+  threadPostStarStatResponses :: (Array  ThreadPostStarStatResponse)
+}
+
+
+_ThreadPostStarStatResponses :: LensP ThreadPostStarStatResponses {
+  threadPostStarStatResponses :: (Array  ThreadPostStarStatResponse)
+}
+_ThreadPostStarStatResponses f (ThreadPostStarStatResponses o) = ThreadPostStarStatResponses <$> f o
+
+
+mkThreadPostStarStatResponses :: (Array  ThreadPostStarStatResponse) -> ThreadPostStarStatResponses
+mkThreadPostStarStatResponses threadPostStarStatResponses =
+  ThreadPostStarStatResponses{threadPostStarStatResponses}
+
+
+unwrapThreadPostStarStatResponses (ThreadPostStarStatResponses r) = r
+
+instance threadPostStarStatResponsesEncodeJson :: EncodeJson ThreadPostStarStatResponses where
+  encodeJson (ThreadPostStarStatResponses o) =
+       "tag" := "ThreadPostStarStatResponses"
+    ~> "thread_post_star_stat_responses" := o.threadPostStarStatResponses
+    ~> jsonEmptyObject
+
+
+instance threadPostStarStatResponsesDecodeJson :: DecodeJson ThreadPostStarStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    threadPostStarStatResponses <- obj .? "thread_post_star_stat_responses"
+    pure $ ThreadPostStarStatResponses {
+      threadPostStarStatResponses
+    }
+
+
+instance threadPostStarStatResponsesRequestable :: Requestable ThreadPostStarStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance threadPostStarStatResponsesRespondable :: Respondable ThreadPostStarStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkThreadPostStarStatResponses
+      <$> readProp "thread_post_star_stat_responses" json
+
+
+instance threadPostStarStatResponsesIsForeign :: IsForeign ThreadPostStarStatResponses where
+  read json =
+      mkThreadPostStarStatResponses
+      <$> readProp "thread_post_star_stat_responses" json
+
+
+instance threadPostStarStatResponsesShow :: Show ThreadPostStarStatResponses where
+    show (ThreadPostStarStatResponses o) = show "threadPostStarStatResponses: " ++ show o.threadPostStarStatResponses
 
 newtype UserRequest = UserRequest {
   nick :: String,
@@ -11504,8 +11831,8 @@ splits_ :: forall b a r. Lens { splits :: a | r } { splits :: b | r } a b
 splits_ f o = o { splits = _ } <$> f o.splits
 
 
-starred_ :: forall b a r. Lens { starred :: a | r } { starred :: b | r } a b
-starred_ f o = o { starred = _ } <$> f o.starred
+stars_ :: forall b a r. Lens { stars :: a | r } { stars :: b | r } a b
+stars_ f o = o { stars = _ } <$> f o.stars
 
 
 stat_ :: forall b a r. Lens { stat :: a | r } { stat :: b | r } a b
@@ -11590,6 +11917,14 @@ threadPostPackResponses_ f o = o { threadPostPackResponses = _ } <$> f o.threadP
 
 threadPostResponses_ :: forall b a r. Lens { threadPostResponses :: a | r } { threadPostResponses :: b | r } a b
 threadPostResponses_ f o = o { threadPostResponses = _ } <$> f o.threadPostResponses
+
+
+threadPostStarResponses_ :: forall b a r. Lens { threadPostStarResponses :: a | r } { threadPostStarResponses :: b | r } a b
+threadPostStarResponses_ f o = o { threadPostStarResponses = _ } <$> f o.threadPostStarResponses
+
+
+threadPostStarStatResponses_ :: forall b a r. Lens { threadPostStarStatResponses :: a | r } { threadPostStarStatResponses :: b | r } a b
+threadPostStarStatResponses_ f o = o { threadPostStarStatResponses = _ } <$> f o.threadPostStarStatResponses
 
 
 threadPostStatResponses_ :: forall b a r. Lens { threadPostStatResponses :: a | r } { threadPostStatResponses :: b | r } a b
@@ -11700,7 +12035,6 @@ workouts_ :: forall b a r. Lens { workouts :: a | r } { workouts :: b | r } a b
 workouts_ f o = o { workouts = _ } <$> f o.workouts
 
 -- footer
-
 
 
 instance paramQueryParam :: QueryParam Param where
