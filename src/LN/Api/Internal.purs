@@ -640,6 +640,72 @@ getThreadPostLikeStat params thread_post_like_id = handleError <$> getAt params 
 getThreadPostLikeStat' :: Int -> ApiEff (Either ApiError ThreadPostLikeStatResponse)
 getThreadPostLikeStat' thread_post_like_id = handleError <$> getAt ([] :: Array Boolean) ["thread_post_like_stat", show thread_post_like_id]
 
+getThreadPostStars :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ThreadPostStarResponses)
+getThreadPostStars params = handleError <$> getAt params ["thread_post_stars"]
+
+getThreadPostStars' :: ApiEff (Either ApiError ThreadPostStarResponses)
+getThreadPostStars'  = handleError <$> getAt ([] :: Array Boolean) ["thread_post_stars"]
+
+getThreadPostStars_ByThreadPostStarsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ThreadPostStarResponses)
+getThreadPostStars_ByThreadPostStarsIds params _ByThreadPostStarsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostStarsIds _ByThreadPostStarsIds]) ["thread_post_stars"]
+
+getThreadPostStars_ByThreadPostStarsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPostStarResponses)
+getThreadPostStars_ByThreadPostStarsIds' _ByThreadPostStarsIds = handleError <$> getAt [ByThreadPostStarsIds _ByThreadPostStarsIds] ["thread_post_stars"]
+
+getThreadPostStars_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ThreadPostStarResponses)
+getThreadPostStars_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["thread_post_stars"]
+
+getThreadPostStars_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPostStarResponses)
+getThreadPostStars_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["thread_post_stars"]
+
+getThreadPostStars_ByThreadPostId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostStarResponses)
+getThreadPostStars_ByThreadPostId params _ByThreadPostId = handleError <$> getAt (map qp params ++ map qp [ByThreadPostId _ByThreadPostId]) ["thread_post_stars"]
+
+getThreadPostStars_ByThreadPostId' :: Int -> ApiEff (Either ApiError ThreadPostStarResponses)
+getThreadPostStars_ByThreadPostId' _ByThreadPostId = handleError <$> getAt [ByThreadPostId _ByThreadPostId] ["thread_post_stars"]
+
+postThreadPostStar_ByThreadPostId :: forall qp. QueryParam qp => Array qp -> Int -> ThreadPostStarRequest -> ApiEff (Either ApiError ThreadPostStarResponse)
+postThreadPostStar_ByThreadPostId params _ByThreadPostId thread_post_star_request = handleError <$> postAt (map qp params ++ map qp [ByThreadPostId _ByThreadPostId]) ["thread_post_star"] thread_post_star_request
+
+postThreadPostStar_ByThreadPostId' :: Int -> ThreadPostStarRequest -> ApiEff (Either ApiError ThreadPostStarResponse)
+postThreadPostStar_ByThreadPostId' _ByThreadPostId thread_post_star_request = handleError <$> postAt [ByThreadPostId _ByThreadPostId] ["thread_post_star"] thread_post_star_request
+
+getThreadPostStar :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostStarResponse)
+getThreadPostStar params thread_post_star_id = handleError <$> getAt params ["thread_post_star", show thread_post_star_id]
+
+getThreadPostStar' :: Int -> ApiEff (Either ApiError ThreadPostStarResponse)
+getThreadPostStar' thread_post_star_id = handleError <$> getAt ([] :: Array Boolean) ["thread_post_star", show thread_post_star_id]
+
+putThreadPostStar :: forall qp. QueryParam qp => Array qp -> Int -> ThreadPostStarRequest -> ApiEff (Either ApiError ThreadPostStarResponse)
+putThreadPostStar params thread_post_star_id thread_post_star_request = handleError <$> putAt params ["thread_post_star", show thread_post_star_id] thread_post_star_request
+
+putThreadPostStar' :: Int -> ThreadPostStarRequest -> ApiEff (Either ApiError ThreadPostStarResponse)
+putThreadPostStar' thread_post_star_id thread_post_star_request = handleError <$> putAt ([] :: Array Boolean) ["thread_post_star", show thread_post_star_id] thread_post_star_request
+
+deleteThreadPostStar :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError Unit)
+deleteThreadPostStar params thread_post_star_id = handleError <$> deleteAt params ["thread_post_star", show thread_post_star_id]
+
+deleteThreadPostStar' :: Int -> ApiEff (Either ApiError Unit)
+deleteThreadPostStar' thread_post_star_id = handleError <$> deleteAt ([] :: Array Boolean) ["thread_post_star", show thread_post_star_id]
+
+getThreadPostStarStats_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ThreadPostStarStatResponses)
+getThreadPostStarStats_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["thread_post_star_stats"]
+
+getThreadPostStarStats_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPostStarStatResponses)
+getThreadPostStarStats_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["thread_post_star_stats"]
+
+getThreadPostStarStats_ByThreadPostStarsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ThreadPostStarStatResponses)
+getThreadPostStarStats_ByThreadPostStarsIds params _ByThreadPostStarsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostStarsIds _ByThreadPostStarsIds]) ["thread_post_star_stats"]
+
+getThreadPostStarStats_ByThreadPostStarsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPostStarStatResponses)
+getThreadPostStarStats_ByThreadPostStarsIds' _ByThreadPostStarsIds = handleError <$> getAt [ByThreadPostStarsIds _ByThreadPostStarsIds] ["thread_post_star_stats"]
+
+getThreadPostStarStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostStarStatResponse)
+getThreadPostStarStat params thread_post_star_id = handleError <$> getAt params ["thread_post_star_stat", show thread_post_star_id]
+
+getThreadPostStarStat' :: Int -> ApiEff (Either ApiError ThreadPostStarStatResponse)
+getThreadPostStarStat' thread_post_star_id = handleError <$> getAt ([] :: Array Boolean) ["thread_post_star_stat", show thread_post_star_id]
+
 getUsers :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError UserResponses)
 getUsers params = handleError <$> getAt params ["users"]
 
