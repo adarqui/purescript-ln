@@ -12,4 +12,5 @@ import LN.T.ThreadPost.Stat (defaultThreadPostStatResponse)
 
 
 defaultThreadPostPackResponse :: ThreadPostResponse -> UserSanitizedResponse -> ThreadPostPackResponse
-defaultThreadPostPackResponse thread_post user = mkThreadPostPackResponse thread_post user defaultThreadPostStatResponse Nothing
+defaultThreadPostPackResponse thread_post user =
+  mkThreadPostPackResponse thread_post user defaultThreadPostStatResponse Nothing Nothing

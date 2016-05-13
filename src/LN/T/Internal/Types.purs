@@ -10960,7 +10960,8 @@ newtype ThreadPostPackResponse = ThreadPostPackResponse {
   threadPost :: ThreadPostResponse,
   user :: UserSanitizedResponse,
   stat :: ThreadPostStatResponse,
-  like :: (Maybe ThreadPostLikeResponse)
+  like :: (Maybe ThreadPostLikeResponse),
+  star :: (Maybe ThreadPostStarResponse)
 }
 
 
@@ -10968,14 +10969,15 @@ _ThreadPostPackResponse :: LensP ThreadPostPackResponse {
   threadPost :: ThreadPostResponse,
   user :: UserSanitizedResponse,
   stat :: ThreadPostStatResponse,
-  like :: (Maybe ThreadPostLikeResponse)
+  like :: (Maybe ThreadPostLikeResponse),
+  star :: (Maybe ThreadPostStarResponse)
 }
 _ThreadPostPackResponse f (ThreadPostPackResponse o) = ThreadPostPackResponse <$> f o
 
 
-mkThreadPostPackResponse :: ThreadPostResponse -> UserSanitizedResponse -> ThreadPostStatResponse -> (Maybe ThreadPostLikeResponse) -> ThreadPostPackResponse
-mkThreadPostPackResponse threadPost user stat like =
-  ThreadPostPackResponse{threadPost, user, stat, like}
+mkThreadPostPackResponse :: ThreadPostResponse -> UserSanitizedResponse -> ThreadPostStatResponse -> (Maybe ThreadPostLikeResponse) -> (Maybe ThreadPostStarResponse) -> ThreadPostPackResponse
+mkThreadPostPackResponse threadPost user stat like star =
+  ThreadPostPackResponse{threadPost, user, stat, like, star}
 
 
 unwrapThreadPostPackResponse (ThreadPostPackResponse r) = r
@@ -10987,6 +10989,7 @@ instance threadPostPackResponseEncodeJson :: EncodeJson ThreadPostPackResponse w
     ~> "user" := o.user
     ~> "stat" := o.stat
     ~> "like" := o.like
+    ~> "star" := o.star
     ~> jsonEmptyObject
 
 
@@ -10997,11 +11000,13 @@ instance threadPostPackResponseDecodeJson :: DecodeJson ThreadPostPackResponse w
     user <- obj .? "user"
     stat <- obj .? "stat"
     like <- obj .? "like"
+    star <- obj .? "star"
     pure $ ThreadPostPackResponse {
       threadPost,
       user,
       stat,
-      like
+      like,
+      star
     }
 
 
@@ -11020,6 +11025,7 @@ instance threadPostPackResponseRespondable :: Respondable ThreadPostPackResponse
       <*> readProp "user" json
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
+      <*> (runNullOrUndefined <$> readProp "star" json)
 
 
 instance threadPostPackResponseIsForeign :: IsForeign ThreadPostPackResponse where
@@ -11029,10 +11035,11 @@ instance threadPostPackResponseIsForeign :: IsForeign ThreadPostPackResponse whe
       <*> readProp "user" json
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
+      <*> (runNullOrUndefined <$> readProp "star" json)
 
 
 instance threadPostPackResponseShow :: Show ThreadPostPackResponse where
-    show (ThreadPostPackResponse o) = show "threadPost: " ++ show o.threadPost ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like
+    show (ThreadPostPackResponse o) = show "threadPost: " ++ show o.threadPost ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype ThreadPostPackResponses = ThreadPostPackResponses {
   threadPostPackResponses :: (Array  ThreadPostPackResponse)
@@ -11829,6 +11836,10 @@ source_ f o = o { source = _ } <$> f o.source
 
 splits_ :: forall b a r. Lens { splits :: a | r } { splits :: b | r } a b
 splits_ f o = o { splits = _ } <$> f o.splits
+
+
+star_ :: forall b a r. Lens { star :: a | r } { star :: b | r } a b
+star_ f o = o { star = _ } <$> f o.star
 
 
 stars_ :: forall b a r. Lens { stars :: a | r } { stars :: b | r } a b
