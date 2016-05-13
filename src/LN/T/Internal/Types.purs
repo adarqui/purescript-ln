@@ -9060,6 +9060,7 @@ instance threadPostResponsesShow :: Show ThreadPostResponses where
 newtype ThreadPostStatResponse = ThreadPostStatResponse {
   threadPostId :: Int,
   likes :: Int,
+  neutral :: Int,
   dislikes :: Int,
   starred :: Int,
   views :: Int
@@ -9069,6 +9070,7 @@ newtype ThreadPostStatResponse = ThreadPostStatResponse {
 _ThreadPostStatResponse :: LensP ThreadPostStatResponse {
   threadPostId :: Int,
   likes :: Int,
+  neutral :: Int,
   dislikes :: Int,
   starred :: Int,
   views :: Int
@@ -9076,9 +9078,9 @@ _ThreadPostStatResponse :: LensP ThreadPostStatResponse {
 _ThreadPostStatResponse f (ThreadPostStatResponse o) = ThreadPostStatResponse <$> f o
 
 
-mkThreadPostStatResponse :: Int -> Int -> Int -> Int -> Int -> ThreadPostStatResponse
-mkThreadPostStatResponse threadPostId likes dislikes starred views =
-  ThreadPostStatResponse{threadPostId, likes, dislikes, starred, views}
+mkThreadPostStatResponse :: Int -> Int -> Int -> Int -> Int -> Int -> ThreadPostStatResponse
+mkThreadPostStatResponse threadPostId likes neutral dislikes starred views =
+  ThreadPostStatResponse{threadPostId, likes, neutral, dislikes, starred, views}
 
 
 unwrapThreadPostStatResponse (ThreadPostStatResponse r) = r
@@ -9088,6 +9090,7 @@ instance threadPostStatResponseEncodeJson :: EncodeJson ThreadPostStatResponse w
        "tag" := "ThreadPostStatResponse"
     ~> "thread_post_id" := o.threadPostId
     ~> "likes" := o.likes
+    ~> "neutral" := o.neutral
     ~> "dislikes" := o.dislikes
     ~> "starred" := o.starred
     ~> "views" := o.views
@@ -9099,12 +9102,14 @@ instance threadPostStatResponseDecodeJson :: DecodeJson ThreadPostStatResponse w
     obj <- decodeJson o
     threadPostId <- obj .? "thread_post_id"
     likes <- obj .? "likes"
+    neutral <- obj .? "neutral"
     dislikes <- obj .? "dislikes"
     starred <- obj .? "starred"
     views <- obj .? "views"
     pure $ ThreadPostStatResponse {
       threadPostId,
       likes,
+      neutral,
       dislikes,
       starred,
       views
@@ -9124,6 +9129,7 @@ instance threadPostStatResponseRespondable :: Respondable ThreadPostStatResponse
       mkThreadPostStatResponse
       <$> readProp "thread_post_id" json
       <*> readProp "likes" json
+      <*> readProp "neutral" json
       <*> readProp "dislikes" json
       <*> readProp "starred" json
       <*> readProp "views" json
@@ -9134,13 +9140,14 @@ instance threadPostStatResponseIsForeign :: IsForeign ThreadPostStatResponse whe
       mkThreadPostStatResponse
       <$> readProp "thread_post_id" json
       <*> readProp "likes" json
+      <*> readProp "neutral" json
       <*> readProp "dislikes" json
       <*> readProp "starred" json
       <*> readProp "views" json
 
 
 instance threadPostStatResponseShow :: Show ThreadPostStatResponse where
-    show (ThreadPostStatResponse o) = show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "starred: " ++ show o.starred ++ ", " ++ show "views: " ++ show o.views
+    show (ThreadPostStatResponse o) = show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "starred: " ++ show o.starred ++ ", " ++ show "views: " ++ show o.views
 
 newtype ThreadPostStatResponses = ThreadPostStatResponses {
   threadPostStatResponses :: (Array  ThreadPostStatResponse)
@@ -11331,6 +11338,10 @@ n_ f o = o { n = _ } <$> f o.n
 
 name_ :: forall b a r. Lens { name :: a | r } { name :: b | r } a b
 name_ f o = o { name = _ } <$> f o.name
+
+
+neutral_ :: forall b a r. Lens { neutral :: a | r } { neutral :: b | r } a b
+neutral_ f o = o { neutral = _ } <$> f o.neutral
 
 
 nick_ :: forall b a r. Lens { nick :: a | r } { nick :: b | r } a b
