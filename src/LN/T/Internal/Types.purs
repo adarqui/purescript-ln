@@ -3735,6 +3735,8 @@ data Param
   | ByThreadPostName String
   | ByThreadPostLikeId Int
   | ByThreadPostLikesIds (Array  Int)
+  | ByThreadPostStarId Int
+  | ByThreadPostStarsIds (Array  Int)
   | ByBucketId Int
   | ByResourceId Int
   | ByResourcesIds (Array  Int)
@@ -3868,6 +3870,14 @@ instance paramEncodeJson :: EncodeJson Param where
     ~> jsonEmptyObject
   encodeJson (ByThreadPostLikesIds x0) =
        "tag" := "ByThreadPostLikesIds"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByThreadPostStarId x0) =
+       "tag" := "ByThreadPostStarId"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByThreadPostStarsIds x0) =
+       "tag" := "ByThreadPostStarsIds"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
   encodeJson (ByBucketId x0) =
@@ -4064,6 +4074,14 @@ instance paramDecodeJson :: DecodeJson Param where
         "ByThreadPostLikesIds" -> do
           x0 <- obj .? "contents"
           ByThreadPostLikesIds <$> decodeJson x0
+
+        "ByThreadPostStarId" -> do
+          x0 <- obj .? "contents"
+          ByThreadPostStarId <$> decodeJson x0
+
+        "ByThreadPostStarsIds" -> do
+          x0 <- obj .? "contents"
+          ByThreadPostStarsIds <$> decodeJson x0
 
         "ByBucketId" -> do
           x0 <- obj .? "contents"
@@ -4268,6 +4286,14 @@ instance paramRespondable :: Respondable Param where
           x0 <- readProp "contents" json
           ByThreadPostLikesIds <$> read x0
 
+        "ByThreadPostStarId" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostStarId <$> read x0
+
+        "ByThreadPostStarsIds" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostStarsIds <$> read x0
+
         "ByBucketId" -> do
           x0 <- readProp "contents" json
           ByBucketId <$> read x0
@@ -4462,6 +4488,14 @@ instance paramIsForeign :: IsForeign Param where
           x0 <- readProp "contents" json
           ByThreadPostLikesIds <$> read x0
 
+        "ByThreadPostStarId" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostStarId <$> read x0
+
+        "ByThreadPostStarsIds" -> do
+          x0 <- readProp "contents" json
+          ByThreadPostStarsIds <$> read x0
+
         "ByBucketId" -> do
           x0 <- readProp "contents" json
           ByBucketId <$> read x0
@@ -4569,6 +4603,8 @@ data ParamTag
   | ParamTag_ByThreadPostName 
   | ParamTag_ByThreadPostLikeId 
   | ParamTag_ByThreadPostLikesIds 
+  | ParamTag_ByThreadPostStarId 
+  | ParamTag_ByThreadPostStarsIds 
   | ParamTag_ByBucketId 
   | ParamTag_ByResourceId 
   | ParamTag_ByResourcesIds 
@@ -4702,6 +4738,14 @@ instance paramTagEncodeJson :: EncodeJson ParamTag where
     ~> jsonEmptyObject
   encodeJson (ParamTag_ByThreadPostLikesIds ) =
        "tag" := "ParamTag_ByThreadPostLikesIds"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByThreadPostStarId ) =
+       "tag" := "ParamTag_ByThreadPostStarId"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByThreadPostStarsIds ) =
+       "tag" := "ParamTag_ByThreadPostStarsIds"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (ParamTag_ByBucketId ) =
@@ -4871,6 +4915,12 @@ instance paramTagDecodeJson :: DecodeJson ParamTag where
         "ParamTag_ByThreadPostLikesIds" -> do
           return ParamTag_ByThreadPostLikesIds
 
+        "ParamTag_ByThreadPostStarId" -> do
+          return ParamTag_ByThreadPostStarId
+
+        "ParamTag_ByThreadPostStarsIds" -> do
+          return ParamTag_ByThreadPostStarsIds
+
         "ParamTag_ByBucketId" -> do
           return ParamTag_ByBucketId
 
@@ -5027,6 +5077,12 @@ instance paramTagRespondable :: Respondable ParamTag where
         "ParamTag_ByThreadPostLikesIds" -> do
           return ParamTag_ByThreadPostLikesIds
 
+        "ParamTag_ByThreadPostStarId" -> do
+          return ParamTag_ByThreadPostStarId
+
+        "ParamTag_ByThreadPostStarsIds" -> do
+          return ParamTag_ByThreadPostStarsIds
+
         "ParamTag_ByBucketId" -> do
           return ParamTag_ByBucketId
 
@@ -5173,6 +5229,12 @@ instance paramTagIsForeign :: IsForeign ParamTag where
 
         "ParamTag_ByThreadPostLikesIds" -> do
           return ParamTag_ByThreadPostLikesIds
+
+        "ParamTag_ByThreadPostStarId" -> do
+          return ParamTag_ByThreadPostStarId
+
+        "ParamTag_ByThreadPostStarsIds" -> do
+          return ParamTag_ByThreadPostStarsIds
 
         "ParamTag_ByBucketId" -> do
           return ParamTag_ByBucketId
@@ -12077,6 +12139,8 @@ instance paramQueryParam :: QueryParam Param where
   qp (ByThreadPostName thread_post_name) = Tuple "thread_post_name" (thread_post_name)
   qp (ByThreadPostLikeId like_id)        = Tuple "thread_post_like_id" (show like_id)
   qp (ByThreadPostLikesIds likes_ids)    = Tuple "thread_post_likes_ids" (show likes_ids)
+  qp (ByThreadPostStarId star_id)        = Tuple "thread_post_star_id" (show star_id)
+  qp (ByThreadPostStarsIds stars_ids)    = Tuple "thread_post_stars_ids" (show stars_ids)
   qp (ByBucketId bucket_id)              = Tuple "bucket_id" (show bucket_id)
   qp (ByResourceId resource_id)          = Tuple "resource_id" (show resource_id)
   qp (ByResourcesIds resources_ids)      = Tuple "resources_ids" (show resources_ids)
@@ -12128,6 +12192,8 @@ instance paramTagShow :: Show ParamTag where
   show ParamTag_ByThreadPostName       = "thread_post_name"
   show ParamTag_ByThreadPostLikeId     = "thread_post_like_id"
   show ParamTag_ByThreadPostLikesIds   = "thread_post_likes_ids"
+  show ParamTag_ByThreadPostStarId     = "thread_post_star_id"
+  show ParamTag_ByThreadPostStarsIds   = "thread_post_stars_ids"
   show ParamTag_ByBucketId             = "bucket_id"
   show ParamTag_ByResourceId           = "resource_id"
   show ParamTag_ByResourcesIds         = "resources_ids"
