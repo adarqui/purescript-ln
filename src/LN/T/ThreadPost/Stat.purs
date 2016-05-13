@@ -9,4 +9,4 @@ import LN.T.Internal.Types (ThreadPostStatResponse, mkThreadPostStatResponse)
 
 
 defaultThreadPostStatResponse :: ThreadPostStatResponse
-defaultThreadPostStatResponse = mkThreadPostStatResponse 0 0 0 0 0
+defaultThreadPostStatResponse = mkThreadPostStatResponse 0 0 0 0 0 0
