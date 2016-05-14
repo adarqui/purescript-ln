@@ -1066,6 +1066,48 @@ getThreadPostPack params thread_post_id = handleError <$> getAt params ["thread_
 getThreadPostPack' :: Int -> ApiEff (Either ApiError ThreadPostPackResponse)
 getThreadPostPack' thread_post_id = handleError <$> getAt ([] :: Array Boolean) ["thread_post_pack", show thread_post_id]
 
+getResourcePacks :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ResourcePackResponses)
+getResourcePacks params = handleError <$> getAt params ["resource_packs"]
+
+getResourcePacks' :: ApiEff (Either ApiError ResourcePackResponses)
+getResourcePacks'  = handleError <$> getAt ([] :: Array Boolean) ["resource_packs"]
+
+getResourcePacks_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ResourcePackResponses)
+getResourcePacks_ByResourcesIds params _ByResourcesIds = handleError <$> getAt (map qp params ++ map qp [ByResourcesIds _ByResourcesIds]) ["resource_packs"]
+
+getResourcePacks_ByResourcesIds' :: (Array  Int) -> ApiEff (Either ApiError ResourcePackResponses)
+getResourcePacks_ByResourcesIds' _ByResourcesIds = handleError <$> getAt [ByResourcesIds _ByResourcesIds] ["resource_packs"]
+
+getResourcePack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourcePackResponse)
+getResourcePack params resource_id = handleError <$> getAt params ["resource_pack", show resource_id]
+
+getResourcePack' :: Int -> ApiEff (Either ApiError ResourcePackResponse)
+getResourcePack' resource_id = handleError <$> getAt ([] :: Array Boolean) ["resource_pack", show resource_id]
+
+getLeuronPacks :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks params = handleError <$> getAt params ["leuron_packs"]
+
+getLeuronPacks' :: ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks'  = handleError <$> getAt ([] :: Array Boolean) ["leuron_packs"]
+
+getLeuronPacks_ByLeuronsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks_ByLeuronsIds params _ByLeuronsIds = handleError <$> getAt (map qp params ++ map qp [ByLeuronsIds _ByLeuronsIds]) ["leuron_packs"]
+
+getLeuronPacks_ByLeuronsIds' :: (Array  Int) -> ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks_ByLeuronsIds' _ByLeuronsIds = handleError <$> getAt [ByLeuronsIds _ByLeuronsIds] ["leuron_packs"]
+
+getLeuronPacks_ByResourceId :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks_ByResourceId params _ByResourceId = handleError <$> getAt (map qp params ++ map qp [ByResourceId _ByResourceId]) ["leuron_packs"]
+
+getLeuronPacks_ByResourceId' :: (Array  Int) -> ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks_ByResourceId' _ByResourceId = handleError <$> getAt [ByResourceId _ByResourceId] ["leuron_packs"]
+
+getLeuronPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LeuronPackResponse)
+getLeuronPack params leuron_id = handleError <$> getAt params ["leuron_pack", show leuron_id]
+
+getLeuronPack' :: Int -> ApiEff (Either ApiError LeuronPackResponse)
+getLeuronPack' leuron_id = handleError <$> getAt ([] :: Array Boolean) ["leuron_pack", show leuron_id]
+
 getUserPacks :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError UserPackResponses)
 getUserPacks params = handleError <$> getAt params ["user_packs"]
 
