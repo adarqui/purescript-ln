@@ -280,6 +280,72 @@ deleteLeuron params leuron_id = handleError <$> deleteAt params ["leuron", show 
 deleteLeuron' :: Int -> ApiEff (Either ApiError Unit)
 deleteLeuron' leuron_id = handleError <$> deleteAt ([] :: Array Boolean) ["leuron", show leuron_id]
 
+getLeuronLikeStats_ByLeuronsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LeuronLikeStatResponses)
+getLeuronLikeStats_ByLeuronsIds params _ByLeuronsIds = handleError <$> getAt (map qp params ++ map qp [ByLeuronsIds _ByLeuronsIds]) ["leuron_like_stats"]
+
+getLeuronLikeStats_ByLeuronsIds' :: (Array  Int) -> ApiEff (Either ApiError LeuronLikeStatResponses)
+getLeuronLikeStats_ByLeuronsIds' _ByLeuronsIds = handleError <$> getAt [ByLeuronsIds _ByLeuronsIds] ["leuron_like_stats"]
+
+getLeuronLikeStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LeuronLikeStatResponse)
+getLeuronLikeStat params leuron_like_id = handleError <$> getAt params ["leuron_like_stat", show leuron_like_id]
+
+getLeuronLikeStat' :: Int -> ApiEff (Either ApiError LeuronLikeStatResponse)
+getLeuronLikeStat' leuron_like_id = handleError <$> getAt ([] :: Array Boolean) ["leuron_like_stat", show leuron_like_id]
+
+getLeuronStars :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError LeuronStarResponses)
+getLeuronStars params = handleError <$> getAt params ["leuron_stars"]
+
+getLeuronStars' :: ApiEff (Either ApiError LeuronStarResponses)
+getLeuronStars'  = handleError <$> getAt ([] :: Array Boolean) ["leuron_stars"]
+
+getLeuronStars_ByLeuronsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LeuronStarResponses)
+getLeuronStars_ByLeuronsIds params _ByLeuronsIds = handleError <$> getAt (map qp params ++ map qp [ByLeuronsIds _ByLeuronsIds]) ["leuron_stars"]
+
+getLeuronStars_ByLeuronsIds' :: (Array  Int) -> ApiEff (Either ApiError LeuronStarResponses)
+getLeuronStars_ByLeuronsIds' _ByLeuronsIds = handleError <$> getAt [ByLeuronsIds _ByLeuronsIds] ["leuron_stars"]
+
+getLeuronStars_ByLeuronId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LeuronStarResponses)
+getLeuronStars_ByLeuronId params _ByLeuronId = handleError <$> getAt (map qp params ++ map qp [ByLeuronId _ByLeuronId]) ["leuron_stars"]
+
+getLeuronStars_ByLeuronId' :: Int -> ApiEff (Either ApiError LeuronStarResponses)
+getLeuronStars_ByLeuronId' _ByLeuronId = handleError <$> getAt [ByLeuronId _ByLeuronId] ["leuron_stars"]
+
+postLeuronStar_ByLeuronId :: forall qp. QueryParam qp => Array qp -> Int -> LeuronStarRequest -> ApiEff (Either ApiError LeuronStarResponse)
+postLeuronStar_ByLeuronId params _ByLeuronId leuron_star_request = handleError <$> postAt (map qp params ++ map qp [ByLeuronId _ByLeuronId]) ["leuron_star"] leuron_star_request
+
+postLeuronStar_ByLeuronId' :: Int -> LeuronStarRequest -> ApiEff (Either ApiError LeuronStarResponse)
+postLeuronStar_ByLeuronId' _ByLeuronId leuron_star_request = handleError <$> postAt [ByLeuronId _ByLeuronId] ["leuron_star"] leuron_star_request
+
+getLeuronStar :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LeuronStarResponse)
+getLeuronStar params leuron_star_id = handleError <$> getAt params ["leuron_star", show leuron_star_id]
+
+getLeuronStar' :: Int -> ApiEff (Either ApiError LeuronStarResponse)
+getLeuronStar' leuron_star_id = handleError <$> getAt ([] :: Array Boolean) ["leuron_star", show leuron_star_id]
+
+putLeuronStar :: forall qp. QueryParam qp => Array qp -> Int -> LeuronStarRequest -> ApiEff (Either ApiError LeuronStarResponse)
+putLeuronStar params leuron_star_id leuron_star_request = handleError <$> putAt params ["leuron_star", show leuron_star_id] leuron_star_request
+
+putLeuronStar' :: Int -> LeuronStarRequest -> ApiEff (Either ApiError LeuronStarResponse)
+putLeuronStar' leuron_star_id leuron_star_request = handleError <$> putAt ([] :: Array Boolean) ["leuron_star", show leuron_star_id] leuron_star_request
+
+deleteLeuronStar :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError Unit)
+deleteLeuronStar params leuron_star_id = handleError <$> deleteAt params ["leuron_star", show leuron_star_id]
+
+deleteLeuronStar' :: Int -> ApiEff (Either ApiError Unit)
+deleteLeuronStar' leuron_star_id = handleError <$> deleteAt ([] :: Array Boolean) ["leuron_star", show leuron_star_id]
+
+getLeuronStarStats_ByLeuronsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LeuronStarStatResponses)
+getLeuronStarStats_ByLeuronsIds params _ByLeuronsIds = handleError <$> getAt (map qp params ++ map qp [ByLeuronsIds _ByLeuronsIds]) ["leuron_star_stats"]
+
+getLeuronStarStats_ByLeuronsIds' :: (Array  Int) -> ApiEff (Either ApiError LeuronStarStatResponses)
+getLeuronStarStats_ByLeuronsIds' _ByLeuronsIds = handleError <$> getAt [ByLeuronsIds _ByLeuronsIds] ["leuron_star_stats"]
+
+getLeuronStarStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LeuronStarStatResponse)
+getLeuronStarStat params leuron_star_id = handleError <$> getAt params ["leuron_star_stat", show leuron_star_id]
+
+getLeuronStarStat' :: Int -> ApiEff (Either ApiError LeuronStarStatResponse)
+getLeuronStarStat' leuron_star_id = handleError <$> getAt ([] :: Array Boolean) ["leuron_star_stat", show leuron_star_id]
+
 getMe :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError UserResponse)
 getMe params = handleError <$> getAt params ["me"]
 
@@ -453,6 +519,126 @@ deleteResource params resource_id = handleError <$> deleteAt params ["resource",
 
 deleteResource' :: Int -> ApiEff (Either ApiError Unit)
 deleteResource' resource_id = handleError <$> deleteAt ([] :: Array Boolean) ["resource", show resource_id]
+
+getResourceStats_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ResourceStatResponses)
+getResourceStats_ByResourcesIds params _ByResourcesIds = handleError <$> getAt (map qp params ++ map qp [ByResourcesIds _ByResourcesIds]) ["resource_stats"]
+
+getResourceStats_ByResourcesIds' :: (Array  Int) -> ApiEff (Either ApiError ResourceStatResponses)
+getResourceStats_ByResourcesIds' _ByResourcesIds = handleError <$> getAt [ByResourcesIds _ByResourcesIds] ["resource_stats"]
+
+getResourceStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourceStatResponse)
+getResourceStat params resource_id = handleError <$> getAt params ["resource_stat", show resource_id]
+
+getResourceStat' :: Int -> ApiEff (Either ApiError ResourceStatResponse)
+getResourceStat' resource_id = handleError <$> getAt ([] :: Array Boolean) ["resource_stat", show resource_id]
+
+getResourceLikes :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ResourceLikeResponses)
+getResourceLikes params = handleError <$> getAt params ["resource_likes"]
+
+getResourceLikes' :: ApiEff (Either ApiError ResourceLikeResponses)
+getResourceLikes'  = handleError <$> getAt ([] :: Array Boolean) ["resource_likes"]
+
+getResourceLikes_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ResourceLikeResponses)
+getResourceLikes_ByResourcesIds params _ByResourcesIds = handleError <$> getAt (map qp params ++ map qp [ByResourcesIds _ByResourcesIds]) ["resource_likes"]
+
+getResourceLikes_ByResourcesIds' :: (Array  Int) -> ApiEff (Either ApiError ResourceLikeResponses)
+getResourceLikes_ByResourcesIds' _ByResourcesIds = handleError <$> getAt [ByResourcesIds _ByResourcesIds] ["resource_likes"]
+
+getResourceLikes_ByResourceId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourceLikeResponses)
+getResourceLikes_ByResourceId params _ByResourceId = handleError <$> getAt (map qp params ++ map qp [ByResourceId _ByResourceId]) ["resource_likes"]
+
+getResourceLikes_ByResourceId' :: Int -> ApiEff (Either ApiError ResourceLikeResponses)
+getResourceLikes_ByResourceId' _ByResourceId = handleError <$> getAt [ByResourceId _ByResourceId] ["resource_likes"]
+
+postResourceLike_ByResourceId :: forall qp. QueryParam qp => Array qp -> Int -> ResourceLikeRequest -> ApiEff (Either ApiError ResourceLikeResponse)
+postResourceLike_ByResourceId params _ByResourceId resource_like_request = handleError <$> postAt (map qp params ++ map qp [ByResourceId _ByResourceId]) ["resource_like"] resource_like_request
+
+postResourceLike_ByResourceId' :: Int -> ResourceLikeRequest -> ApiEff (Either ApiError ResourceLikeResponse)
+postResourceLike_ByResourceId' _ByResourceId resource_like_request = handleError <$> postAt [ByResourceId _ByResourceId] ["resource_like"] resource_like_request
+
+getResourceLike :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourceLikeResponse)
+getResourceLike params resource_like_id = handleError <$> getAt params ["resource_like", show resource_like_id]
+
+getResourceLike' :: Int -> ApiEff (Either ApiError ResourceLikeResponse)
+getResourceLike' resource_like_id = handleError <$> getAt ([] :: Array Boolean) ["resource_like", show resource_like_id]
+
+putResourceLike :: forall qp. QueryParam qp => Array qp -> Int -> ResourceLikeRequest -> ApiEff (Either ApiError ResourceLikeResponse)
+putResourceLike params resource_like_id resource_like_request = handleError <$> putAt params ["resource_like", show resource_like_id] resource_like_request
+
+putResourceLike' :: Int -> ResourceLikeRequest -> ApiEff (Either ApiError ResourceLikeResponse)
+putResourceLike' resource_like_id resource_like_request = handleError <$> putAt ([] :: Array Boolean) ["resource_like", show resource_like_id] resource_like_request
+
+deleteResourceLike :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError Unit)
+deleteResourceLike params resource_like_id = handleError <$> deleteAt params ["resource_like", show resource_like_id]
+
+deleteResourceLike' :: Int -> ApiEff (Either ApiError Unit)
+deleteResourceLike' resource_like_id = handleError <$> deleteAt ([] :: Array Boolean) ["resource_like", show resource_like_id]
+
+getResourceLikeStats_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ResourceLikeStatResponses)
+getResourceLikeStats_ByResourcesIds params _ByResourcesIds = handleError <$> getAt (map qp params ++ map qp [ByResourcesIds _ByResourcesIds]) ["resource_like_stats"]
+
+getResourceLikeStats_ByResourcesIds' :: (Array  Int) -> ApiEff (Either ApiError ResourceLikeStatResponses)
+getResourceLikeStats_ByResourcesIds' _ByResourcesIds = handleError <$> getAt [ByResourcesIds _ByResourcesIds] ["resource_like_stats"]
+
+getResourceLikeStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourceLikeStatResponse)
+getResourceLikeStat params resource_like_id = handleError <$> getAt params ["resource_like_stat", show resource_like_id]
+
+getResourceLikeStat' :: Int -> ApiEff (Either ApiError ResourceLikeStatResponse)
+getResourceLikeStat' resource_like_id = handleError <$> getAt ([] :: Array Boolean) ["resource_like_stat", show resource_like_id]
+
+getResourceStars :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ResourceStarResponses)
+getResourceStars params = handleError <$> getAt params ["resource_stars"]
+
+getResourceStars' :: ApiEff (Either ApiError ResourceStarResponses)
+getResourceStars'  = handleError <$> getAt ([] :: Array Boolean) ["resource_stars"]
+
+getResourceStars_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ResourceStarResponses)
+getResourceStars_ByResourcesIds params _ByResourcesIds = handleError <$> getAt (map qp params ++ map qp [ByResourcesIds _ByResourcesIds]) ["resource_stars"]
+
+getResourceStars_ByResourcesIds' :: (Array  Int) -> ApiEff (Either ApiError ResourceStarResponses)
+getResourceStars_ByResourcesIds' _ByResourcesIds = handleError <$> getAt [ByResourcesIds _ByResourcesIds] ["resource_stars"]
+
+getResourceStars_ByResourceId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourceStarResponses)
+getResourceStars_ByResourceId params _ByResourceId = handleError <$> getAt (map qp params ++ map qp [ByResourceId _ByResourceId]) ["resource_stars"]
+
+getResourceStars_ByResourceId' :: Int -> ApiEff (Either ApiError ResourceStarResponses)
+getResourceStars_ByResourceId' _ByResourceId = handleError <$> getAt [ByResourceId _ByResourceId] ["resource_stars"]
+
+postResourceStar_ByResourceId :: forall qp. QueryParam qp => Array qp -> Int -> ResourceStarRequest -> ApiEff (Either ApiError ResourceStarResponse)
+postResourceStar_ByResourceId params _ByResourceId resource_star_request = handleError <$> postAt (map qp params ++ map qp [ByResourceId _ByResourceId]) ["resource_star"] resource_star_request
+
+postResourceStar_ByResourceId' :: Int -> ResourceStarRequest -> ApiEff (Either ApiError ResourceStarResponse)
+postResourceStar_ByResourceId' _ByResourceId resource_star_request = handleError <$> postAt [ByResourceId _ByResourceId] ["resource_star"] resource_star_request
+
+getResourceStar :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourceStarResponse)
+getResourceStar params resource_star_id = handleError <$> getAt params ["resource_star", show resource_star_id]
+
+getResourceStar' :: Int -> ApiEff (Either ApiError ResourceStarResponse)
+getResourceStar' resource_star_id = handleError <$> getAt ([] :: Array Boolean) ["resource_star", show resource_star_id]
+
+putResourceStar :: forall qp. QueryParam qp => Array qp -> Int -> ResourceStarRequest -> ApiEff (Either ApiError ResourceStarResponse)
+putResourceStar params resource_star_id resource_star_request = handleError <$> putAt params ["resource_star", show resource_star_id] resource_star_request
+
+putResourceStar' :: Int -> ResourceStarRequest -> ApiEff (Either ApiError ResourceStarResponse)
+putResourceStar' resource_star_id resource_star_request = handleError <$> putAt ([] :: Array Boolean) ["resource_star", show resource_star_id] resource_star_request
+
+deleteResourceStar :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError Unit)
+deleteResourceStar params resource_star_id = handleError <$> deleteAt params ["resource_star", show resource_star_id]
+
+deleteResourceStar' :: Int -> ApiEff (Either ApiError Unit)
+deleteResourceStar' resource_star_id = handleError <$> deleteAt ([] :: Array Boolean) ["resource_star", show resource_star_id]
+
+getResourceStarStats_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ResourceStarStatResponses)
+getResourceStarStats_ByResourcesIds params _ByResourcesIds = handleError <$> getAt (map qp params ++ map qp [ByResourcesIds _ByResourcesIds]) ["resource_star_stats"]
+
+getResourceStarStats_ByResourcesIds' :: (Array  Int) -> ApiEff (Either ApiError ResourceStarStatResponses)
+getResourceStarStats_ByResourcesIds' _ByResourcesIds = handleError <$> getAt [ByResourcesIds _ByResourcesIds] ["resource_star_stats"]
+
+getResourceStarStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourceStarStatResponse)
+getResourceStarStat params resource_star_id = handleError <$> getAt params ["resource_star_stat", show resource_star_id]
+
+getResourceStarStat' :: Int -> ApiEff (Either ApiError ResourceStarStatResponse)
+getResourceStarStat' resource_star_id = handleError <$> getAt ([] :: Array Boolean) ["resource_star_stat", show resource_star_id]
 
 getTeams :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError TeamResponses)
 getTeams params = handleError <$> getAt params ["teams"]
