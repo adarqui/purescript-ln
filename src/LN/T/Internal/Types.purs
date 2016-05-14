@@ -12839,21 +12839,25 @@ instance threadPostPackResponsesShow :: Show ThreadPostPackResponses where
 newtype ResourcePackResponse = ResourcePackResonse {
   resource :: ResourceResponse,
   user :: UserSanitizedResponse,
-  stat :: ResourceStatResponse
+  stat :: ResourceStatResponse,
+  like :: (Maybe ResourceLikeResponse),
+  star :: (Maybe ResourceStarResponse)
 }
 
 
 _ResourcePackResponse :: LensP ResourcePackResponse {
   resource :: ResourceResponse,
   user :: UserSanitizedResponse,
-  stat :: ResourceStatResponse
+  stat :: ResourceStatResponse,
+  like :: (Maybe ResourceLikeResponse),
+  star :: (Maybe ResourceStarResponse)
 }
 _ResourcePackResponse f (ResourcePackResonse o) = ResourcePackResonse <$> f o
 
 
-mkResourcePackResponse :: ResourceResponse -> UserSanitizedResponse -> ResourceStatResponse -> ResourcePackResponse
-mkResourcePackResponse resource user stat =
-  ResourcePackResonse{resource, user, stat}
+mkResourcePackResponse :: ResourceResponse -> UserSanitizedResponse -> ResourceStatResponse -> (Maybe ResourceLikeResponse) -> (Maybe ResourceStarResponse) -> ResourcePackResponse
+mkResourcePackResponse resource user stat like star =
+  ResourcePackResonse{resource, user, stat, like, star}
 
 
 unwrapResourcePackResponse (ResourcePackResonse r) = r
@@ -12864,6 +12868,8 @@ instance resourcePackResponseEncodeJson :: EncodeJson ResourcePackResponse where
     ~> "resource" := o.resource
     ~> "user" := o.user
     ~> "stat" := o.stat
+    ~> "like" := o.like
+    ~> "star" := o.star
     ~> jsonEmptyObject
 
 
@@ -12873,10 +12879,14 @@ instance resourcePackResponseDecodeJson :: DecodeJson ResourcePackResponse where
     resource <- obj .? "resource"
     user <- obj .? "user"
     stat <- obj .? "stat"
+    like <- obj .? "like"
+    star <- obj .? "star"
     pure $ ResourcePackResonse {
       resource,
       user,
-      stat
+      stat,
+      like,
+      star
     }
 
 
@@ -12894,6 +12904,8 @@ instance resourcePackResponseRespondable :: Respondable ResourcePackResponse whe
       <$> readProp "resource" json
       <*> readProp "user" json
       <*> readProp "stat" json
+      <*> (runNullOrUndefined <$> readProp "like" json)
+      <*> (runNullOrUndefined <$> readProp "star" json)
 
 
 instance resourcePackResponseIsForeign :: IsForeign ResourcePackResponse where
@@ -12902,10 +12914,12 @@ instance resourcePackResponseIsForeign :: IsForeign ResourcePackResponse where
       <$> readProp "resource" json
       <*> readProp "user" json
       <*> readProp "stat" json
+      <*> (runNullOrUndefined <$> readProp "like" json)
+      <*> (runNullOrUndefined <$> readProp "star" json)
 
 
 instance resourcePackResponseShow :: Show ResourcePackResponse where
-    show (ResourcePackResonse o) = show "resource: " ++ show o.resource ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "stat: " ++ show o.stat
+    show (ResourcePackResonse o) = show "resource: " ++ show o.resource ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype ResourcePackResponses = ResourcePackResponses {
   resourcePackResponses :: (Array  ResourcePackResponse)
@@ -12967,21 +12981,25 @@ instance resourcePackResponsesShow :: Show ResourcePackResponses where
 newtype LeuronPackResponse = LeuronPackResonse {
   leuron :: LeuronResponse,
   user :: UserSanitizedResponse,
-  stat :: LeuronStatResponse
+  stat :: LeuronStatResponse,
+  like :: (Maybe LeuronLikeResponse),
+  star :: (Maybe LeuronStarResponse)
 }
 
 
 _LeuronPackResponse :: LensP LeuronPackResponse {
   leuron :: LeuronResponse,
   user :: UserSanitizedResponse,
-  stat :: LeuronStatResponse
+  stat :: LeuronStatResponse,
+  like :: (Maybe LeuronLikeResponse),
+  star :: (Maybe LeuronStarResponse)
 }
 _LeuronPackResponse f (LeuronPackResonse o) = LeuronPackResonse <$> f o
 
 
-mkLeuronPackResponse :: LeuronResponse -> UserSanitizedResponse -> LeuronStatResponse -> LeuronPackResponse
-mkLeuronPackResponse leuron user stat =
-  LeuronPackResonse{leuron, user, stat}
+mkLeuronPackResponse :: LeuronResponse -> UserSanitizedResponse -> LeuronStatResponse -> (Maybe LeuronLikeResponse) -> (Maybe LeuronStarResponse) -> LeuronPackResponse
+mkLeuronPackResponse leuron user stat like star =
+  LeuronPackResonse{leuron, user, stat, like, star}
 
 
 unwrapLeuronPackResponse (LeuronPackResonse r) = r
@@ -12992,6 +13010,8 @@ instance leuronPackResponseEncodeJson :: EncodeJson LeuronPackResponse where
     ~> "leuron" := o.leuron
     ~> "user" := o.user
     ~> "stat" := o.stat
+    ~> "like" := o.like
+    ~> "star" := o.star
     ~> jsonEmptyObject
 
 
@@ -13001,10 +13021,14 @@ instance leuronPackResponseDecodeJson :: DecodeJson LeuronPackResponse where
     leuron <- obj .? "leuron"
     user <- obj .? "user"
     stat <- obj .? "stat"
+    like <- obj .? "like"
+    star <- obj .? "star"
     pure $ LeuronPackResonse {
       leuron,
       user,
-      stat
+      stat,
+      like,
+      star
     }
 
 
@@ -13022,6 +13046,8 @@ instance leuronPackResponseRespondable :: Respondable LeuronPackResponse where
       <$> readProp "leuron" json
       <*> readProp "user" json
       <*> readProp "stat" json
+      <*> (runNullOrUndefined <$> readProp "like" json)
+      <*> (runNullOrUndefined <$> readProp "star" json)
 
 
 instance leuronPackResponseIsForeign :: IsForeign LeuronPackResponse where
@@ -13030,10 +13056,12 @@ instance leuronPackResponseIsForeign :: IsForeign LeuronPackResponse where
       <$> readProp "leuron" json
       <*> readProp "user" json
       <*> readProp "stat" json
+      <*> (runNullOrUndefined <$> readProp "like" json)
+      <*> (runNullOrUndefined <$> readProp "star" json)
 
 
 instance leuronPackResponseShow :: Show LeuronPackResponse where
-    show (LeuronPackResonse o) = show "leuron: " ++ show o.leuron ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "stat: " ++ show o.stat
+    show (LeuronPackResonse o) = show "leuron: " ++ show o.leuron ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype LeuronPackResponses = LeuronPackResponses {
   leuronPackResponses :: (Array  LeuronPackResponse)
