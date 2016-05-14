@@ -1096,10 +1096,10 @@ getLeuronPacks_ByLeuronsIds params _ByLeuronsIds = handleError <$> getAt (map qp
 getLeuronPacks_ByLeuronsIds' :: (Array  Int) -> ApiEff (Either ApiError LeuronPackResponses)
 getLeuronPacks_ByLeuronsIds' _ByLeuronsIds = handleError <$> getAt [ByLeuronsIds _ByLeuronsIds] ["leuron_packs"]
 
-getLeuronPacks_ByResourceId :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks_ByResourceId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LeuronPackResponses)
 getLeuronPacks_ByResourceId params _ByResourceId = handleError <$> getAt (map qp params ++ map qp [ByResourceId _ByResourceId]) ["leuron_packs"]
 
-getLeuronPacks_ByResourceId' :: (Array  Int) -> ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks_ByResourceId' :: Int -> ApiEff (Either ApiError LeuronPackResponses)
 getLeuronPacks_ByResourceId' _ByResourceId = handleError <$> getAt [ByResourceId _ByResourceId] ["leuron_packs"]
 
 getLeuronPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LeuronPackResponse)
