@@ -8422,6 +8422,7 @@ instance resourceResponsesShow :: Show ResourceResponses where
 
 newtype ResourceStatResponse = ResourceStatResponse {
   resourceId :: Int,
+  leurons :: Int,
   likes :: Int,
   neutral :: Int,
   dislikes :: Int,
@@ -8432,6 +8433,7 @@ newtype ResourceStatResponse = ResourceStatResponse {
 
 _ResourceStatResponse :: LensP ResourceStatResponse {
   resourceId :: Int,
+  leurons :: Int,
   likes :: Int,
   neutral :: Int,
   dislikes :: Int,
@@ -8441,9 +8443,9 @@ _ResourceStatResponse :: LensP ResourceStatResponse {
 _ResourceStatResponse f (ResourceStatResponse o) = ResourceStatResponse <$> f o
 
 
-mkResourceStatResponse :: Int -> Int -> Int -> Int -> Int -> Int -> ResourceStatResponse
-mkResourceStatResponse resourceId likes neutral dislikes stars views =
-  ResourceStatResponse{resourceId, likes, neutral, dislikes, stars, views}
+mkResourceStatResponse :: Int -> Int -> Int -> Int -> Int -> Int -> Int -> ResourceStatResponse
+mkResourceStatResponse resourceId leurons likes neutral dislikes stars views =
+  ResourceStatResponse{resourceId, leurons, likes, neutral, dislikes, stars, views}
 
 
 unwrapResourceStatResponse (ResourceStatResponse r) = r
@@ -8452,6 +8454,7 @@ instance resourceStatResponseEncodeJson :: EncodeJson ResourceStatResponse where
   encodeJson (ResourceStatResponse o) =
        "tag" := "ResourceStatResponse"
     ~> "resource_id" := o.resourceId
+    ~> "leurons" := o.leurons
     ~> "likes" := o.likes
     ~> "neutral" := o.neutral
     ~> "dislikes" := o.dislikes
@@ -8464,6 +8467,7 @@ instance resourceStatResponseDecodeJson :: DecodeJson ResourceStatResponse where
   decodeJson o = do
     obj <- decodeJson o
     resourceId <- obj .? "resource_id"
+    leurons <- obj .? "leurons"
     likes <- obj .? "likes"
     neutral <- obj .? "neutral"
     dislikes <- obj .? "dislikes"
@@ -8471,6 +8475,7 @@ instance resourceStatResponseDecodeJson :: DecodeJson ResourceStatResponse where
     views <- obj .? "views"
     pure $ ResourceStatResponse {
       resourceId,
+      leurons,
       likes,
       neutral,
       dislikes,
@@ -8491,6 +8496,7 @@ instance resourceStatResponseRespondable :: Respondable ResourceStatResponse whe
   fromResponse json =
       mkResourceStatResponse
       <$> readProp "resource_id" json
+      <*> readProp "leurons" json
       <*> readProp "likes" json
       <*> readProp "neutral" json
       <*> readProp "dislikes" json
@@ -8502,6 +8508,7 @@ instance resourceStatResponseIsForeign :: IsForeign ResourceStatResponse where
   read json =
       mkResourceStatResponse
       <$> readProp "resource_id" json
+      <*> readProp "leurons" json
       <*> readProp "likes" json
       <*> readProp "neutral" json
       <*> readProp "dislikes" json
@@ -8510,7 +8517,7 @@ instance resourceStatResponseIsForeign :: IsForeign ResourceStatResponse where
 
 
 instance resourceStatResponseShow :: Show ResourceStatResponse where
-    show (ResourceStatResponse o) = show "resourceId: " ++ show o.resourceId ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "stars: " ++ show o.stars ++ ", " ++ show "views: " ++ show o.views
+    show (ResourceStatResponse o) = show "resourceId: " ++ show o.resourceId ++ ", " ++ show "leurons: " ++ show o.leurons ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "stars: " ++ show o.stars ++ ", " ++ show "views: " ++ show o.views
 
 newtype ResourceStatResponses = ResourceStatResponses {
   resourceStatResponses :: (Array  ResourceStatResponse)
