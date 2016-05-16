@@ -10790,6 +10790,120 @@ instance teamResponsesIsForeign :: IsForeign TeamResponses where
 instance teamResponsesShow :: Show TeamResponses where
     show (TeamResponses o) = show "teamResponses: " ++ show o.teamResponses
 
+newtype TeamStatResponse = TeamStatResponse {
+  members :: Int
+}
+
+
+_TeamStatResponse :: LensP TeamStatResponse {
+  members :: Int
+}
+_TeamStatResponse f (TeamStatResponse o) = TeamStatResponse <$> f o
+
+
+mkTeamStatResponse :: Int -> TeamStatResponse
+mkTeamStatResponse members =
+  TeamStatResponse{members}
+
+
+unwrapTeamStatResponse (TeamStatResponse r) = r
+
+instance teamStatResponseEncodeJson :: EncodeJson TeamStatResponse where
+  encodeJson (TeamStatResponse o) =
+       "tag" := "TeamStatResponse"
+    ~> "members" := o.members
+    ~> jsonEmptyObject
+
+
+instance teamStatResponseDecodeJson :: DecodeJson TeamStatResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    members <- obj .? "members"
+    pure $ TeamStatResponse {
+      members
+    }
+
+
+instance teamStatResponseRequestable :: Requestable TeamStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamStatResponseRespondable :: Respondable TeamStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamStatResponse
+      <$> readProp "members" json
+
+
+instance teamStatResponseIsForeign :: IsForeign TeamStatResponse where
+  read json =
+      mkTeamStatResponse
+      <$> readProp "members" json
+
+
+instance teamStatResponseShow :: Show TeamStatResponse where
+    show (TeamStatResponse o) = show "members: " ++ show o.members
+
+newtype TeamStatResponses = TeamStatResponses {
+  teamStatResponses :: (Array  TeamStatResponse)
+}
+
+
+_TeamStatResponses :: LensP TeamStatResponses {
+  teamStatResponses :: (Array  TeamStatResponse)
+}
+_TeamStatResponses f (TeamStatResponses o) = TeamStatResponses <$> f o
+
+
+mkTeamStatResponses :: (Array  TeamStatResponse) -> TeamStatResponses
+mkTeamStatResponses teamStatResponses =
+  TeamStatResponses{teamStatResponses}
+
+
+unwrapTeamStatResponses (TeamStatResponses r) = r
+
+instance teamStatResponsesEncodeJson :: EncodeJson TeamStatResponses where
+  encodeJson (TeamStatResponses o) =
+       "tag" := "TeamStatResponses"
+    ~> "team_stat_responses" := o.teamStatResponses
+    ~> jsonEmptyObject
+
+
+instance teamStatResponsesDecodeJson :: DecodeJson TeamStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    teamStatResponses <- obj .? "team_stat_responses"
+    pure $ TeamStatResponses {
+      teamStatResponses
+    }
+
+
+instance teamStatResponsesRequestable :: Requestable TeamStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamStatResponsesRespondable :: Respondable TeamStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamStatResponses
+      <$> readProp "team_stat_responses" json
+
+
+instance teamStatResponsesIsForeign :: IsForeign TeamStatResponses where
+  read json =
+      mkTeamStatResponses
+      <$> readProp "team_stat_responses" json
+
+
+instance teamStatResponsesShow :: Show TeamStatResponses where
+    show (TeamStatResponses o) = show "teamStatResponses: " ++ show o.teamStatResponses
+
 newtype TestRequest = TestRequest {
   msg :: String
 }
@@ -13292,6 +13406,639 @@ instance visibilityShow :: Show Visibility where
   show (Private) = "Private"
 
 
+newtype OrganizationPackResponse = OrganizationPackResponse {
+  user :: UserSanitizedResponse,
+  organization :: OrganizationResponse,
+  organizationStat :: OrganizationStatResponse
+}
+
+
+_OrganizationPackResponse :: LensP OrganizationPackResponse {
+  user :: UserSanitizedResponse,
+  organization :: OrganizationResponse,
+  organizationStat :: OrganizationStatResponse
+}
+_OrganizationPackResponse f (OrganizationPackResponse o) = OrganizationPackResponse <$> f o
+
+
+mkOrganizationPackResponse :: UserSanitizedResponse -> OrganizationResponse -> OrganizationStatResponse -> OrganizationPackResponse
+mkOrganizationPackResponse user organization organizationStat =
+  OrganizationPackResponse{user, organization, organizationStat}
+
+
+unwrapOrganizationPackResponse (OrganizationPackResponse r) = r
+
+instance organizationPackResponseEncodeJson :: EncodeJson OrganizationPackResponse where
+  encodeJson (OrganizationPackResponse o) =
+       "tag" := "OrganizationPackResponse"
+    ~> "user" := o.user
+    ~> "organization" := o.organization
+    ~> "organization_stat" := o.organizationStat
+    ~> jsonEmptyObject
+
+
+instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    user <- obj .? "user"
+    organization <- obj .? "organization"
+    organizationStat <- obj .? "organization_stat"
+    pure $ OrganizationPackResponse {
+      user,
+      organization,
+      organizationStat
+    }
+
+
+instance organizationPackResponseRequestable :: Requestable OrganizationPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance organizationPackResponseRespondable :: Respondable OrganizationPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkOrganizationPackResponse
+      <$> readProp "user" json
+      <*> readProp "organization" json
+      <*> readProp "organization_stat" json
+
+
+instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse where
+  read json =
+      mkOrganizationPackResponse
+      <$> readProp "user" json
+      <*> readProp "organization" json
+      <*> readProp "organization_stat" json
+
+
+instance organizationPackResponseShow :: Show OrganizationPackResponse where
+    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationStat: " ++ show o.organizationStat
+
+newtype OrganizationPackResponses = OrganizationPackResponses {
+  organizationPackResponses :: (Array  OrganizationPackResponse)
+}
+
+
+_OrganizationPackResponses :: LensP OrganizationPackResponses {
+  organizationPackResponses :: (Array  OrganizationPackResponse)
+}
+_OrganizationPackResponses f (OrganizationPackResponses o) = OrganizationPackResponses <$> f o
+
+
+mkOrganizationPackResponses :: (Array  OrganizationPackResponse) -> OrganizationPackResponses
+mkOrganizationPackResponses organizationPackResponses =
+  OrganizationPackResponses{organizationPackResponses}
+
+
+unwrapOrganizationPackResponses (OrganizationPackResponses r) = r
+
+instance organizationPackResponsesEncodeJson :: EncodeJson OrganizationPackResponses where
+  encodeJson (OrganizationPackResponses o) =
+       "tag" := "OrganizationPackResponses"
+    ~> "organization_pack_responses" := o.organizationPackResponses
+    ~> jsonEmptyObject
+
+
+instance organizationPackResponsesDecodeJson :: DecodeJson OrganizationPackResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    organizationPackResponses <- obj .? "organization_pack_responses"
+    pure $ OrganizationPackResponses {
+      organizationPackResponses
+    }
+
+
+instance organizationPackResponsesRequestable :: Requestable OrganizationPackResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance organizationPackResponsesRespondable :: Respondable OrganizationPackResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkOrganizationPackResponses
+      <$> readProp "organization_pack_responses" json
+
+
+instance organizationPackResponsesIsForeign :: IsForeign OrganizationPackResponses where
+  read json =
+      mkOrganizationPackResponses
+      <$> readProp "organization_pack_responses" json
+
+
+instance organizationPackResponsesShow :: Show OrganizationPackResponses where
+    show (OrganizationPackResponses o) = show "organizationPackResponses: " ++ show o.organizationPackResponses
+
+newtype TeamPackResponse = TeamPackResponse {
+  user :: UserSanitizedResponse,
+  team :: TeamResponse,
+  teamStat :: TeamStatResponse
+}
+
+
+_TeamPackResponse :: LensP TeamPackResponse {
+  user :: UserSanitizedResponse,
+  team :: TeamResponse,
+  teamStat :: TeamStatResponse
+}
+_TeamPackResponse f (TeamPackResponse o) = TeamPackResponse <$> f o
+
+
+mkTeamPackResponse :: UserSanitizedResponse -> TeamResponse -> TeamStatResponse -> TeamPackResponse
+mkTeamPackResponse user team teamStat =
+  TeamPackResponse{user, team, teamStat}
+
+
+unwrapTeamPackResponse (TeamPackResponse r) = r
+
+instance teamPackResponseEncodeJson :: EncodeJson TeamPackResponse where
+  encodeJson (TeamPackResponse o) =
+       "tag" := "TeamPackResponse"
+    ~> "user" := o.user
+    ~> "team" := o.team
+    ~> "team_stat" := o.teamStat
+    ~> jsonEmptyObject
+
+
+instance teamPackResponseDecodeJson :: DecodeJson TeamPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    user <- obj .? "user"
+    team <- obj .? "team"
+    teamStat <- obj .? "team_stat"
+    pure $ TeamPackResponse {
+      user,
+      team,
+      teamStat
+    }
+
+
+instance teamPackResponseRequestable :: Requestable TeamPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamPackResponseRespondable :: Respondable TeamPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamPackResponse
+      <$> readProp "user" json
+      <*> readProp "team" json
+      <*> readProp "team_stat" json
+
+
+instance teamPackResponseIsForeign :: IsForeign TeamPackResponse where
+  read json =
+      mkTeamPackResponse
+      <$> readProp "user" json
+      <*> readProp "team" json
+      <*> readProp "team_stat" json
+
+
+instance teamPackResponseShow :: Show TeamPackResponse where
+    show (TeamPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "team: " ++ show o.team ++ ", " ++ show "teamStat: " ++ show o.teamStat
+
+newtype TeamPackResponses = TeamPackResponses {
+  teamPackResponses :: (Array  TeamPackResponse)
+}
+
+
+_TeamPackResponses :: LensP TeamPackResponses {
+  teamPackResponses :: (Array  TeamPackResponse)
+}
+_TeamPackResponses f (TeamPackResponses o) = TeamPackResponses <$> f o
+
+
+mkTeamPackResponses :: (Array  TeamPackResponse) -> TeamPackResponses
+mkTeamPackResponses teamPackResponses =
+  TeamPackResponses{teamPackResponses}
+
+
+unwrapTeamPackResponses (TeamPackResponses r) = r
+
+instance teamPackResponsesEncodeJson :: EncodeJson TeamPackResponses where
+  encodeJson (TeamPackResponses o) =
+       "tag" := "TeamPackResponses"
+    ~> "team_pack_responses" := o.teamPackResponses
+    ~> jsonEmptyObject
+
+
+instance teamPackResponsesDecodeJson :: DecodeJson TeamPackResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    teamPackResponses <- obj .? "team_pack_responses"
+    pure $ TeamPackResponses {
+      teamPackResponses
+    }
+
+
+instance teamPackResponsesRequestable :: Requestable TeamPackResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamPackResponsesRespondable :: Respondable TeamPackResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamPackResponses
+      <$> readProp "team_pack_responses" json
+
+
+instance teamPackResponsesIsForeign :: IsForeign TeamPackResponses where
+  read json =
+      mkTeamPackResponses
+      <$> readProp "team_pack_responses" json
+
+
+instance teamPackResponsesShow :: Show TeamPackResponses where
+    show (TeamPackResponses o) = show "teamPackResponses: " ++ show o.teamPackResponses
+
+newtype UserPackResponse = UserPackResponse {
+  user :: UserResponse,
+  userStat :: UserSanitizedStatResponse,
+  userProfile :: ProfileResponse
+}
+
+
+_UserPackResponse :: LensP UserPackResponse {
+  user :: UserResponse,
+  userStat :: UserSanitizedStatResponse,
+  userProfile :: ProfileResponse
+}
+_UserPackResponse f (UserPackResponse o) = UserPackResponse <$> f o
+
+
+mkUserPackResponse :: UserResponse -> UserSanitizedStatResponse -> ProfileResponse -> UserPackResponse
+mkUserPackResponse user userStat userProfile =
+  UserPackResponse{user, userStat, userProfile}
+
+
+unwrapUserPackResponse (UserPackResponse r) = r
+
+instance userPackResponseEncodeJson :: EncodeJson UserPackResponse where
+  encodeJson (UserPackResponse o) =
+       "tag" := "UserPackResponse"
+    ~> "user" := o.user
+    ~> "user_stat" := o.userStat
+    ~> "user_profile" := o.userProfile
+    ~> jsonEmptyObject
+
+
+instance userPackResponseDecodeJson :: DecodeJson UserPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    user <- obj .? "user"
+    userStat <- obj .? "user_stat"
+    userProfile <- obj .? "user_profile"
+    pure $ UserPackResponse {
+      user,
+      userStat,
+      userProfile
+    }
+
+
+instance userPackResponseRequestable :: Requestable UserPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance userPackResponseRespondable :: Respondable UserPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkUserPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_stat" json
+      <*> readProp "user_profile" json
+
+
+instance userPackResponseIsForeign :: IsForeign UserPackResponse where
+  read json =
+      mkUserPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_stat" json
+      <*> readProp "user_profile" json
+
+
+instance userPackResponseShow :: Show UserPackResponse where
+    show (UserPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userStat: " ++ show o.userStat ++ ", " ++ show "userProfile: " ++ show o.userProfile
+
+newtype UserPackResponses = UserPackResponses {
+  userPackResponses :: (Array  UserPackResponse)
+}
+
+
+_UserPackResponses :: LensP UserPackResponses {
+  userPackResponses :: (Array  UserPackResponse)
+}
+_UserPackResponses f (UserPackResponses o) = UserPackResponses <$> f o
+
+
+mkUserPackResponses :: (Array  UserPackResponse) -> UserPackResponses
+mkUserPackResponses userPackResponses =
+  UserPackResponses{userPackResponses}
+
+
+unwrapUserPackResponses (UserPackResponses r) = r
+
+instance userPackResponsesEncodeJson :: EncodeJson UserPackResponses where
+  encodeJson (UserPackResponses o) =
+       "tag" := "UserPackResponses"
+    ~> "user_pack_responses" := o.userPackResponses
+    ~> jsonEmptyObject
+
+
+instance userPackResponsesDecodeJson :: DecodeJson UserPackResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    userPackResponses <- obj .? "user_pack_responses"
+    pure $ UserPackResponses {
+      userPackResponses
+    }
+
+
+instance userPackResponsesRequestable :: Requestable UserPackResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance userPackResponsesRespondable :: Respondable UserPackResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkUserPackResponses
+      <$> readProp "user_pack_responses" json
+
+
+instance userPackResponsesIsForeign :: IsForeign UserPackResponses where
+  read json =
+      mkUserPackResponses
+      <$> readProp "user_pack_responses" json
+
+
+instance userPackResponsesShow :: Show UserPackResponses where
+    show (UserPackResponses o) = show "userPackResponses: " ++ show o.userPackResponses
+
+newtype UserSanitizedPackResponse = UserSanitizedPackResponse {
+  user :: UserSanitizedResponse,
+  userStat :: UserSanitizedStatResponse,
+  userProfile :: ProfileResponse
+}
+
+
+_UserSanitizedPackResponse :: LensP UserSanitizedPackResponse {
+  user :: UserSanitizedResponse,
+  userStat :: UserSanitizedStatResponse,
+  userProfile :: ProfileResponse
+}
+_UserSanitizedPackResponse f (UserSanitizedPackResponse o) = UserSanitizedPackResponse <$> f o
+
+
+mkUserSanitizedPackResponse :: UserSanitizedResponse -> UserSanitizedStatResponse -> ProfileResponse -> UserSanitizedPackResponse
+mkUserSanitizedPackResponse user userStat userProfile =
+  UserSanitizedPackResponse{user, userStat, userProfile}
+
+
+unwrapUserSanitizedPackResponse (UserSanitizedPackResponse r) = r
+
+instance userSanitizedPackResponseEncodeJson :: EncodeJson UserSanitizedPackResponse where
+  encodeJson (UserSanitizedPackResponse o) =
+       "tag" := "UserSanitizedPackResponse"
+    ~> "user" := o.user
+    ~> "user_stat" := o.userStat
+    ~> "user_profile" := o.userProfile
+    ~> jsonEmptyObject
+
+
+instance userSanitizedPackResponseDecodeJson :: DecodeJson UserSanitizedPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    user <- obj .? "user"
+    userStat <- obj .? "user_stat"
+    userProfile <- obj .? "user_profile"
+    pure $ UserSanitizedPackResponse {
+      user,
+      userStat,
+      userProfile
+    }
+
+
+instance userSanitizedPackResponseRequestable :: Requestable UserSanitizedPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance userSanitizedPackResponseRespondable :: Respondable UserSanitizedPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkUserSanitizedPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_stat" json
+      <*> readProp "user_profile" json
+
+
+instance userSanitizedPackResponseIsForeign :: IsForeign UserSanitizedPackResponse where
+  read json =
+      mkUserSanitizedPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_stat" json
+      <*> readProp "user_profile" json
+
+
+instance userSanitizedPackResponseShow :: Show UserSanitizedPackResponse where
+    show (UserSanitizedPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userStat: " ++ show o.userStat ++ ", " ++ show "userProfile: " ++ show o.userProfile
+
+newtype UserSanitizedPackResponses = UserSanitizedPackResponses {
+  userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
+}
+
+
+_UserSanitizedPackResponses :: LensP UserSanitizedPackResponses {
+  userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
+}
+_UserSanitizedPackResponses f (UserSanitizedPackResponses o) = UserSanitizedPackResponses <$> f o
+
+
+mkUserSanitizedPackResponses :: (Array  UserSanitizedPackResponse) -> UserSanitizedPackResponses
+mkUserSanitizedPackResponses userSanitizedPackResponses =
+  UserSanitizedPackResponses{userSanitizedPackResponses}
+
+
+unwrapUserSanitizedPackResponses (UserSanitizedPackResponses r) = r
+
+instance userSanitizedPackResponsesEncodeJson :: EncodeJson UserSanitizedPackResponses where
+  encodeJson (UserSanitizedPackResponses o) =
+       "tag" := "UserSanitizedPackResponses"
+    ~> "user_sanitized_pack_responses" := o.userSanitizedPackResponses
+    ~> jsonEmptyObject
+
+
+instance userSanitizedPackResponsesDecodeJson :: DecodeJson UserSanitizedPackResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    userSanitizedPackResponses <- obj .? "user_sanitized_pack_responses"
+    pure $ UserSanitizedPackResponses {
+      userSanitizedPackResponses
+    }
+
+
+instance userSanitizedPackResponsesRequestable :: Requestable UserSanitizedPackResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance userSanitizedPackResponsesRespondable :: Respondable UserSanitizedPackResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkUserSanitizedPackResponses
+      <$> readProp "user_sanitized_pack_responses" json
+
+
+instance userSanitizedPackResponsesIsForeign :: IsForeign UserSanitizedPackResponses where
+  read json =
+      mkUserSanitizedPackResponses
+      <$> readProp "user_sanitized_pack_responses" json
+
+
+instance userSanitizedPackResponsesShow :: Show UserSanitizedPackResponses where
+    show (UserSanitizedPackResponses o) = show "userSanitizedPackResponses: " ++ show o.userSanitizedPackResponses
+
+newtype ForumPackResponse = ForumPackResponse {
+  forum :: ForumResponse,
+  stat :: ForumStatResponse
+}
+
+
+_ForumPackResponse :: LensP ForumPackResponse {
+  forum :: ForumResponse,
+  stat :: ForumStatResponse
+}
+_ForumPackResponse f (ForumPackResponse o) = ForumPackResponse <$> f o
+
+
+mkForumPackResponse :: ForumResponse -> ForumStatResponse -> ForumPackResponse
+mkForumPackResponse forum stat =
+  ForumPackResponse{forum, stat}
+
+
+unwrapForumPackResponse (ForumPackResponse r) = r
+
+instance forumPackResponseEncodeJson :: EncodeJson ForumPackResponse where
+  encodeJson (ForumPackResponse o) =
+       "tag" := "ForumPackResponse"
+    ~> "forum" := o.forum
+    ~> "stat" := o.stat
+    ~> jsonEmptyObject
+
+
+instance forumPackResponseDecodeJson :: DecodeJson ForumPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    forum <- obj .? "forum"
+    stat <- obj .? "stat"
+    pure $ ForumPackResponse {
+      forum,
+      stat
+    }
+
+
+instance forumPackResponseRequestable :: Requestable ForumPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance forumPackResponseRespondable :: Respondable ForumPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkForumPackResponse
+      <$> readProp "forum" json
+      <*> readProp "stat" json
+
+
+instance forumPackResponseIsForeign :: IsForeign ForumPackResponse where
+  read json =
+      mkForumPackResponse
+      <$> readProp "forum" json
+      <*> readProp "stat" json
+
+
+instance forumPackResponseShow :: Show ForumPackResponse where
+    show (ForumPackResponse o) = show "forum: " ++ show o.forum ++ ", " ++ show "stat: " ++ show o.stat
+
+newtype ForumPackResponses = ForumPackResponses {
+  forumPackResponses :: (Array  ForumPackResponse)
+}
+
+
+_ForumPackResponses :: LensP ForumPackResponses {
+  forumPackResponses :: (Array  ForumPackResponse)
+}
+_ForumPackResponses f (ForumPackResponses o) = ForumPackResponses <$> f o
+
+
+mkForumPackResponses :: (Array  ForumPackResponse) -> ForumPackResponses
+mkForumPackResponses forumPackResponses =
+  ForumPackResponses{forumPackResponses}
+
+
+unwrapForumPackResponses (ForumPackResponses r) = r
+
+instance forumPackResponsesEncodeJson :: EncodeJson ForumPackResponses where
+  encodeJson (ForumPackResponses o) =
+       "tag" := "ForumPackResponses"
+    ~> "forum_pack_responses" := o.forumPackResponses
+    ~> jsonEmptyObject
+
+
+instance forumPackResponsesDecodeJson :: DecodeJson ForumPackResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    forumPackResponses <- obj .? "forum_pack_responses"
+    pure $ ForumPackResponses {
+      forumPackResponses
+    }
+
+
+instance forumPackResponsesRequestable :: Requestable ForumPackResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance forumPackResponsesRespondable :: Respondable ForumPackResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkForumPackResponses
+      <$> readProp "forum_pack_responses" json
+
+
+instance forumPackResponsesIsForeign :: IsForeign ForumPackResponses where
+  read json =
+      mkForumPackResponses
+      <$> readProp "forum_pack_responses" json
+
+
+instance forumPackResponsesShow :: Show ForumPackResponses where
+    show (ForumPackResponses o) = show "forumPackResponses: " ++ show o.forumPackResponses
+
 newtype BoardPackResponse = BoardPackResponse {
   board :: BoardResponse,
   boardStat :: BoardStatResponse,
@@ -13433,127 +14180,6 @@ instance boardPackResponsesIsForeign :: IsForeign BoardPackResponses where
 
 instance boardPackResponsesShow :: Show BoardPackResponses where
     show (BoardPackResponses o) = show "boardPackResponses: " ++ show o.boardPackResponses
-
-newtype OrganizationPackResponse = OrganizationPackResponse {
-  organization :: OrganizationResponse,
-  organizationStat :: OrganizationStatResponse
-}
-
-
-_OrganizationPackResponse :: LensP OrganizationPackResponse {
-  organization :: OrganizationResponse,
-  organizationStat :: OrganizationStatResponse
-}
-_OrganizationPackResponse f (OrganizationPackResponse o) = OrganizationPackResponse <$> f o
-
-
-mkOrganizationPackResponse :: OrganizationResponse -> OrganizationStatResponse -> OrganizationPackResponse
-mkOrganizationPackResponse organization organizationStat =
-  OrganizationPackResponse{organization, organizationStat}
-
-
-unwrapOrganizationPackResponse (OrganizationPackResponse r) = r
-
-instance organizationPackResponseEncodeJson :: EncodeJson OrganizationPackResponse where
-  encodeJson (OrganizationPackResponse o) =
-       "tag" := "OrganizationPackResponse"
-    ~> "organization" := o.organization
-    ~> "organization_stat" := o.organizationStat
-    ~> jsonEmptyObject
-
-
-instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackResponse where
-  decodeJson o = do
-    obj <- decodeJson o
-    organization <- obj .? "organization"
-    organizationStat <- obj .? "organization_stat"
-    pure $ OrganizationPackResponse {
-      organization,
-      organizationStat
-    }
-
-
-instance organizationPackResponseRequestable :: Requestable OrganizationPackResponse where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance organizationPackResponseRespondable :: Respondable OrganizationPackResponse where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkOrganizationPackResponse
-      <$> readProp "organization" json
-      <*> readProp "organization_stat" json
-
-
-instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse where
-  read json =
-      mkOrganizationPackResponse
-      <$> readProp "organization" json
-      <*> readProp "organization_stat" json
-
-
-instance organizationPackResponseShow :: Show OrganizationPackResponse where
-    show (OrganizationPackResponse o) = show "organization: " ++ show o.organization ++ ", " ++ show "organizationStat: " ++ show o.organizationStat
-
-newtype OrganizationPackResponses = OrganizationPackResponses {
-  organizationPackResponses :: (Array  OrganizationPackResponse)
-}
-
-
-_OrganizationPackResponses :: LensP OrganizationPackResponses {
-  organizationPackResponses :: (Array  OrganizationPackResponse)
-}
-_OrganizationPackResponses f (OrganizationPackResponses o) = OrganizationPackResponses <$> f o
-
-
-mkOrganizationPackResponses :: (Array  OrganizationPackResponse) -> OrganizationPackResponses
-mkOrganizationPackResponses organizationPackResponses =
-  OrganizationPackResponses{organizationPackResponses}
-
-
-unwrapOrganizationPackResponses (OrganizationPackResponses r) = r
-
-instance organizationPackResponsesEncodeJson :: EncodeJson OrganizationPackResponses where
-  encodeJson (OrganizationPackResponses o) =
-       "tag" := "OrganizationPackResponses"
-    ~> "organization_pack_responses" := o.organizationPackResponses
-    ~> jsonEmptyObject
-
-
-instance organizationPackResponsesDecodeJson :: DecodeJson OrganizationPackResponses where
-  decodeJson o = do
-    obj <- decodeJson o
-    organizationPackResponses <- obj .? "organization_pack_responses"
-    pure $ OrganizationPackResponses {
-      organizationPackResponses
-    }
-
-
-instance organizationPackResponsesRequestable :: Requestable OrganizationPackResponses where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance organizationPackResponsesRespondable :: Respondable OrganizationPackResponses where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkOrganizationPackResponses
-      <$> readProp "organization_pack_responses" json
-
-
-instance organizationPackResponsesIsForeign :: IsForeign OrganizationPackResponses where
-  read json =
-      mkOrganizationPackResponses
-      <$> readProp "organization_pack_responses" json
-
-
-instance organizationPackResponsesShow :: Show OrganizationPackResponses where
-    show (OrganizationPackResponses o) = show "organizationPackResponses: " ++ show o.organizationPackResponses
 
 newtype ThreadPackResponse = ThreadPackResponse {
   thread :: ThreadResponse,
@@ -14123,262 +14749,6 @@ instance leuronPackResponsesIsForeign :: IsForeign LeuronPackResponses where
 instance leuronPackResponsesShow :: Show LeuronPackResponses where
     show (LeuronPackResponses o) = show "leuronPackResponses: " ++ show o.leuronPackResponses
 
-newtype UserPackResponse = UserPackResponse {
-  user :: UserResponse,
-  userStat :: UserSanitizedStatResponse,
-  userProfile :: ProfileResponse
-}
-
-
-_UserPackResponse :: LensP UserPackResponse {
-  user :: UserResponse,
-  userStat :: UserSanitizedStatResponse,
-  userProfile :: ProfileResponse
-}
-_UserPackResponse f (UserPackResponse o) = UserPackResponse <$> f o
-
-
-mkUserPackResponse :: UserResponse -> UserSanitizedStatResponse -> ProfileResponse -> UserPackResponse
-mkUserPackResponse user userStat userProfile =
-  UserPackResponse{user, userStat, userProfile}
-
-
-unwrapUserPackResponse (UserPackResponse r) = r
-
-instance userPackResponseEncodeJson :: EncodeJson UserPackResponse where
-  encodeJson (UserPackResponse o) =
-       "tag" := "UserPackResponse"
-    ~> "user" := o.user
-    ~> "user_stat" := o.userStat
-    ~> "user_profile" := o.userProfile
-    ~> jsonEmptyObject
-
-
-instance userPackResponseDecodeJson :: DecodeJson UserPackResponse where
-  decodeJson o = do
-    obj <- decodeJson o
-    user <- obj .? "user"
-    userStat <- obj .? "user_stat"
-    userProfile <- obj .? "user_profile"
-    pure $ UserPackResponse {
-      user,
-      userStat,
-      userProfile
-    }
-
-
-instance userPackResponseRequestable :: Requestable UserPackResponse where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance userPackResponseRespondable :: Respondable UserPackResponse where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkUserPackResponse
-      <$> readProp "user" json
-      <*> readProp "user_stat" json
-      <*> readProp "user_profile" json
-
-
-instance userPackResponseIsForeign :: IsForeign UserPackResponse where
-  read json =
-      mkUserPackResponse
-      <$> readProp "user" json
-      <*> readProp "user_stat" json
-      <*> readProp "user_profile" json
-
-
-instance userPackResponseShow :: Show UserPackResponse where
-    show (UserPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userStat: " ++ show o.userStat ++ ", " ++ show "userProfile: " ++ show o.userProfile
-
-newtype UserPackResponses = UserPackResponses {
-  userPackResponses :: (Array  UserPackResponse)
-}
-
-
-_UserPackResponses :: LensP UserPackResponses {
-  userPackResponses :: (Array  UserPackResponse)
-}
-_UserPackResponses f (UserPackResponses o) = UserPackResponses <$> f o
-
-
-mkUserPackResponses :: (Array  UserPackResponse) -> UserPackResponses
-mkUserPackResponses userPackResponses =
-  UserPackResponses{userPackResponses}
-
-
-unwrapUserPackResponses (UserPackResponses r) = r
-
-instance userPackResponsesEncodeJson :: EncodeJson UserPackResponses where
-  encodeJson (UserPackResponses o) =
-       "tag" := "UserPackResponses"
-    ~> "user_pack_responses" := o.userPackResponses
-    ~> jsonEmptyObject
-
-
-instance userPackResponsesDecodeJson :: DecodeJson UserPackResponses where
-  decodeJson o = do
-    obj <- decodeJson o
-    userPackResponses <- obj .? "user_pack_responses"
-    pure $ UserPackResponses {
-      userPackResponses
-    }
-
-
-instance userPackResponsesRequestable :: Requestable UserPackResponses where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance userPackResponsesRespondable :: Respondable UserPackResponses where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkUserPackResponses
-      <$> readProp "user_pack_responses" json
-
-
-instance userPackResponsesIsForeign :: IsForeign UserPackResponses where
-  read json =
-      mkUserPackResponses
-      <$> readProp "user_pack_responses" json
-
-
-instance userPackResponsesShow :: Show UserPackResponses where
-    show (UserPackResponses o) = show "userPackResponses: " ++ show o.userPackResponses
-
-newtype UserSanitizedPackResponse = UserSanitizedPackResponse {
-  user :: UserSanitizedResponse,
-  userStat :: UserSanitizedStatResponse,
-  userProfile :: ProfileResponse
-}
-
-
-_UserSanitizedPackResponse :: LensP UserSanitizedPackResponse {
-  user :: UserSanitizedResponse,
-  userStat :: UserSanitizedStatResponse,
-  userProfile :: ProfileResponse
-}
-_UserSanitizedPackResponse f (UserSanitizedPackResponse o) = UserSanitizedPackResponse <$> f o
-
-
-mkUserSanitizedPackResponse :: UserSanitizedResponse -> UserSanitizedStatResponse -> ProfileResponse -> UserSanitizedPackResponse
-mkUserSanitizedPackResponse user userStat userProfile =
-  UserSanitizedPackResponse{user, userStat, userProfile}
-
-
-unwrapUserSanitizedPackResponse (UserSanitizedPackResponse r) = r
-
-instance userSanitizedPackResponseEncodeJson :: EncodeJson UserSanitizedPackResponse where
-  encodeJson (UserSanitizedPackResponse o) =
-       "tag" := "UserSanitizedPackResponse"
-    ~> "user" := o.user
-    ~> "user_stat" := o.userStat
-    ~> "user_profile" := o.userProfile
-    ~> jsonEmptyObject
-
-
-instance userSanitizedPackResponseDecodeJson :: DecodeJson UserSanitizedPackResponse where
-  decodeJson o = do
-    obj <- decodeJson o
-    user <- obj .? "user"
-    userStat <- obj .? "user_stat"
-    userProfile <- obj .? "user_profile"
-    pure $ UserSanitizedPackResponse {
-      user,
-      userStat,
-      userProfile
-    }
-
-
-instance userSanitizedPackResponseRequestable :: Requestable UserSanitizedPackResponse where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance userSanitizedPackResponseRespondable :: Respondable UserSanitizedPackResponse where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkUserSanitizedPackResponse
-      <$> readProp "user" json
-      <*> readProp "user_stat" json
-      <*> readProp "user_profile" json
-
-
-instance userSanitizedPackResponseIsForeign :: IsForeign UserSanitizedPackResponse where
-  read json =
-      mkUserSanitizedPackResponse
-      <$> readProp "user" json
-      <*> readProp "user_stat" json
-      <*> readProp "user_profile" json
-
-
-instance userSanitizedPackResponseShow :: Show UserSanitizedPackResponse where
-    show (UserSanitizedPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userStat: " ++ show o.userStat ++ ", " ++ show "userProfile: " ++ show o.userProfile
-
-newtype UserSanitizedPackResponses = UserSanitizedPackResponses {
-  userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
-}
-
-
-_UserSanitizedPackResponses :: LensP UserSanitizedPackResponses {
-  userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
-}
-_UserSanitizedPackResponses f (UserSanitizedPackResponses o) = UserSanitizedPackResponses <$> f o
-
-
-mkUserSanitizedPackResponses :: (Array  UserSanitizedPackResponse) -> UserSanitizedPackResponses
-mkUserSanitizedPackResponses userSanitizedPackResponses =
-  UserSanitizedPackResponses{userSanitizedPackResponses}
-
-
-unwrapUserSanitizedPackResponses (UserSanitizedPackResponses r) = r
-
-instance userSanitizedPackResponsesEncodeJson :: EncodeJson UserSanitizedPackResponses where
-  encodeJson (UserSanitizedPackResponses o) =
-       "tag" := "UserSanitizedPackResponses"
-    ~> "user_sanitized_pack_responses" := o.userSanitizedPackResponses
-    ~> jsonEmptyObject
-
-
-instance userSanitizedPackResponsesDecodeJson :: DecodeJson UserSanitizedPackResponses where
-  decodeJson o = do
-    obj <- decodeJson o
-    userSanitizedPackResponses <- obj .? "user_sanitized_pack_responses"
-    pure $ UserSanitizedPackResponses {
-      userSanitizedPackResponses
-    }
-
-
-instance userSanitizedPackResponsesRequestable :: Requestable UserSanitizedPackResponses where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance userSanitizedPackResponsesRespondable :: Respondable UserSanitizedPackResponses where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json =
-      mkUserSanitizedPackResponses
-      <$> readProp "user_sanitized_pack_responses" json
-
-
-instance userSanitizedPackResponsesIsForeign :: IsForeign UserSanitizedPackResponses where
-  read json =
-      mkUserSanitizedPackResponses
-      <$> readProp "user_sanitized_pack_responses" json
-
-
-instance userSanitizedPackResponsesShow :: Show UserSanitizedPackResponses where
-    show (UserSanitizedPackResponses o) = show "userSanitizedPackResponses: " ++ show o.userSanitizedPackResponses
-
 a_ :: forall b a r. Lens { a :: a | r } { a :: b | r } a b
 a_ f o = o { a = _ } <$> f o.a
 
@@ -14567,8 +14937,16 @@ filters_ :: forall b a r. Lens { filters :: a | r } { filters :: b | r } a b
 filters_ f o = o { filters = _ } <$> f o.filters
 
 
+forum_ :: forall b a r. Lens { forum :: a | r } { forum :: b | r } a b
+forum_ f o = o { forum = _ } <$> f o.forum
+
+
 forumId_ :: forall b a r. Lens { forumId :: a | r } { forumId :: b | r } a b
 forumId_ f o = o { forumId = _ } <$> f o.forumId
+
+
+forumPackResponses_ :: forall b a r. Lens { forumPackResponses :: a | r } { forumPackResponses :: b | r } a b
+forumPackResponses_ f o = o { forumPackResponses = _ } <$> f o.forumPackResponses
 
 
 forumResponses_ :: forall b a r. Lens { forumResponses :: a | r } { forumResponses :: b | r } a b
@@ -14979,8 +15357,24 @@ tags_ :: forall b a r. Lens { tags :: a | r } { tags :: b | r } a b
 tags_ f o = o { tags = _ } <$> f o.tags
 
 
+team_ :: forall b a r. Lens { team :: a | r } { team :: b | r } a b
+team_ f o = o { team = _ } <$> f o.team
+
+
+teamPackResponses_ :: forall b a r. Lens { teamPackResponses :: a | r } { teamPackResponses :: b | r } a b
+teamPackResponses_ f o = o { teamPackResponses = _ } <$> f o.teamPackResponses
+
+
 teamResponses_ :: forall b a r. Lens { teamResponses :: a | r } { teamResponses :: b | r } a b
 teamResponses_ f o = o { teamResponses = _ } <$> f o.teamResponses
+
+
+teamStat_ :: forall b a r. Lens { teamStat :: a | r } { teamStat :: b | r } a b
+teamStat_ f o = o { teamStat = _ } <$> f o.teamStat
+
+
+teamStatResponses_ :: forall b a r. Lens { teamStatResponses :: a | r } { teamStatResponses :: b | r } a b
+teamStatResponses_ f o = o { teamStatResponses = _ } <$> f o.teamStatResponses
 
 
 teams_ :: forall b a r. Lens { teams :: a | r } { teams :: b | r } a b
