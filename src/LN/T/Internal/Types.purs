@@ -1220,6 +1220,299 @@ instance emptyResponsesIsForeign :: IsForeign EmptyResponses where
 instance emptyResponsesShow :: Show EmptyResponses where
     show (EmptyResponses o) = show "emptyResponses: " ++ show o.emptyResponses
 
+data Entity
+  = Ent_Organization 
+  | Ent_Team 
+  | Ent_User 
+  | Ent_UserSanitized 
+  | Ent_Forum 
+  | Ent_Board 
+  | Ent_Thread 
+  | Ent_ThreadPost 
+  | Ent_Blog 
+  | Ent_BlogPost 
+  | Ent_BlogComment 
+  | Ent_Resource 
+  | Ent_Leuron 
+  | Ent_Comment 
+  | Ent_Api 
+  | Ent_Like 
+  | Ent_Star 
+
+
+
+instance entityEncodeJson :: EncodeJson Entity where
+  encodeJson (Ent_Organization ) =
+       "tag" := "Ent_Organization"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Team ) =
+       "tag" := "Ent_Team"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_User ) =
+       "tag" := "Ent_User"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_UserSanitized ) =
+       "tag" := "Ent_UserSanitized"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Forum ) =
+       "tag" := "Ent_Forum"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Board ) =
+       "tag" := "Ent_Board"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Thread ) =
+       "tag" := "Ent_Thread"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_ThreadPost ) =
+       "tag" := "Ent_ThreadPost"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Blog ) =
+       "tag" := "Ent_Blog"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_BlogPost ) =
+       "tag" := "Ent_BlogPost"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_BlogComment ) =
+       "tag" := "Ent_BlogComment"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Resource ) =
+       "tag" := "Ent_Resource"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Leuron ) =
+       "tag" := "Ent_Leuron"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Comment ) =
+       "tag" := "Ent_Comment"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Api ) =
+       "tag" := "Ent_Api"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Like ) =
+       "tag" := "Ent_Like"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Star ) =
+       "tag" := "Ent_Star"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance entityDecodeJson :: DecodeJson Entity where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "Ent_Organization" -> do
+          return Ent_Organization
+
+        "Ent_Team" -> do
+          return Ent_Team
+
+        "Ent_User" -> do
+          return Ent_User
+
+        "Ent_UserSanitized" -> do
+          return Ent_UserSanitized
+
+        "Ent_Forum" -> do
+          return Ent_Forum
+
+        "Ent_Board" -> do
+          return Ent_Board
+
+        "Ent_Thread" -> do
+          return Ent_Thread
+
+        "Ent_ThreadPost" -> do
+          return Ent_ThreadPost
+
+        "Ent_Blog" -> do
+          return Ent_Blog
+
+        "Ent_BlogPost" -> do
+          return Ent_BlogPost
+
+        "Ent_BlogComment" -> do
+          return Ent_BlogComment
+
+        "Ent_Resource" -> do
+          return Ent_Resource
+
+        "Ent_Leuron" -> do
+          return Ent_Leuron
+
+        "Ent_Comment" -> do
+          return Ent_Comment
+
+        "Ent_Api" -> do
+          return Ent_Api
+
+        "Ent_Like" -> do
+          return Ent_Like
+
+        "Ent_Star" -> do
+          return Ent_Star
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance entityRequestable :: Requestable Entity where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance entityRespondable :: Respondable Entity where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Ent_Organization" -> do
+          return Ent_Organization
+
+        "Ent_Team" -> do
+          return Ent_Team
+
+        "Ent_User" -> do
+          return Ent_User
+
+        "Ent_UserSanitized" -> do
+          return Ent_UserSanitized
+
+        "Ent_Forum" -> do
+          return Ent_Forum
+
+        "Ent_Board" -> do
+          return Ent_Board
+
+        "Ent_Thread" -> do
+          return Ent_Thread
+
+        "Ent_ThreadPost" -> do
+          return Ent_ThreadPost
+
+        "Ent_Blog" -> do
+          return Ent_Blog
+
+        "Ent_BlogPost" -> do
+          return Ent_BlogPost
+
+        "Ent_BlogComment" -> do
+          return Ent_BlogComment
+
+        "Ent_Resource" -> do
+          return Ent_Resource
+
+        "Ent_Leuron" -> do
+          return Ent_Leuron
+
+        "Ent_Comment" -> do
+          return Ent_Comment
+
+        "Ent_Api" -> do
+          return Ent_Api
+
+        "Ent_Like" -> do
+          return Ent_Like
+
+        "Ent_Star" -> do
+          return Ent_Star
+
+
+
+instance entityIsForeign :: IsForeign Entity where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Ent_Organization" -> do
+          return Ent_Organization
+
+        "Ent_Team" -> do
+          return Ent_Team
+
+        "Ent_User" -> do
+          return Ent_User
+
+        "Ent_UserSanitized" -> do
+          return Ent_UserSanitized
+
+        "Ent_Forum" -> do
+          return Ent_Forum
+
+        "Ent_Board" -> do
+          return Ent_Board
+
+        "Ent_Thread" -> do
+          return Ent_Thread
+
+        "Ent_ThreadPost" -> do
+          return Ent_ThreadPost
+
+        "Ent_Blog" -> do
+          return Ent_Blog
+
+        "Ent_BlogPost" -> do
+          return Ent_BlogPost
+
+        "Ent_BlogComment" -> do
+          return Ent_BlogComment
+
+        "Ent_Resource" -> do
+          return Ent_Resource
+
+        "Ent_Leuron" -> do
+          return Ent_Leuron
+
+        "Ent_Comment" -> do
+          return Ent_Comment
+
+        "Ent_Api" -> do
+          return Ent_Api
+
+        "Ent_Like" -> do
+          return Ent_Like
+
+        "Ent_Star" -> do
+          return Ent_Star
+
+
+
+instance entityShow :: Show Entity where
+  show (Ent_Organization) = "Ent_Organization"
+  show (Ent_Team) = "Ent_Team"
+  show (Ent_User) = "Ent_User"
+  show (Ent_UserSanitized) = "Ent_UserSanitized"
+  show (Ent_Forum) = "Ent_Forum"
+  show (Ent_Board) = "Ent_Board"
+  show (Ent_Thread) = "Ent_Thread"
+  show (Ent_ThreadPost) = "Ent_ThreadPost"
+  show (Ent_Blog) = "Ent_Blog"
+  show (Ent_BlogPost) = "Ent_BlogPost"
+  show (Ent_BlogComment) = "Ent_BlogComment"
+  show (Ent_Resource) = "Ent_Resource"
+  show (Ent_Leuron) = "Ent_Leuron"
+  show (Ent_Comment) = "Ent_Comment"
+  show (Ent_Api) = "Ent_Api"
+  show (Ent_Like) = "Ent_Like"
+  show (Ent_Star) = "Ent_Star"
+
+
 newtype ForumRequest = ForumRequest {
   name :: String,
   description :: (Maybe String)
@@ -2787,6 +3080,458 @@ instance leuronStarStatResponsesIsForeign :: IsForeign LeuronStarStatResponses w
 instance leuronStarStatResponsesShow :: Show LeuronStarStatResponses where
     show (LeuronStarStatResponses o) = show "leuronStarStatResponses: " ++ show o.leuronStarStatResponses
 
+data LikeOpt
+  = Like 
+  | Neutral 
+  | Dislike 
+
+
+
+instance likeOptEncodeJson :: EncodeJson LikeOpt where
+  encodeJson (Like ) =
+       "tag" := "Like"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Neutral ) =
+       "tag" := "Neutral"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Dislike ) =
+       "tag" := "Dislike"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance likeOptDecodeJson :: DecodeJson LikeOpt where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "Like" -> do
+          return Like
+
+        "Neutral" -> do
+          return Neutral
+
+        "Dislike" -> do
+          return Dislike
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance likeOptRequestable :: Requestable LikeOpt where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance likeOptRespondable :: Respondable LikeOpt where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Like" -> do
+          return Like
+
+        "Neutral" -> do
+          return Neutral
+
+        "Dislike" -> do
+          return Dislike
+
+
+
+instance likeOptIsForeign :: IsForeign LikeOpt where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Like" -> do
+          return Like
+
+        "Neutral" -> do
+          return Neutral
+
+        "Dislike" -> do
+          return Dislike
+
+
+
+instance likeOptShow :: Show LikeOpt where
+  show (Like) = "Like"
+  show (Neutral) = "Neutral"
+  show (Dislike) = "Dislike"
+
+
+newtype LikeRequest = LikeRequest {
+  opt :: LikeOpt,
+  reason :: (Maybe String)
+}
+
+
+_LikeRequest :: LensP LikeRequest {
+  opt :: LikeOpt,
+  reason :: (Maybe String)
+}
+_LikeRequest f (LikeRequest o) = LikeRequest <$> f o
+
+
+mkLikeRequest :: LikeOpt -> (Maybe String) -> LikeRequest
+mkLikeRequest opt reason =
+  LikeRequest{opt, reason}
+
+
+unwrapLikeRequest (LikeRequest r) = r
+
+instance likeRequestEncodeJson :: EncodeJson LikeRequest where
+  encodeJson (LikeRequest o) =
+       "tag" := "LikeRequest"
+    ~> "opt" := o.opt
+    ~> "reason" := o.reason
+    ~> jsonEmptyObject
+
+
+instance likeRequestDecodeJson :: DecodeJson LikeRequest where
+  decodeJson o = do
+    obj <- decodeJson o
+    opt <- obj .? "opt"
+    reason <- obj .? "reason"
+    pure $ LikeRequest {
+      opt,
+      reason
+    }
+
+
+instance likeRequestRequestable :: Requestable LikeRequest where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance likeRequestRespondable :: Respondable LikeRequest where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLikeRequest
+      <$> readProp "opt" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+
+
+instance likeRequestIsForeign :: IsForeign LikeRequest where
+  read json =
+      mkLikeRequest
+      <$> readProp "opt" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+
+
+instance likeRequestShow :: Show LikeRequest where
+    show (LikeRequest o) = show "opt: " ++ show o.opt ++ ", " ++ show "reason: " ++ show o.reason
+
+newtype LikeResponse = LikeResponse {
+  id :: Int,
+  entity :: Entity,
+  userId :: Int,
+  opt :: LikeOpt,
+  score :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+
+
+_LikeResponse :: LensP LikeResponse {
+  id :: Int,
+  entity :: Entity,
+  userId :: Int,
+  opt :: LikeOpt,
+  score :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+_LikeResponse f (LikeResponse o) = LikeResponse <$> f o
+
+
+mkLikeResponse :: Int -> Entity -> Int -> LikeOpt -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> LikeResponse
+mkLikeResponse id entity userId opt score reason createdAt modifiedAt =
+  LikeResponse{id, entity, userId, opt, score, reason, createdAt, modifiedAt}
+
+
+unwrapLikeResponse (LikeResponse r) = r
+
+instance likeResponseEncodeJson :: EncodeJson LikeResponse where
+  encodeJson (LikeResponse o) =
+       "tag" := "LikeResponse"
+    ~> "id" := o.id
+    ~> "entity" := o.entity
+    ~> "user_id" := o.userId
+    ~> "opt" := o.opt
+    ~> "score" := o.score
+    ~> "reason" := o.reason
+    ~> "created_at" := o.createdAt
+    ~> "modified_at" := o.modifiedAt
+    ~> jsonEmptyObject
+
+
+instance likeResponseDecodeJson :: DecodeJson LikeResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    entity <- obj .? "entity"
+    userId <- obj .? "user_id"
+    opt <- obj .? "opt"
+    score <- obj .? "score"
+    reason <- obj .? "reason"
+    createdAt <- obj .? "created_at"
+    modifiedAt <- obj .? "modified_at"
+    pure $ LikeResponse {
+      id,
+      entity,
+      userId,
+      opt,
+      score,
+      reason,
+      createdAt,
+      modifiedAt
+    }
+
+
+instance likeResponseRequestable :: Requestable LikeResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance likeResponseRespondable :: Respondable LikeResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLikeResponse
+      <$> readProp "id" json
+      <*> readProp "entity" json
+      <*> readProp "user_id" json
+      <*> readProp "opt" json
+      <*> readProp "score" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance likeResponseIsForeign :: IsForeign LikeResponse where
+  read json =
+      mkLikeResponse
+      <$> readProp "id" json
+      <*> readProp "entity" json
+      <*> readProp "user_id" json
+      <*> readProp "opt" json
+      <*> readProp "score" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance likeResponseShow :: Show LikeResponse where
+    show (LikeResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "opt: " ++ show o.opt ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+
+newtype LikeResponses = LikeResponses {
+  likeResponses :: (Array  LikeResponse)
+}
+
+
+_LikeResponses :: LensP LikeResponses {
+  likeResponses :: (Array  LikeResponse)
+}
+_LikeResponses f (LikeResponses o) = LikeResponses <$> f o
+
+
+mkLikeResponses :: (Array  LikeResponse) -> LikeResponses
+mkLikeResponses likeResponses =
+  LikeResponses{likeResponses}
+
+
+unwrapLikeResponses (LikeResponses r) = r
+
+instance likeResponsesEncodeJson :: EncodeJson LikeResponses where
+  encodeJson (LikeResponses o) =
+       "tag" := "LikeResponses"
+    ~> "like_responses" := o.likeResponses
+    ~> jsonEmptyObject
+
+
+instance likeResponsesDecodeJson :: DecodeJson LikeResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    likeResponses <- obj .? "like_responses"
+    pure $ LikeResponses {
+      likeResponses
+    }
+
+
+instance likeResponsesRequestable :: Requestable LikeResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance likeResponsesRespondable :: Respondable LikeResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLikeResponses
+      <$> readProp "like_responses" json
+
+
+instance likeResponsesIsForeign :: IsForeign LikeResponses where
+  read json =
+      mkLikeResponses
+      <$> readProp "like_responses" json
+
+
+instance likeResponsesShow :: Show LikeResponses where
+    show (LikeResponses o) = show "likeResponses: " ++ show o.likeResponses
+
+newtype LikeStatResponse = LikeStatResponse {
+  id :: Int,
+  entity :: Entity,
+  score :: Int,
+  like :: Int,
+  dislike :: Int
+}
+
+
+_LikeStatResponse :: LensP LikeStatResponse {
+  id :: Int,
+  entity :: Entity,
+  score :: Int,
+  like :: Int,
+  dislike :: Int
+}
+_LikeStatResponse f (LikeStatResponse o) = LikeStatResponse <$> f o
+
+
+mkLikeStatResponse :: Int -> Entity -> Int -> Int -> Int -> LikeStatResponse
+mkLikeStatResponse id entity score like dislike =
+  LikeStatResponse{id, entity, score, like, dislike}
+
+
+unwrapLikeStatResponse (LikeStatResponse r) = r
+
+instance likeStatResponseEncodeJson :: EncodeJson LikeStatResponse where
+  encodeJson (LikeStatResponse o) =
+       "tag" := "LikeStatResponse"
+    ~> "id" := o.id
+    ~> "entity" := o.entity
+    ~> "score" := o.score
+    ~> "like" := o.like
+    ~> "dislike" := o.dislike
+    ~> jsonEmptyObject
+
+
+instance likeStatResponseDecodeJson :: DecodeJson LikeStatResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    entity <- obj .? "entity"
+    score <- obj .? "score"
+    like <- obj .? "like"
+    dislike <- obj .? "dislike"
+    pure $ LikeStatResponse {
+      id,
+      entity,
+      score,
+      like,
+      dislike
+    }
+
+
+instance likeStatResponseRequestable :: Requestable LikeStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance likeStatResponseRespondable :: Respondable LikeStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLikeStatResponse
+      <$> readProp "id" json
+      <*> readProp "entity" json
+      <*> readProp "score" json
+      <*> readProp "like" json
+      <*> readProp "dislike" json
+
+
+instance likeStatResponseIsForeign :: IsForeign LikeStatResponse where
+  read json =
+      mkLikeStatResponse
+      <$> readProp "id" json
+      <*> readProp "entity" json
+      <*> readProp "score" json
+      <*> readProp "like" json
+      <*> readProp "dislike" json
+
+
+instance likeStatResponseShow :: Show LikeStatResponse where
+    show (LikeStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "dislike: " ++ show o.dislike
+
+newtype LikeStatResponses = LikeStatResponses {
+  likeStatResponses :: (Array  LikeStatResponse)
+}
+
+
+_LikeStatResponses :: LensP LikeStatResponses {
+  likeStatResponses :: (Array  LikeStatResponse)
+}
+_LikeStatResponses f (LikeStatResponses o) = LikeStatResponses <$> f o
+
+
+mkLikeStatResponses :: (Array  LikeStatResponse) -> LikeStatResponses
+mkLikeStatResponses likeStatResponses =
+  LikeStatResponses{likeStatResponses}
+
+
+unwrapLikeStatResponses (LikeStatResponses r) = r
+
+instance likeStatResponsesEncodeJson :: EncodeJson LikeStatResponses where
+  encodeJson (LikeStatResponses o) =
+       "tag" := "LikeStatResponses"
+    ~> "like_stat_responses" := o.likeStatResponses
+    ~> jsonEmptyObject
+
+
+instance likeStatResponsesDecodeJson :: DecodeJson LikeStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    likeStatResponses <- obj .? "like_stat_responses"
+    pure $ LikeStatResponses {
+      likeStatResponses
+    }
+
+
+instance likeStatResponsesRequestable :: Requestable LikeStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance likeStatResponsesRespondable :: Respondable LikeStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLikeStatResponses
+      <$> readProp "like_stat_responses" json
+
+
+instance likeStatResponsesIsForeign :: IsForeign LikeStatResponses where
+  read json =
+      mkLikeStatResponses
+      <$> readProp "like_stat_responses" json
+
+
+instance likeStatResponsesShow :: Show LikeStatResponses where
+    show (LikeStatResponses o) = show "likeStatResponses: " ++ show o.likeStatResponses
+
 data LeuronData
   = LnFact Fact
   | LnFactList FactList
@@ -4028,89 +4773,6 @@ instance tableIsForeign :: IsForeign Table where
 
 instance tableShow :: Show Table where
     show (Table o) = show "title: " ++ show o.title ++ ", " ++ show "columns: " ++ show o.columns ++ ", " ++ show "rows: " ++ show o.rows
-
-data LikeOpt
-  = Like 
-  | Neutral 
-  | Dislike 
-
-
-
-instance likeOptEncodeJson :: EncodeJson LikeOpt where
-  encodeJson (Like ) =
-       "tag" := "Like"
-    ~> "contents" := ([] :: Array String)
-    ~> jsonEmptyObject
-  encodeJson (Neutral ) =
-       "tag" := "Neutral"
-    ~> "contents" := ([] :: Array String)
-    ~> jsonEmptyObject
-  encodeJson (Dislike ) =
-       "tag" := "Dislike"
-    ~> "contents" := ([] :: Array String)
-    ~> jsonEmptyObject
-
-
-instance likeOptDecodeJson :: DecodeJson LikeOpt where
-  decodeJson json = do
-    obj <- decodeJson json
-    tag <- obj .? "tag"
-    case tag of
-        "Like" -> do
-          return Like
-
-        "Neutral" -> do
-          return Neutral
-
-        "Dislike" -> do
-          return Dislike
-
-  decodeJson x = fail $ "Could not parse object: " ++ show x
-
-
-instance likeOptRequestable :: Requestable LikeOpt where
-  toRequest s =
-    let str = printJson (encodeJson s) :: String
-    in toRequest str
-
-
-instance likeOptRespondable :: Respondable LikeOpt where
-  responseType =
-    Tuple Nothing JSONResponse
-  fromResponse json = do
-    tag <- readProp "tag" json
-    case tag of
-        "Like" -> do
-          return Like
-
-        "Neutral" -> do
-          return Neutral
-
-        "Dislike" -> do
-          return Dislike
-
-
-
-instance likeOptIsForeign :: IsForeign LikeOpt where
-  read json = do
-    tag <- readProp "tag" json
-    case tag of
-        "Like" -> do
-          return Like
-
-        "Neutral" -> do
-          return Neutral
-
-        "Dislike" -> do
-          return Dislike
-
-
-
-instance likeOptShow :: Show LikeOpt where
-  show (Like) = "Like"
-  show (Neutral) = "Neutral"
-  show (Dislike) = "Dislike"
-
 
 newtype OrganizationRequest = OrganizationRequest {
   name :: String,
@@ -9567,6 +10229,340 @@ instance substitutionsShow :: Show Substitutions where
   show (SubsBoth x0 x1) = "SubsBoth: " ++ show x0 ++ " " ++ show x1
 
 
+newtype StarRequest = StarRequest {
+  reason :: (Maybe String)
+}
+
+
+_StarRequest :: LensP StarRequest {
+  reason :: (Maybe String)
+}
+_StarRequest f (StarRequest o) = StarRequest <$> f o
+
+
+mkStarRequest :: (Maybe String) -> StarRequest
+mkStarRequest reason =
+  StarRequest{reason}
+
+
+unwrapStarRequest (StarRequest r) = r
+
+instance starRequestEncodeJson :: EncodeJson StarRequest where
+  encodeJson (StarRequest o) =
+       "tag" := "StarRequest"
+    ~> "reason" := o.reason
+    ~> jsonEmptyObject
+
+
+instance starRequestDecodeJson :: DecodeJson StarRequest where
+  decodeJson o = do
+    obj <- decodeJson o
+    reason <- obj .? "reason"
+    pure $ StarRequest {
+      reason
+    }
+
+
+instance starRequestRequestable :: Requestable StarRequest where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance starRequestRespondable :: Respondable StarRequest where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkStarRequest
+      <$> (runNullOrUndefined <$> readProp "reason" json)
+
+
+instance starRequestIsForeign :: IsForeign StarRequest where
+  read json =
+      mkStarRequest
+      <$> (runNullOrUndefined <$> readProp "reason" json)
+
+
+instance starRequestShow :: Show StarRequest where
+    show (StarRequest o) = show "reason: " ++ show o.reason
+
+newtype StarResponse = StarResponse {
+  id :: Int,
+  entity :: Entity,
+  userId :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+
+
+_StarResponse :: LensP StarResponse {
+  id :: Int,
+  entity :: Entity,
+  userId :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+_StarResponse f (StarResponse o) = StarResponse <$> f o
+
+
+mkStarResponse :: Int -> Entity -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> StarResponse
+mkStarResponse id entity userId reason createdAt modifiedAt =
+  StarResponse{id, entity, userId, reason, createdAt, modifiedAt}
+
+
+unwrapStarResponse (StarResponse r) = r
+
+instance starResponseEncodeJson :: EncodeJson StarResponse where
+  encodeJson (StarResponse o) =
+       "tag" := "StarResponse"
+    ~> "id" := o.id
+    ~> "entity" := o.entity
+    ~> "user_id" := o.userId
+    ~> "reason" := o.reason
+    ~> "created_at" := o.createdAt
+    ~> "modified_at" := o.modifiedAt
+    ~> jsonEmptyObject
+
+
+instance starResponseDecodeJson :: DecodeJson StarResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    entity <- obj .? "entity"
+    userId <- obj .? "user_id"
+    reason <- obj .? "reason"
+    createdAt <- obj .? "created_at"
+    modifiedAt <- obj .? "modified_at"
+    pure $ StarResponse {
+      id,
+      entity,
+      userId,
+      reason,
+      createdAt,
+      modifiedAt
+    }
+
+
+instance starResponseRequestable :: Requestable StarResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance starResponseRespondable :: Respondable StarResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkStarResponse
+      <$> readProp "id" json
+      <*> readProp "entity" json
+      <*> readProp "user_id" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance starResponseIsForeign :: IsForeign StarResponse where
+  read json =
+      mkStarResponse
+      <$> readProp "id" json
+      <*> readProp "entity" json
+      <*> readProp "user_id" json
+      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance starResponseShow :: Show StarResponse where
+    show (StarResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+
+newtype StarResponses = StarResponses {
+  starResponses :: (Array  StarResponse)
+}
+
+
+_StarResponses :: LensP StarResponses {
+  starResponses :: (Array  StarResponse)
+}
+_StarResponses f (StarResponses o) = StarResponses <$> f o
+
+
+mkStarResponses :: (Array  StarResponse) -> StarResponses
+mkStarResponses starResponses =
+  StarResponses{starResponses}
+
+
+unwrapStarResponses (StarResponses r) = r
+
+instance starResponsesEncodeJson :: EncodeJson StarResponses where
+  encodeJson (StarResponses o) =
+       "tag" := "StarResponses"
+    ~> "star_responses" := o.starResponses
+    ~> jsonEmptyObject
+
+
+instance starResponsesDecodeJson :: DecodeJson StarResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    starResponses <- obj .? "star_responses"
+    pure $ StarResponses {
+      starResponses
+    }
+
+
+instance starResponsesRequestable :: Requestable StarResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance starResponsesRespondable :: Respondable StarResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkStarResponses
+      <$> readProp "star_responses" json
+
+
+instance starResponsesIsForeign :: IsForeign StarResponses where
+  read json =
+      mkStarResponses
+      <$> readProp "star_responses" json
+
+
+instance starResponsesShow :: Show StarResponses where
+    show (StarResponses o) = show "starResponses: " ++ show o.starResponses
+
+newtype StarStatResponse = StarStatResponse {
+  id :: Int,
+  entity :: Entity,
+  stars :: Int
+}
+
+
+_StarStatResponse :: LensP StarStatResponse {
+  id :: Int,
+  entity :: Entity,
+  stars :: Int
+}
+_StarStatResponse f (StarStatResponse o) = StarStatResponse <$> f o
+
+
+mkStarStatResponse :: Int -> Entity -> Int -> StarStatResponse
+mkStarStatResponse id entity stars =
+  StarStatResponse{id, entity, stars}
+
+
+unwrapStarStatResponse (StarStatResponse r) = r
+
+instance starStatResponseEncodeJson :: EncodeJson StarStatResponse where
+  encodeJson (StarStatResponse o) =
+       "tag" := "StarStatResponse"
+    ~> "id" := o.id
+    ~> "entity" := o.entity
+    ~> "stars" := o.stars
+    ~> jsonEmptyObject
+
+
+instance starStatResponseDecodeJson :: DecodeJson StarStatResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    entity <- obj .? "entity"
+    stars <- obj .? "stars"
+    pure $ StarStatResponse {
+      id,
+      entity,
+      stars
+    }
+
+
+instance starStatResponseRequestable :: Requestable StarStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance starStatResponseRespondable :: Respondable StarStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkStarStatResponse
+      <$> readProp "id" json
+      <*> readProp "entity" json
+      <*> readProp "stars" json
+
+
+instance starStatResponseIsForeign :: IsForeign StarStatResponse where
+  read json =
+      mkStarStatResponse
+      <$> readProp "id" json
+      <*> readProp "entity" json
+      <*> readProp "stars" json
+
+
+instance starStatResponseShow :: Show StarStatResponse where
+    show (StarStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "stars: " ++ show o.stars
+
+newtype StarStatResponses = StarStatResponses {
+  starStatResponses :: (Array  StarStatResponse)
+}
+
+
+_StarStatResponses :: LensP StarStatResponses {
+  starStatResponses :: (Array  StarStatResponse)
+}
+_StarStatResponses f (StarStatResponses o) = StarStatResponses <$> f o
+
+
+mkStarStatResponses :: (Array  StarStatResponse) -> StarStatResponses
+mkStarStatResponses starStatResponses =
+  StarStatResponses{starStatResponses}
+
+
+unwrapStarStatResponses (StarStatResponses r) = r
+
+instance starStatResponsesEncodeJson :: EncodeJson StarStatResponses where
+  encodeJson (StarStatResponses o) =
+       "tag" := "StarStatResponses"
+    ~> "star_stat_responses" := o.starStatResponses
+    ~> jsonEmptyObject
+
+
+instance starStatResponsesDecodeJson :: DecodeJson StarStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    starStatResponses <- obj .? "star_stat_responses"
+    pure $ StarStatResponses {
+      starStatResponses
+    }
+
+
+instance starStatResponsesRequestable :: Requestable StarStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance starStatResponsesRespondable :: Respondable StarStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkStarStatResponses
+      <$> readProp "star_stat_responses" json
+
+
+instance starStatResponsesIsForeign :: IsForeign StarStatResponses where
+  read json =
+      mkStarStatResponses
+      <$> readProp "star_stat_responses" json
+
+
+instance starStatResponsesShow :: Show StarStatResponses where
+    show (StarStatResponses o) = show "starStatResponses: " ++ show o.starStatResponses
+
 newtype TeamRequest = TeamRequest {
   name :: String,
   description :: (Maybe String)
@@ -13551,6 +14547,10 @@ emptyResponses_ :: forall b a r. Lens { emptyResponses :: a | r } { emptyRespons
 emptyResponses_ f o = o { emptyResponses = _ } <$> f o.emptyResponses
 
 
+entity_ :: forall b a r. Lens { entity :: a | r } { entity :: b | r } a b
+entity_ f o = o { entity = _ } <$> f o.entity
+
+
 entityId_ :: forall b a r. Lens { entityId :: a | r } { entityId :: b | r } a b
 entityId_ f o = o { entityId = _ } <$> f o.entityId
 
@@ -13689,6 +14689,14 @@ leurons_ f o = o { leurons = _ } <$> f o.leurons
 
 like_ :: forall b a r. Lens { like :: a | r } { like :: b | r } a b
 like_ f o = o { like = _ } <$> f o.like
+
+
+likeResponses_ :: forall b a r. Lens { likeResponses :: a | r } { likeResponses :: b | r } a b
+likeResponses_ f o = o { likeResponses = _ } <$> f o.likeResponses
+
+
+likeStatResponses_ :: forall b a r. Lens { likeStatResponses :: a | r } { likeStatResponses :: b | r } a b
+likeStatResponses_ f o = o { likeStatResponses = _ } <$> f o.likeStatResponses
 
 
 likes_ :: forall b a r. Lens { likes :: a | r } { likes :: b | r } a b
@@ -13929,6 +14937,14 @@ splits_ f o = o { splits = _ } <$> f o.splits
 
 star_ :: forall b a r. Lens { star :: a | r } { star :: b | r } a b
 star_ f o = o { star = _ } <$> f o.star
+
+
+starResponses_ :: forall b a r. Lens { starResponses :: a | r } { starResponses :: b | r } a b
+starResponses_ f o = o { starResponses = _ } <$> f o.starResponses
+
+
+starStatResponses_ :: forall b a r. Lens { starStatResponses :: a | r } { starStatResponses :: b | r } a b
+starStatResponses_ f o = o { starStatResponses = _ } <$> f o.starStatResponses
 
 
 stars_ :: forall b a r. Lens { stars :: a | r } { stars :: b | r } a b
