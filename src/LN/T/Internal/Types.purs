@@ -4421,7 +4421,7 @@ instance templateIsForeign :: IsForeign Template where
 instance templateShow :: Show Template where
     show (Template o) = show "template: " ++ show o.template ++ ", " ++ show "values: " ++ show o.values
 
-type TemplateValue = ((Tuple  String) (Array  String))
+type TemplateValue  = ((Tuple  String) (Array  String))
 
 
 newtype ImageAssociation = ImageAssociation {
@@ -4566,13 +4566,13 @@ instance scriptIsForeign :: IsForeign Script where
 instance scriptShow :: Show Script where
     show (Script o) = show "title: " ++ show o.title ++ ", " ++ show "desc: " ++ show o.desc ++ ", " ++ show "url: " ++ show o.url
 
-type LDContent = String
+type LDContent  = String
 
 
-type LDHint = (Maybe String)
+type LDHint  = (Maybe String)
 
 
-type LinearDemoNode = ((Tuple  LDContent) LDHint)
+type LinearDemoNode  = ((Tuple  LDContent) LDHint)
 
 
 newtype LinearDemo = LinearDemo {
