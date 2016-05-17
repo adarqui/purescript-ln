@@ -1000,6 +1000,12 @@ getTeamPacks params = handleError <$> getAt params ["team_packs"]
 getTeamPacks' :: ApiEff (Either ApiError TeamPackResponses)
 getTeamPacks'  = handleError <$> getAt ([] :: Array Boolean) ["team_packs"]
 
+getTeamPacks_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError TeamPackResponses)
+getTeamPacks_ByOrganizationId params _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["team_packs"]
+
+getTeamPacks_ByOrganizationId' :: Int -> ApiEff (Either ApiError TeamPackResponses)
+getTeamPacks_ByOrganizationId' _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["team_packs"]
+
 getTeamPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError TeamPackResponse)
 getTeamPack params team_id = handleError <$> getAt params ["team_pack", show team_id]
 
