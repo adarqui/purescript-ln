@@ -1096,6 +1096,18 @@ getForumPacks_ByForumsIds params _ByForumsIds = handleError <$> getAt (map qp pa
 getForumPacks_ByForumsIds' :: (Array  Int) -> ApiEff (Either ApiError ForumPackResponses)
 getForumPacks_ByForumsIds' _ByForumsIds = handleError <$> getAt [ByForumsIds _ByForumsIds] ["forum_packs"]
 
+getForumPacks_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ForumPackResponses)
+getForumPacks_ByOrganizationId params _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["forum_packs"]
+
+getForumPacks_ByOrganizationId' :: Int -> ApiEff (Either ApiError ForumPackResponses)
+getForumPacks_ByOrganizationId' _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["forum_packs"]
+
+getForumPacks_ByOrganizationName :: forall qp. QueryParam qp => Array qp -> String -> ApiEff (Either ApiError ForumPackResponses)
+getForumPacks_ByOrganizationName params _ByOrganizationName = handleError <$> getAt (map qp params ++ map qp [ByOrganizationName _ByOrganizationName]) ["forum_packs"]
+
+getForumPacks_ByOrganizationName' :: String -> ApiEff (Either ApiError ForumPackResponses)
+getForumPacks_ByOrganizationName' _ByOrganizationName = handleError <$> getAt [ByOrganizationName _ByOrganizationName] ["forum_packs"]
+
 getForumPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ForumPackResponse)
 getForumPack params forum_id = handleError <$> getAt params ["forum_pack", show forum_id]
 
@@ -1119,6 +1131,12 @@ getBoardPacks_ByBoardsIds params _ByBoardsIds = handleError <$> getAt (map qp pa
 
 getBoardPacks_ByBoardsIds' :: (Array  Int) -> ApiEff (Either ApiError BoardPackResponses)
 getBoardPacks_ByBoardsIds' _ByBoardsIds = handleError <$> getAt [ByBoardsIds _ByBoardsIds] ["board_packs"]
+
+getBoardPacks_ByBoardId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError BoardPackResponses)
+getBoardPacks_ByBoardId params _ByBoardId = handleError <$> getAt (map qp params ++ map qp [ByBoardId _ByBoardId]) ["board_packs"]
+
+getBoardPacks_ByBoardId' :: Int -> ApiEff (Either ApiError BoardPackResponses)
+getBoardPacks_ByBoardId' _ByBoardId = handleError <$> getAt [ByBoardId _ByBoardId] ["board_packs"]
 
 getBoardPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError BoardPackResponse)
 getBoardPack params board_id = handleError <$> getAt params ["board_pack", show board_id]

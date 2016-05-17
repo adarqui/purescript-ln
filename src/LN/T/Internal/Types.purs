@@ -1220,7 +1220,7 @@ instance emptyResponsesIsForeign :: IsForeign EmptyResponses where
 instance emptyResponsesShow :: Show EmptyResponses where
     show (EmptyResponses o) = show "emptyResponses: " ++ show o.emptyResponses
 
-data Entity
+data Ent
   = Ent_Organization 
   | Ent_Team 
   | Ent_User 
@@ -1241,7 +1241,7 @@ data Entity
 
 
 
-instance entityEncodeJson :: EncodeJson Entity where
+instance entEncodeJson :: EncodeJson Ent where
   encodeJson (Ent_Organization ) =
        "tag" := "Ent_Organization"
     ~> "contents" := ([] :: Array String)
@@ -1312,7 +1312,7 @@ instance entityEncodeJson :: EncodeJson Entity where
     ~> jsonEmptyObject
 
 
-instance entityDecodeJson :: DecodeJson Entity where
+instance entDecodeJson :: DecodeJson Ent where
   decodeJson json = do
     obj <- decodeJson json
     tag <- obj .? "tag"
@@ -1371,13 +1371,13 @@ instance entityDecodeJson :: DecodeJson Entity where
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
 
-instance entityRequestable :: Requestable Entity where
+instance entRequestable :: Requestable Ent where
   toRequest s =
     let str = printJson (encodeJson s) :: String
     in toRequest str
 
 
-instance entityRespondable :: Respondable Entity where
+instance entRespondable :: Respondable Ent where
   responseType =
     Tuple Nothing JSONResponse
   fromResponse json = do
@@ -1436,7 +1436,7 @@ instance entityRespondable :: Respondable Entity where
 
 
 
-instance entityIsForeign :: IsForeign Entity where
+instance entIsForeign :: IsForeign Ent where
   read json = do
     tag <- readProp "tag" json
     case tag of
@@ -1493,7 +1493,7 @@ instance entityIsForeign :: IsForeign Entity where
 
 
 
-instance entityShow :: Show Entity where
+instance entShow :: Show Ent where
   show (Ent_Organization) = "Ent_Organization"
   show (Ent_Team) = "Ent_Team"
   show (Ent_User) = "Ent_User"
@@ -2540,7 +2540,7 @@ instance likeRequestShow :: Show LikeRequest where
 
 newtype LikeResponse = LikeResponse {
   id :: Int,
-  entity :: Entity,
+  entity :: Ent,
   userId :: Int,
   opt :: LikeOpt,
   score :: Int,
@@ -2552,7 +2552,7 @@ newtype LikeResponse = LikeResponse {
 
 _LikeResponse :: LensP LikeResponse {
   id :: Int,
-  entity :: Entity,
+  entity :: Ent,
   userId :: Int,
   opt :: LikeOpt,
   score :: Int,
@@ -2563,7 +2563,7 @@ _LikeResponse :: LensP LikeResponse {
 _LikeResponse f (LikeResponse o) = LikeResponse <$> f o
 
 
-mkLikeResponse :: Int -> Entity -> Int -> LikeOpt -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> LikeResponse
+mkLikeResponse :: Int -> Ent -> Int -> LikeOpt -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> LikeResponse
 mkLikeResponse id entity userId opt score reason createdAt modifiedAt =
   LikeResponse{id, entity, userId, opt, score, reason, createdAt, modifiedAt}
 
@@ -2703,7 +2703,7 @@ instance likeResponsesShow :: Show LikeResponses where
 
 newtype LikeStatResponse = LikeStatResponse {
   id :: Int,
-  entity :: Entity,
+  entity :: Ent,
   score :: Int,
   like :: Int,
   dislike :: Int
@@ -2712,7 +2712,7 @@ newtype LikeStatResponse = LikeStatResponse {
 
 _LikeStatResponse :: LensP LikeStatResponse {
   id :: Int,
-  entity :: Entity,
+  entity :: Ent,
   score :: Int,
   like :: Int,
   dislike :: Int
@@ -2720,7 +2720,7 @@ _LikeStatResponse :: LensP LikeStatResponse {
 _LikeStatResponse f (LikeStatResponse o) = LikeStatResponse <$> f o
 
 
-mkLikeStatResponse :: Int -> Entity -> Int -> Int -> Int -> LikeStatResponse
+mkLikeStatResponse :: Int -> Ent -> Int -> Int -> Int -> LikeStatResponse
 mkLikeStatResponse id entity score like dislike =
   LikeStatResponse{id, entity, score, like, dislike}
 
@@ -8910,7 +8910,7 @@ instance starRequestShow :: Show StarRequest where
 
 newtype StarResponse = StarResponse {
   id :: Int,
-  entity :: Entity,
+  entity :: Ent,
   userId :: Int,
   reason :: (Maybe String),
   createdAt :: (Maybe Date),
@@ -8920,7 +8920,7 @@ newtype StarResponse = StarResponse {
 
 _StarResponse :: LensP StarResponse {
   id :: Int,
-  entity :: Entity,
+  entity :: Ent,
   userId :: Int,
   reason :: (Maybe String),
   createdAt :: (Maybe Date),
@@ -8929,7 +8929,7 @@ _StarResponse :: LensP StarResponse {
 _StarResponse f (StarResponse o) = StarResponse <$> f o
 
 
-mkStarResponse :: Int -> Entity -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> StarResponse
+mkStarResponse :: Int -> Ent -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> StarResponse
 mkStarResponse id entity userId reason createdAt modifiedAt =
   StarResponse{id, entity, userId, reason, createdAt, modifiedAt}
 
@@ -9059,20 +9059,20 @@ instance starResponsesShow :: Show StarResponses where
 
 newtype StarStatResponse = StarStatResponse {
   id :: Int,
-  entity :: Entity,
+  entity :: Ent,
   stars :: Int
 }
 
 
 _StarStatResponse :: LensP StarStatResponse {
   id :: Int,
-  entity :: Entity,
+  entity :: Ent,
   stars :: Int
 }
 _StarStatResponse f (StarStatResponse o) = StarStatResponse <$> f o
 
 
-mkStarStatResponse :: Int -> Entity -> Int -> StarStatResponse
+mkStarStatResponse :: Int -> Ent -> Int -> StarStatResponse
 mkStarStatResponse id entity stars =
   StarStatResponse{id, entity, stars}
 
