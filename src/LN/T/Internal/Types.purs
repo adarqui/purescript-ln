@@ -2540,7 +2540,8 @@ instance likeRequestShow :: Show LikeRequest where
 
 newtype LikeResponse = LikeResponse {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   userId :: Int,
   opt :: LikeOpt,
   score :: Int,
@@ -2552,7 +2553,8 @@ newtype LikeResponse = LikeResponse {
 
 _LikeResponse :: LensP LikeResponse {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   userId :: Int,
   opt :: LikeOpt,
   score :: Int,
@@ -2563,9 +2565,9 @@ _LikeResponse :: LensP LikeResponse {
 _LikeResponse f (LikeResponse o) = LikeResponse <$> f o
 
 
-mkLikeResponse :: Int -> Ent -> Int -> LikeOpt -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> LikeResponse
-mkLikeResponse id entity userId opt score reason createdAt modifiedAt =
-  LikeResponse{id, entity, userId, opt, score, reason, createdAt, modifiedAt}
+mkLikeResponse :: Int -> Ent -> Int -> Int -> LikeOpt -> Int -> (Maybe String) -> (Maybe Date) -> (Maybe Date) -> LikeResponse
+mkLikeResponse id ent entId userId opt score reason createdAt modifiedAt =
+  LikeResponse{id, ent, entId, userId, opt, score, reason, createdAt, modifiedAt}
 
 
 unwrapLikeResponse (LikeResponse r) = r
@@ -2574,7 +2576,8 @@ instance likeResponseEncodeJson :: EncodeJson LikeResponse where
   encodeJson (LikeResponse o) =
        "tag" := "LikeResponse"
     ~> "id" := o.id
-    ~> "entity" := o.entity
+    ~> "ent" := o.ent
+    ~> "ent_id" := o.entId
     ~> "user_id" := o.userId
     ~> "opt" := o.opt
     ~> "score" := o.score
@@ -2588,7 +2591,8 @@ instance likeResponseDecodeJson :: DecodeJson LikeResponse where
   decodeJson o = do
     obj <- decodeJson o
     id <- obj .? "id"
-    entity <- obj .? "entity"
+    ent <- obj .? "ent"
+    entId <- obj .? "ent_id"
     userId <- obj .? "user_id"
     opt <- obj .? "opt"
     score <- obj .? "score"
@@ -2597,7 +2601,8 @@ instance likeResponseDecodeJson :: DecodeJson LikeResponse where
     modifiedAt <- obj .? "modified_at"
     pure $ LikeResponse {
       id,
-      entity,
+      ent,
+      entId,
       userId,
       opt,
       score,
@@ -2619,7 +2624,8 @@ instance likeResponseRespondable :: Respondable LikeResponse where
   fromResponse json =
       mkLikeResponse
       <$> readProp "id" json
-      <*> readProp "entity" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "user_id" json
       <*> readProp "opt" json
       <*> readProp "score" json
@@ -2632,7 +2638,8 @@ instance likeResponseIsForeign :: IsForeign LikeResponse where
   read json =
       mkLikeResponse
       <$> readProp "id" json
-      <*> readProp "entity" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "user_id" json
       <*> readProp "opt" json
       <*> readProp "score" json
@@ -2642,7 +2649,7 @@ instance likeResponseIsForeign :: IsForeign LikeResponse where
 
 
 instance likeResponseShow :: Show LikeResponse where
-    show (LikeResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "opt: " ++ show o.opt ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (LikeResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "opt: " ++ show o.opt ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype LikeResponses = LikeResponses {
   likeResponses :: (Array  LikeResponse)
@@ -13054,6 +13061,14 @@ emailMD5_ f o = o { emailMD5 = _ } <$> f o.emailMD5
 
 emptyResponses_ :: forall b a r. Lens { emptyResponses :: a | r } { emptyResponses :: b | r } a b
 emptyResponses_ f o = o { emptyResponses = _ } <$> f o.emptyResponses
+
+
+ent_ :: forall b a r. Lens { ent :: a | r } { ent :: b | r } a b
+ent_ f o = o { ent = _ } <$> f o.ent
+
+
+entId_ :: forall b a r. Lens { entId :: a | r } { entId :: b | r } a b
+entId_ f o = o { entId = _ } <$> f o.entId
 
 
 entity_ :: forall b a r. Lens { entity :: a | r } { entity :: b | r } a b
