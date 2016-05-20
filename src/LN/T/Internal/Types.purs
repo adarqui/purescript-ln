@@ -30,6 +30,12 @@ newtype ApiRequest = ApiRequest {
 }
 
 
+type ApiRequestR = forall eff. {
+  comment :: (Maybe String)
+  | eff
+}
+
+
 _ApiRequest :: LensP ApiRequest {
   comment :: (Maybe String)
 }
@@ -89,6 +95,17 @@ newtype ApiResponse = ApiResponse {
   comment :: (Maybe String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type ApiResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  key :: String,
+  comment :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -179,6 +196,12 @@ newtype ApiResponses = ApiResponses {
 }
 
 
+type ApiResponsesR = forall eff. {
+  apiResponses :: (Array  ApiResponse)
+  | eff
+}
+
+
 _ApiResponses :: LensP ApiResponses {
   apiResponses :: (Array  ApiResponse)
 }
@@ -234,6 +257,13 @@ instance apiResponsesShow :: Show ApiResponses where
 newtype BoardRequest = BoardRequest {
   name :: String,
   description :: (Maybe String)
+}
+
+
+type BoardRequestR = forall eff. {
+  name :: String,
+  description :: (Maybe String)
+  | eff
 }
 
 
@@ -305,6 +335,20 @@ newtype BoardResponse = BoardResponse {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
+}
+
+
+type BoardResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  forumId :: Int,
+  parentId :: (Maybe Int),
+  name :: String,
+  description :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -413,6 +457,12 @@ newtype BoardResponses = BoardResponses {
 }
 
 
+type BoardResponsesR = forall eff. {
+  boardResponses :: (Array  BoardResponse)
+  | eff
+}
+
+
 _BoardResponses :: LensP BoardResponses {
   boardResponses :: (Array  BoardResponse)
 }
@@ -470,6 +520,15 @@ newtype BoardStatResponse = BoardStatResponse {
   threads :: Int,
   threadPosts :: Int,
   views :: Int
+}
+
+
+type BoardStatResponseR = forall eff. {
+  boardId :: Int,
+  threads :: Int,
+  threadPosts :: Int,
+  views :: Int
+  | eff
 }
 
 
@@ -548,6 +607,12 @@ newtype BoardStatResponses = BoardStatResponses {
 }
 
 
+type BoardStatResponsesR = forall eff. {
+  boardStatResponses :: (Array  BoardStatResponse)
+  | eff
+}
+
+
 _BoardStatResponses :: LensP BoardStatResponses {
   boardStatResponses :: (Array  BoardStatResponse)
 }
@@ -609,6 +674,19 @@ newtype BucketRequest = BucketRequest {
   resources :: (Array  Int),
   categories :: (Array  String),
   filters :: (Array  Int)
+}
+
+
+type BucketRequestR = forall eff. {
+  name :: String,
+  description :: (Maybe String),
+  scoreLo :: Int,
+  scoreHi :: Int,
+  leurons :: (Array  Int),
+  resources :: (Array  Int),
+  categories :: (Array  String),
+  filters :: (Array  Int)
+  | eff
 }
 
 
@@ -719,6 +797,23 @@ newtype BucketResponse = BucketResponse {
   filters :: (Array  Int),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type BucketResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  name :: String,
+  description :: (Maybe String),
+  scoreLo :: Int,
+  scoreHi :: Int,
+  leurons :: (Array  Int),
+  resources :: (Array  Int),
+  categories :: (Array  String),
+  filters :: (Array  Int),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -845,6 +940,12 @@ newtype BucketResponses = BucketResponses {
 }
 
 
+type BucketResponsesR = forall eff. {
+  bucketResponses :: (Array  BucketResponse)
+  | eff
+}
+
+
 _BucketResponses :: LensP BucketResponses {
   bucketResponses :: (Array  BucketResponse)
 }
@@ -900,6 +1001,13 @@ instance bucketResponsesShow :: Show BucketResponses where
 newtype CountResponse = CountResponse {
   id :: Int,
   n :: Int
+}
+
+
+type CountResponseR = forall eff. {
+  id :: Int,
+  n :: Int
+  | eff
 }
 
 
@@ -966,6 +1074,12 @@ newtype CountResponses = CountResponses {
 }
 
 
+type CountResponsesR = forall eff. {
+  countResponses :: (Array  CountResponse)
+  | eff
+}
+
+
 _CountResponses :: LensP CountResponses {
   countResponses :: (Array  CountResponse)
 }
@@ -1023,6 +1137,12 @@ type DepList a = (Array  (Array  a))
 
 newtype EmptyRequest = EmptyRequest {
   value :: Boolean
+}
+
+
+type EmptyRequestR = forall eff. {
+  value :: Boolean
+  | eff
 }
 
 
@@ -1084,6 +1204,16 @@ newtype EmptyResponse = EmptyResponse {
   value :: Boolean,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type EmptyResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  value :: Boolean,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -1165,6 +1295,12 @@ instance emptyResponseShow :: Show EmptyResponse where
 
 newtype EmptyResponses = EmptyResponses {
   emptyResponses :: (Array  EmptyResponse)
+}
+
+
+type EmptyResponsesR = forall eff. {
+  emptyResponses :: (Array  EmptyResponse)
+  | eff
 }
 
 
@@ -1519,6 +1655,13 @@ newtype ForumRequest = ForumRequest {
 }
 
 
+type ForumRequestR = forall eff. {
+  name :: String,
+  description :: (Maybe String)
+  | eff
+}
+
+
 _ForumRequest :: LensP ForumRequest {
   name :: String,
   description :: (Maybe String)
@@ -1586,6 +1729,19 @@ newtype ForumResponse = ForumResponse {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
+}
+
+
+type ForumResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  name :: String,
+  description :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -1688,6 +1844,12 @@ newtype ForumResponses = ForumResponses {
 }
 
 
+type ForumResponsesR = forall eff. {
+  forumResponses :: (Array  ForumResponse)
+  | eff
+}
+
+
 _ForumResponses :: LensP ForumResponses {
   forumResponses :: (Array  ForumResponse)
 }
@@ -1746,6 +1908,16 @@ newtype ForumStatResponse = ForumStatResponse {
   threads :: Int,
   threadPosts :: Int,
   views :: Int
+}
+
+
+type ForumStatResponseR = forall eff. {
+  forumId :: Int,
+  boards :: Int,
+  threads :: Int,
+  threadPosts :: Int,
+  views :: Int
+  | eff
 }
 
 
@@ -1830,6 +2002,12 @@ newtype ForumStatResponses = ForumStatResponses {
 }
 
 
+type ForumStatResponsesR = forall eff. {
+  forumStatResponses :: (Array  ForumStatResponse)
+  | eff
+}
+
+
 _ForumStatResponses :: LensP ForumStatResponses {
   forumStatResponses :: (Array  ForumStatResponse)
 }
@@ -1895,6 +2073,23 @@ newtype LeuronRequest = LeuronRequest {
   substitutions :: (Maybe (Array  Substitutions)),
   tags :: (Maybe (Array  String)),
   style :: (Maybe (Array  String))
+}
+
+
+type LeuronRequestR = forall eff. {
+  dataP :: LeuronData,
+  title :: (Maybe String),
+  description :: (Maybe String),
+  section :: (Maybe String),
+  page :: (Maybe String),
+  examples :: (Maybe (Array  String)),
+  strengths :: (Maybe (Array  String)),
+  categories :: (DepList String),
+  splits :: (Maybe (Array  Splits)),
+  substitutions :: (Maybe (Array  Substitutions)),
+  tags :: (Maybe (Array  String)),
+  style :: (Maybe (Array  String))
+  | eff
 }
 
 
@@ -2034,6 +2229,28 @@ newtype LeuronResponse = LeuronResponse {
   style :: (Maybe (Array  String)),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type LeuronResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  resourceId :: Int,
+  dataP :: LeuronData,
+  title :: (Maybe String),
+  description :: (Maybe String),
+  section :: (Maybe String),
+  page :: (Maybe String),
+  examples :: (Maybe (Array  String)),
+  strengths :: (Maybe (Array  String)),
+  categories :: (DepList String),
+  splits :: (Maybe (Array  Splits)),
+  substitutions :: (Maybe (Array  Substitutions)),
+  tags :: (Maybe (Array  String)),
+  style :: (Maybe (Array  String)),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -2190,6 +2407,12 @@ newtype LeuronResponses = LeuronResponses {
 }
 
 
+type LeuronResponsesR = forall eff. {
+  leuronResponses :: (Array  LeuronResponse)
+  | eff
+}
+
+
 _LeuronResponses :: LensP LeuronResponses {
   leuronResponses :: (Array  LeuronResponse)
 }
@@ -2249,6 +2472,17 @@ newtype LeuronStatResponse = LeuronStatResponse {
   dislikes :: Int,
   stars :: Int,
   views :: Int
+}
+
+
+type LeuronStatResponseR = forall eff. {
+  leuronId :: Int,
+  likes :: Int,
+  neutral :: Int,
+  dislikes :: Int,
+  stars :: Int,
+  views :: Int
+  | eff
 }
 
 
@@ -2336,6 +2570,12 @@ instance leuronStatResponseShow :: Show LeuronStatResponse where
 
 newtype LeuronStatResponses = LeuronStatResponses {
   leuronStatResponses :: (Array  LeuronStatResponse)
+}
+
+
+type LeuronStatResponsesR = forall eff. {
+  leuronStatResponses :: (Array  LeuronStatResponse)
+  | eff
 }
 
 
@@ -2480,6 +2720,13 @@ newtype LikeRequest = LikeRequest {
 }
 
 
+type LikeRequestR = forall eff. {
+  opt :: LikeOpt,
+  reason :: (Maybe String)
+  | eff
+}
+
+
 _LikeRequest :: LensP LikeRequest {
   opt :: LikeOpt,
   reason :: (Maybe String)
@@ -2548,6 +2795,20 @@ newtype LikeResponse = LikeResponse {
   reason :: (Maybe String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type LikeResponseR = forall eff. {
+  id :: Int,
+  ent :: Ent,
+  entId :: Int,
+  userId :: Int,
+  opt :: LikeOpt,
+  score :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -2656,6 +2917,12 @@ newtype LikeResponses = LikeResponses {
 }
 
 
+type LikeResponsesR = forall eff. {
+  likeResponses :: (Array  LikeResponse)
+  | eff
+}
+
+
 _LikeResponses :: LensP LikeResponses {
   likeResponses :: (Array  LikeResponse)
 }
@@ -2714,6 +2981,16 @@ newtype LikeStatResponse = LikeStatResponse {
   score :: Int,
   like :: Int,
   dislike :: Int
+}
+
+
+type LikeStatResponseR = forall eff. {
+  id :: Int,
+  entity :: Ent,
+  score :: Int,
+  like :: Int,
+  dislike :: Int
+  | eff
 }
 
 
@@ -2795,6 +3072,12 @@ instance likeStatResponseShow :: Show LikeStatResponse where
 
 newtype LikeStatResponses = LikeStatResponses {
   likeStatResponses :: (Array  LikeStatResponse)
+}
+
+
+type LikeStatResponsesR = forall eff. {
+  likeStatResponses :: (Array  LikeStatResponse)
+  | eff
 }
 
 
@@ -3453,6 +3736,12 @@ newtype Fact = Fact {
 }
 
 
+type FactR = forall eff. {
+  text :: String
+  | eff
+}
+
+
 _Fact :: LensP Fact {
   text :: String
 }
@@ -3508,6 +3797,13 @@ instance factShow :: Show Fact where
 newtype FactList = FactList {
   fact :: String,
   list :: (Array  String)
+}
+
+
+type FactListR = forall eff. {
+  fact :: String,
+  list :: (Array  String)
+  | eff
 }
 
 
@@ -3575,6 +3871,13 @@ newtype Card = Card {
 }
 
 
+type CardR = forall eff. {
+  front :: String,
+  back :: String
+  | eff
+}
+
+
 _Card :: LensP Card {
   front :: String,
   back :: String
@@ -3636,6 +3939,13 @@ instance cardShow :: Show Card where
 newtype DCard = DCard {
   front :: String,
   back :: String
+}
+
+
+type DCardR = forall eff. {
+  front :: String,
+  back :: String
+  | eff
 }
 
 
@@ -3703,6 +4013,13 @@ newtype DCardX = DCardX {
 }
 
 
+type DCardXR = forall eff. {
+  front :: (Array  String),
+  back :: (Array  String)
+  | eff
+}
+
+
 _DCardX :: LensP DCardX {
   front :: (Array  String),
   back :: (Array  String)
@@ -3764,6 +4081,13 @@ instance dCardXShow :: Show DCardX where
 newtype Acronym = Acronym {
   abbreviation :: String,
   meaning :: String
+}
+
+
+type AcronymR = forall eff. {
+  abbreviation :: String,
+  meaning :: String
+  | eff
 }
 
 
@@ -3831,6 +4155,13 @@ newtype Synonym = Synonym {
 }
 
 
+type SynonymR = forall eff. {
+  a :: String,
+  b :: String
+  | eff
+}
+
+
 _Synonym :: LensP Synonym {
   a :: String,
   b :: String
@@ -3895,6 +4226,13 @@ newtype Antonym = Antonym {
 }
 
 
+type AntonymR = forall eff. {
+  a :: String,
+  b :: String
+  | eff
+}
+
+
 _Antonym :: LensP Antonym {
   a :: String,
   b :: String
@@ -3956,6 +4294,13 @@ instance antonymShow :: Show Antonym where
 newtype Template = Template {
   template :: String,
   values :: (Array  TemplateValue)
+}
+
+
+type TemplateR = forall eff. {
+  template :: String,
+  values :: (Array  TemplateValue)
+  | eff
 }
 
 
@@ -4027,6 +4372,14 @@ newtype ImageAssociation = ImageAssociation {
 }
 
 
+type ImageAssociationR = forall eff. {
+  imageUrl :: (Array  String),
+  assocBy :: (Array  String),
+  assocResult :: (Array  String)
+  | eff
+}
+
+
 _ImageAssociation :: LensP ImageAssociation {
   imageUrl :: (Array  String),
   assocBy :: (Array  String),
@@ -4095,6 +4448,14 @@ newtype Script = Script {
   title :: String,
   desc :: String,
   url :: String
+}
+
+
+type ScriptR = forall eff. {
+  title :: String,
+  desc :: String,
+  url :: String
+  | eff
 }
 
 
@@ -4177,6 +4538,13 @@ newtype LinearDemo = LinearDemo {
 }
 
 
+type LinearDemoR = forall eff. {
+  label :: String,
+  content :: (Array  LinearDemoNode)
+  | eff
+}
+
+
 _LinearDemo :: LensP LinearDemo {
   label :: String,
   content :: (Array  LinearDemoNode)
@@ -4238,6 +4606,13 @@ instance linearDemoShow :: Show LinearDemo where
 newtype QA = QA {
   question :: String,
   answer :: String
+}
+
+
+type QAR = forall eff. {
+  question :: String,
+  answer :: String
+  | eff
 }
 
 
@@ -4303,6 +4678,14 @@ newtype Table = Table {
   title :: String,
   columns :: (Array  String),
   rows :: (Array  (Array  (Maybe String)))
+}
+
+
+type TableR = forall eff. {
+  title :: String,
+  columns :: (Array  String),
+  rows :: (Array  (Array  (Maybe String)))
+  | eff
 }
 
 
@@ -4376,6 +4759,16 @@ newtype OrganizationRequest = OrganizationRequest {
   company :: String,
   location :: String,
   email :: String
+}
+
+
+type OrganizationRequestR = forall eff. {
+  name :: String,
+  description :: (Maybe String),
+  company :: String,
+  location :: String,
+  email :: String
+  | eff
 }
 
 
@@ -4467,6 +4860,22 @@ newtype OrganizationResponse = OrganizationResponse {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
+}
+
+
+type OrganizationResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  name :: String,
+  description :: (Maybe String),
+  company :: String,
+  location :: String,
+  email :: String,
+  emailMD5 :: String,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -4587,6 +4996,12 @@ newtype OrganizationResponses = OrganizationResponses {
 }
 
 
+type OrganizationResponsesR = forall eff. {
+  organizationResponses :: (Array  OrganizationResponse)
+  | eff
+}
+
+
 _OrganizationResponses :: LensP OrganizationResponses {
   organizationResponses :: (Array  OrganizationResponse)
 }
@@ -4648,6 +5063,19 @@ newtype OrganizationStatResponse = OrganizationStatResponse {
   threads :: Int,
   threadPosts :: Int,
   views :: Int
+}
+
+
+type OrganizationStatResponseR = forall eff. {
+  organizationId :: Int,
+  teams :: Int,
+  members :: Int,
+  forums :: Int,
+  boards :: Int,
+  threads :: Int,
+  threadPosts :: Int,
+  views :: Int
+  | eff
 }
 
 
@@ -4747,6 +5175,12 @@ instance organizationStatResponseShow :: Show OrganizationStatResponse where
 
 newtype OrganizationStatResponses = OrganizationStatResponses {
   organizationStatResponses :: (Array  OrganizationStatResponse)
+}
+
+
+type OrganizationStatResponsesR = forall eff. {
+  organizationStatResponses :: (Array  OrganizationStatResponse)
+  | eff
 }
 
 
@@ -6691,6 +7125,13 @@ newtype PmRequest = PmRequest {
 }
 
 
+type PmRequestR = forall eff. {
+  subject :: String,
+  body :: String
+  | eff
+}
+
+
 _PmRequest :: LensP PmRequest {
   subject :: String,
   body :: String
@@ -6757,6 +7198,18 @@ newtype PmResponse = PmResponse {
   body :: String,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type PmResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  toUserId :: Int,
+  subject :: String,
+  body :: String,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -6853,6 +7306,12 @@ newtype PmResponses = PmResponses {
 }
 
 
+type PmResponsesR = forall eff. {
+  pmResponses :: (Array  PmResponse)
+  | eff
+}
+
+
 _PmResponses :: LensP PmResponses {
   pmResponses :: (Array  PmResponse)
 }
@@ -6909,6 +7368,14 @@ newtype PmInRequest = PmInRequest {
   label :: (Maybe String),
   isRead :: Boolean,
   isStarred :: Boolean
+}
+
+
+type PmInRequestR = forall eff. {
+  label :: (Maybe String),
+  isRead :: Boolean,
+  isStarred :: Boolean
+  | eff
 }
 
 
@@ -6987,6 +7454,21 @@ newtype PmInResponse = PmInResponse {
   isSaved :: Boolean,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type PmInResponseR = forall eff. {
+  id :: Int,
+  pmId :: Int,
+  userId :: Int,
+  label :: (Maybe String),
+  isRead :: Boolean,
+  isStarred :: Boolean,
+  isNew :: Boolean,
+  isSaved :: Boolean,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -7101,6 +7583,12 @@ newtype PmInResponses = PmInResponses {
 }
 
 
+type PmInResponsesR = forall eff. {
+  pmInResponses :: (Array  PmInResponse)
+  | eff
+}
+
+
 _PmInResponses :: LensP PmInResponses {
   pmInResponses :: (Array  PmInResponse)
 }
@@ -7155,6 +7643,12 @@ instance pmInResponsesShow :: Show PmInResponses where
 
 newtype PmOutRequest = PmOutRequest {
   label :: (Maybe String)
+}
+
+
+type PmOutRequestR = forall eff. {
+  label :: (Maybe String)
+  | eff
 }
 
 
@@ -7218,6 +7712,18 @@ newtype PmOutResponse = PmOutResponse {
   isSaved :: Boolean,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type PmOutResponseR = forall eff. {
+  id :: Int,
+  pmId :: Int,
+  userId :: Int,
+  label :: (Maybe String),
+  isSaved :: Boolean,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -7314,6 +7820,12 @@ newtype PmOutResponses = PmOutResponses {
 }
 
 
+type PmOutResponsesR = forall eff. {
+  pmOutResponses :: (Array  PmOutResponse)
+  | eff
+}
+
+
 _PmOutResponses :: LensP PmOutResponses {
   pmOutResponses :: (Array  PmOutResponse)
 }
@@ -7369,6 +7881,13 @@ instance pmOutResponsesShow :: Show PmOutResponses where
 newtype ProfileX = ProfileX {
   profileName :: String,
   profileEmail :: String
+}
+
+
+type ProfileXR = forall eff. {
+  profileName :: String,
+  profileEmail :: String
+  | eff
 }
 
 
@@ -7528,6 +8047,16 @@ newtype ProfileRequest = ProfileRequest {
 }
 
 
+type ProfileRequestR = forall eff. {
+  gender :: ProfileGender,
+  birthdate :: Date,
+  website :: (Maybe String),
+  location :: (Maybe String),
+  signature :: (Maybe String)
+  | eff
+}
+
+
 _ProfileRequest :: LensP ProfileRequest {
   gender :: ProfileGender,
   birthdate :: Date,
@@ -7616,6 +8145,22 @@ newtype ProfileResponse = ProfileResponse {
   karmaBad :: Int,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type ProfileResponseR = forall eff. {
+  id :: Int,
+  entityId :: Int,
+  gender :: ProfileGender,
+  birthdate :: Date,
+  website :: (Maybe String),
+  location :: (Maybe String),
+  signature :: (Maybe String),
+  karmaGood :: Int,
+  karmaBad :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -7736,6 +8281,12 @@ newtype ProfileResponses = ProfileResponses {
 }
 
 
+type ProfileResponsesR = forall eff. {
+  profileResponses :: (Array  ProfileResponse)
+  | eff
+}
+
+
 _ProfileResponses :: LensP ProfileResponses {
   profileResponses :: (Array  ProfileResponse)
 }
@@ -7790,6 +8341,12 @@ instance profileResponsesShow :: Show ProfileResponses where
 
 newtype ReminderRequest = ReminderRequest {
   dataP :: String
+}
+
+
+type ReminderRequestR = forall eff. {
+  dataP :: String
+  | eff
 }
 
 
@@ -7852,6 +8409,17 @@ newtype ReminderResponse = ReminderResponse {
   dataP :: String,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type ReminderResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  parentFolderId :: Int,
+  dataP :: String,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -7942,6 +8510,12 @@ newtype ReminderResponses = ReminderResponses {
 }
 
 
+type ReminderResponsesR = forall eff. {
+  reminderResponses :: (Array  ReminderResponse)
+  | eff
+}
+
+
 _ReminderResponses :: LensP ReminderResponses {
   reminderResponses :: (Array  ReminderResponse)
 }
@@ -7998,6 +8572,14 @@ newtype ReminderFolderRequest = ReminderFolderRequest {
   name :: String,
   description :: (Maybe String),
   visibility :: Visibility
+}
+
+
+type ReminderFolderRequestR = forall eff. {
+  name :: String,
+  description :: (Maybe String),
+  visibility :: Visibility
+  | eff
 }
 
 
@@ -8074,6 +8656,19 @@ newtype ReminderFolderResponse = ReminderFolderResponse {
   description :: (Maybe String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type ReminderFolderResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  parentFolderId :: (Maybe Int),
+  name :: String,
+  visibility :: Visibility,
+  description :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -8173,6 +8768,12 @@ instance reminderFolderResponseShow :: Show ReminderFolderResponse where
 
 newtype ReminderFolderResponses = ReminderFolderResponses {
   reminderFolderResponses :: (Array  ReminderFolderResponse)
+}
+
+
+type ReminderFolderResponsesR = forall eff. {
+  reminderFolderResponses :: (Array  ReminderFolderResponse)
+  | eff
 }
 
 
@@ -8367,6 +8968,21 @@ newtype ResourceRequest = ResourceRequest {
 }
 
 
+type ResourceRequestR = forall eff. {
+  title :: String,
+  description :: String,
+  source :: ResourceType,
+  author :: (Maybe (Array  String)),
+  prerequisites :: (DepList String),
+  categories :: (DepList String),
+  visibility :: Visibility,
+  counter :: Int,
+  version :: (Maybe String),
+  urls :: (Maybe (Array  String))
+  | eff
+}
+
+
 _ResourceRequest :: LensP ResourceRequest {
   title :: String,
   description :: String,
@@ -8488,6 +9104,25 @@ newtype ResourceResponse = ResourceResponse {
   urls :: (Maybe (Array  String)),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type ResourceResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  title :: String,
+  description :: String,
+  source :: ResourceType,
+  author :: (Maybe (Array  String)),
+  prerequisites :: (DepList String),
+  categories :: (DepList String),
+  visibility :: Visibility,
+  counter :: Int,
+  version :: (Maybe String),
+  urls :: (Maybe (Array  String)),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -8626,6 +9261,12 @@ newtype ResourceResponses = ResourceResponses {
 }
 
 
+type ResourceResponsesR = forall eff. {
+  resourceResponses :: (Array  ResourceResponse)
+  | eff
+}
+
+
 _ResourceResponses :: LensP ResourceResponses {
   resourceResponses :: (Array  ResourceResponse)
 }
@@ -8686,6 +9327,18 @@ newtype ResourceStatResponse = ResourceStatResponse {
   dislikes :: Int,
   stars :: Int,
   views :: Int
+}
+
+
+type ResourceStatResponseR = forall eff. {
+  resourceId :: Int,
+  leurons :: Int,
+  likes :: Int,
+  neutral :: Int,
+  dislikes :: Int,
+  stars :: Int,
+  views :: Int
+  | eff
 }
 
 
@@ -8779,6 +9432,12 @@ instance resourceStatResponseShow :: Show ResourceStatResponse where
 
 newtype ResourceStatResponses = ResourceStatResponses {
   resourceStatResponses :: (Array  ResourceStatResponse)
+}
+
+
+type ResourceStatResponsesR = forall eff. {
+  resourceStatResponses :: (Array  ResourceStatResponse)
+  | eff
 }
 
 
@@ -9141,6 +9800,12 @@ newtype StarRequest = StarRequest {
 }
 
 
+type StarRequestR = forall eff. {
+  reason :: (Maybe String)
+  | eff
+}
+
+
 _StarRequest :: LensP StarRequest {
   reason :: (Maybe String)
 }
@@ -9200,6 +9865,17 @@ newtype StarResponse = StarResponse {
   reason :: (Maybe String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type StarResponseR = forall eff. {
+  id :: Int,
+  entity :: Ent,
+  userId :: Int,
+  reason :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -9290,6 +9966,12 @@ newtype StarResponses = StarResponses {
 }
 
 
+type StarResponsesR = forall eff. {
+  starResponses :: (Array  StarResponse)
+  | eff
+}
+
+
 _StarResponses :: LensP StarResponses {
   starResponses :: (Array  StarResponse)
 }
@@ -9346,6 +10028,14 @@ newtype StarStatResponse = StarStatResponse {
   id :: Int,
   entity :: Ent,
   stars :: Int
+}
+
+
+type StarStatResponseR = forall eff. {
+  id :: Int,
+  entity :: Ent,
+  stars :: Int
+  | eff
 }
 
 
@@ -9418,6 +10108,12 @@ newtype StarStatResponses = StarStatResponses {
 }
 
 
+type StarStatResponsesR = forall eff. {
+  starStatResponses :: (Array  StarStatResponse)
+  | eff
+}
+
+
 _StarStatResponses :: LensP StarStatResponses {
   starStatResponses :: (Array  StarStatResponse)
 }
@@ -9473,6 +10169,13 @@ instance starStatResponsesShow :: Show StarStatResponses where
 newtype TeamRequest = TeamRequest {
   name :: String,
   description :: (Maybe String)
+}
+
+
+type TeamRequestR = forall eff. {
+  name :: String,
+  description :: (Maybe String)
+  | eff
 }
 
 
@@ -9543,6 +10246,19 @@ newtype TeamResponse = TeamResponse {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
+}
+
+
+type TeamResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  name :: String,
+  description :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -9645,6 +10361,12 @@ newtype TeamResponses = TeamResponses {
 }
 
 
+type TeamResponsesR = forall eff. {
+  teamResponses :: (Array  TeamResponse)
+  | eff
+}
+
+
 _TeamResponses :: LensP TeamResponses {
   teamResponses :: (Array  TeamResponse)
 }
@@ -9699,6 +10421,12 @@ instance teamResponsesShow :: Show TeamResponses where
 
 newtype TeamStatResponse = TeamStatResponse {
   members :: Int
+}
+
+
+type TeamStatResponseR = forall eff. {
+  members :: Int
+  | eff
 }
 
 
@@ -9759,6 +10487,12 @@ newtype TeamStatResponses = TeamStatResponses {
 }
 
 
+type TeamStatResponsesR = forall eff. {
+  teamStatResponses :: (Array  TeamStatResponse)
+  | eff
+}
+
+
 _TeamStatResponses :: LensP TeamStatResponses {
   teamStatResponses :: (Array  TeamStatResponse)
 }
@@ -9813,6 +10547,12 @@ instance teamStatResponsesShow :: Show TeamStatResponses where
 
 newtype TestRequest = TestRequest {
   msg :: String
+}
+
+
+type TestRequestR = forall eff. {
+  msg :: String
+  | eff
 }
 
 
@@ -9874,6 +10614,16 @@ newtype TestResponse = TestResponse {
   msg :: String,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
+}
+
+
+type TestResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  msg :: String,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -9958,6 +10708,12 @@ newtype TestResponses = TestResponses {
 }
 
 
+type TestResponsesR = forall eff. {
+  testResponses :: (Array  TestResponse)
+  | eff
+}
+
+
 _TestResponses :: LensP TestResponses {
   testResponses :: (Array  TestResponse)
 }
@@ -10016,6 +10772,16 @@ newtype ThreadRequest = ThreadRequest {
   sticky :: Boolean,
   locked :: Boolean,
   poll :: (Maybe String)
+}
+
+
+type ThreadRequestR = forall eff. {
+  name :: String,
+  description :: (Maybe String),
+  sticky :: Boolean,
+  locked :: Boolean,
+  poll :: (Maybe String)
+  | eff
 }
 
 
@@ -10108,6 +10874,23 @@ newtype ThreadResponse = ThreadResponse {
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
+}
+
+
+type ThreadResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  boardId :: Int,
+  name :: String,
+  description :: (Maybe String),
+  sticky :: Boolean,
+  locked :: Boolean,
+  poll :: (Maybe String),
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -10234,6 +11017,12 @@ newtype ThreadResponses = ThreadResponses {
 }
 
 
+type ThreadResponsesR = forall eff. {
+  threadResponses :: (Array  ThreadResponse)
+  | eff
+}
+
+
 _ThreadResponses :: LensP ThreadResponses {
   threadResponses :: (Array  ThreadResponse)
 }
@@ -10290,6 +11079,14 @@ newtype ThreadStatResponse = ThreadStatResponse {
   threadId :: Int,
   threadPosts :: Int,
   views :: Int
+}
+
+
+type ThreadStatResponseR = forall eff. {
+  threadId :: Int,
+  threadPosts :: Int,
+  views :: Int
+  | eff
 }
 
 
@@ -10359,6 +11156,12 @@ instance threadStatResponseShow :: Show ThreadStatResponse where
 
 newtype ThreadStatResponses = ThreadStatResponses {
   threadStatResponses :: (Array  ThreadStatResponse)
+}
+
+
+type ThreadStatResponsesR = forall eff. {
+  threadStatResponses :: (Array  ThreadStatResponse)
+  | eff
 }
 
 
@@ -10565,6 +11368,15 @@ newtype ThreadPostRequest = ThreadPostRequest {
 }
 
 
+type ThreadPostRequestR = forall eff. {
+  title :: (Maybe String),
+  body :: PostData,
+  tags :: (Array  String),
+  privateTags :: (Array  String)
+  | eff
+}
+
+
 _ThreadPostRequest :: LensP ThreadPostRequest {
   title :: (Maybe String),
   body :: PostData,
@@ -10647,6 +11459,22 @@ newtype ThreadPostResponse = ThreadPostResponse {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
+}
+
+
+type ThreadPostResponseR = forall eff. {
+  id :: Int,
+  userId :: Int,
+  threadId :: Int,
+  parentId :: (Maybe Int),
+  title :: (Maybe String),
+  body :: PostData,
+  tags :: (Array  String),
+  privateTags :: (Array  String),
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -10767,6 +11595,12 @@ newtype ThreadPostResponses = ThreadPostResponses {
 }
 
 
+type ThreadPostResponsesR = forall eff. {
+  threadPostResponses :: (Array  ThreadPostResponse)
+  | eff
+}
+
+
 _ThreadPostResponses :: LensP ThreadPostResponses {
   threadPostResponses :: (Array  ThreadPostResponse)
 }
@@ -10826,6 +11660,17 @@ newtype ThreadPostStatResponse = ThreadPostStatResponse {
   dislikes :: Int,
   stars :: Int,
   views :: Int
+}
+
+
+type ThreadPostStatResponseR = forall eff. {
+  threadPostId :: Int,
+  likes :: Int,
+  neutral :: Int,
+  dislikes :: Int,
+  stars :: Int,
+  views :: Int
+  | eff
 }
 
 
@@ -10916,6 +11761,12 @@ newtype ThreadPostStatResponses = ThreadPostStatResponses {
 }
 
 
+type ThreadPostStatResponsesR = forall eff. {
+  threadPostStatResponses :: (Array  ThreadPostStatResponse)
+  | eff
+}
+
+
 _ThreadPostStatResponses :: LensP ThreadPostStatResponses {
   threadPostStatResponses :: (Array  ThreadPostStatResponse)
 }
@@ -10975,6 +11826,17 @@ newtype UserRequest = UserRequest {
   email :: String,
   plugin :: String,
   ident :: String
+}
+
+
+type UserRequestR = forall eff. {
+  nick :: String,
+  displayNick :: String,
+  name :: String,
+  email :: String,
+  plugin :: String,
+  ident :: String
+  | eff
 }
 
 
@@ -11073,6 +11935,23 @@ newtype UserResponse = UserResponse {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date),
   deactivatedAt :: (Maybe Date)
+}
+
+
+type UserResponseR = forall eff. {
+  id :: Int,
+  nick :: String,
+  displayNick :: String,
+  name :: String,
+  email :: String,
+  emailMD5 :: String,
+  plugin :: String,
+  ident :: String,
+  active :: Boolean,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date),
+  deactivatedAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -11199,6 +12078,12 @@ newtype UserResponses = UserResponses {
 }
 
 
+type UserResponsesR = forall eff. {
+  userResponses :: (Array  UserResponse)
+  | eff
+}
+
+
 _UserResponses :: LensP UserResponses {
   userResponses :: (Array  UserResponse)
 }
@@ -11258,6 +12143,17 @@ newtype UserSanitizedResponse = UserSanitizedResponse {
   emailMD5 :: String,
   active :: Boolean,
   createdAt :: (Maybe Date)
+}
+
+
+type UserSanitizedResponseR = forall eff. {
+  id :: Int,
+  nick :: String,
+  displayNick :: String,
+  emailMD5 :: String,
+  active :: Boolean,
+  createdAt :: (Maybe Date)
+  | eff
 }
 
 
@@ -11348,6 +12244,12 @@ newtype UserSanitizedResponses = UserSanitizedResponses {
 }
 
 
+type UserSanitizedResponsesR = forall eff. {
+  userSanitizedResponses :: (Array  UserSanitizedResponse)
+  | eff
+}
+
+
 _UserSanitizedResponses :: LensP UserSanitizedResponses {
   userSanitizedResponses :: (Array  UserSanitizedResponse)
 }
@@ -11408,6 +12310,18 @@ newtype UserSanitizedStatResponse = UserSanitizedStatResponse {
   resources :: Int,
   leurons :: Int,
   workouts :: Int
+}
+
+
+type UserSanitizedStatResponseR = forall eff. {
+  userId :: Int,
+  threads :: Int,
+  threadPosts :: Int,
+  respect :: Int,
+  resources :: Int,
+  leurons :: Int,
+  workouts :: Int
+  | eff
 }
 
 
@@ -11501,6 +12415,12 @@ instance userSanitizedStatResponseShow :: Show UserSanitizedStatResponse where
 
 newtype UserSanitizedStatResponses = UserSanitizedStatResponses {
   userSanitizedStatResponses :: (Array  UserSanitizedStatResponse)
+}
+
+
+type UserSanitizedStatResponsesR = forall eff. {
+  userSanitizedStatResponses :: (Array  UserSanitizedStatResponse)
+  | eff
 }
 
 
@@ -11635,6 +12555,18 @@ newtype OrganizationPackResponse = OrganizationPackResponse {
 }
 
 
+type OrganizationPackResponseR = forall eff. {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  organization :: OrganizationResponse,
+  organizationId :: Int,
+  stat :: OrganizationStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse)
+  | eff
+}
+
+
 _OrganizationPackResponse :: LensP OrganizationPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
@@ -11728,6 +12660,12 @@ newtype OrganizationPackResponses = OrganizationPackResponses {
 }
 
 
+type OrganizationPackResponsesR = forall eff. {
+  organizationPackResponses :: (Array  OrganizationPackResponse)
+  | eff
+}
+
+
 _OrganizationPackResponses :: LensP OrganizationPackResponses {
   organizationPackResponses :: (Array  OrganizationPackResponse)
 }
@@ -11788,6 +12726,18 @@ newtype TeamPackResponse = TeamPackResponse {
   stat :: TeamStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
+}
+
+
+type TeamPackResponseR = forall eff. {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  team :: TeamResponse,
+  teamId :: Int,
+  stat :: TeamStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse)
+  | eff
 }
 
 
@@ -11884,6 +12834,12 @@ newtype TeamPackResponses = TeamPackResponses {
 }
 
 
+type TeamPackResponsesR = forall eff. {
+  teamPackResponses :: (Array  TeamPackResponse)
+  | eff
+}
+
+
 _TeamPackResponses :: LensP TeamPackResponses {
   teamPackResponses :: (Array  TeamPackResponse)
 }
@@ -11942,6 +12898,16 @@ newtype UserPackResponse = UserPackResponse {
   stat :: UserSanitizedStatResponse,
   profile :: ProfileResponse,
   profileId :: Int
+}
+
+
+type UserPackResponseR = forall eff. {
+  user :: UserResponse,
+  userId :: Int,
+  stat :: UserSanitizedStatResponse,
+  profile :: ProfileResponse,
+  profileId :: Int
+  | eff
 }
 
 
@@ -12026,6 +12992,12 @@ newtype UserPackResponses = UserPackResponses {
 }
 
 
+type UserPackResponsesR = forall eff. {
+  userPackResponses :: (Array  UserPackResponse)
+  | eff
+}
+
+
 _UserPackResponses :: LensP UserPackResponses {
   userPackResponses :: (Array  UserPackResponse)
 }
@@ -12086,6 +13058,18 @@ newtype UserSanitizedPackResponse = UserSanitizedPackResponse {
   stat :: UserSanitizedStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
+}
+
+
+type UserSanitizedPackResponseR = forall eff. {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  profile :: ProfileResponse,
+  profileId :: Int,
+  stat :: UserSanitizedStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse)
+  | eff
 }
 
 
@@ -12182,6 +13166,12 @@ newtype UserSanitizedPackResponses = UserSanitizedPackResponses {
 }
 
 
+type UserSanitizedPackResponsesR = forall eff. {
+  userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
+  | eff
+}
+
+
 _UserSanitizedPackResponses :: LensP UserSanitizedPackResponses {
   userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
 }
@@ -12240,6 +13230,16 @@ newtype ForumPackResponse = ForumPackResponse {
   stat :: ForumStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
+}
+
+
+type ForumPackResponseR = forall eff. {
+  forum :: ForumResponse,
+  forumId :: Int,
+  stat :: ForumStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse)
+  | eff
 }
 
 
@@ -12324,6 +13324,12 @@ newtype ForumPackResponses = ForumPackResponses {
 }
 
 
+type ForumPackResponsesR = forall eff. {
+  forumPackResponses :: (Array  ForumPackResponse)
+  | eff
+}
+
+
 _ForumPackResponses :: LensP ForumPackResponses {
   forumPackResponses :: (Array  ForumPackResponse)
 }
@@ -12385,6 +13391,19 @@ newtype BoardPackResponse = BoardPackResponse {
   latestThread :: (Maybe ThreadResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
   latestThreadPostUser :: (Maybe UserSanitizedResponse)
+}
+
+
+type BoardPackResponseR = forall eff. {
+  board :: BoardResponse,
+  boardId :: Int,
+  stat :: BoardStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse),
+  latestThread :: (Maybe ThreadResponse),
+  latestThreadPost :: (Maybe ThreadPostResponse),
+  latestThreadPostUser :: (Maybe UserSanitizedResponse)
+  | eff
 }
 
 
@@ -12487,6 +13506,12 @@ newtype BoardPackResponses = BoardPackResponses {
 }
 
 
+type BoardPackResponsesR = forall eff. {
+  boardPackResponses :: (Array  BoardPackResponse)
+  | eff
+}
+
+
 _BoardPackResponses :: LensP BoardPackResponses {
   boardPackResponses :: (Array  BoardPackResponse)
 }
@@ -12549,6 +13574,20 @@ newtype ThreadPackResponse = ThreadPackResponse {
   star :: (Maybe StarResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
   latestThreadPostUser :: (Maybe UserSanitizedResponse)
+}
+
+
+type ThreadPackResponseR = forall eff. {
+  thread :: ThreadResponse,
+  threadId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  stat :: ThreadStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse),
+  latestThreadPost :: (Maybe ThreadPostResponse),
+  latestThreadPostUser :: (Maybe UserSanitizedResponse)
+  | eff
 }
 
 
@@ -12657,6 +13696,12 @@ newtype ThreadPackResponses = ThreadPackResponses {
 }
 
 
+type ThreadPackResponsesR = forall eff. {
+  threadPackResponses :: (Array  ThreadPackResponse)
+  | eff
+}
+
+
 _ThreadPackResponses :: LensP ThreadPackResponses {
   threadPackResponses :: (Array  ThreadPackResponse)
 }
@@ -12717,6 +13762,18 @@ newtype ThreadPostPackResponse = ThreadPostPackResponse {
   stat :: ThreadPostStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
+}
+
+
+type ThreadPostPackResponseR = forall eff. {
+  threadPost :: ThreadPostResponse,
+  threadPostId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  stat :: ThreadPostStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse)
+  | eff
 }
 
 
@@ -12813,6 +13870,12 @@ newtype ThreadPostPackResponses = ThreadPostPackResponses {
 }
 
 
+type ThreadPostPackResponsesR = forall eff. {
+  threadPostPackResponses :: (Array  ThreadPostPackResponse)
+  | eff
+}
+
+
 _ThreadPostPackResponses :: LensP ThreadPostPackResponses {
   threadPostPackResponses :: (Array  ThreadPostPackResponse)
 }
@@ -12873,6 +13936,18 @@ newtype ResourcePackResponse = ResourcePackResponse {
   stat :: ResourceStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
+}
+
+
+type ResourcePackResponseR = forall eff. {
+  resource :: ResourceResponse,
+  resourceId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  stat :: ResourceStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse)
+  | eff
 }
 
 
@@ -12969,6 +14044,12 @@ newtype ResourcePackResponses = ResourcePackResponses {
 }
 
 
+type ResourcePackResponsesR = forall eff. {
+  resourcePackResponses :: (Array  ResourcePackResponse)
+  | eff
+}
+
+
 _ResourcePackResponses :: LensP ResourcePackResponses {
   resourcePackResponses :: (Array  ResourcePackResponse)
 }
@@ -13029,6 +14110,18 @@ newtype LeuronPackResponse = LeuronPackResponse {
   stat :: LeuronStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
+}
+
+
+type LeuronPackResponseR = forall eff. {
+  leuron :: LeuronResponse,
+  leuronId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  stat :: LeuronStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse)
+  | eff
 }
 
 
@@ -13122,6 +14215,12 @@ instance leuronPackResponseShow :: Show LeuronPackResponse where
 
 newtype LeuronPackResponses = LeuronPackResponses {
   leuronPackResponses :: (Array  LeuronPackResponse)
+}
+
+
+type LeuronPackResponsesR = forall eff. {
+  leuronPackResponses :: (Array  LeuronPackResponse)
+  | eff
 }
 
 
