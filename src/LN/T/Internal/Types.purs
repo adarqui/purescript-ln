@@ -1925,7 +1925,7 @@ unwrapLeuronRequest (LeuronRequest r) = r
 instance leuronRequestEncodeJson :: EncodeJson LeuronRequest where
   encodeJson (LeuronRequest o) =
        "tag" := "LeuronRequest"
-    ~> "data_p" := o.dataP
+    ~> "data" := o.dataP
     ~> "title" := o.title
     ~> "description" := o.description
     ~> "section" := o.section
@@ -1943,7 +1943,7 @@ instance leuronRequestEncodeJson :: EncodeJson LeuronRequest where
 instance leuronRequestDecodeJson :: DecodeJson LeuronRequest where
   decodeJson o = do
     obj <- decodeJson o
-    dataP <- obj .? "data_p"
+    dataP <- obj .? "data"
     title <- obj .? "title"
     description <- obj .? "description"
     section <- obj .? "section"
@@ -1982,7 +1982,7 @@ instance leuronRequestRespondable :: Respondable LeuronRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkLeuronRequest
-      <$> readProp "data_p" json
+      <$> readProp "data" json
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> (runNullOrUndefined <$> readProp "section" json)
@@ -1999,7 +1999,7 @@ instance leuronRequestRespondable :: Respondable LeuronRequest where
 instance leuronRequestIsForeign :: IsForeign LeuronRequest where
   read json =
       mkLeuronRequest
-      <$> readProp "data_p" json
+      <$> readProp "data" json
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> (runNullOrUndefined <$> readProp "section" json)
@@ -2072,7 +2072,7 @@ instance leuronResponseEncodeJson :: EncodeJson LeuronResponse where
     ~> "id" := o.id
     ~> "user_id" := o.userId
     ~> "resource_id" := o.resourceId
-    ~> "data_p" := o.dataP
+    ~> "data" := o.dataP
     ~> "title" := o.title
     ~> "description" := o.description
     ~> "section" := o.section
@@ -2095,7 +2095,7 @@ instance leuronResponseDecodeJson :: DecodeJson LeuronResponse where
     id <- obj .? "id"
     userId <- obj .? "user_id"
     resourceId <- obj .? "resource_id"
-    dataP <- obj .? "data_p"
+    dataP <- obj .? "data"
     title <- obj .? "title"
     description <- obj .? "description"
     section <- obj .? "section"
@@ -2144,7 +2144,7 @@ instance leuronResponseRespondable :: Respondable LeuronResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "resource_id" json
-      <*> readProp "data_p" json
+      <*> readProp "data" json
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> (runNullOrUndefined <$> readProp "section" json)
@@ -2166,7 +2166,7 @@ instance leuronResponseIsForeign :: IsForeign LeuronResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "resource_id" json
-      <*> readProp "data_p" json
+      <*> readProp "data" json
       <*> (runNullOrUndefined <$> readProp "title" json)
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> (runNullOrUndefined <$> readProp "section" json)
@@ -7531,14 +7531,14 @@ unwrapReminderRequest (ReminderRequest r) = r
 instance reminderRequestEncodeJson :: EncodeJson ReminderRequest where
   encodeJson (ReminderRequest o) =
        "tag" := "ReminderRequest"
-    ~> "data_p" := o.dataP
+    ~> "data" := o.dataP
     ~> jsonEmptyObject
 
 
 instance reminderRequestDecodeJson :: DecodeJson ReminderRequest where
   decodeJson o = do
     obj <- decodeJson o
-    dataP <- obj .? "data_p"
+    dataP <- obj .? "data"
     pure $ ReminderRequest {
       dataP
     }
@@ -7555,13 +7555,13 @@ instance reminderRequestRespondable :: Respondable ReminderRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkReminderRequest
-      <$> readProp "data_p" json
+      <$> readProp "data" json
 
 
 instance reminderRequestIsForeign :: IsForeign ReminderRequest where
   read json =
       mkReminderRequest
-      <$> readProp "data_p" json
+      <$> readProp "data" json
 
 
 instance reminderRequestShow :: Show ReminderRequest where
@@ -7601,7 +7601,7 @@ instance reminderResponseEncodeJson :: EncodeJson ReminderResponse where
     ~> "id" := o.id
     ~> "user_id" := o.userId
     ~> "parent_folder_id" := o.parentFolderId
-    ~> "data_p" := o.dataP
+    ~> "data" := o.dataP
     ~> "created_at" := o.createdAt
     ~> "modified_at" := o.modifiedAt
     ~> jsonEmptyObject
@@ -7613,7 +7613,7 @@ instance reminderResponseDecodeJson :: DecodeJson ReminderResponse where
     id <- obj .? "id"
     userId <- obj .? "user_id"
     parentFolderId <- obj .? "parent_folder_id"
-    dataP <- obj .? "data_p"
+    dataP <- obj .? "data"
     createdAt <- obj .? "created_at"
     modifiedAt <- obj .? "modified_at"
     pure $ ReminderResponse {
@@ -7640,7 +7640,7 @@ instance reminderResponseRespondable :: Respondable ReminderResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "parent_folder_id" json
-      <*> readProp "data_p" json
+      <*> readProp "data" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
@@ -7651,7 +7651,7 @@ instance reminderResponseIsForeign :: IsForeign ReminderResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "parent_folder_id" json
-      <*> readProp "data_p" json
+      <*> readProp "data" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
