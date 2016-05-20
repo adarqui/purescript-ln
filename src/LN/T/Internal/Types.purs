@@ -30,9 +30,8 @@ newtype ApiRequest = ApiRequest {
 }
 
 
-type ApiRequestR = forall eff. {
+type ApiRequestR = {
   comment :: (Maybe String)
-  | eff
 }
 
 
@@ -98,14 +97,13 @@ newtype ApiResponse = ApiResponse {
 }
 
 
-type ApiResponseR = forall eff. {
+type ApiResponseR = {
   id :: Int,
   userId :: Int,
   key :: String,
   comment :: (Maybe String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -196,9 +194,8 @@ newtype ApiResponses = ApiResponses {
 }
 
 
-type ApiResponsesR = forall eff. {
+type ApiResponsesR = {
   apiResponses :: (Array  ApiResponse)
-  | eff
 }
 
 
@@ -260,10 +257,9 @@ newtype BoardRequest = BoardRequest {
 }
 
 
-type BoardRequestR = forall eff. {
+type BoardRequestR = {
   name :: String,
   description :: (Maybe String)
-  | eff
 }
 
 
@@ -338,7 +334,7 @@ newtype BoardResponse = BoardResponse {
 }
 
 
-type BoardResponseR = forall eff. {
+type BoardResponseR = {
   id :: Int,
   userId :: Int,
   forumId :: Int,
@@ -348,7 +344,6 @@ type BoardResponseR = forall eff. {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -457,9 +452,8 @@ newtype BoardResponses = BoardResponses {
 }
 
 
-type BoardResponsesR = forall eff. {
+type BoardResponsesR = {
   boardResponses :: (Array  BoardResponse)
-  | eff
 }
 
 
@@ -523,12 +517,11 @@ newtype BoardStatResponse = BoardStatResponse {
 }
 
 
-type BoardStatResponseR = forall eff. {
+type BoardStatResponseR = {
   boardId :: Int,
   threads :: Int,
   threadPosts :: Int,
   views :: Int
-  | eff
 }
 
 
@@ -607,9 +600,8 @@ newtype BoardStatResponses = BoardStatResponses {
 }
 
 
-type BoardStatResponsesR = forall eff. {
+type BoardStatResponsesR = {
   boardStatResponses :: (Array  BoardStatResponse)
-  | eff
 }
 
 
@@ -677,7 +669,7 @@ newtype BucketRequest = BucketRequest {
 }
 
 
-type BucketRequestR = forall eff. {
+type BucketRequestR = {
   name :: String,
   description :: (Maybe String),
   scoreLo :: Int,
@@ -686,7 +678,6 @@ type BucketRequestR = forall eff. {
   resources :: (Array  Int),
   categories :: (Array  String),
   filters :: (Array  Int)
-  | eff
 }
 
 
@@ -800,7 +791,7 @@ newtype BucketResponse = BucketResponse {
 }
 
 
-type BucketResponseR = forall eff. {
+type BucketResponseR = {
   id :: Int,
   userId :: Int,
   name :: String,
@@ -813,7 +804,6 @@ type BucketResponseR = forall eff. {
   filters :: (Array  Int),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -940,9 +930,8 @@ newtype BucketResponses = BucketResponses {
 }
 
 
-type BucketResponsesR = forall eff. {
+type BucketResponsesR = {
   bucketResponses :: (Array  BucketResponse)
-  | eff
 }
 
 
@@ -1004,10 +993,9 @@ newtype CountResponse = CountResponse {
 }
 
 
-type CountResponseR = forall eff. {
+type CountResponseR = {
   id :: Int,
   n :: Int
-  | eff
 }
 
 
@@ -1074,9 +1062,8 @@ newtype CountResponses = CountResponses {
 }
 
 
-type CountResponsesR = forall eff. {
+type CountResponsesR = {
   countResponses :: (Array  CountResponse)
-  | eff
 }
 
 
@@ -1140,9 +1127,8 @@ newtype EmptyRequest = EmptyRequest {
 }
 
 
-type EmptyRequestR = forall eff. {
+type EmptyRequestR = {
   value :: Boolean
-  | eff
 }
 
 
@@ -1207,13 +1193,12 @@ newtype EmptyResponse = EmptyResponse {
 }
 
 
-type EmptyResponseR = forall eff. {
+type EmptyResponseR = {
   id :: Int,
   userId :: Int,
   value :: Boolean,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -1298,9 +1283,8 @@ newtype EmptyResponses = EmptyResponses {
 }
 
 
-type EmptyResponsesR = forall eff. {
+type EmptyResponsesR = {
   emptyResponses :: (Array  EmptyResponse)
-  | eff
 }
 
 
@@ -1655,10 +1639,9 @@ newtype ForumRequest = ForumRequest {
 }
 
 
-type ForumRequestR = forall eff. {
+type ForumRequestR = {
   name :: String,
   description :: (Maybe String)
-  | eff
 }
 
 
@@ -1732,7 +1715,7 @@ newtype ForumResponse = ForumResponse {
 }
 
 
-type ForumResponseR = forall eff. {
+type ForumResponseR = {
   id :: Int,
   userId :: Int,
   orgId :: Int,
@@ -1741,7 +1724,6 @@ type ForumResponseR = forall eff. {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -1844,9 +1826,8 @@ newtype ForumResponses = ForumResponses {
 }
 
 
-type ForumResponsesR = forall eff. {
+type ForumResponsesR = {
   forumResponses :: (Array  ForumResponse)
-  | eff
 }
 
 
@@ -1911,13 +1892,12 @@ newtype ForumStatResponse = ForumStatResponse {
 }
 
 
-type ForumStatResponseR = forall eff. {
+type ForumStatResponseR = {
   forumId :: Int,
   boards :: Int,
   threads :: Int,
   threadPosts :: Int,
   views :: Int
-  | eff
 }
 
 
@@ -2002,9 +1982,8 @@ newtype ForumStatResponses = ForumStatResponses {
 }
 
 
-type ForumStatResponsesR = forall eff. {
+type ForumStatResponsesR = {
   forumStatResponses :: (Array  ForumStatResponse)
-  | eff
 }
 
 
@@ -2076,7 +2055,7 @@ newtype LeuronRequest = LeuronRequest {
 }
 
 
-type LeuronRequestR = forall eff. {
+type LeuronRequestR = {
   dataP :: LeuronData,
   title :: (Maybe String),
   description :: (Maybe String),
@@ -2089,7 +2068,6 @@ type LeuronRequestR = forall eff. {
   substitutions :: (Maybe (Array  Substitutions)),
   tags :: (Maybe (Array  String)),
   style :: (Maybe (Array  String))
-  | eff
 }
 
 
@@ -2232,7 +2210,7 @@ newtype LeuronResponse = LeuronResponse {
 }
 
 
-type LeuronResponseR = forall eff. {
+type LeuronResponseR = {
   id :: Int,
   userId :: Int,
   resourceId :: Int,
@@ -2250,7 +2228,6 @@ type LeuronResponseR = forall eff. {
   style :: (Maybe (Array  String)),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -2407,9 +2384,8 @@ newtype LeuronResponses = LeuronResponses {
 }
 
 
-type LeuronResponsesR = forall eff. {
+type LeuronResponsesR = {
   leuronResponses :: (Array  LeuronResponse)
-  | eff
 }
 
 
@@ -2475,14 +2451,13 @@ newtype LeuronStatResponse = LeuronStatResponse {
 }
 
 
-type LeuronStatResponseR = forall eff. {
+type LeuronStatResponseR = {
   leuronId :: Int,
   likes :: Int,
   neutral :: Int,
   dislikes :: Int,
   stars :: Int,
   views :: Int
-  | eff
 }
 
 
@@ -2573,9 +2548,8 @@ newtype LeuronStatResponses = LeuronStatResponses {
 }
 
 
-type LeuronStatResponsesR = forall eff. {
+type LeuronStatResponsesR = {
   leuronStatResponses :: (Array  LeuronStatResponse)
-  | eff
 }
 
 
@@ -2720,10 +2694,9 @@ newtype LikeRequest = LikeRequest {
 }
 
 
-type LikeRequestR = forall eff. {
+type LikeRequestR = {
   opt :: LikeOpt,
   reason :: (Maybe String)
-  | eff
 }
 
 
@@ -2798,7 +2771,7 @@ newtype LikeResponse = LikeResponse {
 }
 
 
-type LikeResponseR = forall eff. {
+type LikeResponseR = {
   id :: Int,
   ent :: Ent,
   entId :: Int,
@@ -2808,7 +2781,6 @@ type LikeResponseR = forall eff. {
   reason :: (Maybe String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -2917,9 +2889,8 @@ newtype LikeResponses = LikeResponses {
 }
 
 
-type LikeResponsesR = forall eff. {
+type LikeResponsesR = {
   likeResponses :: (Array  LikeResponse)
-  | eff
 }
 
 
@@ -2984,13 +2955,12 @@ newtype LikeStatResponse = LikeStatResponse {
 }
 
 
-type LikeStatResponseR = forall eff. {
+type LikeStatResponseR = {
   id :: Int,
   entity :: Ent,
   score :: Int,
   like :: Int,
   dislike :: Int
-  | eff
 }
 
 
@@ -3075,9 +3045,8 @@ newtype LikeStatResponses = LikeStatResponses {
 }
 
 
-type LikeStatResponsesR = forall eff. {
+type LikeStatResponsesR = {
   likeStatResponses :: (Array  LikeStatResponse)
-  | eff
 }
 
 
@@ -3736,9 +3705,8 @@ newtype Fact = Fact {
 }
 
 
-type FactR = forall eff. {
+type FactR = {
   text :: String
-  | eff
 }
 
 
@@ -3800,10 +3768,9 @@ newtype FactList = FactList {
 }
 
 
-type FactListR = forall eff. {
+type FactListR = {
   fact :: String,
   list :: (Array  String)
-  | eff
 }
 
 
@@ -3871,10 +3838,9 @@ newtype Card = Card {
 }
 
 
-type CardR = forall eff. {
+type CardR = {
   front :: String,
   back :: String
-  | eff
 }
 
 
@@ -3942,10 +3908,9 @@ newtype DCard = DCard {
 }
 
 
-type DCardR = forall eff. {
+type DCardR = {
   front :: String,
   back :: String
-  | eff
 }
 
 
@@ -4013,10 +3978,9 @@ newtype DCardX = DCardX {
 }
 
 
-type DCardXR = forall eff. {
+type DCardXR = {
   front :: (Array  String),
   back :: (Array  String)
-  | eff
 }
 
 
@@ -4084,10 +4048,9 @@ newtype Acronym = Acronym {
 }
 
 
-type AcronymR = forall eff. {
+type AcronymR = {
   abbreviation :: String,
   meaning :: String
-  | eff
 }
 
 
@@ -4155,10 +4118,9 @@ newtype Synonym = Synonym {
 }
 
 
-type SynonymR = forall eff. {
+type SynonymR = {
   a :: String,
   b :: String
-  | eff
 }
 
 
@@ -4226,10 +4188,9 @@ newtype Antonym = Antonym {
 }
 
 
-type AntonymR = forall eff. {
+type AntonymR = {
   a :: String,
   b :: String
-  | eff
 }
 
 
@@ -4297,10 +4258,9 @@ newtype Template = Template {
 }
 
 
-type TemplateR = forall eff. {
+type TemplateR = {
   template :: String,
   values :: (Array  TemplateValue)
-  | eff
 }
 
 
@@ -4372,11 +4332,10 @@ newtype ImageAssociation = ImageAssociation {
 }
 
 
-type ImageAssociationR = forall eff. {
+type ImageAssociationR = {
   imageUrl :: (Array  String),
   assocBy :: (Array  String),
   assocResult :: (Array  String)
-  | eff
 }
 
 
@@ -4451,11 +4410,10 @@ newtype Script = Script {
 }
 
 
-type ScriptR = forall eff. {
+type ScriptR = {
   title :: String,
   desc :: String,
   url :: String
-  | eff
 }
 
 
@@ -4538,10 +4496,9 @@ newtype LinearDemo = LinearDemo {
 }
 
 
-type LinearDemoR = forall eff. {
+type LinearDemoR = {
   label :: String,
   content :: (Array  LinearDemoNode)
-  | eff
 }
 
 
@@ -4609,10 +4566,9 @@ newtype QA = QA {
 }
 
 
-type QAR = forall eff. {
+type QAR = {
   question :: String,
   answer :: String
-  | eff
 }
 
 
@@ -4681,11 +4637,10 @@ newtype Table = Table {
 }
 
 
-type TableR = forall eff. {
+type TableR = {
   title :: String,
   columns :: (Array  String),
   rows :: (Array  (Array  (Maybe String)))
-  | eff
 }
 
 
@@ -4762,13 +4717,12 @@ newtype OrganizationRequest = OrganizationRequest {
 }
 
 
-type OrganizationRequestR = forall eff. {
+type OrganizationRequestR = {
   name :: String,
   description :: (Maybe String),
   company :: String,
   location :: String,
   email :: String
-  | eff
 }
 
 
@@ -4863,7 +4817,7 @@ newtype OrganizationResponse = OrganizationResponse {
 }
 
 
-type OrganizationResponseR = forall eff. {
+type OrganizationResponseR = {
   id :: Int,
   userId :: Int,
   name :: String,
@@ -4875,7 +4829,6 @@ type OrganizationResponseR = forall eff. {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -4996,9 +4949,8 @@ newtype OrganizationResponses = OrganizationResponses {
 }
 
 
-type OrganizationResponsesR = forall eff. {
+type OrganizationResponsesR = {
   organizationResponses :: (Array  OrganizationResponse)
-  | eff
 }
 
 
@@ -5066,7 +5018,7 @@ newtype OrganizationStatResponse = OrganizationStatResponse {
 }
 
 
-type OrganizationStatResponseR = forall eff. {
+type OrganizationStatResponseR = {
   organizationId :: Int,
   teams :: Int,
   members :: Int,
@@ -5075,7 +5027,6 @@ type OrganizationStatResponseR = forall eff. {
   threads :: Int,
   threadPosts :: Int,
   views :: Int
-  | eff
 }
 
 
@@ -5178,9 +5129,8 @@ newtype OrganizationStatResponses = OrganizationStatResponses {
 }
 
 
-type OrganizationStatResponsesR = forall eff. {
+type OrganizationStatResponsesR = {
   organizationStatResponses :: (Array  OrganizationStatResponse)
-  | eff
 }
 
 
@@ -7125,10 +7075,9 @@ newtype PmRequest = PmRequest {
 }
 
 
-type PmRequestR = forall eff. {
+type PmRequestR = {
   subject :: String,
   body :: String
-  | eff
 }
 
 
@@ -7201,7 +7150,7 @@ newtype PmResponse = PmResponse {
 }
 
 
-type PmResponseR = forall eff. {
+type PmResponseR = {
   id :: Int,
   userId :: Int,
   toUserId :: Int,
@@ -7209,7 +7158,6 @@ type PmResponseR = forall eff. {
   body :: String,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -7306,9 +7254,8 @@ newtype PmResponses = PmResponses {
 }
 
 
-type PmResponsesR = forall eff. {
+type PmResponsesR = {
   pmResponses :: (Array  PmResponse)
-  | eff
 }
 
 
@@ -7371,11 +7318,10 @@ newtype PmInRequest = PmInRequest {
 }
 
 
-type PmInRequestR = forall eff. {
+type PmInRequestR = {
   label :: (Maybe String),
   isRead :: Boolean,
   isStarred :: Boolean
-  | eff
 }
 
 
@@ -7457,7 +7403,7 @@ newtype PmInResponse = PmInResponse {
 }
 
 
-type PmInResponseR = forall eff. {
+type PmInResponseR = {
   id :: Int,
   pmId :: Int,
   userId :: Int,
@@ -7468,7 +7414,6 @@ type PmInResponseR = forall eff. {
   isSaved :: Boolean,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -7583,9 +7528,8 @@ newtype PmInResponses = PmInResponses {
 }
 
 
-type PmInResponsesR = forall eff. {
+type PmInResponsesR = {
   pmInResponses :: (Array  PmInResponse)
-  | eff
 }
 
 
@@ -7646,9 +7590,8 @@ newtype PmOutRequest = PmOutRequest {
 }
 
 
-type PmOutRequestR = forall eff. {
+type PmOutRequestR = {
   label :: (Maybe String)
-  | eff
 }
 
 
@@ -7715,7 +7658,7 @@ newtype PmOutResponse = PmOutResponse {
 }
 
 
-type PmOutResponseR = forall eff. {
+type PmOutResponseR = {
   id :: Int,
   pmId :: Int,
   userId :: Int,
@@ -7723,7 +7666,6 @@ type PmOutResponseR = forall eff. {
   isSaved :: Boolean,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -7820,9 +7762,8 @@ newtype PmOutResponses = PmOutResponses {
 }
 
 
-type PmOutResponsesR = forall eff. {
+type PmOutResponsesR = {
   pmOutResponses :: (Array  PmOutResponse)
-  | eff
 }
 
 
@@ -7884,10 +7825,9 @@ newtype ProfileX = ProfileX {
 }
 
 
-type ProfileXR = forall eff. {
+type ProfileXR = {
   profileName :: String,
   profileEmail :: String
-  | eff
 }
 
 
@@ -8047,13 +7987,12 @@ newtype ProfileRequest = ProfileRequest {
 }
 
 
-type ProfileRequestR = forall eff. {
+type ProfileRequestR = {
   gender :: ProfileGender,
   birthdate :: Date,
   website :: (Maybe String),
   location :: (Maybe String),
   signature :: (Maybe String)
-  | eff
 }
 
 
@@ -8148,7 +8087,7 @@ newtype ProfileResponse = ProfileResponse {
 }
 
 
-type ProfileResponseR = forall eff. {
+type ProfileResponseR = {
   id :: Int,
   entityId :: Int,
   gender :: ProfileGender,
@@ -8160,7 +8099,6 @@ type ProfileResponseR = forall eff. {
   karmaBad :: Int,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -8281,9 +8219,8 @@ newtype ProfileResponses = ProfileResponses {
 }
 
 
-type ProfileResponsesR = forall eff. {
+type ProfileResponsesR = {
   profileResponses :: (Array  ProfileResponse)
-  | eff
 }
 
 
@@ -8344,9 +8281,8 @@ newtype ReminderRequest = ReminderRequest {
 }
 
 
-type ReminderRequestR = forall eff. {
+type ReminderRequestR = {
   dataP :: String
-  | eff
 }
 
 
@@ -8412,14 +8348,13 @@ newtype ReminderResponse = ReminderResponse {
 }
 
 
-type ReminderResponseR = forall eff. {
+type ReminderResponseR = {
   id :: Int,
   userId :: Int,
   parentFolderId :: Int,
   dataP :: String,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -8510,9 +8445,8 @@ newtype ReminderResponses = ReminderResponses {
 }
 
 
-type ReminderResponsesR = forall eff. {
+type ReminderResponsesR = {
   reminderResponses :: (Array  ReminderResponse)
-  | eff
 }
 
 
@@ -8575,11 +8509,10 @@ newtype ReminderFolderRequest = ReminderFolderRequest {
 }
 
 
-type ReminderFolderRequestR = forall eff. {
+type ReminderFolderRequestR = {
   name :: String,
   description :: (Maybe String),
   visibility :: Visibility
-  | eff
 }
 
 
@@ -8659,7 +8592,7 @@ newtype ReminderFolderResponse = ReminderFolderResponse {
 }
 
 
-type ReminderFolderResponseR = forall eff. {
+type ReminderFolderResponseR = {
   id :: Int,
   userId :: Int,
   parentFolderId :: (Maybe Int),
@@ -8668,7 +8601,6 @@ type ReminderFolderResponseR = forall eff. {
   description :: (Maybe String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -8771,9 +8703,8 @@ newtype ReminderFolderResponses = ReminderFolderResponses {
 }
 
 
-type ReminderFolderResponsesR = forall eff. {
+type ReminderFolderResponsesR = {
   reminderFolderResponses :: (Array  ReminderFolderResponse)
-  | eff
 }
 
 
@@ -8968,7 +8899,7 @@ newtype ResourceRequest = ResourceRequest {
 }
 
 
-type ResourceRequestR = forall eff. {
+type ResourceRequestR = {
   title :: String,
   description :: String,
   source :: ResourceType,
@@ -8979,7 +8910,6 @@ type ResourceRequestR = forall eff. {
   counter :: Int,
   version :: (Maybe String),
   urls :: (Maybe (Array  String))
-  | eff
 }
 
 
@@ -9107,7 +9037,7 @@ newtype ResourceResponse = ResourceResponse {
 }
 
 
-type ResourceResponseR = forall eff. {
+type ResourceResponseR = {
   id :: Int,
   userId :: Int,
   title :: String,
@@ -9122,7 +9052,6 @@ type ResourceResponseR = forall eff. {
   urls :: (Maybe (Array  String)),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -9261,9 +9190,8 @@ newtype ResourceResponses = ResourceResponses {
 }
 
 
-type ResourceResponsesR = forall eff. {
+type ResourceResponsesR = {
   resourceResponses :: (Array  ResourceResponse)
-  | eff
 }
 
 
@@ -9330,7 +9258,7 @@ newtype ResourceStatResponse = ResourceStatResponse {
 }
 
 
-type ResourceStatResponseR = forall eff. {
+type ResourceStatResponseR = {
   resourceId :: Int,
   leurons :: Int,
   likes :: Int,
@@ -9338,7 +9266,6 @@ type ResourceStatResponseR = forall eff. {
   dislikes :: Int,
   stars :: Int,
   views :: Int
-  | eff
 }
 
 
@@ -9435,9 +9362,8 @@ newtype ResourceStatResponses = ResourceStatResponses {
 }
 
 
-type ResourceStatResponsesR = forall eff. {
+type ResourceStatResponsesR = {
   resourceStatResponses :: (Array  ResourceStatResponse)
-  | eff
 }
 
 
@@ -9800,9 +9726,8 @@ newtype StarRequest = StarRequest {
 }
 
 
-type StarRequestR = forall eff. {
+type StarRequestR = {
   reason :: (Maybe String)
-  | eff
 }
 
 
@@ -9868,14 +9793,13 @@ newtype StarResponse = StarResponse {
 }
 
 
-type StarResponseR = forall eff. {
+type StarResponseR = {
   id :: Int,
   entity :: Ent,
   userId :: Int,
   reason :: (Maybe String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -9966,9 +9890,8 @@ newtype StarResponses = StarResponses {
 }
 
 
-type StarResponsesR = forall eff. {
+type StarResponsesR = {
   starResponses :: (Array  StarResponse)
-  | eff
 }
 
 
@@ -10031,11 +9954,10 @@ newtype StarStatResponse = StarStatResponse {
 }
 
 
-type StarStatResponseR = forall eff. {
+type StarStatResponseR = {
   id :: Int,
   entity :: Ent,
   stars :: Int
-  | eff
 }
 
 
@@ -10108,9 +10030,8 @@ newtype StarStatResponses = StarStatResponses {
 }
 
 
-type StarStatResponsesR = forall eff. {
+type StarStatResponsesR = {
   starStatResponses :: (Array  StarStatResponse)
-  | eff
 }
 
 
@@ -10172,10 +10093,9 @@ newtype TeamRequest = TeamRequest {
 }
 
 
-type TeamRequestR = forall eff. {
+type TeamRequestR = {
   name :: String,
   description :: (Maybe String)
-  | eff
 }
 
 
@@ -10249,7 +10169,7 @@ newtype TeamResponse = TeamResponse {
 }
 
 
-type TeamResponseR = forall eff. {
+type TeamResponseR = {
   id :: Int,
   userId :: Int,
   orgId :: Int,
@@ -10258,7 +10178,6 @@ type TeamResponseR = forall eff. {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -10361,9 +10280,8 @@ newtype TeamResponses = TeamResponses {
 }
 
 
-type TeamResponsesR = forall eff. {
+type TeamResponsesR = {
   teamResponses :: (Array  TeamResponse)
-  | eff
 }
 
 
@@ -10424,9 +10342,8 @@ newtype TeamStatResponse = TeamStatResponse {
 }
 
 
-type TeamStatResponseR = forall eff. {
+type TeamStatResponseR = {
   members :: Int
-  | eff
 }
 
 
@@ -10487,9 +10404,8 @@ newtype TeamStatResponses = TeamStatResponses {
 }
 
 
-type TeamStatResponsesR = forall eff. {
+type TeamStatResponsesR = {
   teamStatResponses :: (Array  TeamStatResponse)
-  | eff
 }
 
 
@@ -10550,9 +10466,8 @@ newtype TestRequest = TestRequest {
 }
 
 
-type TestRequestR = forall eff. {
+type TestRequestR = {
   msg :: String
-  | eff
 }
 
 
@@ -10617,13 +10532,12 @@ newtype TestResponse = TestResponse {
 }
 
 
-type TestResponseR = forall eff. {
+type TestResponseR = {
   id :: Int,
   userId :: Int,
   msg :: String,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -10708,9 +10622,8 @@ newtype TestResponses = TestResponses {
 }
 
 
-type TestResponsesR = forall eff. {
+type TestResponsesR = {
   testResponses :: (Array  TestResponse)
-  | eff
 }
 
 
@@ -10775,13 +10688,12 @@ newtype ThreadRequest = ThreadRequest {
 }
 
 
-type ThreadRequestR = forall eff. {
+type ThreadRequestR = {
   name :: String,
   description :: (Maybe String),
   sticky :: Boolean,
   locked :: Boolean,
   poll :: (Maybe String)
-  | eff
 }
 
 
@@ -10877,7 +10789,7 @@ newtype ThreadResponse = ThreadResponse {
 }
 
 
-type ThreadResponseR = forall eff. {
+type ThreadResponseR = {
   id :: Int,
   userId :: Int,
   boardId :: Int,
@@ -10890,7 +10802,6 @@ type ThreadResponseR = forall eff. {
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -11017,9 +10928,8 @@ newtype ThreadResponses = ThreadResponses {
 }
 
 
-type ThreadResponsesR = forall eff. {
+type ThreadResponsesR = {
   threadResponses :: (Array  ThreadResponse)
-  | eff
 }
 
 
@@ -11082,11 +10992,10 @@ newtype ThreadStatResponse = ThreadStatResponse {
 }
 
 
-type ThreadStatResponseR = forall eff. {
+type ThreadStatResponseR = {
   threadId :: Int,
   threadPosts :: Int,
   views :: Int
-  | eff
 }
 
 
@@ -11159,9 +11068,8 @@ newtype ThreadStatResponses = ThreadStatResponses {
 }
 
 
-type ThreadStatResponsesR = forall eff. {
+type ThreadStatResponsesR = {
   threadStatResponses :: (Array  ThreadStatResponse)
-  | eff
 }
 
 
@@ -11368,12 +11276,11 @@ newtype ThreadPostRequest = ThreadPostRequest {
 }
 
 
-type ThreadPostRequestR = forall eff. {
+type ThreadPostRequestR = {
   title :: (Maybe String),
   body :: PostData,
   tags :: (Array  String),
   privateTags :: (Array  String)
-  | eff
 }
 
 
@@ -11462,7 +11369,7 @@ newtype ThreadPostResponse = ThreadPostResponse {
 }
 
 
-type ThreadPostResponseR = forall eff. {
+type ThreadPostResponseR = {
   id :: Int,
   userId :: Int,
   threadId :: Int,
@@ -11474,7 +11381,6 @@ type ThreadPostResponseR = forall eff. {
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -11595,9 +11501,8 @@ newtype ThreadPostResponses = ThreadPostResponses {
 }
 
 
-type ThreadPostResponsesR = forall eff. {
+type ThreadPostResponsesR = {
   threadPostResponses :: (Array  ThreadPostResponse)
-  | eff
 }
 
 
@@ -11663,14 +11568,13 @@ newtype ThreadPostStatResponse = ThreadPostStatResponse {
 }
 
 
-type ThreadPostStatResponseR = forall eff. {
+type ThreadPostStatResponseR = {
   threadPostId :: Int,
   likes :: Int,
   neutral :: Int,
   dislikes :: Int,
   stars :: Int,
   views :: Int
-  | eff
 }
 
 
@@ -11761,9 +11665,8 @@ newtype ThreadPostStatResponses = ThreadPostStatResponses {
 }
 
 
-type ThreadPostStatResponsesR = forall eff. {
+type ThreadPostStatResponsesR = {
   threadPostStatResponses :: (Array  ThreadPostStatResponse)
-  | eff
 }
 
 
@@ -11829,14 +11732,13 @@ newtype UserRequest = UserRequest {
 }
 
 
-type UserRequestR = forall eff. {
+type UserRequestR = {
   nick :: String,
   displayNick :: String,
   name :: String,
   email :: String,
   plugin :: String,
   ident :: String
-  | eff
 }
 
 
@@ -11938,7 +11840,7 @@ newtype UserResponse = UserResponse {
 }
 
 
-type UserResponseR = forall eff. {
+type UserResponseR = {
   id :: Int,
   nick :: String,
   displayNick :: String,
@@ -11951,7 +11853,6 @@ type UserResponseR = forall eff. {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date),
   deactivatedAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -12078,9 +11979,8 @@ newtype UserResponses = UserResponses {
 }
 
 
-type UserResponsesR = forall eff. {
+type UserResponsesR = {
   userResponses :: (Array  UserResponse)
-  | eff
 }
 
 
@@ -12146,14 +12046,13 @@ newtype UserSanitizedResponse = UserSanitizedResponse {
 }
 
 
-type UserSanitizedResponseR = forall eff. {
+type UserSanitizedResponseR = {
   id :: Int,
   nick :: String,
   displayNick :: String,
   emailMD5 :: String,
   active :: Boolean,
   createdAt :: (Maybe Date)
-  | eff
 }
 
 
@@ -12244,9 +12143,8 @@ newtype UserSanitizedResponses = UserSanitizedResponses {
 }
 
 
-type UserSanitizedResponsesR = forall eff. {
+type UserSanitizedResponsesR = {
   userSanitizedResponses :: (Array  UserSanitizedResponse)
-  | eff
 }
 
 
@@ -12313,7 +12211,7 @@ newtype UserSanitizedStatResponse = UserSanitizedStatResponse {
 }
 
 
-type UserSanitizedStatResponseR = forall eff. {
+type UserSanitizedStatResponseR = {
   userId :: Int,
   threads :: Int,
   threadPosts :: Int,
@@ -12321,7 +12219,6 @@ type UserSanitizedStatResponseR = forall eff. {
   resources :: Int,
   leurons :: Int,
   workouts :: Int
-  | eff
 }
 
 
@@ -12418,9 +12315,8 @@ newtype UserSanitizedStatResponses = UserSanitizedStatResponses {
 }
 
 
-type UserSanitizedStatResponsesR = forall eff. {
+type UserSanitizedStatResponsesR = {
   userSanitizedStatResponses :: (Array  UserSanitizedStatResponse)
-  | eff
 }
 
 
@@ -12555,7 +12451,7 @@ newtype OrganizationPackResponse = OrganizationPackResponse {
 }
 
 
-type OrganizationPackResponseR = forall eff. {
+type OrganizationPackResponseR = {
   user :: UserSanitizedResponse,
   userId :: Int,
   organization :: OrganizationResponse,
@@ -12563,7 +12459,6 @@ type OrganizationPackResponseR = forall eff. {
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
-  | eff
 }
 
 
@@ -12660,9 +12555,8 @@ newtype OrganizationPackResponses = OrganizationPackResponses {
 }
 
 
-type OrganizationPackResponsesR = forall eff. {
+type OrganizationPackResponsesR = {
   organizationPackResponses :: (Array  OrganizationPackResponse)
-  | eff
 }
 
 
@@ -12729,7 +12623,7 @@ newtype TeamPackResponse = TeamPackResponse {
 }
 
 
-type TeamPackResponseR = forall eff. {
+type TeamPackResponseR = {
   user :: UserSanitizedResponse,
   userId :: Int,
   team :: TeamResponse,
@@ -12737,7 +12631,6 @@ type TeamPackResponseR = forall eff. {
   stat :: TeamStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
-  | eff
 }
 
 
@@ -12834,9 +12727,8 @@ newtype TeamPackResponses = TeamPackResponses {
 }
 
 
-type TeamPackResponsesR = forall eff. {
+type TeamPackResponsesR = {
   teamPackResponses :: (Array  TeamPackResponse)
-  | eff
 }
 
 
@@ -12901,13 +12793,12 @@ newtype UserPackResponse = UserPackResponse {
 }
 
 
-type UserPackResponseR = forall eff. {
+type UserPackResponseR = {
   user :: UserResponse,
   userId :: Int,
   stat :: UserSanitizedStatResponse,
   profile :: ProfileResponse,
   profileId :: Int
-  | eff
 }
 
 
@@ -12992,9 +12883,8 @@ newtype UserPackResponses = UserPackResponses {
 }
 
 
-type UserPackResponsesR = forall eff. {
+type UserPackResponsesR = {
   userPackResponses :: (Array  UserPackResponse)
-  | eff
 }
 
 
@@ -13061,7 +12951,7 @@ newtype UserSanitizedPackResponse = UserSanitizedPackResponse {
 }
 
 
-type UserSanitizedPackResponseR = forall eff. {
+type UserSanitizedPackResponseR = {
   user :: UserSanitizedResponse,
   userId :: Int,
   profile :: ProfileResponse,
@@ -13069,7 +12959,6 @@ type UserSanitizedPackResponseR = forall eff. {
   stat :: UserSanitizedStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
-  | eff
 }
 
 
@@ -13166,9 +13055,8 @@ newtype UserSanitizedPackResponses = UserSanitizedPackResponses {
 }
 
 
-type UserSanitizedPackResponsesR = forall eff. {
+type UserSanitizedPackResponsesR = {
   userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
-  | eff
 }
 
 
@@ -13233,13 +13121,12 @@ newtype ForumPackResponse = ForumPackResponse {
 }
 
 
-type ForumPackResponseR = forall eff. {
+type ForumPackResponseR = {
   forum :: ForumResponse,
   forumId :: Int,
   stat :: ForumStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
-  | eff
 }
 
 
@@ -13324,9 +13211,8 @@ newtype ForumPackResponses = ForumPackResponses {
 }
 
 
-type ForumPackResponsesR = forall eff. {
+type ForumPackResponsesR = {
   forumPackResponses :: (Array  ForumPackResponse)
-  | eff
 }
 
 
@@ -13394,7 +13280,7 @@ newtype BoardPackResponse = BoardPackResponse {
 }
 
 
-type BoardPackResponseR = forall eff. {
+type BoardPackResponseR = {
   board :: BoardResponse,
   boardId :: Int,
   stat :: BoardStatResponse,
@@ -13403,7 +13289,6 @@ type BoardPackResponseR = forall eff. {
   latestThread :: (Maybe ThreadResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
   latestThreadPostUser :: (Maybe UserSanitizedResponse)
-  | eff
 }
 
 
@@ -13506,9 +13391,8 @@ newtype BoardPackResponses = BoardPackResponses {
 }
 
 
-type BoardPackResponsesR = forall eff. {
+type BoardPackResponsesR = {
   boardPackResponses :: (Array  BoardPackResponse)
-  | eff
 }
 
 
@@ -13577,7 +13461,7 @@ newtype ThreadPackResponse = ThreadPackResponse {
 }
 
 
-type ThreadPackResponseR = forall eff. {
+type ThreadPackResponseR = {
   thread :: ThreadResponse,
   threadId :: Int,
   user :: UserSanitizedResponse,
@@ -13587,7 +13471,6 @@ type ThreadPackResponseR = forall eff. {
   star :: (Maybe StarResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
   latestThreadPostUser :: (Maybe UserSanitizedResponse)
-  | eff
 }
 
 
@@ -13696,9 +13579,8 @@ newtype ThreadPackResponses = ThreadPackResponses {
 }
 
 
-type ThreadPackResponsesR = forall eff. {
+type ThreadPackResponsesR = {
   threadPackResponses :: (Array  ThreadPackResponse)
-  | eff
 }
 
 
@@ -13765,7 +13647,7 @@ newtype ThreadPostPackResponse = ThreadPostPackResponse {
 }
 
 
-type ThreadPostPackResponseR = forall eff. {
+type ThreadPostPackResponseR = {
   threadPost :: ThreadPostResponse,
   threadPostId :: Int,
   user :: UserSanitizedResponse,
@@ -13773,7 +13655,6 @@ type ThreadPostPackResponseR = forall eff. {
   stat :: ThreadPostStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
-  | eff
 }
 
 
@@ -13870,9 +13751,8 @@ newtype ThreadPostPackResponses = ThreadPostPackResponses {
 }
 
 
-type ThreadPostPackResponsesR = forall eff. {
+type ThreadPostPackResponsesR = {
   threadPostPackResponses :: (Array  ThreadPostPackResponse)
-  | eff
 }
 
 
@@ -13939,7 +13819,7 @@ newtype ResourcePackResponse = ResourcePackResponse {
 }
 
 
-type ResourcePackResponseR = forall eff. {
+type ResourcePackResponseR = {
   resource :: ResourceResponse,
   resourceId :: Int,
   user :: UserSanitizedResponse,
@@ -13947,7 +13827,6 @@ type ResourcePackResponseR = forall eff. {
   stat :: ResourceStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
-  | eff
 }
 
 
@@ -14044,9 +13923,8 @@ newtype ResourcePackResponses = ResourcePackResponses {
 }
 
 
-type ResourcePackResponsesR = forall eff. {
+type ResourcePackResponsesR = {
   resourcePackResponses :: (Array  ResourcePackResponse)
-  | eff
 }
 
 
@@ -14113,7 +13991,7 @@ newtype LeuronPackResponse = LeuronPackResponse {
 }
 
 
-type LeuronPackResponseR = forall eff. {
+type LeuronPackResponseR = {
   leuron :: LeuronResponse,
   leuronId :: Int,
   user :: UserSanitizedResponse,
@@ -14121,7 +13999,6 @@ type LeuronPackResponseR = forall eff. {
   stat :: LeuronStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
-  | eff
 }
 
 
@@ -14218,9 +14095,8 @@ newtype LeuronPackResponses = LeuronPackResponses {
 }
 
 
-type LeuronPackResponsesR = forall eff. {
+type LeuronPackResponsesR = {
   leuronPackResponses :: (Array  LeuronPackResponse)
-  | eff
 }
 
 
