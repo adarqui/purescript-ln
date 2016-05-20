@@ -3170,6 +3170,284 @@ instance leuronDataShow :: Show LeuronData where
   show (LnEmpty) = "LnEmpty"
 
 
+data TyLeuron
+  = TyLnFact 
+  | TyLnFactList 
+  | TyLnCard 
+  | TyLnDCard 
+  | TyLnDCardX 
+  | TyLnAcronym 
+  | TyLnSynonym 
+  | TyLnAntonym 
+  | TyLnTemplate 
+  | TyLnImageAssociation 
+  | TyLnLinearDemo 
+  | TyLnTable 
+  | TyLnScript 
+  | TyLnQA 
+  | TyLnExamples 
+  | TyLnEmpty 
+
+
+
+instance tyLeuronEncodeJson :: EncodeJson TyLeuron where
+  encodeJson (TyLnFact ) =
+       "tag" := "TyLnFact"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnFactList ) =
+       "tag" := "TyLnFactList"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnCard ) =
+       "tag" := "TyLnCard"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnDCard ) =
+       "tag" := "TyLnDCard"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnDCardX ) =
+       "tag" := "TyLnDCardX"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnAcronym ) =
+       "tag" := "TyLnAcronym"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnSynonym ) =
+       "tag" := "TyLnSynonym"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnAntonym ) =
+       "tag" := "TyLnAntonym"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnTemplate ) =
+       "tag" := "TyLnTemplate"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnImageAssociation ) =
+       "tag" := "TyLnImageAssociation"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnLinearDemo ) =
+       "tag" := "TyLnLinearDemo"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnTable ) =
+       "tag" := "TyLnTable"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnScript ) =
+       "tag" := "TyLnScript"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnQA ) =
+       "tag" := "TyLnQA"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnExamples ) =
+       "tag" := "TyLnExamples"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyLnEmpty ) =
+       "tag" := "TyLnEmpty"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance tyLeuronDecodeJson :: DecodeJson TyLeuron where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "TyLnFact" -> do
+          return TyLnFact
+
+        "TyLnFactList" -> do
+          return TyLnFactList
+
+        "TyLnCard" -> do
+          return TyLnCard
+
+        "TyLnDCard" -> do
+          return TyLnDCard
+
+        "TyLnDCardX" -> do
+          return TyLnDCardX
+
+        "TyLnAcronym" -> do
+          return TyLnAcronym
+
+        "TyLnSynonym" -> do
+          return TyLnSynonym
+
+        "TyLnAntonym" -> do
+          return TyLnAntonym
+
+        "TyLnTemplate" -> do
+          return TyLnTemplate
+
+        "TyLnImageAssociation" -> do
+          return TyLnImageAssociation
+
+        "TyLnLinearDemo" -> do
+          return TyLnLinearDemo
+
+        "TyLnTable" -> do
+          return TyLnTable
+
+        "TyLnScript" -> do
+          return TyLnScript
+
+        "TyLnQA" -> do
+          return TyLnQA
+
+        "TyLnExamples" -> do
+          return TyLnExamples
+
+        "TyLnEmpty" -> do
+          return TyLnEmpty
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance tyLeuronRequestable :: Requestable TyLeuron where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance tyLeuronRespondable :: Respondable TyLeuron where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TyLnFact" -> do
+          return TyLnFact
+
+        "TyLnFactList" -> do
+          return TyLnFactList
+
+        "TyLnCard" -> do
+          return TyLnCard
+
+        "TyLnDCard" -> do
+          return TyLnDCard
+
+        "TyLnDCardX" -> do
+          return TyLnDCardX
+
+        "TyLnAcronym" -> do
+          return TyLnAcronym
+
+        "TyLnSynonym" -> do
+          return TyLnSynonym
+
+        "TyLnAntonym" -> do
+          return TyLnAntonym
+
+        "TyLnTemplate" -> do
+          return TyLnTemplate
+
+        "TyLnImageAssociation" -> do
+          return TyLnImageAssociation
+
+        "TyLnLinearDemo" -> do
+          return TyLnLinearDemo
+
+        "TyLnTable" -> do
+          return TyLnTable
+
+        "TyLnScript" -> do
+          return TyLnScript
+
+        "TyLnQA" -> do
+          return TyLnQA
+
+        "TyLnExamples" -> do
+          return TyLnExamples
+
+        "TyLnEmpty" -> do
+          return TyLnEmpty
+
+
+
+instance tyLeuronIsForeign :: IsForeign TyLeuron where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TyLnFact" -> do
+          return TyLnFact
+
+        "TyLnFactList" -> do
+          return TyLnFactList
+
+        "TyLnCard" -> do
+          return TyLnCard
+
+        "TyLnDCard" -> do
+          return TyLnDCard
+
+        "TyLnDCardX" -> do
+          return TyLnDCardX
+
+        "TyLnAcronym" -> do
+          return TyLnAcronym
+
+        "TyLnSynonym" -> do
+          return TyLnSynonym
+
+        "TyLnAntonym" -> do
+          return TyLnAntonym
+
+        "TyLnTemplate" -> do
+          return TyLnTemplate
+
+        "TyLnImageAssociation" -> do
+          return TyLnImageAssociation
+
+        "TyLnLinearDemo" -> do
+          return TyLnLinearDemo
+
+        "TyLnTable" -> do
+          return TyLnTable
+
+        "TyLnScript" -> do
+          return TyLnScript
+
+        "TyLnQA" -> do
+          return TyLnQA
+
+        "TyLnExamples" -> do
+          return TyLnExamples
+
+        "TyLnEmpty" -> do
+          return TyLnEmpty
+
+
+
+instance tyLeuronShow :: Show TyLeuron where
+  show (TyLnFact) = "TyLnFact"
+  show (TyLnFactList) = "TyLnFactList"
+  show (TyLnCard) = "TyLnCard"
+  show (TyLnDCard) = "TyLnDCard"
+  show (TyLnDCardX) = "TyLnDCardX"
+  show (TyLnAcronym) = "TyLnAcronym"
+  show (TyLnSynonym) = "TyLnSynonym"
+  show (TyLnAntonym) = "TyLnAntonym"
+  show (TyLnTemplate) = "TyLnTemplate"
+  show (TyLnImageAssociation) = "TyLnImageAssociation"
+  show (TyLnLinearDemo) = "TyLnLinearDemo"
+  show (TyLnTable) = "TyLnTable"
+  show (TyLnScript) = "TyLnScript"
+  show (TyLnQA) = "TyLnQA"
+  show (TyLnExamples) = "TyLnExamples"
+  show (TyLnEmpty) = "TyLnEmpty"
+
+
 newtype Fact = Fact {
   text :: String
 }
