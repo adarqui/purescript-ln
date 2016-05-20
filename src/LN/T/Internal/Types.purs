@@ -3634,21 +3634,21 @@ instance cardShow :: Show Card where
     show (Card o) = show "front: " ++ show o.front ++ ", " ++ show "back: " ++ show o.back
 
 newtype DCard = DCard {
-  dcardFront :: String,
-  dcardBack :: String
+  front :: String,
+  back :: String
 }
 
 
 _DCard :: LensP DCard {
-  dcardFront :: String,
-  dcardBack :: String
+  front :: String,
+  back :: String
 }
 _DCard f (DCard o) = DCard <$> f o
 
 
 mkDCard :: String -> String -> DCard
-mkDCard dcardFront dcardBack =
-  DCard{dcardFront, dcardBack}
+mkDCard front back =
+  DCard{front, back}
 
 
 unwrapDCard (DCard r) = r
@@ -3656,19 +3656,19 @@ unwrapDCard (DCard r) = r
 instance dCardEncodeJson :: EncodeJson DCard where
   encodeJson (DCard o) =
        "tag" := "DCard"
-    ~> "dcard_front" := o.dcardFront
-    ~> "dcard_back" := o.dcardBack
+    ~> "front" := o.front
+    ~> "back" := o.back
     ~> jsonEmptyObject
 
 
 instance dCardDecodeJson :: DecodeJson DCard where
   decodeJson o = do
     obj <- decodeJson o
-    dcardFront <- obj .? "dcard_front"
-    dcardBack <- obj .? "dcard_back"
+    front <- obj .? "front"
+    back <- obj .? "back"
     pure $ DCard {
-      dcardFront,
-      dcardBack
+      front,
+      back
     }
 
 
@@ -3683,36 +3683,36 @@ instance dCardRespondable :: Respondable DCard where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkDCard
-      <$> readProp "dcard_front" json
-      <*> readProp "dcard_back" json
+      <$> readProp "front" json
+      <*> readProp "back" json
 
 
 instance dCardIsForeign :: IsForeign DCard where
   read json =
       mkDCard
-      <$> readProp "dcard_front" json
-      <*> readProp "dcard_back" json
+      <$> readProp "front" json
+      <*> readProp "back" json
 
 
 instance dCardShow :: Show DCard where
-    show (DCard o) = show "dcardFront: " ++ show o.dcardFront ++ ", " ++ show "dcardBack: " ++ show o.dcardBack
+    show (DCard o) = show "front: " ++ show o.front ++ ", " ++ show "back: " ++ show o.back
 
 newtype DCardX = DCardX {
-  dcardxFront :: (Array  String),
-  dcardxBack :: (Array  String)
+  front :: (Array  String),
+  back :: (Array  String)
 }
 
 
 _DCardX :: LensP DCardX {
-  dcardxFront :: (Array  String),
-  dcardxBack :: (Array  String)
+  front :: (Array  String),
+  back :: (Array  String)
 }
 _DCardX f (DCardX o) = DCardX <$> f o
 
 
 mkDCardX :: (Array  String) -> (Array  String) -> DCardX
-mkDCardX dcardxFront dcardxBack =
-  DCardX{dcardxFront, dcardxBack}
+mkDCardX front back =
+  DCardX{front, back}
 
 
 unwrapDCardX (DCardX r) = r
@@ -3720,19 +3720,19 @@ unwrapDCardX (DCardX r) = r
 instance dCardXEncodeJson :: EncodeJson DCardX where
   encodeJson (DCardX o) =
        "tag" := "DCardX"
-    ~> "dcardx_front" := o.dcardxFront
-    ~> "dcardx_back" := o.dcardxBack
+    ~> "front" := o.front
+    ~> "back" := o.back
     ~> jsonEmptyObject
 
 
 instance dCardXDecodeJson :: DecodeJson DCardX where
   decodeJson o = do
     obj <- decodeJson o
-    dcardxFront <- obj .? "dcardx_front"
-    dcardxBack <- obj .? "dcardx_back"
+    front <- obj .? "front"
+    back <- obj .? "back"
     pure $ DCardX {
-      dcardxFront,
-      dcardxBack
+      front,
+      back
     }
 
 
@@ -3747,19 +3747,19 @@ instance dCardXRespondable :: Respondable DCardX where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkDCardX
-      <$> readProp "dcardx_front" json
-      <*> readProp "dcardx_back" json
+      <$> readProp "front" json
+      <*> readProp "back" json
 
 
 instance dCardXIsForeign :: IsForeign DCardX where
   read json =
       mkDCardX
-      <$> readProp "dcardx_front" json
-      <*> readProp "dcardx_back" json
+      <$> readProp "front" json
+      <*> readProp "back" json
 
 
 instance dCardXShow :: Show DCardX where
-    show (DCardX o) = show "dcardxFront: " ++ show o.dcardxFront ++ ", " ++ show "dcardxBack: " ++ show o.dcardxBack
+    show (DCardX o) = show "front: " ++ show o.front ++ ", " ++ show "back: " ++ show o.back
 
 newtype Acronym = Acronym {
   abbreviation :: String,
@@ -4236,21 +4236,21 @@ instance linearDemoShow :: Show LinearDemo where
     show (LinearDemo o) = show "label: " ++ show o.label ++ ", " ++ show "content: " ++ show o.content
 
 newtype QA = QA {
-  qaQuestion :: String,
-  qaAnswer :: String
+  question :: String,
+  answer :: String
 }
 
 
 _QA :: LensP QA {
-  qaQuestion :: String,
-  qaAnswer :: String
+  question :: String,
+  answer :: String
 }
 _QA f (QA o) = QA <$> f o
 
 
 mkQA :: String -> String -> QA
-mkQA qaQuestion qaAnswer =
-  QA{qaQuestion, qaAnswer}
+mkQA question answer =
+  QA{question, answer}
 
 
 unwrapQA (QA r) = r
@@ -4258,19 +4258,19 @@ unwrapQA (QA r) = r
 instance qAEncodeJson :: EncodeJson QA where
   encodeJson (QA o) =
        "tag" := "QA"
-    ~> "qa_question" := o.qaQuestion
-    ~> "qa_answer" := o.qaAnswer
+    ~> "question" := o.question
+    ~> "answer" := o.answer
     ~> jsonEmptyObject
 
 
 instance qADecodeJson :: DecodeJson QA where
   decodeJson o = do
     obj <- decodeJson o
-    qaQuestion <- obj .? "qa_question"
-    qaAnswer <- obj .? "qa_answer"
+    question <- obj .? "question"
+    answer <- obj .? "answer"
     pure $ QA {
-      qaQuestion,
-      qaAnswer
+      question,
+      answer
     }
 
 
@@ -4285,19 +4285,19 @@ instance qARespondable :: Respondable QA where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkQA
-      <$> readProp "qa_question" json
-      <*> readProp "qa_answer" json
+      <$> readProp "question" json
+      <*> readProp "answer" json
 
 
 instance qAIsForeign :: IsForeign QA where
   read json =
       mkQA
-      <$> readProp "qa_question" json
-      <*> readProp "qa_answer" json
+      <$> readProp "question" json
+      <*> readProp "answer" json
 
 
 instance qAShow :: Show QA where
-    show (QA o) = show "qaQuestion: " ++ show o.qaQuestion ++ ", " ++ show "qaAnswer: " ++ show o.qaAnswer
+    show (QA o) = show "question: " ++ show o.question ++ ", " ++ show "answer: " ++ show o.answer
 
 newtype Table = Table {
   title :: String,
@@ -13193,6 +13193,10 @@ activityAt_ :: forall b a r. Lens { activityAt :: a | r } { activityAt :: b | r 
 activityAt_ f o = o { activityAt = _ } <$> f o.activityAt
 
 
+answer_ :: forall b a r. Lens { answer :: a | r } { answer :: b | r } a b
+answer_ f o = o { answer = _ } <$> f o.answer
+
+
 apiResponses_ :: forall b a r. Lens { apiResponses :: a | r } { apiResponses :: b | r } a b
 apiResponses_ f o = o { apiResponses = _ } <$> f o.apiResponses
 
@@ -13287,22 +13291,6 @@ createdAt_ f o = o { createdAt = _ } <$> f o.createdAt
 
 dataP_ :: forall b a r. Lens { dataP :: a | r } { dataP :: b | r } a b
 dataP_ f o = o { dataP = _ } <$> f o.dataP
-
-
-dcardBack_ :: forall b a r. Lens { dcardBack :: a | r } { dcardBack :: b | r } a b
-dcardBack_ f o = o { dcardBack = _ } <$> f o.dcardBack
-
-
-dcardFront_ :: forall b a r. Lens { dcardFront :: a | r } { dcardFront :: b | r } a b
-dcardFront_ f o = o { dcardFront = _ } <$> f o.dcardFront
-
-
-dcardxBack_ :: forall b a r. Lens { dcardxBack :: a | r } { dcardxBack :: b | r } a b
-dcardxBack_ f o = o { dcardxBack = _ } <$> f o.dcardxBack
-
-
-dcardxFront_ :: forall b a r. Lens { dcardxFront :: a | r } { dcardxFront :: b | r } a b
-dcardxFront_ f o = o { dcardxFront = _ } <$> f o.dcardxFront
 
 
 deactivatedAt_ :: forall b a r. Lens { deactivatedAt :: a | r } { deactivatedAt :: b | r } a b
@@ -13637,12 +13625,8 @@ profileResponses_ :: forall b a r. Lens { profileResponses :: a | r } { profileR
 profileResponses_ f o = o { profileResponses = _ } <$> f o.profileResponses
 
 
-qaAnswer_ :: forall b a r. Lens { qaAnswer :: a | r } { qaAnswer :: b | r } a b
-qaAnswer_ f o = o { qaAnswer = _ } <$> f o.qaAnswer
-
-
-qaQuestion_ :: forall b a r. Lens { qaQuestion :: a | r } { qaQuestion :: b | r } a b
-qaQuestion_ f o = o { qaQuestion = _ } <$> f o.qaQuestion
+question_ :: forall b a r. Lens { question :: a | r } { question :: b | r } a b
+question_ f o = o { question = _ } <$> f o.question
 
 
 reason_ :: forall b a r. Lens { reason :: a | r } { reason :: b | r } a b
