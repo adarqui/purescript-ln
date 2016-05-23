@@ -2704,24 +2704,24 @@ instance leuronTrainingSummaryShow :: Show LeuronTrainingSummary where
 
 
 newtype LeuronTrainingRequest = LeuronTrainingRequest {
-  style :: LeuronTrainingSummary
+  summary :: LeuronTrainingSummary
 }
 
 
 type LeuronTrainingRequestR = {
-  style :: LeuronTrainingSummary
+  summary :: LeuronTrainingSummary
 }
 
 
 _LeuronTrainingRequest :: LensP LeuronTrainingRequest {
-  style :: LeuronTrainingSummary
+  summary :: LeuronTrainingSummary
 }
 _LeuronTrainingRequest f (LeuronTrainingRequest o) = LeuronTrainingRequest <$> f o
 
 
 mkLeuronTrainingRequest :: LeuronTrainingSummary -> LeuronTrainingRequest
-mkLeuronTrainingRequest style =
-  LeuronTrainingRequest{style}
+mkLeuronTrainingRequest summary =
+  LeuronTrainingRequest{summary}
 
 
 unwrapLeuronTrainingRequest (LeuronTrainingRequest r) = r
@@ -2729,16 +2729,16 @@ unwrapLeuronTrainingRequest (LeuronTrainingRequest r) = r
 instance leuronTrainingRequestEncodeJson :: EncodeJson LeuronTrainingRequest where
   encodeJson (LeuronTrainingRequest o) =
        "tag" := "LeuronTrainingRequest"
-    ~> "style" := o.style
+    ~> "summary" := o.summary
     ~> jsonEmptyObject
 
 
 instance leuronTrainingRequestDecodeJson :: DecodeJson LeuronTrainingRequest where
   decodeJson o = do
     obj <- decodeJson o
-    style <- obj .? "style"
+    summary <- obj .? "summary"
     pure $ LeuronTrainingRequest {
-      style
+      summary
     }
 
 
@@ -2753,17 +2753,17 @@ instance leuronTrainingRequestRespondable :: Respondable LeuronTrainingRequest w
     Tuple Nothing JSONResponse
   fromResponse json =
       mkLeuronTrainingRequest
-      <$> readProp "style" json
+      <$> readProp "summary" json
 
 
 instance leuronTrainingRequestIsForeign :: IsForeign LeuronTrainingRequest where
   read json =
       mkLeuronTrainingRequest
-      <$> readProp "style" json
+      <$> readProp "summary" json
 
 
 instance leuronTrainingRequestShow :: Show LeuronTrainingRequest where
-    show (LeuronTrainingRequest o) = show "style: " ++ show o.style
+    show (LeuronTrainingRequest o) = show "summary: " ++ show o.summary
 
 newtype LeuronTrainingResponse = LeuronTrainingResponse {
   id :: Int,
