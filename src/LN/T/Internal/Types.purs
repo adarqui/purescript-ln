@@ -2605,6 +2605,454 @@ instance leuronStatResponsesIsForeign :: IsForeign LeuronStatResponses where
 instance leuronStatResponsesShow :: Show LeuronStatResponses where
     show (LeuronStatResponses o) = show "leuronStatResponses: " ++ show o.leuronStatResponses
 
+data LeuronTrainingSummary
+  = LTS_View 
+  | LTS_Know 
+  | LTS_DontKnow 
+  | LTS_DontCare 
+
+
+
+instance leuronTrainingSummaryEncodeJson :: EncodeJson LeuronTrainingSummary where
+  encodeJson (LTS_View ) =
+       "tag" := "LTS_View"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (LTS_Know ) =
+       "tag" := "LTS_Know"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (LTS_DontKnow ) =
+       "tag" := "LTS_DontKnow"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (LTS_DontCare ) =
+       "tag" := "LTS_DontCare"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance leuronTrainingSummaryDecodeJson :: DecodeJson LeuronTrainingSummary where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "LTS_View" -> do
+          return LTS_View
+
+        "LTS_Know" -> do
+          return LTS_Know
+
+        "LTS_DontKnow" -> do
+          return LTS_DontKnow
+
+        "LTS_DontCare" -> do
+          return LTS_DontCare
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance leuronTrainingSummaryRequestable :: Requestable LeuronTrainingSummary where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance leuronTrainingSummaryRespondable :: Respondable LeuronTrainingSummary where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "LTS_View" -> do
+          return LTS_View
+
+        "LTS_Know" -> do
+          return LTS_Know
+
+        "LTS_DontKnow" -> do
+          return LTS_DontKnow
+
+        "LTS_DontCare" -> do
+          return LTS_DontCare
+
+
+
+instance leuronTrainingSummaryIsForeign :: IsForeign LeuronTrainingSummary where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "LTS_View" -> do
+          return LTS_View
+
+        "LTS_Know" -> do
+          return LTS_Know
+
+        "LTS_DontKnow" -> do
+          return LTS_DontKnow
+
+        "LTS_DontCare" -> do
+          return LTS_DontCare
+
+
+
+instance leuronTrainingSummaryShow :: Show LeuronTrainingSummary where
+  show (LTS_View) = "LTS_View"
+  show (LTS_Know) = "LTS_Know"
+  show (LTS_DontKnow) = "LTS_DontKnow"
+  show (LTS_DontCare) = "LTS_DontCare"
+
+
+newtype LeuronTrainingRequest = LeuronTrainingRequest {
+  style :: LeuronTrainingSummary
+}
+
+
+type LeuronTrainingRequestR = {
+  style :: LeuronTrainingSummary
+}
+
+
+_LeuronTrainingRequest :: LensP LeuronTrainingRequest {
+  style :: LeuronTrainingSummary
+}
+_LeuronTrainingRequest f (LeuronTrainingRequest o) = LeuronTrainingRequest <$> f o
+
+
+mkLeuronTrainingRequest :: LeuronTrainingSummary -> LeuronTrainingRequest
+mkLeuronTrainingRequest style =
+  LeuronTrainingRequest{style}
+
+
+unwrapLeuronTrainingRequest (LeuronTrainingRequest r) = r
+
+instance leuronTrainingRequestEncodeJson :: EncodeJson LeuronTrainingRequest where
+  encodeJson (LeuronTrainingRequest o) =
+       "tag" := "LeuronTrainingRequest"
+    ~> "style" := o.style
+    ~> jsonEmptyObject
+
+
+instance leuronTrainingRequestDecodeJson :: DecodeJson LeuronTrainingRequest where
+  decodeJson o = do
+    obj <- decodeJson o
+    style <- obj .? "style"
+    pure $ LeuronTrainingRequest {
+      style
+    }
+
+
+instance leuronTrainingRequestRequestable :: Requestable LeuronTrainingRequest where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance leuronTrainingRequestRespondable :: Respondable LeuronTrainingRequest where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLeuronTrainingRequest
+      <$> readProp "style" json
+
+
+instance leuronTrainingRequestIsForeign :: IsForeign LeuronTrainingRequest where
+  read json =
+      mkLeuronTrainingRequest
+      <$> readProp "style" json
+
+
+instance leuronTrainingRequestShow :: Show LeuronTrainingRequest where
+    show (LeuronTrainingRequest o) = show "style: " ++ show o.style
+
+newtype LeuronTrainingResponse = LeuronTrainingResponse {
+  id :: Int,
+  userId :: Int,
+  leuronId :: Int,
+  summary :: LeuronTrainingSummary,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+
+
+type LeuronTrainingResponseR = {
+  id :: Int,
+  userId :: Int,
+  leuronId :: Int,
+  summary :: LeuronTrainingSummary,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+
+
+_LeuronTrainingResponse :: LensP LeuronTrainingResponse {
+  id :: Int,
+  userId :: Int,
+  leuronId :: Int,
+  summary :: LeuronTrainingSummary,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
+_LeuronTrainingResponse f (LeuronTrainingResponse o) = LeuronTrainingResponse <$> f o
+
+
+mkLeuronTrainingResponse :: Int -> Int -> Int -> LeuronTrainingSummary -> (Maybe Date) -> (Maybe Date) -> LeuronTrainingResponse
+mkLeuronTrainingResponse id userId leuronId summary createdAt modifiedAt =
+  LeuronTrainingResponse{id, userId, leuronId, summary, createdAt, modifiedAt}
+
+
+unwrapLeuronTrainingResponse (LeuronTrainingResponse r) = r
+
+instance leuronTrainingResponseEncodeJson :: EncodeJson LeuronTrainingResponse where
+  encodeJson (LeuronTrainingResponse o) =
+       "tag" := "LeuronTrainingResponse"
+    ~> "id" := o.id
+    ~> "user_id" := o.userId
+    ~> "leuron_id" := o.leuronId
+    ~> "summary" := o.summary
+    ~> "created_at" := o.createdAt
+    ~> "modified_at" := o.modifiedAt
+    ~> jsonEmptyObject
+
+
+instance leuronTrainingResponseDecodeJson :: DecodeJson LeuronTrainingResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    userId <- obj .? "user_id"
+    leuronId <- obj .? "leuron_id"
+    summary <- obj .? "summary"
+    createdAt <- obj .? "created_at"
+    modifiedAt <- obj .? "modified_at"
+    pure $ LeuronTrainingResponse {
+      id,
+      userId,
+      leuronId,
+      summary,
+      createdAt,
+      modifiedAt
+    }
+
+
+instance leuronTrainingResponseRequestable :: Requestable LeuronTrainingResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance leuronTrainingResponseRespondable :: Respondable LeuronTrainingResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLeuronTrainingResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "leuron_id" json
+      <*> readProp "summary" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance leuronTrainingResponseIsForeign :: IsForeign LeuronTrainingResponse where
+  read json =
+      mkLeuronTrainingResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "leuron_id" json
+      <*> readProp "summary" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+
+
+instance leuronTrainingResponseShow :: Show LeuronTrainingResponse where
+    show (LeuronTrainingResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "summary: " ++ show o.summary ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+
+newtype LeuronTrainingResponses = LeuronTrainingResponses {
+  leuronTrainingResponses :: (Array  LeuronTrainingResponse)
+}
+
+
+type LeuronTrainingResponsesR = {
+  leuronTrainingResponses :: (Array  LeuronTrainingResponse)
+}
+
+
+_LeuronTrainingResponses :: LensP LeuronTrainingResponses {
+  leuronTrainingResponses :: (Array  LeuronTrainingResponse)
+}
+_LeuronTrainingResponses f (LeuronTrainingResponses o) = LeuronTrainingResponses <$> f o
+
+
+mkLeuronTrainingResponses :: (Array  LeuronTrainingResponse) -> LeuronTrainingResponses
+mkLeuronTrainingResponses leuronTrainingResponses =
+  LeuronTrainingResponses{leuronTrainingResponses}
+
+
+unwrapLeuronTrainingResponses (LeuronTrainingResponses r) = r
+
+instance leuronTrainingResponsesEncodeJson :: EncodeJson LeuronTrainingResponses where
+  encodeJson (LeuronTrainingResponses o) =
+       "tag" := "LeuronTrainingResponses"
+    ~> "leuron_training_responses" := o.leuronTrainingResponses
+    ~> jsonEmptyObject
+
+
+instance leuronTrainingResponsesDecodeJson :: DecodeJson LeuronTrainingResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    leuronTrainingResponses <- obj .? "leuron_training_responses"
+    pure $ LeuronTrainingResponses {
+      leuronTrainingResponses
+    }
+
+
+instance leuronTrainingResponsesRequestable :: Requestable LeuronTrainingResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance leuronTrainingResponsesRespondable :: Respondable LeuronTrainingResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLeuronTrainingResponses
+      <$> readProp "leuron_training_responses" json
+
+
+instance leuronTrainingResponsesIsForeign :: IsForeign LeuronTrainingResponses where
+  read json =
+      mkLeuronTrainingResponses
+      <$> readProp "leuron_training_responses" json
+
+
+instance leuronTrainingResponsesShow :: Show LeuronTrainingResponses where
+    show (LeuronTrainingResponses o) = show "leuronTrainingResponses: " ++ show o.leuronTrainingResponses
+
+newtype LeuronTrainingStatResponse = LeuronTrainingStatResponse {
+  leuronTrainingId :: Int
+}
+
+
+type LeuronTrainingStatResponseR = {
+  leuronTrainingId :: Int
+}
+
+
+_LeuronTrainingStatResponse :: LensP LeuronTrainingStatResponse {
+  leuronTrainingId :: Int
+}
+_LeuronTrainingStatResponse f (LeuronTrainingStatResponse o) = LeuronTrainingStatResponse <$> f o
+
+
+mkLeuronTrainingStatResponse :: Int -> LeuronTrainingStatResponse
+mkLeuronTrainingStatResponse leuronTrainingId =
+  LeuronTrainingStatResponse{leuronTrainingId}
+
+
+unwrapLeuronTrainingStatResponse (LeuronTrainingStatResponse r) = r
+
+instance leuronTrainingStatResponseEncodeJson :: EncodeJson LeuronTrainingStatResponse where
+  encodeJson (LeuronTrainingStatResponse o) =
+       "tag" := "LeuronTrainingStatResponse"
+    ~> "leuron_training_id" := o.leuronTrainingId
+    ~> jsonEmptyObject
+
+
+instance leuronTrainingStatResponseDecodeJson :: DecodeJson LeuronTrainingStatResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    leuronTrainingId <- obj .? "leuron_training_id"
+    pure $ LeuronTrainingStatResponse {
+      leuronTrainingId
+    }
+
+
+instance leuronTrainingStatResponseRequestable :: Requestable LeuronTrainingStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance leuronTrainingStatResponseRespondable :: Respondable LeuronTrainingStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLeuronTrainingStatResponse
+      <$> readProp "leuron_training_id" json
+
+
+instance leuronTrainingStatResponseIsForeign :: IsForeign LeuronTrainingStatResponse where
+  read json =
+      mkLeuronTrainingStatResponse
+      <$> readProp "leuron_training_id" json
+
+
+instance leuronTrainingStatResponseShow :: Show LeuronTrainingStatResponse where
+    show (LeuronTrainingStatResponse o) = show "leuronTrainingId: " ++ show o.leuronTrainingId
+
+newtype LeuronTrainingStatResponses = LeuronTrainingStatResponses {
+  leuronTrainingStatResponses :: (Array  LeuronTrainingStatResponse)
+}
+
+
+type LeuronTrainingStatResponsesR = {
+  leuronTrainingStatResponses :: (Array  LeuronTrainingStatResponse)
+}
+
+
+_LeuronTrainingStatResponses :: LensP LeuronTrainingStatResponses {
+  leuronTrainingStatResponses :: (Array  LeuronTrainingStatResponse)
+}
+_LeuronTrainingStatResponses f (LeuronTrainingStatResponses o) = LeuronTrainingStatResponses <$> f o
+
+
+mkLeuronTrainingStatResponses :: (Array  LeuronTrainingStatResponse) -> LeuronTrainingStatResponses
+mkLeuronTrainingStatResponses leuronTrainingStatResponses =
+  LeuronTrainingStatResponses{leuronTrainingStatResponses}
+
+
+unwrapLeuronTrainingStatResponses (LeuronTrainingStatResponses r) = r
+
+instance leuronTrainingStatResponsesEncodeJson :: EncodeJson LeuronTrainingStatResponses where
+  encodeJson (LeuronTrainingStatResponses o) =
+       "tag" := "LeuronTrainingStatResponses"
+    ~> "leuron_training_stat_responses" := o.leuronTrainingStatResponses
+    ~> jsonEmptyObject
+
+
+instance leuronTrainingStatResponsesDecodeJson :: DecodeJson LeuronTrainingStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    leuronTrainingStatResponses <- obj .? "leuron_training_stat_responses"
+    pure $ LeuronTrainingStatResponses {
+      leuronTrainingStatResponses
+    }
+
+
+instance leuronTrainingStatResponsesRequestable :: Requestable LeuronTrainingStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance leuronTrainingStatResponsesRespondable :: Respondable LeuronTrainingStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkLeuronTrainingStatResponses
+      <$> readProp "leuron_training_stat_responses" json
+
+
+instance leuronTrainingStatResponsesIsForeign :: IsForeign LeuronTrainingStatResponses where
+  read json =
+      mkLeuronTrainingStatResponses
+      <$> readProp "leuron_training_stat_responses" json
+
+
+instance leuronTrainingStatResponsesShow :: Show LeuronTrainingStatResponses where
+    show (LeuronTrainingStatResponses o) = show "leuronTrainingStatResponses: " ++ show o.leuronTrainingStatResponses
+
 data LikeOpt
   = Like 
   | Neutral 
@@ -13985,6 +14433,7 @@ newtype LeuronPackResponse = LeuronPackResponse {
   leuronId :: Int,
   user :: UserSanitizedResponse,
   userId :: Int,
+  training :: LeuronTrainingResponse,
   stat :: LeuronStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
@@ -13996,6 +14445,7 @@ type LeuronPackResponseR = {
   leuronId :: Int,
   user :: UserSanitizedResponse,
   userId :: Int,
+  training :: LeuronTrainingResponse,
   stat :: LeuronStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
@@ -14007,6 +14457,7 @@ _LeuronPackResponse :: LensP LeuronPackResponse {
   leuronId :: Int,
   user :: UserSanitizedResponse,
   userId :: Int,
+  training :: LeuronTrainingResponse,
   stat :: LeuronStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
@@ -14014,9 +14465,9 @@ _LeuronPackResponse :: LensP LeuronPackResponse {
 _LeuronPackResponse f (LeuronPackResponse o) = LeuronPackResponse <$> f o
 
 
-mkLeuronPackResponse :: LeuronResponse -> Int -> UserSanitizedResponse -> Int -> LeuronStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> LeuronPackResponse
-mkLeuronPackResponse leuron leuronId user userId stat like star =
-  LeuronPackResponse{leuron, leuronId, user, userId, stat, like, star}
+mkLeuronPackResponse :: LeuronResponse -> Int -> UserSanitizedResponse -> Int -> LeuronTrainingResponse -> LeuronStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> LeuronPackResponse
+mkLeuronPackResponse leuron leuronId user userId training stat like star =
+  LeuronPackResponse{leuron, leuronId, user, userId, training, stat, like, star}
 
 
 unwrapLeuronPackResponse (LeuronPackResponse r) = r
@@ -14028,6 +14479,7 @@ instance leuronPackResponseEncodeJson :: EncodeJson LeuronPackResponse where
     ~> "leuron_id" := o.leuronId
     ~> "user" := o.user
     ~> "user_id" := o.userId
+    ~> "training" := o.training
     ~> "stat" := o.stat
     ~> "like" := o.like
     ~> "star" := o.star
@@ -14041,6 +14493,7 @@ instance leuronPackResponseDecodeJson :: DecodeJson LeuronPackResponse where
     leuronId <- obj .? "leuron_id"
     user <- obj .? "user"
     userId <- obj .? "user_id"
+    training <- obj .? "training"
     stat <- obj .? "stat"
     like <- obj .? "like"
     star <- obj .? "star"
@@ -14049,6 +14502,7 @@ instance leuronPackResponseDecodeJson :: DecodeJson LeuronPackResponse where
       leuronId,
       user,
       userId,
+      training,
       stat,
       like,
       star
@@ -14070,6 +14524,7 @@ instance leuronPackResponseRespondable :: Respondable LeuronPackResponse where
       <*> readProp "leuron_id" json
       <*> readProp "user" json
       <*> readProp "user_id" json
+      <*> readProp "training" json
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
@@ -14082,13 +14537,14 @@ instance leuronPackResponseIsForeign :: IsForeign LeuronPackResponse where
       <*> readProp "leuron_id" json
       <*> readProp "user" json
       <*> readProp "user_id" json
+      <*> readProp "training" json
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
 
 
 instance leuronPackResponseShow :: Show LeuronPackResponse where
-    show (LeuronPackResponse o) = show "leuron: " ++ show o.leuron ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
+    show (LeuronPackResponse o) = show "leuron: " ++ show o.leuron ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "training: " ++ show o.training ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype LeuronPackResponses = LeuronPackResponses {
   leuronPackResponses :: (Array  LeuronPackResponse)
@@ -14440,6 +14896,18 @@ leuronStatResponses_ :: forall b a r. Lens { leuronStatResponses :: a | r } { le
 leuronStatResponses_ f o = o { leuronStatResponses = _ } <$> f o.leuronStatResponses
 
 
+leuronTrainingId_ :: forall b a r. Lens { leuronTrainingId :: a | r } { leuronTrainingId :: b | r } a b
+leuronTrainingId_ f o = o { leuronTrainingId = _ } <$> f o.leuronTrainingId
+
+
+leuronTrainingResponses_ :: forall b a r. Lens { leuronTrainingResponses :: a | r } { leuronTrainingResponses :: b | r } a b
+leuronTrainingResponses_ f o = o { leuronTrainingResponses = _ } <$> f o.leuronTrainingResponses
+
+
+leuronTrainingStatResponses_ :: forall b a r. Lens { leuronTrainingStatResponses :: a | r } { leuronTrainingStatResponses :: b | r } a b
+leuronTrainingStatResponses_ f o = o { leuronTrainingStatResponses = _ } <$> f o.leuronTrainingStatResponses
+
+
 leurons_ :: forall b a r. Lens { leurons :: a | r } { leurons :: b | r } a b
 leurons_ f o = o { leurons = _ } <$> f o.leurons
 
@@ -14716,6 +15184,10 @@ substitutions_ :: forall b a r. Lens { substitutions :: a | r } { substitutions 
 substitutions_ f o = o { substitutions = _ } <$> f o.substitutions
 
 
+summary_ :: forall b a r. Lens { summary :: a | r } { summary :: b | r } a b
+summary_ f o = o { summary = _ } <$> f o.summary
+
+
 tags_ :: forall b a r. Lens { tags :: a | r } { tags :: b | r } a b
 tags_ f o = o { tags = _ } <$> f o.tags
 
@@ -14810,6 +15282,10 @@ title_ f o = o { title = _ } <$> f o.title
 
 toUserId_ :: forall b a r. Lens { toUserId :: a | r } { toUserId :: b | r } a b
 toUserId_ f o = o { toUserId = _ } <$> f o.toUserId
+
+
+training_ :: forall b a r. Lens { training :: a | r } { training :: b | r } a b
+training_ f o = o { training = _ } <$> f o.training
 
 
 url_ :: forall b a r. Lens { url :: a | r } { url :: b | r } a b
