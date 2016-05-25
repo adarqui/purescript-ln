@@ -2607,15 +2607,21 @@ instance leuronStatResponsesShow :: Show LeuronStatResponses where
 
 data LeuronTrainingSummary
   = LTS_View 
+  | LTS_Skip 
   | LTS_Know 
   | LTS_DontKnow 
   | LTS_DontCare 
+  | LTS_Protest 
 
 
 
 instance leuronTrainingSummaryEncodeJson :: EncodeJson LeuronTrainingSummary where
   encodeJson (LTS_View ) =
        "tag" := "LTS_View"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (LTS_Skip ) =
+       "tag" := "LTS_Skip"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (LTS_Know ) =
@@ -2630,6 +2636,10 @@ instance leuronTrainingSummaryEncodeJson :: EncodeJson LeuronTrainingSummary whe
        "tag" := "LTS_DontCare"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
+  encodeJson (LTS_Protest ) =
+       "tag" := "LTS_Protest"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
 
 
 instance leuronTrainingSummaryDecodeJson :: DecodeJson LeuronTrainingSummary where
@@ -2640,6 +2650,9 @@ instance leuronTrainingSummaryDecodeJson :: DecodeJson LeuronTrainingSummary whe
         "LTS_View" -> do
           return LTS_View
 
+        "LTS_Skip" -> do
+          return LTS_Skip
+
         "LTS_Know" -> do
           return LTS_Know
 
@@ -2648,6 +2661,9 @@ instance leuronTrainingSummaryDecodeJson :: DecodeJson LeuronTrainingSummary whe
 
         "LTS_DontCare" -> do
           return LTS_DontCare
+
+        "LTS_Protest" -> do
+          return LTS_Protest
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -2667,6 +2683,9 @@ instance leuronTrainingSummaryRespondable :: Respondable LeuronTrainingSummary w
         "LTS_View" -> do
           return LTS_View
 
+        "LTS_Skip" -> do
+          return LTS_Skip
+
         "LTS_Know" -> do
           return LTS_Know
 
@@ -2675,6 +2694,9 @@ instance leuronTrainingSummaryRespondable :: Respondable LeuronTrainingSummary w
 
         "LTS_DontCare" -> do
           return LTS_DontCare
+
+        "LTS_Protest" -> do
+          return LTS_Protest
 
 
 
@@ -2685,6 +2707,9 @@ instance leuronTrainingSummaryIsForeign :: IsForeign LeuronTrainingSummary where
         "LTS_View" -> do
           return LTS_View
 
+        "LTS_Skip" -> do
+          return LTS_Skip
+
         "LTS_Know" -> do
           return LTS_Know
 
@@ -2694,13 +2719,18 @@ instance leuronTrainingSummaryIsForeign :: IsForeign LeuronTrainingSummary where
         "LTS_DontCare" -> do
           return LTS_DontCare
 
+        "LTS_Protest" -> do
+          return LTS_Protest
+
 
 
 instance leuronTrainingSummaryShow :: Show LeuronTrainingSummary where
   show (LTS_View) = "LTS_View"
+  show (LTS_Skip) = "LTS_Skip"
   show (LTS_Know) = "LTS_Know"
   show (LTS_DontKnow) = "LTS_DontKnow"
   show (LTS_DontCare) = "LTS_DontCare"
+  show (LTS_Protest) = "LTS_Protest"
 
 
 newtype LeuronTrainingRequest = LeuronTrainingRequest {
@@ -12887,6 +12917,11 @@ instance visibilityShow :: Show Visibility where
   show (Public) = "Public"
   show (Private) = "Private"
 
+
+instance visibilityEq :: Eq Visibility where
+  eq (Public) (Public) = true
+  eq (Private) (Private) = true
+  eq _ _ = false
 
 newtype OrganizationPackResponse = OrganizationPackResponse {
   user :: UserSanitizedResponse,
