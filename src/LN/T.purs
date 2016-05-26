@@ -18,3 +18,4 @@ import           LN.T.Size                           as A
 
 
 import LN.T.Internal.Types as A
+import LN.T.Internal.Convert as A
