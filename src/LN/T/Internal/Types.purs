@@ -2610,6 +2610,7 @@ data LeuronTrainingSummary
   | LTS_Skip 
   | LTS_Know 
   | LTS_DontKnow 
+  | LTS_DontUnderstand 
   | LTS_DontCare 
   | LTS_Protest 
 
@@ -2630,6 +2631,10 @@ instance leuronTrainingSummaryEncodeJson :: EncodeJson LeuronTrainingSummary whe
     ~> jsonEmptyObject
   encodeJson (LTS_DontKnow ) =
        "tag" := "LTS_DontKnow"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (LTS_DontUnderstand ) =
+       "tag" := "LTS_DontUnderstand"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (LTS_DontCare ) =
@@ -2658,6 +2663,9 @@ instance leuronTrainingSummaryDecodeJson :: DecodeJson LeuronTrainingSummary whe
 
         "LTS_DontKnow" -> do
           return LTS_DontKnow
+
+        "LTS_DontUnderstand" -> do
+          return LTS_DontUnderstand
 
         "LTS_DontCare" -> do
           return LTS_DontCare
@@ -2692,6 +2700,9 @@ instance leuronTrainingSummaryRespondable :: Respondable LeuronTrainingSummary w
         "LTS_DontKnow" -> do
           return LTS_DontKnow
 
+        "LTS_DontUnderstand" -> do
+          return LTS_DontUnderstand
+
         "LTS_DontCare" -> do
           return LTS_DontCare
 
@@ -2716,6 +2727,9 @@ instance leuronTrainingSummaryIsForeign :: IsForeign LeuronTrainingSummary where
         "LTS_DontKnow" -> do
           return LTS_DontKnow
 
+        "LTS_DontUnderstand" -> do
+          return LTS_DontUnderstand
+
         "LTS_DontCare" -> do
           return LTS_DontCare
 
@@ -2729,6 +2743,7 @@ instance leuronTrainingSummaryShow :: Show LeuronTrainingSummary where
   show (LTS_Skip) = "LTS_Skip"
   show (LTS_Know) = "LTS_Know"
   show (LTS_DontKnow) = "LTS_DontKnow"
+  show (LTS_DontUnderstand) = "LTS_DontUnderstand"
   show (LTS_DontCare) = "LTS_DontCare"
   show (LTS_Protest) = "LTS_Protest"
 
@@ -9363,6 +9378,111 @@ instance resourceTypeShow :: Show ResourceType where
   show (SourceNone) = "SourceNone"
 
 
+data TyResourceType
+  = TyISBN13 
+  | TyISBN10 
+  | TyISBN 
+  | TyURL 
+
+
+
+instance tyResourceTypeEncodeJson :: EncodeJson TyResourceType where
+  encodeJson (TyISBN13 ) =
+       "tag" := "TyISBN13"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyISBN10 ) =
+       "tag" := "TyISBN10"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyISBN ) =
+       "tag" := "TyISBN"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TyURL ) =
+       "tag" := "TyURL"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance tyResourceTypeDecodeJson :: DecodeJson TyResourceType where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "TyISBN13" -> do
+          return TyISBN13
+
+        "TyISBN10" -> do
+          return TyISBN10
+
+        "TyISBN" -> do
+          return TyISBN
+
+        "TyURL" -> do
+          return TyURL
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance tyResourceTypeRequestable :: Requestable TyResourceType where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance tyResourceTypeRespondable :: Respondable TyResourceType where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TyISBN13" -> do
+          return TyISBN13
+
+        "TyISBN10" -> do
+          return TyISBN10
+
+        "TyISBN" -> do
+          return TyISBN
+
+        "TyURL" -> do
+          return TyURL
+
+
+
+instance tyResourceTypeIsForeign :: IsForeign TyResourceType where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TyISBN13" -> do
+          return TyISBN13
+
+        "TyISBN10" -> do
+          return TyISBN10
+
+        "TyISBN" -> do
+          return TyISBN
+
+        "TyURL" -> do
+          return TyURL
+
+
+
+instance tyResourceTypeShow :: Show TyResourceType where
+  show (TyISBN13) = "TyISBN13"
+  show (TyISBN10) = "TyISBN10"
+  show (TyISBN) = "TyISBN"
+  show (TyURL) = "TyURL"
+
+
+instance tyResourceTypeEq :: Eq TyResourceType where
+  eq (TyISBN13) (TyISBN13) = true
+  eq (TyISBN10) (TyISBN10) = true
+  eq (TyISBN) (TyISBN) = true
+  eq (TyURL) (TyURL) = true
+  eq _ _ = false
+
 newtype ResourceRequest = ResourceRequest {
   title :: String,
   description :: String,
@@ -10089,6 +10209,79 @@ instance splitsShow :: Show Splits where
   show (SplitNone) = "SplitNone"
 
 
+data TySplits
+  = TySplitA 
+  | TySplitNone 
+
+
+
+instance tySplitsEncodeJson :: EncodeJson TySplits where
+  encodeJson (TySplitA ) =
+       "tag" := "TySplitA"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TySplitNone ) =
+       "tag" := "TySplitNone"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance tySplitsDecodeJson :: DecodeJson TySplits where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "TySplitA" -> do
+          return TySplitA
+
+        "TySplitNone" -> do
+          return TySplitNone
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance tySplitsRequestable :: Requestable TySplits where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance tySplitsRespondable :: Respondable TySplits where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TySplitA" -> do
+          return TySplitA
+
+        "TySplitNone" -> do
+          return TySplitNone
+
+
+
+instance tySplitsIsForeign :: IsForeign TySplits where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TySplitA" -> do
+          return TySplitA
+
+        "TySplitNone" -> do
+          return TySplitNone
+
+
+
+instance tySplitsShow :: Show TySplits where
+  show (TySplitA) = "TySplitA"
+  show (TySplitNone) = "TySplitNone"
+
+
+instance tySplitsEq :: Eq TySplits where
+  eq (TySplitA) (TySplitA) = true
+  eq (TySplitNone) (TySplitNone) = true
+  eq _ _ = false
+
 data Substitutions
   = SubsExpr Substitutions Substitutions
   | SubsOneOf (Array  String)
@@ -10198,6 +10391,111 @@ instance substitutionsShow :: Show Substitutions where
   show (SubsAllOf x0) = "SubsAllOf: " ++ show x0
   show (SubsBoth x0 x1) = "SubsBoth: " ++ show x0 ++ " " ++ show x1
 
+
+data TySubstitutions
+  = TySubsExpr 
+  | TySubsOneOf 
+  | TySubsAllOf 
+  | TySubsBoth 
+
+
+
+instance tySubstitutionsEncodeJson :: EncodeJson TySubstitutions where
+  encodeJson (TySubsExpr ) =
+       "tag" := "TySubsExpr"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TySubsOneOf ) =
+       "tag" := "TySubsOneOf"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TySubsAllOf ) =
+       "tag" := "TySubsAllOf"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (TySubsBoth ) =
+       "tag" := "TySubsBoth"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance tySubstitutionsDecodeJson :: DecodeJson TySubstitutions where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "TySubsExpr" -> do
+          return TySubsExpr
+
+        "TySubsOneOf" -> do
+          return TySubsOneOf
+
+        "TySubsAllOf" -> do
+          return TySubsAllOf
+
+        "TySubsBoth" -> do
+          return TySubsBoth
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance tySubstitutionsRequestable :: Requestable TySubstitutions where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance tySubstitutionsRespondable :: Respondable TySubstitutions where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TySubsExpr" -> do
+          return TySubsExpr
+
+        "TySubsOneOf" -> do
+          return TySubsOneOf
+
+        "TySubsAllOf" -> do
+          return TySubsAllOf
+
+        "TySubsBoth" -> do
+          return TySubsBoth
+
+
+
+instance tySubstitutionsIsForeign :: IsForeign TySubstitutions where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TySubsExpr" -> do
+          return TySubsExpr
+
+        "TySubsOneOf" -> do
+          return TySubsOneOf
+
+        "TySubsAllOf" -> do
+          return TySubsAllOf
+
+        "TySubsBoth" -> do
+          return TySubsBoth
+
+
+
+instance tySubstitutionsShow :: Show TySubstitutions where
+  show (TySubsExpr) = "TySubsExpr"
+  show (TySubsOneOf) = "TySubsOneOf"
+  show (TySubsAllOf) = "TySubsAllOf"
+  show (TySubsBoth) = "TySubsBoth"
+
+
+instance tySubstitutionsEq :: Eq TySubstitutions where
+  eq (TySubsExpr) (TySubsExpr) = true
+  eq (TySubsOneOf) (TySubsOneOf) = true
+  eq (TySubsAllOf) (TySubsAllOf) = true
+  eq (TySubsBoth) (TySubsBoth) = true
+  eq _ _ = false
 
 newtype StarRequest = StarRequest {
   reason :: (Maybe String)
