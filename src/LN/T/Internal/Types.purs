@@ -4193,6 +4193,25 @@ instance tyLeuronShow :: Show TyLeuron where
   show (TyLnEmpty) = "TyLnEmpty"
 
 
+instance tyLeuronEq :: Eq TyLeuron where
+  eq (TyLnFact) (TyLnFact) = true
+  eq (TyLnFactList) (TyLnFactList) = true
+  eq (TyLnCard) (TyLnCard) = true
+  eq (TyLnDCard) (TyLnDCard) = true
+  eq (TyLnDCardX) (TyLnDCardX) = true
+  eq (TyLnAcronym) (TyLnAcronym) = true
+  eq (TyLnSynonym) (TyLnSynonym) = true
+  eq (TyLnAntonym) (TyLnAntonym) = true
+  eq (TyLnTemplate) (TyLnTemplate) = true
+  eq (TyLnImageAssociation) (TyLnImageAssociation) = true
+  eq (TyLnLinearDemo) (TyLnLinearDemo) = true
+  eq (TyLnTable) (TyLnTable) = true
+  eq (TyLnScript) (TyLnScript) = true
+  eq (TyLnQA) (TyLnQA) = true
+  eq (TyLnExamples) (TyLnExamples) = true
+  eq (TyLnEmpty) (TyLnEmpty) = true
+  eq _ _ = false
+
 newtype Fact = Fact {
   text :: String
 }
