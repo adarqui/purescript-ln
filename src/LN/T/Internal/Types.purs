@@ -9383,6 +9383,7 @@ data TyResourceType
   | TyISBN10 
   | TyISBN 
   | TyURL 
+  | TySourceNone 
 
 
 
@@ -9403,6 +9404,10 @@ instance tyResourceTypeEncodeJson :: EncodeJson TyResourceType where
        "tag" := "TyURL"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
+  encodeJson (TySourceNone ) =
+       "tag" := "TySourceNone"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
 
 
 instance tyResourceTypeDecodeJson :: DecodeJson TyResourceType where
@@ -9421,6 +9426,9 @@ instance tyResourceTypeDecodeJson :: DecodeJson TyResourceType where
 
         "TyURL" -> do
           return TyURL
+
+        "TySourceNone" -> do
+          return TySourceNone
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -9449,6 +9457,9 @@ instance tyResourceTypeRespondable :: Respondable TyResourceType where
         "TyURL" -> do
           return TyURL
 
+        "TySourceNone" -> do
+          return TySourceNone
+
 
 
 instance tyResourceTypeIsForeign :: IsForeign TyResourceType where
@@ -9467,6 +9478,9 @@ instance tyResourceTypeIsForeign :: IsForeign TyResourceType where
         "TyURL" -> do
           return TyURL
 
+        "TySourceNone" -> do
+          return TySourceNone
+
 
 
 instance tyResourceTypeShow :: Show TyResourceType where
@@ -9474,6 +9488,7 @@ instance tyResourceTypeShow :: Show TyResourceType where
   show (TyISBN10) = "TyISBN10"
   show (TyISBN) = "TyISBN"
   show (TyURL) = "TyURL"
+  show (TySourceNone) = "TySourceNone"
 
 
 instance tyResourceTypeEq :: Eq TyResourceType where
@@ -9481,6 +9496,7 @@ instance tyResourceTypeEq :: Eq TyResourceType where
   eq (TyISBN10) (TyISBN10) = true
   eq (TyISBN) (TyISBN) = true
   eq (TyURL) (TyURL) = true
+  eq (TySourceNone) (TySourceNone) = true
   eq _ _ = false
 
 newtype ResourceRequest = ResourceRequest {
