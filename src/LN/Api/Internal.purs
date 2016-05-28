@@ -256,11 +256,11 @@ getLeurons params = handleError <$> getAt params ["leurons"]
 getLeurons' :: ApiEff (Either ApiError LeuronResponses)
 getLeurons'  = handleError <$> getAt ([] :: Array Boolean) ["leurons"]
 
-postLeuron :: forall qp. QueryParam qp => Array qp -> LeuronRequest -> ApiEff (Either ApiError LeuronResponse)
-postLeuron params leuron_request = handleError <$> postAt params ["leuron"] leuron_request
+postLeuron_ByResourceId :: forall qp. QueryParam qp => Array qp -> Int -> LeuronRequest -> ApiEff (Either ApiError LeuronResponse)
+postLeuron_ByResourceId params _ByResourceId leuron_request = handleError <$> postAt (map qp params ++ map qp [ByResourceId _ByResourceId]) ["leuron"] leuron_request
 
-postLeuron' :: LeuronRequest -> ApiEff (Either ApiError LeuronResponse)
-postLeuron' leuron_request = handleError <$> postAt ([] :: Array Boolean) ["leuron"] leuron_request
+postLeuron_ByResourceId' :: Int -> LeuronRequest -> ApiEff (Either ApiError LeuronResponse)
+postLeuron_ByResourceId' _ByResourceId leuron_request = handleError <$> postAt [ByResourceId _ByResourceId] ["leuron"] leuron_request
 
 getLeuron :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LeuronResponse)
 getLeuron params leuron_id = handleError <$> getAt params ["leuron", show leuron_id]
