@@ -253,26 +253,32 @@ instance apiResponsesShow :: Show ApiResponses where
 
 newtype BoardRequest = BoardRequest {
   name :: String,
-  description :: (Maybe String)
+  description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String)
 }
 
 
 type BoardRequestR = {
   name :: String,
-  description :: (Maybe String)
+  description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String)
 }
 
 
 _BoardRequest :: LensP BoardRequest {
   name :: String,
-  description :: (Maybe String)
+  description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String)
 }
 _BoardRequest f (BoardRequest o) = BoardRequest <$> f o
 
 
-mkBoardRequest :: String -> (Maybe String) -> BoardRequest
-mkBoardRequest name description =
-  BoardRequest{name, description}
+mkBoardRequest :: String -> (Maybe String) -> (Maybe String) -> (Array  String) -> BoardRequest
+mkBoardRequest name description icon tags =
+  BoardRequest{name, description, icon, tags}
 
 
 unwrapBoardRequest (BoardRequest r) = r
@@ -282,6 +288,8 @@ instance boardRequestEncodeJson :: EncodeJson BoardRequest where
        "tag" := "BoardRequest"
     ~> "name" := o.name
     ~> "description" := o.description
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
     ~> jsonEmptyObject
 
 
@@ -290,9 +298,13 @@ instance boardRequestDecodeJson :: DecodeJson BoardRequest where
     obj <- decodeJson o
     name <- obj .? "name"
     description <- obj .? "description"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
     pure $ BoardRequest {
       name,
-      description
+      description,
+      icon,
+      tags
     }
 
 
@@ -309,6 +321,8 @@ instance boardRequestRespondable :: Respondable BoardRequest where
       mkBoardRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
 
 
 instance boardRequestIsForeign :: IsForeign BoardRequest where
@@ -316,10 +330,12 @@ instance boardRequestIsForeign :: IsForeign BoardRequest where
       mkBoardRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
 
 
 instance boardRequestShow :: Show BoardRequest where
-    show (BoardRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description
+    show (BoardRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags
 
 newtype BoardResponse = BoardResponse {
   id :: Int,
@@ -328,6 +344,8 @@ newtype BoardResponse = BoardResponse {
   parentId :: (Maybe Int),
   name :: String,
   description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -341,6 +359,8 @@ type BoardResponseR = {
   parentId :: (Maybe Int),
   name :: String,
   description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -354,6 +374,8 @@ _BoardResponse :: LensP BoardResponse {
   parentId :: (Maybe Int),
   name :: String,
   description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -361,9 +383,9 @@ _BoardResponse :: LensP BoardResponse {
 _BoardResponse f (BoardResponse o) = BoardResponse <$> f o
 
 
-mkBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> (Maybe String) -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> BoardResponse
-mkBoardResponse id userId forumId parentId name description createdAt modifiedBy modifiedAt =
-  BoardResponse{id, userId, forumId, parentId, name, description, createdAt, modifiedBy, modifiedAt}
+mkBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> (Maybe String) -> (Maybe String) -> (Array  String) -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> BoardResponse
+mkBoardResponse id userId forumId parentId name description icon tags createdAt modifiedBy modifiedAt =
+  BoardResponse{id, userId, forumId, parentId, name, description, icon, tags, createdAt, modifiedBy, modifiedAt}
 
 
 unwrapBoardResponse (BoardResponse r) = r
@@ -377,6 +399,8 @@ instance boardResponseEncodeJson :: EncodeJson BoardResponse where
     ~> "parent_id" := o.parentId
     ~> "name" := o.name
     ~> "description" := o.description
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
     ~> "created_at" := o.createdAt
     ~> "modified_by" := o.modifiedBy
     ~> "modified_at" := o.modifiedAt
@@ -392,6 +416,8 @@ instance boardResponseDecodeJson :: DecodeJson BoardResponse where
     parentId <- obj .? "parent_id"
     name <- obj .? "name"
     description <- obj .? "description"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
@@ -402,6 +428,8 @@ instance boardResponseDecodeJson :: DecodeJson BoardResponse where
       parentId,
       name,
       description,
+      icon,
+      tags,
       createdAt,
       modifiedBy,
       modifiedAt
@@ -425,6 +453,8 @@ instance boardResponseRespondable :: Respondable BoardResponse where
       <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
@@ -439,13 +469,15 @@ instance boardResponseIsForeign :: IsForeign BoardResponse where
       <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance boardResponseShow :: Show BoardResponse where
-    show (BoardResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (BoardResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype BoardResponses = BoardResponses {
   boardResponses :: (Array  BoardResponse)
@@ -1635,26 +1667,35 @@ instance entShow :: Show Ent where
 
 newtype ForumRequest = ForumRequest {
   name :: String,
-  description :: (Maybe String)
+  description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility
 }
 
 
 type ForumRequestR = {
   name :: String,
-  description :: (Maybe String)
+  description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility
 }
 
 
 _ForumRequest :: LensP ForumRequest {
   name :: String,
-  description :: (Maybe String)
+  description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility
 }
 _ForumRequest f (ForumRequest o) = ForumRequest <$> f o
 
 
-mkForumRequest :: String -> (Maybe String) -> ForumRequest
-mkForumRequest name description =
-  ForumRequest{name, description}
+mkForumRequest :: String -> (Maybe String) -> (Maybe String) -> (Array  String) -> Visibility -> ForumRequest
+mkForumRequest name description icon tags visibility =
+  ForumRequest{name, description, icon, tags, visibility}
 
 
 unwrapForumRequest (ForumRequest r) = r
@@ -1664,6 +1705,9 @@ instance forumRequestEncodeJson :: EncodeJson ForumRequest where
        "tag" := "ForumRequest"
     ~> "name" := o.name
     ~> "description" := o.description
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
+    ~> "visibility" := o.visibility
     ~> jsonEmptyObject
 
 
@@ -1672,9 +1716,15 @@ instance forumRequestDecodeJson :: DecodeJson ForumRequest where
     obj <- decodeJson o
     name <- obj .? "name"
     description <- obj .? "description"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
+    visibility <- obj .? "visibility"
     pure $ ForumRequest {
       name,
-      description
+      description,
+      icon,
+      tags,
+      visibility
     }
 
 
@@ -1691,6 +1741,9 @@ instance forumRequestRespondable :: Respondable ForumRequest where
       mkForumRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
 
 
 instance forumRequestIsForeign :: IsForeign ForumRequest where
@@ -1698,10 +1751,13 @@ instance forumRequestIsForeign :: IsForeign ForumRequest where
       mkForumRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
 
 
 instance forumRequestShow :: Show ForumRequest where
-    show (ForumRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description
+    show (ForumRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility
 
 newtype ForumResponse = ForumResponse {
   id :: Int,
@@ -1709,6 +1765,9 @@ newtype ForumResponse = ForumResponse {
   orgId :: Int,
   name :: String,
   description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility,
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -1721,6 +1780,9 @@ type ForumResponseR = {
   orgId :: Int,
   name :: String,
   description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility,
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -1733,6 +1795,9 @@ _ForumResponse :: LensP ForumResponse {
   orgId :: Int,
   name :: String,
   description :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility,
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -1740,9 +1805,9 @@ _ForumResponse :: LensP ForumResponse {
 _ForumResponse f (ForumResponse o) = ForumResponse <$> f o
 
 
-mkForumResponse :: Int -> Int -> Int -> String -> (Maybe String) -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> ForumResponse
-mkForumResponse id userId orgId name description createdAt modifiedBy modifiedAt =
-  ForumResponse{id, userId, orgId, name, description, createdAt, modifiedBy, modifiedAt}
+mkForumResponse :: Int -> Int -> Int -> String -> (Maybe String) -> (Maybe String) -> (Array  String) -> Visibility -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> ForumResponse
+mkForumResponse id userId orgId name description icon tags visibility createdAt modifiedBy modifiedAt =
+  ForumResponse{id, userId, orgId, name, description, icon, tags, visibility, createdAt, modifiedBy, modifiedAt}
 
 
 unwrapForumResponse (ForumResponse r) = r
@@ -1755,6 +1820,9 @@ instance forumResponseEncodeJson :: EncodeJson ForumResponse where
     ~> "org_id" := o.orgId
     ~> "name" := o.name
     ~> "description" := o.description
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
+    ~> "visibility" := o.visibility
     ~> "created_at" := o.createdAt
     ~> "modified_by" := o.modifiedBy
     ~> "modified_at" := o.modifiedAt
@@ -1769,6 +1837,9 @@ instance forumResponseDecodeJson :: DecodeJson ForumResponse where
     orgId <- obj .? "org_id"
     name <- obj .? "name"
     description <- obj .? "description"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
+    visibility <- obj .? "visibility"
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
@@ -1778,6 +1849,9 @@ instance forumResponseDecodeJson :: DecodeJson ForumResponse where
       orgId,
       name,
       description,
+      icon,
+      tags,
+      visibility,
       createdAt,
       modifiedBy,
       modifiedAt
@@ -1800,6 +1874,9 @@ instance forumResponseRespondable :: Respondable ForumResponse where
       <*> readProp "org_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
@@ -1813,13 +1890,16 @@ instance forumResponseIsForeign :: IsForeign ForumResponse where
       <*> readProp "org_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance forumResponseShow :: Show ForumResponse where
-    show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype ForumResponses = ForumResponses {
   forumResponses :: (Array  ForumResponse)
@@ -5220,12 +5300,121 @@ instance tableIsForeign :: IsForeign Table where
 instance tableShow :: Show Table where
     show (Table o) = show "title: " ++ show o.title ++ ", " ++ show "columns: " ++ show o.columns ++ ", " ++ show "rows: " ++ show o.rows
 
+data Membership
+  = Membership_InviteOnly 
+  | Membership_RequestInvite 
+  | Membership_Join 
+  | Membership_Locked 
+
+
+
+instance membershipEncodeJson :: EncodeJson Membership where
+  encodeJson (Membership_InviteOnly ) =
+       "tag" := "Membership_InviteOnly"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Membership_RequestInvite ) =
+       "tag" := "Membership_RequestInvite"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Membership_Join ) =
+       "tag" := "Membership_Join"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Membership_Locked ) =
+       "tag" := "Membership_Locked"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance membershipDecodeJson :: DecodeJson Membership where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "Membership_InviteOnly" -> do
+          return Membership_InviteOnly
+
+        "Membership_RequestInvite" -> do
+          return Membership_RequestInvite
+
+        "Membership_Join" -> do
+          return Membership_Join
+
+        "Membership_Locked" -> do
+          return Membership_Locked
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance membershipRequestable :: Requestable Membership where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance membershipRespondable :: Respondable Membership where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Membership_InviteOnly" -> do
+          return Membership_InviteOnly
+
+        "Membership_RequestInvite" -> do
+          return Membership_RequestInvite
+
+        "Membership_Join" -> do
+          return Membership_Join
+
+        "Membership_Locked" -> do
+          return Membership_Locked
+
+
+
+instance membershipIsForeign :: IsForeign Membership where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Membership_InviteOnly" -> do
+          return Membership_InviteOnly
+
+        "Membership_RequestInvite" -> do
+          return Membership_RequestInvite
+
+        "Membership_Join" -> do
+          return Membership_Join
+
+        "Membership_Locked" -> do
+          return Membership_Locked
+
+
+
+instance membershipShow :: Show Membership where
+  show (Membership_InviteOnly) = "Membership_InviteOnly"
+  show (Membership_RequestInvite) = "Membership_RequestInvite"
+  show (Membership_Join) = "Membership_Join"
+  show (Membership_Locked) = "Membership_Locked"
+
+
+instance membershipEq :: Eq Membership where
+  eq (Membership_InviteOnly) (Membership_InviteOnly) = true
+  eq (Membership_RequestInvite) (Membership_RequestInvite) = true
+  eq (Membership_Join) (Membership_Join) = true
+  eq (Membership_Locked) (Membership_Locked) = true
+  eq _ _ = false
+
 newtype OrganizationRequest = OrganizationRequest {
   name :: String,
   description :: (Maybe String),
   company :: String,
   location :: String,
-  email :: String
+  email :: String,
+  membership :: Membership,
+  tags :: (Array  String),
+  icon :: (Maybe String),
+  visibility :: Visibility
 }
 
 
@@ -5234,7 +5423,11 @@ type OrganizationRequestR = {
   description :: (Maybe String),
   company :: String,
   location :: String,
-  email :: String
+  email :: String,
+  membership :: Membership,
+  tags :: (Array  String),
+  icon :: (Maybe String),
+  visibility :: Visibility
 }
 
 
@@ -5243,14 +5436,18 @@ _OrganizationRequest :: LensP OrganizationRequest {
   description :: (Maybe String),
   company :: String,
   location :: String,
-  email :: String
+  email :: String,
+  membership :: Membership,
+  tags :: (Array  String),
+  icon :: (Maybe String),
+  visibility :: Visibility
 }
 _OrganizationRequest f (OrganizationRequest o) = OrganizationRequest <$> f o
 
 
-mkOrganizationRequest :: String -> (Maybe String) -> String -> String -> String -> OrganizationRequest
-mkOrganizationRequest name description company location email =
-  OrganizationRequest{name, description, company, location, email}
+mkOrganizationRequest :: String -> (Maybe String) -> String -> String -> String -> Membership -> (Array  String) -> (Maybe String) -> Visibility -> OrganizationRequest
+mkOrganizationRequest name description company location email membership tags icon visibility =
+  OrganizationRequest{name, description, company, location, email, membership, tags, icon, visibility}
 
 
 unwrapOrganizationRequest (OrganizationRequest r) = r
@@ -5263,6 +5460,10 @@ instance organizationRequestEncodeJson :: EncodeJson OrganizationRequest where
     ~> "company" := o.company
     ~> "location" := o.location
     ~> "email" := o.email
+    ~> "membership" := o.membership
+    ~> "tags" := o.tags
+    ~> "icon" := o.icon
+    ~> "visibility" := o.visibility
     ~> jsonEmptyObject
 
 
@@ -5274,12 +5475,20 @@ instance organizationRequestDecodeJson :: DecodeJson OrganizationRequest where
     company <- obj .? "company"
     location <- obj .? "location"
     email <- obj .? "email"
+    membership <- obj .? "membership"
+    tags <- obj .? "tags"
+    icon <- obj .? "icon"
+    visibility <- obj .? "visibility"
     pure $ OrganizationRequest {
       name,
       description,
       company,
       location,
-      email
+      email,
+      membership,
+      tags,
+      icon,
+      visibility
     }
 
 
@@ -5299,6 +5508,10 @@ instance organizationRequestRespondable :: Respondable OrganizationRequest where
       <*> readProp "company" json
       <*> readProp "location" json
       <*> readProp "email" json
+      <*> readProp "membership" json
+      <*> readProp "tags" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "visibility" json
 
 
 instance organizationRequestIsForeign :: IsForeign OrganizationRequest where
@@ -5309,10 +5522,14 @@ instance organizationRequestIsForeign :: IsForeign OrganizationRequest where
       <*> readProp "company" json
       <*> readProp "location" json
       <*> readProp "email" json
+      <*> readProp "membership" json
+      <*> readProp "tags" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "visibility" json
 
 
 instance organizationRequestShow :: Show OrganizationRequest where
-    show (OrganizationRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "company: " ++ show o.company ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "email: " ++ show o.email
+    show (OrganizationRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "company: " ++ show o.company ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "visibility: " ++ show o.visibility
 
 newtype OrganizationResponse = OrganizationResponse {
   id :: Int,
@@ -5323,6 +5540,10 @@ newtype OrganizationResponse = OrganizationResponse {
   location :: String,
   email :: String,
   emailMD5 :: String,
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility,
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -5338,6 +5559,10 @@ type OrganizationResponseR = {
   location :: String,
   email :: String,
   emailMD5 :: String,
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility,
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -5353,6 +5578,10 @@ _OrganizationResponse :: LensP OrganizationResponse {
   location :: String,
   email :: String,
   emailMD5 :: String,
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility,
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -5360,9 +5589,9 @@ _OrganizationResponse :: LensP OrganizationResponse {
 _OrganizationResponse f (OrganizationResponse o) = OrganizationResponse <$> f o
 
 
-mkOrganizationResponse :: Int -> Int -> String -> (Maybe String) -> String -> String -> String -> String -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> OrganizationResponse
-mkOrganizationResponse id userId name description company location email emailMD5 createdAt modifiedBy modifiedAt =
-  OrganizationResponse{id, userId, name, description, company, location, email, emailMD5, createdAt, modifiedBy, modifiedAt}
+mkOrganizationResponse :: Int -> Int -> String -> (Maybe String) -> String -> String -> String -> String -> Membership -> (Maybe String) -> (Array  String) -> Visibility -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> OrganizationResponse
+mkOrganizationResponse id userId name description company location email emailMD5 membership icon tags visibility createdAt modifiedBy modifiedAt =
+  OrganizationResponse{id, userId, name, description, company, location, email, emailMD5, membership, icon, tags, visibility, createdAt, modifiedBy, modifiedAt}
 
 
 unwrapOrganizationResponse (OrganizationResponse r) = r
@@ -5378,6 +5607,10 @@ instance organizationResponseEncodeJson :: EncodeJson OrganizationResponse where
     ~> "location" := o.location
     ~> "email" := o.email
     ~> "email_md5" := o.emailMD5
+    ~> "membership" := o.membership
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
+    ~> "visibility" := o.visibility
     ~> "created_at" := o.createdAt
     ~> "modified_by" := o.modifiedBy
     ~> "modified_at" := o.modifiedAt
@@ -5395,6 +5628,10 @@ instance organizationResponseDecodeJson :: DecodeJson OrganizationResponse where
     location <- obj .? "location"
     email <- obj .? "email"
     emailMD5 <- obj .? "email_md5"
+    membership <- obj .? "membership"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
+    visibility <- obj .? "visibility"
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
@@ -5407,6 +5644,10 @@ instance organizationResponseDecodeJson :: DecodeJson OrganizationResponse where
       location,
       email,
       emailMD5,
+      membership,
+      icon,
+      tags,
+      visibility,
       createdAt,
       modifiedBy,
       modifiedAt
@@ -5432,6 +5673,10 @@ instance organizationResponseRespondable :: Respondable OrganizationResponse whe
       <*> readProp "location" json
       <*> readProp "email" json
       <*> readProp "email_md5" json
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
@@ -5448,13 +5693,17 @@ instance organizationResponseIsForeign :: IsForeign OrganizationResponse where
       <*> readProp "location" json
       <*> readProp "email" json
       <*> readProp "email_md5" json
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance organizationResponseShow :: Show OrganizationResponse where
-    show (OrganizationResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "company: " ++ show o.company ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (OrganizationResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "company: " ++ show o.company ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype OrganizationResponses = OrganizationResponses {
   organizationResponses :: (Array  OrganizationResponse)
@@ -10900,26 +11149,38 @@ instance starStatResponsesShow :: Show StarStatResponses where
 
 newtype TeamRequest = TeamRequest {
   name :: String,
-  description :: (Maybe String)
+  description :: (Maybe String),
+  teamMembership :: Membership,
+  teamIcon :: (Maybe String),
+  teamTags :: (Array  String),
+  teamVisibility :: Visibility
 }
 
 
 type TeamRequestR = {
   name :: String,
-  description :: (Maybe String)
+  description :: (Maybe String),
+  teamMembership :: Membership,
+  teamIcon :: (Maybe String),
+  teamTags :: (Array  String),
+  teamVisibility :: Visibility
 }
 
 
 _TeamRequest :: LensP TeamRequest {
   name :: String,
-  description :: (Maybe String)
+  description :: (Maybe String),
+  teamMembership :: Membership,
+  teamIcon :: (Maybe String),
+  teamTags :: (Array  String),
+  teamVisibility :: Visibility
 }
 _TeamRequest f (TeamRequest o) = TeamRequest <$> f o
 
 
-mkTeamRequest :: String -> (Maybe String) -> TeamRequest
-mkTeamRequest name description =
-  TeamRequest{name, description}
+mkTeamRequest :: String -> (Maybe String) -> Membership -> (Maybe String) -> (Array  String) -> Visibility -> TeamRequest
+mkTeamRequest name description teamMembership teamIcon teamTags teamVisibility =
+  TeamRequest{name, description, teamMembership, teamIcon, teamTags, teamVisibility}
 
 
 unwrapTeamRequest (TeamRequest r) = r
@@ -10929,6 +11190,10 @@ instance teamRequestEncodeJson :: EncodeJson TeamRequest where
        "tag" := "TeamRequest"
     ~> "name" := o.name
     ~> "description" := o.description
+    ~> "team_membership" := o.teamMembership
+    ~> "team_icon" := o.teamIcon
+    ~> "team_tags" := o.teamTags
+    ~> "team_visibility" := o.teamVisibility
     ~> jsonEmptyObject
 
 
@@ -10937,9 +11202,17 @@ instance teamRequestDecodeJson :: DecodeJson TeamRequest where
     obj <- decodeJson o
     name <- obj .? "name"
     description <- obj .? "description"
+    teamMembership <- obj .? "team_membership"
+    teamIcon <- obj .? "team_icon"
+    teamTags <- obj .? "team_tags"
+    teamVisibility <- obj .? "team_visibility"
     pure $ TeamRequest {
       name,
-      description
+      description,
+      teamMembership,
+      teamIcon,
+      teamTags,
+      teamVisibility
     }
 
 
@@ -10956,6 +11229,10 @@ instance teamRequestRespondable :: Respondable TeamRequest where
       mkTeamRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "team_membership" json
+      <*> (runNullOrUndefined <$> readProp "team_icon" json)
+      <*> readProp "team_tags" json
+      <*> readProp "team_visibility" json
 
 
 instance teamRequestIsForeign :: IsForeign TeamRequest where
@@ -10963,10 +11240,14 @@ instance teamRequestIsForeign :: IsForeign TeamRequest where
       mkTeamRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "team_membership" json
+      <*> (runNullOrUndefined <$> readProp "team_icon" json)
+      <*> readProp "team_tags" json
+      <*> readProp "team_visibility" json
 
 
 instance teamRequestShow :: Show TeamRequest where
-    show (TeamRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description
+    show (TeamRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "teamMembership: " ++ show o.teamMembership ++ ", " ++ show "teamIcon: " ++ show o.teamIcon ++ ", " ++ show "teamTags: " ++ show o.teamTags ++ ", " ++ show "teamVisibility: " ++ show o.teamVisibility
 
 newtype TeamResponse = TeamResponse {
   id :: Int,
@@ -10974,6 +11255,10 @@ newtype TeamResponse = TeamResponse {
   orgId :: Int,
   name :: String,
   description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility,
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -10986,6 +11271,10 @@ type TeamResponseR = {
   orgId :: Int,
   name :: String,
   description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility,
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -10998,6 +11287,10 @@ _TeamResponse :: LensP TeamResponse {
   orgId :: Int,
   name :: String,
   description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility,
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date)
@@ -11005,9 +11298,9 @@ _TeamResponse :: LensP TeamResponse {
 _TeamResponse f (TeamResponse o) = TeamResponse <$> f o
 
 
-mkTeamResponse :: Int -> Int -> Int -> String -> (Maybe String) -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> TeamResponse
-mkTeamResponse id userId orgId name description createdAt modifiedBy modifiedAt =
-  TeamResponse{id, userId, orgId, name, description, createdAt, modifiedBy, modifiedAt}
+mkTeamResponse :: Int -> Int -> Int -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array  String) -> Visibility -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> TeamResponse
+mkTeamResponse id userId orgId name description membership icon tags visibility createdAt modifiedBy modifiedAt =
+  TeamResponse{id, userId, orgId, name, description, membership, icon, tags, visibility, createdAt, modifiedBy, modifiedAt}
 
 
 unwrapTeamResponse (TeamResponse r) = r
@@ -11020,6 +11313,10 @@ instance teamResponseEncodeJson :: EncodeJson TeamResponse where
     ~> "org_id" := o.orgId
     ~> "name" := o.name
     ~> "description" := o.description
+    ~> "membership" := o.membership
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
+    ~> "visibility" := o.visibility
     ~> "created_at" := o.createdAt
     ~> "modified_by" := o.modifiedBy
     ~> "modified_at" := o.modifiedAt
@@ -11034,6 +11331,10 @@ instance teamResponseDecodeJson :: DecodeJson TeamResponse where
     orgId <- obj .? "org_id"
     name <- obj .? "name"
     description <- obj .? "description"
+    membership <- obj .? "membership"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
+    visibility <- obj .? "visibility"
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
@@ -11043,6 +11344,10 @@ instance teamResponseDecodeJson :: DecodeJson TeamResponse where
       orgId,
       name,
       description,
+      membership,
+      icon,
+      tags,
+      visibility,
       createdAt,
       modifiedBy,
       modifiedAt
@@ -11065,6 +11370,10 @@ instance teamResponseRespondable :: Respondable TeamResponse where
       <*> readProp "org_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
@@ -11078,13 +11387,17 @@ instance teamResponseIsForeign :: IsForeign TeamResponse where
       <*> readProp "org_id" json
       <*> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance teamResponseShow :: Show TeamResponse where
-    show (TeamResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (TeamResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype TeamResponses = TeamResponses {
   teamResponses :: (Array  TeamResponse)
@@ -11495,7 +11808,9 @@ newtype ThreadRequest = ThreadRequest {
   description :: (Maybe String),
   sticky :: Boolean,
   locked :: Boolean,
-  poll :: (Maybe String)
+  poll :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String)
 }
 
 
@@ -11504,7 +11819,9 @@ type ThreadRequestR = {
   description :: (Maybe String),
   sticky :: Boolean,
   locked :: Boolean,
-  poll :: (Maybe String)
+  poll :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String)
 }
 
 
@@ -11513,14 +11830,16 @@ _ThreadRequest :: LensP ThreadRequest {
   description :: (Maybe String),
   sticky :: Boolean,
   locked :: Boolean,
-  poll :: (Maybe String)
+  poll :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String)
 }
 _ThreadRequest f (ThreadRequest o) = ThreadRequest <$> f o
 
 
-mkThreadRequest :: String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> ThreadRequest
-mkThreadRequest name description sticky locked poll =
-  ThreadRequest{name, description, sticky, locked, poll}
+mkThreadRequest :: String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array  String) -> ThreadRequest
+mkThreadRequest name description sticky locked poll icon tags =
+  ThreadRequest{name, description, sticky, locked, poll, icon, tags}
 
 
 unwrapThreadRequest (ThreadRequest r) = r
@@ -11533,6 +11852,8 @@ instance threadRequestEncodeJson :: EncodeJson ThreadRequest where
     ~> "sticky" := o.sticky
     ~> "locked" := o.locked
     ~> "poll" := o.poll
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
     ~> jsonEmptyObject
 
 
@@ -11544,12 +11865,16 @@ instance threadRequestDecodeJson :: DecodeJson ThreadRequest where
     sticky <- obj .? "sticky"
     locked <- obj .? "locked"
     poll <- obj .? "poll"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
     pure $ ThreadRequest {
       name,
       description,
       sticky,
       locked,
-      poll
+      poll,
+      icon,
+      tags
     }
 
 
@@ -11569,6 +11894,8 @@ instance threadRequestRespondable :: Respondable ThreadRequest where
       <*> readProp "sticky" json
       <*> readProp "locked" json
       <*> (runNullOrUndefined <$> readProp "poll" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
 
 
 instance threadRequestIsForeign :: IsForeign ThreadRequest where
@@ -11579,10 +11906,12 @@ instance threadRequestIsForeign :: IsForeign ThreadRequest where
       <*> readProp "sticky" json
       <*> readProp "locked" json
       <*> (runNullOrUndefined <$> readProp "poll" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
 
 
 instance threadRequestShow :: Show ThreadRequest where
-    show (ThreadRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "sticky: " ++ show o.sticky ++ ", " ++ show "locked: " ++ show o.locked ++ ", " ++ show "poll: " ++ show o.poll
+    show (ThreadRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "sticky: " ++ show o.sticky ++ ", " ++ show "locked: " ++ show o.locked ++ ", " ++ show "poll: " ++ show o.poll ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags
 
 newtype ThreadResponse = ThreadResponse {
   id :: Int,
@@ -11593,6 +11922,8 @@ newtype ThreadResponse = ThreadResponse {
   sticky :: Boolean,
   locked :: Boolean,
   poll :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date),
@@ -11609,6 +11940,8 @@ type ThreadResponseR = {
   sticky :: Boolean,
   locked :: Boolean,
   poll :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date),
@@ -11625,6 +11958,8 @@ _ThreadResponse :: LensP ThreadResponse {
   sticky :: Boolean,
   locked :: Boolean,
   poll :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array  String),
   createdAt :: (Maybe Date),
   modifiedBy :: (Maybe Int),
   modifiedAt :: (Maybe Date),
@@ -11633,9 +11968,9 @@ _ThreadResponse :: LensP ThreadResponse {
 _ThreadResponse f (ThreadResponse o) = ThreadResponse <$> f o
 
 
-mkThreadResponse :: Int -> Int -> Int -> String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadResponse
-mkThreadResponse id userId boardId name description sticky locked poll createdAt modifiedBy modifiedAt activityAt =
-  ThreadResponse{id, userId, boardId, name, description, sticky, locked, poll, createdAt, modifiedBy, modifiedAt, activityAt}
+mkThreadResponse :: Int -> Int -> Int -> String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array  String) -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadResponse
+mkThreadResponse id userId boardId name description sticky locked poll icon tags createdAt modifiedBy modifiedAt activityAt =
+  ThreadResponse{id, userId, boardId, name, description, sticky, locked, poll, icon, tags, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapThreadResponse (ThreadResponse r) = r
@@ -11651,6 +11986,8 @@ instance threadResponseEncodeJson :: EncodeJson ThreadResponse where
     ~> "sticky" := o.sticky
     ~> "locked" := o.locked
     ~> "poll" := o.poll
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
     ~> "created_at" := o.createdAt
     ~> "modified_by" := o.modifiedBy
     ~> "modified_at" := o.modifiedAt
@@ -11669,6 +12006,8 @@ instance threadResponseDecodeJson :: DecodeJson ThreadResponse where
     sticky <- obj .? "sticky"
     locked <- obj .? "locked"
     poll <- obj .? "poll"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
     createdAt <- obj .? "created_at"
     modifiedBy <- obj .? "modified_by"
     modifiedAt <- obj .? "modified_at"
@@ -11682,6 +12021,8 @@ instance threadResponseDecodeJson :: DecodeJson ThreadResponse where
       sticky,
       locked,
       poll,
+      icon,
+      tags,
       createdAt,
       modifiedBy,
       modifiedAt,
@@ -11708,6 +12049,8 @@ instance threadResponseRespondable :: Respondable ThreadResponse where
       <*> readProp "sticky" json
       <*> readProp "locked" json
       <*> (runNullOrUndefined <$> readProp "poll" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
@@ -11725,6 +12068,8 @@ instance threadResponseIsForeign :: IsForeign ThreadResponse where
       <*> readProp "sticky" json
       <*> readProp "locked" json
       <*> (runNullOrUndefined <$> readProp "poll" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_by" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
@@ -11732,7 +12077,7 @@ instance threadResponseIsForeign :: IsForeign ThreadResponse where
 
 
 instance threadResponseShow :: Show ThreadResponse where
-    show (ThreadResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "sticky: " ++ show o.sticky ++ ", " ++ show "locked: " ++ show o.locked ++ ", " ++ show "poll: " ++ show o.poll ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ThreadResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "sticky: " ++ show o.sticky ++ ", " ++ show "locked: " ++ show o.locked ++ ", " ++ show "poll: " ++ show o.poll ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ThreadResponses = ThreadResponses {
   threadResponses :: (Array  ThreadResponse)
@@ -15188,6 +15533,10 @@ gender_ :: forall b a r. Lens { gender :: a | r } { gender :: b | r } a b
 gender_ f o = o { gender = _ } <$> f o.gender
 
 
+icon_ :: forall b a r. Lens { icon :: a | r } { icon :: b | r } a b
+icon_ f o = o { icon = _ } <$> f o.icon
+
+
 id_ :: forall b a r. Lens { id :: a | r } { id :: b | r } a b
 id_ f o = o { id = _ } <$> f o.id
 
@@ -15314,6 +15663,10 @@ meaning_ f o = o { meaning = _ } <$> f o.meaning
 
 members_ :: forall b a r. Lens { members :: a | r } { members :: b | r } a b
 members_ f o = o { members = _ } <$> f o.members
+
+
+membership_ :: forall b a r. Lens { membership :: a | r } { membership :: b | r } a b
+membership_ f o = o { membership = _ } <$> f o.membership
 
 
 modifiedAt_ :: forall b a r. Lens { modifiedAt :: a | r } { modifiedAt :: b | r } a b
@@ -15564,8 +15917,16 @@ team_ :: forall b a r. Lens { team :: a | r } { team :: b | r } a b
 team_ f o = o { team = _ } <$> f o.team
 
 
+teamIcon_ :: forall b a r. Lens { teamIcon :: a | r } { teamIcon :: b | r } a b
+teamIcon_ f o = o { teamIcon = _ } <$> f o.teamIcon
+
+
 teamId_ :: forall b a r. Lens { teamId :: a | r } { teamId :: b | r } a b
 teamId_ f o = o { teamId = _ } <$> f o.teamId
+
+
+teamMembership_ :: forall b a r. Lens { teamMembership :: a | r } { teamMembership :: b | r } a b
+teamMembership_ f o = o { teamMembership = _ } <$> f o.teamMembership
 
 
 teamPackResponses_ :: forall b a r. Lens { teamPackResponses :: a | r } { teamPackResponses :: b | r } a b
@@ -15578,6 +15939,14 @@ teamResponses_ f o = o { teamResponses = _ } <$> f o.teamResponses
 
 teamStatResponses_ :: forall b a r. Lens { teamStatResponses :: a | r } { teamStatResponses :: b | r } a b
 teamStatResponses_ f o = o { teamStatResponses = _ } <$> f o.teamStatResponses
+
+
+teamTags_ :: forall b a r. Lens { teamTags :: a | r } { teamTags :: b | r } a b
+teamTags_ f o = o { teamTags = _ } <$> f o.teamTags
+
+
+teamVisibility_ :: forall b a r. Lens { teamVisibility :: a | r } { teamVisibility :: b | r } a b
+teamVisibility_ f o = o { teamVisibility = _ } <$> f o.teamVisibility
 
 
 teams_ :: forall b a r. Lens { teams :: a | r } { teams :: b | r } a b

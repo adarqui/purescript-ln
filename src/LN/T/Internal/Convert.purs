@@ -53,6 +53,8 @@ boardRequestToBoardResponse id userId forumId parentId createdAt modifiedBy modi
     parentId: parentId,
     name: o.name,
     description: o.description,
+    icon: o.icon,
+    tags: o.tags,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
     modifiedAt: modifiedAt
@@ -63,7 +65,9 @@ boardResponseToBoardRequest :: BoardResponse -> BoardRequest
 boardResponseToBoardRequest  (BoardResponse o) =
   BoardRequest {
     name: o.name,
-    description: o.description
+    description: o.description,
+    icon: o.icon,
+    tags: o.tags
   }
 
 
@@ -125,6 +129,9 @@ forumRequestToForumResponse id userId orgId createdAt modifiedBy modifiedAt (For
     orgId: orgId,
     name: o.name,
     description: o.description,
+    icon: o.icon,
+    tags: o.tags,
+    visibility: o.visibility,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
     modifiedAt: modifiedAt
@@ -135,7 +142,10 @@ forumResponseToForumRequest :: ForumResponse -> ForumRequest
 forumResponseToForumRequest  (ForumResponse o) =
   ForumRequest {
     name: o.name,
-    description: o.description
+    description: o.description,
+    icon: o.icon,
+    tags: o.tags,
+    visibility: o.visibility
   }
 
 
@@ -233,6 +243,10 @@ organizationRequestToOrganizationResponse id userId emailMD5 createdAt modifiedB
     location: o.location,
     email: o.email,
     emailMD5: emailMD5,
+    membership: o.membership,
+    icon: o.icon,
+    tags: o.tags,
+    visibility: o.visibility,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
     modifiedAt: modifiedAt
@@ -246,7 +260,11 @@ organizationResponseToOrganizationRequest  (OrganizationResponse o) =
     description: o.description,
     company: o.company,
     location: o.location,
-    email: o.email
+    email: o.email,
+    membership: o.membership,
+    tags: o.tags,
+    icon: o.icon,
+    visibility: o.visibility
   }
 
 
@@ -441,25 +459,33 @@ starResponseToStarRequest  (StarResponse o) =
   }
 
 
-teamRequestToTeamResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> TeamRequest -> TeamResponse
-teamRequestToTeamResponse id userId orgId createdAt modifiedBy modifiedAt (TeamRequest o) =
+teamRequestToTeamResponse :: Int -> Int -> Int -> Membership -> (Maybe String) -> (Array  String) -> Visibility -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> TeamRequest -> TeamResponse
+teamRequestToTeamResponse id userId orgId membership icon tags visibility createdAt modifiedBy modifiedAt (TeamRequest o) =
   TeamResponse {
     id: id,
     userId: userId,
     orgId: orgId,
     name: o.name,
     description: o.description,
+    membership: membership,
+    icon: icon,
+    tags: tags,
+    visibility: visibility,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
     modifiedAt: modifiedAt
   }
 
 
-teamResponseToTeamRequest :: TeamResponse -> TeamRequest
-teamResponseToTeamRequest  (TeamResponse o) =
+teamResponseToTeamRequest :: Membership -> (Maybe String) -> (Array  String) -> Visibility -> TeamResponse -> TeamRequest
+teamResponseToTeamRequest teamMembership teamIcon teamTags teamVisibility (TeamResponse o) =
   TeamRequest {
     name: o.name,
-    description: o.description
+    description: o.description,
+    teamMembership: teamMembership,
+    teamIcon: teamIcon,
+    teamTags: teamTags,
+    teamVisibility: teamVisibility
   }
 
 
@@ -474,6 +500,8 @@ threadRequestToThreadResponse id userId boardId createdAt modifiedBy modifiedAt 
     sticky: o.sticky,
     locked: o.locked,
     poll: o.poll,
+    icon: o.icon,
+    tags: o.tags,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
     modifiedAt: modifiedAt,
@@ -488,7 +516,9 @@ threadResponseToThreadRequest  (ThreadResponse o) =
     description: o.description,
     sticky: o.sticky,
     locked: o.locked,
-    poll: o.poll
+    poll: o.poll,
+    icon: o.icon,
+    tags: o.tags
   }
 
 
