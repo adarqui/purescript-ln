@@ -459,33 +459,33 @@ starResponseToStarRequest  (StarResponse o) =
   }
 
 
-teamRequestToTeamResponse :: Int -> Int -> Int -> Membership -> (Maybe String) -> (Array  String) -> Visibility -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> TeamRequest -> TeamResponse
-teamRequestToTeamResponse id userId orgId membership icon tags visibility createdAt modifiedBy modifiedAt (TeamRequest o) =
+teamRequestToTeamResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> TeamRequest -> TeamResponse
+teamRequestToTeamResponse id userId orgId createdAt modifiedBy modifiedAt (TeamRequest o) =
   TeamResponse {
     id: id,
     userId: userId,
     orgId: orgId,
     name: o.name,
     description: o.description,
-    membership: membership,
-    icon: icon,
-    tags: tags,
-    visibility: visibility,
+    membership: o.membership,
+    icon: o.icon,
+    tags: o.tags,
+    visibility: o.visibility,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
     modifiedAt: modifiedAt
   }
 
 
-teamResponseToTeamRequest :: Membership -> (Maybe String) -> (Array  String) -> Visibility -> TeamResponse -> TeamRequest
-teamResponseToTeamRequest teamMembership teamIcon teamTags teamVisibility (TeamResponse o) =
+teamResponseToTeamRequest :: TeamResponse -> TeamRequest
+teamResponseToTeamRequest  (TeamResponse o) =
   TeamRequest {
     name: o.name,
     description: o.description,
-    teamMembership: teamMembership,
-    teamIcon: teamIcon,
-    teamTags: teamTags,
-    teamVisibility: teamVisibility
+    membership: o.membership,
+    icon: o.icon,
+    tags: o.tags,
+    visibility: o.visibility
   }
 
 

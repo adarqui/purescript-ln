@@ -11150,37 +11150,37 @@ instance starStatResponsesShow :: Show StarStatResponses where
 newtype TeamRequest = TeamRequest {
   name :: String,
   description :: (Maybe String),
-  teamMembership :: Membership,
-  teamIcon :: (Maybe String),
-  teamTags :: (Array  String),
-  teamVisibility :: Visibility
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility
 }
 
 
 type TeamRequestR = {
   name :: String,
   description :: (Maybe String),
-  teamMembership :: Membership,
-  teamIcon :: (Maybe String),
-  teamTags :: (Array  String),
-  teamVisibility :: Visibility
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility
 }
 
 
 _TeamRequest :: LensP TeamRequest {
   name :: String,
   description :: (Maybe String),
-  teamMembership :: Membership,
-  teamIcon :: (Maybe String),
-  teamTags :: (Array  String),
-  teamVisibility :: Visibility
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array  String),
+  visibility :: Visibility
 }
 _TeamRequest f (TeamRequest o) = TeamRequest <$> f o
 
 
 mkTeamRequest :: String -> (Maybe String) -> Membership -> (Maybe String) -> (Array  String) -> Visibility -> TeamRequest
-mkTeamRequest name description teamMembership teamIcon teamTags teamVisibility =
-  TeamRequest{name, description, teamMembership, teamIcon, teamTags, teamVisibility}
+mkTeamRequest name description membership icon tags visibility =
+  TeamRequest{name, description, membership, icon, tags, visibility}
 
 
 unwrapTeamRequest (TeamRequest r) = r
@@ -11190,10 +11190,10 @@ instance teamRequestEncodeJson :: EncodeJson TeamRequest where
        "tag" := "TeamRequest"
     ~> "name" := o.name
     ~> "description" := o.description
-    ~> "team_membership" := o.teamMembership
-    ~> "team_icon" := o.teamIcon
-    ~> "team_tags" := o.teamTags
-    ~> "team_visibility" := o.teamVisibility
+    ~> "membership" := o.membership
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
+    ~> "visibility" := o.visibility
     ~> jsonEmptyObject
 
 
@@ -11202,17 +11202,17 @@ instance teamRequestDecodeJson :: DecodeJson TeamRequest where
     obj <- decodeJson o
     name <- obj .? "name"
     description <- obj .? "description"
-    teamMembership <- obj .? "team_membership"
-    teamIcon <- obj .? "team_icon"
-    teamTags <- obj .? "team_tags"
-    teamVisibility <- obj .? "team_visibility"
+    membership <- obj .? "membership"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
+    visibility <- obj .? "visibility"
     pure $ TeamRequest {
       name,
       description,
-      teamMembership,
-      teamIcon,
-      teamTags,
-      teamVisibility
+      membership,
+      icon,
+      tags,
+      visibility
     }
 
 
@@ -11229,10 +11229,10 @@ instance teamRequestRespondable :: Respondable TeamRequest where
       mkTeamRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> readProp "team_membership" json
-      <*> (runNullOrUndefined <$> readProp "team_icon" json)
-      <*> readProp "team_tags" json
-      <*> readProp "team_visibility" json
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
 
 
 instance teamRequestIsForeign :: IsForeign TeamRequest where
@@ -11240,14 +11240,14 @@ instance teamRequestIsForeign :: IsForeign TeamRequest where
       mkTeamRequest
       <$> readProp "name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> readProp "team_membership" json
-      <*> (runNullOrUndefined <$> readProp "team_icon" json)
-      <*> readProp "team_tags" json
-      <*> readProp "team_visibility" json
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
 
 
 instance teamRequestShow :: Show TeamRequest where
-    show (TeamRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "teamMembership: " ++ show o.teamMembership ++ ", " ++ show "teamIcon: " ++ show o.teamIcon ++ ", " ++ show "teamTags: " ++ show o.teamTags ++ ", " ++ show "teamVisibility: " ++ show o.teamVisibility
+    show (TeamRequest o) = show "name: " ++ show o.name ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility
 
 newtype TeamResponse = TeamResponse {
   id :: Int,
@@ -15917,16 +15917,8 @@ team_ :: forall b a r. Lens { team :: a | r } { team :: b | r } a b
 team_ f o = o { team = _ } <$> f o.team
 
 
-teamIcon_ :: forall b a r. Lens { teamIcon :: a | r } { teamIcon :: b | r } a b
-teamIcon_ f o = o { teamIcon = _ } <$> f o.teamIcon
-
-
 teamId_ :: forall b a r. Lens { teamId :: a | r } { teamId :: b | r } a b
 teamId_ f o = o { teamId = _ } <$> f o.teamId
-
-
-teamMembership_ :: forall b a r. Lens { teamMembership :: a | r } { teamMembership :: b | r } a b
-teamMembership_ f o = o { teamMembership = _ } <$> f o.teamMembership
 
 
 teamPackResponses_ :: forall b a r. Lens { teamPackResponses :: a | r } { teamPackResponses :: b | r } a b
@@ -15939,14 +15931,6 @@ teamResponses_ f o = o { teamResponses = _ } <$> f o.teamResponses
 
 teamStatResponses_ :: forall b a r. Lens { teamStatResponses :: a | r } { teamStatResponses :: b | r } a b
 teamStatResponses_ f o = o { teamStatResponses = _ } <$> f o.teamStatResponses
-
-
-teamTags_ :: forall b a r. Lens { teamTags :: a | r } { teamTags :: b | r } a b
-teamTags_ f o = o { teamTags = _ } <$> f o.teamTags
-
-
-teamVisibility_ :: forall b a r. Lens { teamVisibility :: a | r } { teamVisibility :: b | r } a b
-teamVisibility_ f o = o { teamVisibility = _ } <$> f o.teamVisibility
 
 
 teams_ :: forall b a r. Lens { teams :: a | r } { teams :: b | r } a b
