@@ -2130,7 +2130,7 @@ newtype LeuronRequest = LeuronRequest {
   categories :: (DepList String),
   splits :: (Maybe (Array  Splits)),
   substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Maybe (Array  String)),
+  tags :: (Array  String),
   style :: (Maybe (Array  String))
 }
 
@@ -2146,7 +2146,7 @@ type LeuronRequestR = {
   categories :: (DepList String),
   splits :: (Maybe (Array  Splits)),
   substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Maybe (Array  String)),
+  tags :: (Array  String),
   style :: (Maybe (Array  String))
 }
 
@@ -2162,13 +2162,13 @@ _LeuronRequest :: LensP LeuronRequest {
   categories :: (DepList String),
   splits :: (Maybe (Array  Splits)),
   substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Maybe (Array  String)),
+  tags :: (Array  String),
   style :: (Maybe (Array  String))
 }
 _LeuronRequest f (LeuronRequest o) = LeuronRequest <$> f o
 
 
-mkLeuronRequest :: LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (DepList String) -> (Maybe (Array  Splits)) -> (Maybe (Array  Substitutions)) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> LeuronRequest
+mkLeuronRequest :: LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (DepList String) -> (Maybe (Array  Splits)) -> (Maybe (Array  Substitutions)) -> (Array  String) -> (Maybe (Array  String)) -> LeuronRequest
 mkLeuronRequest dataP title description section page examples strengths categories splits substitutions tags style =
   LeuronRequest{dataP, title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style}
 
@@ -2245,7 +2245,7 @@ instance leuronRequestRespondable :: Respondable LeuronRequest where
       <*> readProp "categories" json
       <*> (runNullOrUndefined <$> readProp "splits" json)
       <*> (runNullOrUndefined <$> readProp "substitutions" json)
-      <*> (runNullOrUndefined <$> readProp "tags" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "style" json)
 
 
@@ -2262,7 +2262,7 @@ instance leuronRequestIsForeign :: IsForeign LeuronRequest where
       <*> readProp "categories" json
       <*> (runNullOrUndefined <$> readProp "splits" json)
       <*> (runNullOrUndefined <$> readProp "substitutions" json)
-      <*> (runNullOrUndefined <$> readProp "tags" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "style" json)
 
 
@@ -9777,7 +9777,9 @@ newtype ResourceRequest = ResourceRequest {
   visibility :: Visibility,
   counter :: Int,
   version :: (Maybe String),
-  urls :: (Maybe (Array  String))
+  urls :: (Maybe (Array  String)),
+  icon :: (Maybe String),
+  tags :: (Array  String)
 }
 
 
@@ -9791,7 +9793,9 @@ type ResourceRequestR = {
   visibility :: Visibility,
   counter :: Int,
   version :: (Maybe String),
-  urls :: (Maybe (Array  String))
+  urls :: (Maybe (Array  String)),
+  icon :: (Maybe String),
+  tags :: (Array  String)
 }
 
 
@@ -9805,14 +9809,16 @@ _ResourceRequest :: LensP ResourceRequest {
   visibility :: Visibility,
   counter :: Int,
   version :: (Maybe String),
-  urls :: (Maybe (Array  String))
+  urls :: (Maybe (Array  String)),
+  icon :: (Maybe String),
+  tags :: (Array  String)
 }
 _ResourceRequest f (ResourceRequest o) = ResourceRequest <$> f o
 
 
-mkResourceRequest :: String -> String -> ResourceType -> (Maybe (Array  String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array  String)) -> ResourceRequest
-mkResourceRequest title description source author prerequisites categories visibility counter version urls =
-  ResourceRequest{title, description, source, author, prerequisites, categories, visibility, counter, version, urls}
+mkResourceRequest :: String -> String -> ResourceType -> (Maybe (Array  String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe String) -> (Array  String) -> ResourceRequest
+mkResourceRequest title description source author prerequisites categories visibility counter version urls icon tags =
+  ResourceRequest{title, description, source, author, prerequisites, categories, visibility, counter, version, urls, icon, tags}
 
 
 unwrapResourceRequest (ResourceRequest r) = r
@@ -9830,6 +9836,8 @@ instance resourceRequestEncodeJson :: EncodeJson ResourceRequest where
     ~> "counter" := o.counter
     ~> "version" := o.version
     ~> "urls" := o.urls
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
     ~> jsonEmptyObject
 
 
@@ -9846,6 +9854,8 @@ instance resourceRequestDecodeJson :: DecodeJson ResourceRequest where
     counter <- obj .? "counter"
     version <- obj .? "version"
     urls <- obj .? "urls"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
     pure $ ResourceRequest {
       title,
       description,
@@ -9856,7 +9866,9 @@ instance resourceRequestDecodeJson :: DecodeJson ResourceRequest where
       visibility,
       counter,
       version,
-      urls
+      urls,
+      icon,
+      tags
     }
 
 
@@ -9881,6 +9893,8 @@ instance resourceRequestRespondable :: Respondable ResourceRequest where
       <*> readProp "counter" json
       <*> (runNullOrUndefined <$> readProp "version" json)
       <*> (runNullOrUndefined <$> readProp "urls" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
 
 
 instance resourceRequestIsForeign :: IsForeign ResourceRequest where
@@ -9896,10 +9910,12 @@ instance resourceRequestIsForeign :: IsForeign ResourceRequest where
       <*> readProp "counter" json
       <*> (runNullOrUndefined <$> readProp "version" json)
       <*> (runNullOrUndefined <$> readProp "urls" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
 
 
 instance resourceRequestShow :: Show ResourceRequest where
-    show (ResourceRequest o) = show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "source: " ++ show o.source ++ ", " ++ show "author: " ++ show o.author ++ ", " ++ show "prerequisites: " ++ show o.prerequisites ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "counter: " ++ show o.counter ++ ", " ++ show "version: " ++ show o.version ++ ", " ++ show "urls: " ++ show o.urls
+    show (ResourceRequest o) = show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "source: " ++ show o.source ++ ", " ++ show "author: " ++ show o.author ++ ", " ++ show "prerequisites: " ++ show o.prerequisites ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "counter: " ++ show o.counter ++ ", " ++ show "version: " ++ show o.version ++ ", " ++ show "urls: " ++ show o.urls ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags
 
 newtype ResourceResponse = ResourceResponse {
   id :: Int,
@@ -9914,6 +9930,8 @@ newtype ResourceResponse = ResourceResponse {
   counter :: Int,
   version :: (Maybe String),
   urls :: (Maybe (Array  String)),
+  icon :: (Maybe String),
+  tags :: (Array  String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
@@ -9932,6 +9950,8 @@ type ResourceResponseR = {
   counter :: Int,
   version :: (Maybe String),
   urls :: (Maybe (Array  String)),
+  icon :: (Maybe String),
+  tags :: (Array  String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
@@ -9950,15 +9970,17 @@ _ResourceResponse :: LensP ResourceResponse {
   counter :: Int,
   version :: (Maybe String),
   urls :: (Maybe (Array  String)),
+  icon :: (Maybe String),
+  tags :: (Array  String),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
 _ResourceResponse f (ResourceResponse o) = ResourceResponse <$> f o
 
 
-mkResourceResponse :: Int -> Int -> String -> String -> ResourceType -> (Maybe (Array  String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe Date) -> (Maybe Date) -> ResourceResponse
-mkResourceResponse id userId title description source author prerequisites categories visibility counter version urls createdAt modifiedAt =
-  ResourceResponse{id, userId, title, description, source, author, prerequisites, categories, visibility, counter, version, urls, createdAt, modifiedAt}
+mkResourceResponse :: Int -> Int -> String -> String -> ResourceType -> (Maybe (Array  String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe String) -> (Array  String) -> (Maybe Date) -> (Maybe Date) -> ResourceResponse
+mkResourceResponse id userId title description source author prerequisites categories visibility counter version urls icon tags createdAt modifiedAt =
+  ResourceResponse{id, userId, title, description, source, author, prerequisites, categories, visibility, counter, version, urls, icon, tags, createdAt, modifiedAt}
 
 
 unwrapResourceResponse (ResourceResponse r) = r
@@ -9978,6 +10000,8 @@ instance resourceResponseEncodeJson :: EncodeJson ResourceResponse where
     ~> "counter" := o.counter
     ~> "version" := o.version
     ~> "urls" := o.urls
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
     ~> "created_at" := o.createdAt
     ~> "modified_at" := o.modifiedAt
     ~> jsonEmptyObject
@@ -9998,6 +10022,8 @@ instance resourceResponseDecodeJson :: DecodeJson ResourceResponse where
     counter <- obj .? "counter"
     version <- obj .? "version"
     urls <- obj .? "urls"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
     createdAt <- obj .? "created_at"
     modifiedAt <- obj .? "modified_at"
     pure $ ResourceResponse {
@@ -10013,6 +10039,8 @@ instance resourceResponseDecodeJson :: DecodeJson ResourceResponse where
       counter,
       version,
       urls,
+      icon,
+      tags,
       createdAt,
       modifiedAt
     }
@@ -10041,6 +10069,8 @@ instance resourceResponseRespondable :: Respondable ResourceResponse where
       <*> readProp "counter" json
       <*> (runNullOrUndefined <$> readProp "version" json)
       <*> (runNullOrUndefined <$> readProp "urls" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
@@ -10060,12 +10090,14 @@ instance resourceResponseIsForeign :: IsForeign ResourceResponse where
       <*> readProp "counter" json
       <*> (runNullOrUndefined <$> readProp "version" json)
       <*> (runNullOrUndefined <$> readProp "urls" json)
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance resourceResponseShow :: Show ResourceResponse where
-    show (ResourceResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "source: " ++ show o.source ++ ", " ++ show "author: " ++ show o.author ++ ", " ++ show "prerequisites: " ++ show o.prerequisites ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "counter: " ++ show o.counter ++ ", " ++ show "version: " ++ show o.version ++ ", " ++ show "urls: " ++ show o.urls ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (ResourceResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "source: " ++ show o.source ++ ", " ++ show "author: " ++ show o.author ++ ", " ++ show "prerequisites: " ++ show o.prerequisites ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "counter: " ++ show o.counter ++ ", " ++ show "version: " ++ show o.version ++ ", " ++ show "urls: " ++ show o.urls ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype ResourceResponses = ResourceResponses {
   resourceResponses :: (Array  ResourceResponse)

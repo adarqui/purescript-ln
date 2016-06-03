@@ -149,8 +149,8 @@ forumResponseToForumRequest  (ForumResponse o) =
   }
 
 
-leuronRequestToLeuronResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> LeuronRequest -> LeuronResponse
-leuronRequestToLeuronResponse id userId resourceId createdAt modifiedAt (LeuronRequest o) =
+leuronRequestToLeuronResponse :: Int -> Int -> Int -> (Maybe (Array  String)) -> (Maybe Date) -> (Maybe Date) -> LeuronRequest -> LeuronResponse
+leuronRequestToLeuronResponse id userId resourceId tags createdAt modifiedAt (LeuronRequest o) =
   LeuronResponse {
     id: id,
     userId: userId,
@@ -165,15 +165,15 @@ leuronRequestToLeuronResponse id userId resourceId createdAt modifiedAt (LeuronR
     categories: o.categories,
     splits: o.splits,
     substitutions: o.substitutions,
-    tags: o.tags,
+    tags: tags,
     style: o.style,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
 
 
-leuronResponseToLeuronRequest :: LeuronResponse -> LeuronRequest
-leuronResponseToLeuronRequest  (LeuronResponse o) =
+leuronResponseToLeuronRequest :: (Array  String) -> LeuronResponse -> LeuronRequest
+leuronResponseToLeuronRequest tags (LeuronResponse o) =
   LeuronRequest {
     dataP: o.dataP,
     title: o.title,
@@ -185,7 +185,7 @@ leuronResponseToLeuronRequest  (LeuronResponse o) =
     categories: o.categories,
     splits: o.splits,
     substitutions: o.substitutions,
-    tags: o.tags,
+    tags: tags,
     style: o.style
   }
 
@@ -419,6 +419,8 @@ resourceRequestToResourceResponse id userId createdAt modifiedAt (ResourceReques
     counter: o.counter,
     version: o.version,
     urls: o.urls,
+    icon: o.icon,
+    tags: o.tags,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
@@ -436,7 +438,9 @@ resourceResponseToResourceRequest  (ResourceResponse o) =
     visibility: o.visibility,
     counter: o.counter,
     version: o.version,
-    urls: o.urls
+    urls: o.urls,
+    icon: o.icon,
+    tags: o.tags
   }
 
 
