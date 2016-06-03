@@ -149,8 +149,8 @@ forumResponseToForumRequest  (ForumResponse o) =
   }
 
 
-leuronRequestToLeuronResponse :: Int -> Int -> Int -> (Maybe (Array  String)) -> (Maybe Date) -> (Maybe Date) -> LeuronRequest -> LeuronResponse
-leuronRequestToLeuronResponse id userId resourceId tags createdAt modifiedAt (LeuronRequest o) =
+leuronRequestToLeuronResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> LeuronRequest -> LeuronResponse
+leuronRequestToLeuronResponse id userId resourceId createdAt modifiedAt (LeuronRequest o) =
   LeuronResponse {
     id: id,
     userId: userId,
@@ -165,15 +165,15 @@ leuronRequestToLeuronResponse id userId resourceId tags createdAt modifiedAt (Le
     categories: o.categories,
     splits: o.splits,
     substitutions: o.substitutions,
-    tags: tags,
+    tags: o.tags,
     style: o.style,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
 
 
-leuronResponseToLeuronRequest :: (Array  String) -> LeuronResponse -> LeuronRequest
-leuronResponseToLeuronRequest tags (LeuronResponse o) =
+leuronResponseToLeuronRequest :: LeuronResponse -> LeuronRequest
+leuronResponseToLeuronRequest  (LeuronResponse o) =
   LeuronRequest {
     dataP: o.dataP,
     title: o.title,
@@ -185,7 +185,7 @@ leuronResponseToLeuronRequest tags (LeuronResponse o) =
     categories: o.categories,
     splits: o.splits,
     substitutions: o.substitutions,
-    tags: tags,
+    tags: o.tags,
     style: o.style
   }
 

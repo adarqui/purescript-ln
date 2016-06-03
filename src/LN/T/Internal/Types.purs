@@ -2283,7 +2283,7 @@ newtype LeuronResponse = LeuronResponse {
   categories :: (DepList String),
   splits :: (Maybe (Array  Splits)),
   substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Maybe (Array  String)),
+  tags :: (Array  String),
   style :: (Maybe (Array  String)),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
@@ -2304,7 +2304,7 @@ type LeuronResponseR = {
   categories :: (DepList String),
   splits :: (Maybe (Array  Splits)),
   substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Maybe (Array  String)),
+  tags :: (Array  String),
   style :: (Maybe (Array  String)),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
@@ -2325,7 +2325,7 @@ _LeuronResponse :: LensP LeuronResponse {
   categories :: (DepList String),
   splits :: (Maybe (Array  Splits)),
   substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Maybe (Array  String)),
+  tags :: (Array  String),
   style :: (Maybe (Array  String)),
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
@@ -2333,7 +2333,7 @@ _LeuronResponse :: LensP LeuronResponse {
 _LeuronResponse f (LeuronResponse o) = LeuronResponse <$> f o
 
 
-mkLeuronResponse :: Int -> Int -> Int -> LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (DepList String) -> (Maybe (Array  Splits)) -> (Maybe (Array  Substitutions)) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (Maybe Date) -> (Maybe Date) -> LeuronResponse
+mkLeuronResponse :: Int -> Int -> Int -> LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (DepList String) -> (Maybe (Array  Splits)) -> (Maybe (Array  Substitutions)) -> (Array  String) -> (Maybe (Array  String)) -> (Maybe Date) -> (Maybe Date) -> LeuronResponse
 mkLeuronResponse id userId resourceId dataP title description section page examples strengths categories splits substitutions tags style createdAt modifiedAt =
   LeuronResponse{id, userId, resourceId, dataP, title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style, createdAt, modifiedAt}
 
@@ -2428,7 +2428,7 @@ instance leuronResponseRespondable :: Respondable LeuronResponse where
       <*> readProp "categories" json
       <*> (runNullOrUndefined <$> readProp "splits" json)
       <*> (runNullOrUndefined <$> readProp "substitutions" json)
-      <*> (runNullOrUndefined <$> readProp "tags" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "style" json)
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
@@ -2450,7 +2450,7 @@ instance leuronResponseIsForeign :: IsForeign LeuronResponse where
       <*> readProp "categories" json
       <*> (runNullOrUndefined <$> readProp "splits" json)
       <*> (runNullOrUndefined <$> readProp "substitutions" json)
-      <*> (runNullOrUndefined <$> readProp "tags" json)
+      <*> readProp "tags" json
       <*> (runNullOrUndefined <$> readProp "style" json)
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
