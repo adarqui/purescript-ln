@@ -206,22 +206,22 @@ instance apiResponseShow :: Show ApiResponse where
     show (ApiResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "key: " ++ show o.key ++ ", " ++ show "comment: " ++ show o.comment ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype ApiResponses = ApiResponses {
-  apiResponses :: (Array  ApiResponse)
+  apiResponses :: (Array ApiResponse)
 }
 
 
 type ApiResponsesR = {
-  apiResponses :: (Array  ApiResponse)
+  apiResponses :: (Array ApiResponse)
 }
 
 
 _ApiResponses :: LensP ApiResponses {
-  apiResponses :: (Array  ApiResponse)
+  apiResponses :: (Array ApiResponse)
 }
 _ApiResponses f (ApiResponses o) = ApiResponses <$> f o
 
 
-mkApiResponses :: (Array  ApiResponse) -> ApiResponses
+mkApiResponses :: (Array ApiResponse) -> ApiResponses
 mkApiResponses apiResponses =
   ApiResponses{apiResponses}
 
@@ -271,7 +271,7 @@ newtype BoardRequest = BoardRequest {
   displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   guard :: Int
 }
 
@@ -280,7 +280,7 @@ type BoardRequestR = {
   displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   guard :: Int
 }
 
@@ -289,13 +289,13 @@ _BoardRequest :: LensP BoardRequest {
   displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   guard :: Int
 }
 _BoardRequest f (BoardRequest o) = BoardRequest <$> f o
 
 
-mkBoardRequest :: String -> (Maybe String) -> (Maybe String) -> (Array  String) -> Int -> BoardRequest
+mkBoardRequest :: String -> (Maybe String) -> (Maybe String) -> (Array String) -> Int -> BoardRequest
 mkBoardRequest displayName description icon tags guard =
   BoardRequest{displayName, description, icon, tags, guard}
 
@@ -370,7 +370,7 @@ newtype BoardResponse = BoardResponse {
   displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -389,7 +389,7 @@ type BoardResponseR = {
   displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -408,7 +408,7 @@ _BoardResponse :: LensP BoardResponse {
   displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -419,7 +419,7 @@ _BoardResponse :: LensP BoardResponse {
 _BoardResponse f (BoardResponse o) = BoardResponse <$> f o
 
 
-mkBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> String -> (Maybe String) -> (Maybe String) -> (Array  String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardResponse
+mkBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> String -> (Maybe String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardResponse
 mkBoardResponse id userId forumId parentId name displayName description icon tags active guard createdAt modifiedBy modifiedAt activityAt =
   BoardResponse{id, userId, forumId, parentId, name, displayName, description, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
@@ -536,22 +536,22 @@ instance boardResponseShow :: Show BoardResponse where
     show (BoardResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype BoardResponses = BoardResponses {
-  boardResponses :: (Array  BoardResponse)
+  boardResponses :: (Array BoardResponse)
 }
 
 
 type BoardResponsesR = {
-  boardResponses :: (Array  BoardResponse)
+  boardResponses :: (Array BoardResponse)
 }
 
 
 _BoardResponses :: LensP BoardResponses {
-  boardResponses :: (Array  BoardResponse)
+  boardResponses :: (Array BoardResponse)
 }
 _BoardResponses f (BoardResponses o) = BoardResponses <$> f o
 
 
-mkBoardResponses :: (Array  BoardResponse) -> BoardResponses
+mkBoardResponses :: (Array BoardResponse) -> BoardResponses
 mkBoardResponses boardResponses =
   BoardResponses{boardResponses}
 
@@ -684,22 +684,22 @@ instance boardStatResponseShow :: Show BoardStatResponse where
     show (BoardStatResponse o) = show "boardId: " ++ show o.boardId ++ ", " ++ show "threads: " ++ show o.threads ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "views: " ++ show o.views
 
 newtype BoardStatResponses = BoardStatResponses {
-  boardStatResponses :: (Array  BoardStatResponse)
+  boardStatResponses :: (Array BoardStatResponse)
 }
 
 
 type BoardStatResponsesR = {
-  boardStatResponses :: (Array  BoardStatResponse)
+  boardStatResponses :: (Array BoardStatResponse)
 }
 
 
 _BoardStatResponses :: LensP BoardStatResponses {
-  boardStatResponses :: (Array  BoardStatResponse)
+  boardStatResponses :: (Array BoardStatResponse)
 }
 _BoardStatResponses f (BoardStatResponses o) = BoardStatResponses <$> f o
 
 
-mkBoardStatResponses :: (Array  BoardStatResponse) -> BoardStatResponses
+mkBoardStatResponses :: (Array BoardStatResponse) -> BoardStatResponses
 mkBoardStatResponses boardStatResponses =
   BoardStatResponses{boardStatResponses}
 
@@ -750,10 +750,10 @@ newtype BucketRequest = BucketRequest {
   description :: (Maybe String),
   scoreLo :: Int,
   scoreHi :: Int,
-  leurons :: (Array  Int),
-  resources :: (Array  Int),
-  categories :: (Array  String),
-  filters :: (Array  Int),
+  leurons :: (Array Int),
+  resources :: (Array Int),
+  categories :: (Array String),
+  filters :: (Array Int),
   guard :: Int
 }
 
@@ -763,10 +763,10 @@ type BucketRequestR = {
   description :: (Maybe String),
   scoreLo :: Int,
   scoreHi :: Int,
-  leurons :: (Array  Int),
-  resources :: (Array  Int),
-  categories :: (Array  String),
-  filters :: (Array  Int),
+  leurons :: (Array Int),
+  resources :: (Array Int),
+  categories :: (Array String),
+  filters :: (Array Int),
   guard :: Int
 }
 
@@ -776,16 +776,16 @@ _BucketRequest :: LensP BucketRequest {
   description :: (Maybe String),
   scoreLo :: Int,
   scoreHi :: Int,
-  leurons :: (Array  Int),
-  resources :: (Array  Int),
-  categories :: (Array  String),
-  filters :: (Array  Int),
+  leurons :: (Array Int),
+  resources :: (Array Int),
+  categories :: (Array String),
+  filters :: (Array Int),
   guard :: Int
 }
 _BucketRequest f (BucketRequest o) = BucketRequest <$> f o
 
 
-mkBucketRequest :: String -> (Maybe String) -> Int -> Int -> (Array  Int) -> (Array  Int) -> (Array  String) -> (Array  Int) -> Int -> BucketRequest
+mkBucketRequest :: String -> (Maybe String) -> Int -> Int -> (Array Int) -> (Array Int) -> (Array String) -> (Array Int) -> Int -> BucketRequest
 mkBucketRequest displayName description scoreLo scoreHi leurons resources categories filters guard =
   BucketRequest{displayName, description, scoreLo, scoreHi, leurons, resources, categories, filters, guard}
 
@@ -879,10 +879,10 @@ newtype BucketResponse = BucketResponse {
   description :: (Maybe String),
   scoreLo :: Int,
   scoreHi :: Int,
-  leurons :: (Array  Int),
-  resources :: (Array  Int),
-  categories :: (Array  String),
-  filters :: (Array  Int),
+  leurons :: (Array Int),
+  resources :: (Array Int),
+  categories :: (Array String),
+  filters :: (Array Int),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -899,10 +899,10 @@ type BucketResponseR = {
   description :: (Maybe String),
   scoreLo :: Int,
   scoreHi :: Int,
-  leurons :: (Array  Int),
-  resources :: (Array  Int),
-  categories :: (Array  String),
-  filters :: (Array  Int),
+  leurons :: (Array Int),
+  resources :: (Array Int),
+  categories :: (Array String),
+  filters :: (Array Int),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -919,10 +919,10 @@ _BucketResponse :: LensP BucketResponse {
   description :: (Maybe String),
   scoreLo :: Int,
   scoreHi :: Int,
-  leurons :: (Array  Int),
-  resources :: (Array  Int),
-  categories :: (Array  String),
-  filters :: (Array  Int),
+  leurons :: (Array Int),
+  resources :: (Array Int),
+  categories :: (Array String),
+  filters :: (Array Int),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -932,7 +932,7 @@ _BucketResponse :: LensP BucketResponse {
 _BucketResponse f (BucketResponse o) = BucketResponse <$> f o
 
 
-mkBucketResponse :: Int -> Int -> String -> String -> (Maybe String) -> Int -> Int -> (Array  Int) -> (Array  Int) -> (Array  String) -> (Array  Int) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> BucketResponse
+mkBucketResponse :: Int -> Int -> String -> String -> (Maybe String) -> Int -> Int -> (Array Int) -> (Array Int) -> (Array String) -> (Array Int) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> BucketResponse
 mkBucketResponse id userId name displayName description scoreLo scoreHi leurons resources categories filters active guard createdAt modifiedAt activityAt =
   BucketResponse{id, userId, name, displayName, description, scoreLo, scoreHi, leurons, resources, categories, filters, active, guard, createdAt, modifiedAt, activityAt}
 
@@ -1054,22 +1054,22 @@ instance bucketResponseShow :: Show BucketResponse where
     show (BucketResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "scoreLo: " ++ show o.scoreLo ++ ", " ++ show "scoreHi: " ++ show o.scoreHi ++ ", " ++ show "leurons: " ++ show o.leurons ++ ", " ++ show "resources: " ++ show o.resources ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "filters: " ++ show o.filters ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype BucketResponses = BucketResponses {
-  bucketResponses :: (Array  BucketResponse)
+  bucketResponses :: (Array BucketResponse)
 }
 
 
 type BucketResponsesR = {
-  bucketResponses :: (Array  BucketResponse)
+  bucketResponses :: (Array BucketResponse)
 }
 
 
 _BucketResponses :: LensP BucketResponses {
-  bucketResponses :: (Array  BucketResponse)
+  bucketResponses :: (Array BucketResponse)
 }
 _BucketResponses f (BucketResponses o) = BucketResponses <$> f o
 
 
-mkBucketResponses :: (Array  BucketResponse) -> BucketResponses
+mkBucketResponses :: (Array BucketResponse) -> BucketResponses
 mkBucketResponses bucketResponses =
   BucketResponses{bucketResponses}
 
@@ -1186,22 +1186,22 @@ instance countResponseShow :: Show CountResponse where
     show (CountResponse o) = show "id: " ++ show o.id ++ ", " ++ show "n: " ++ show o.n
 
 newtype CountResponses = CountResponses {
-  countResponses :: (Array  CountResponse)
+  countResponses :: (Array CountResponse)
 }
 
 
 type CountResponsesR = {
-  countResponses :: (Array  CountResponse)
+  countResponses :: (Array CountResponse)
 }
 
 
 _CountResponses :: LensP CountResponses {
-  countResponses :: (Array  CountResponse)
+  countResponses :: (Array CountResponse)
 }
 _CountResponses f (CountResponses o) = CountResponses <$> f o
 
 
-mkCountResponses :: (Array  CountResponse) -> CountResponses
+mkCountResponses :: (Array CountResponse) -> CountResponses
 mkCountResponses countResponses =
   CountResponses{countResponses}
 
@@ -1247,7 +1247,7 @@ instance countResponsesIsForeign :: IsForeign CountResponses where
 instance countResponsesShow :: Show CountResponses where
     show (CountResponses o) = show "countResponses: " ++ show o.countResponses
 
-type DepList a = (Array  (Array  a))
+type DepList a = (Array (Array a))
 
 
 newtype EmptyRequest = EmptyRequest {
@@ -1407,22 +1407,22 @@ instance emptyResponseShow :: Show EmptyResponse where
     show (EmptyResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "value: " ++ show o.value ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype EmptyResponses = EmptyResponses {
-  emptyResponses :: (Array  EmptyResponse)
+  emptyResponses :: (Array EmptyResponse)
 }
 
 
 type EmptyResponsesR = {
-  emptyResponses :: (Array  EmptyResponse)
+  emptyResponses :: (Array EmptyResponse)
 }
 
 
 _EmptyResponses :: LensP EmptyResponses {
-  emptyResponses :: (Array  EmptyResponse)
+  emptyResponses :: (Array EmptyResponse)
 }
 _EmptyResponses f (EmptyResponses o) = EmptyResponses <$> f o
 
 
-mkEmptyResponses :: (Array  EmptyResponse) -> EmptyResponses
+mkEmptyResponses :: (Array EmptyResponse) -> EmptyResponses
 mkEmptyResponses emptyResponses =
   EmptyResponses{emptyResponses}
 
@@ -1765,7 +1765,7 @@ newtype ForumRequest = ForumRequest {
   displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   guard :: Int
 }
@@ -1775,7 +1775,7 @@ type ForumRequestR = {
   displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   guard :: Int
 }
@@ -1785,14 +1785,14 @@ _ForumRequest :: LensP ForumRequest {
   displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   guard :: Int
 }
 _ForumRequest f (ForumRequest o) = ForumRequest <$> f o
 
 
-mkForumRequest :: String -> (Maybe String) -> (Maybe String) -> (Array  String) -> Visibility -> Int -> ForumRequest
+mkForumRequest :: String -> (Maybe String) -> (Maybe String) -> (Array String) -> Visibility -> Int -> ForumRequest
 mkForumRequest displayName description icon tags visibility guard =
   ForumRequest{displayName, description, icon, tags, visibility, guard}
 
@@ -1871,7 +1871,7 @@ newtype ForumResponse = ForumResponse {
   displayNAme :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   active :: Boolean,
   guard :: Int,
@@ -1890,7 +1890,7 @@ type ForumResponseR = {
   displayNAme :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   active :: Boolean,
   guard :: Int,
@@ -1909,7 +1909,7 @@ _ForumResponse :: LensP ForumResponse {
   displayNAme :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   active :: Boolean,
   guard :: Int,
@@ -1921,7 +1921,7 @@ _ForumResponse :: LensP ForumResponse {
 _ForumResponse f (ForumResponse o) = ForumResponse <$> f o
 
 
-mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> (Maybe String) -> (Array  String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
+mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
 mkForumResponse id userId orgId name displayNAme description icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
   ForumResponse{id, userId, orgId, name, displayNAme, description, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
@@ -2038,22 +2038,22 @@ instance forumResponseShow :: Show ForumResponse where
     show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayNAme: " ++ show o.displayNAme ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ForumResponses = ForumResponses {
-  forumResponses :: (Array  ForumResponse)
+  forumResponses :: (Array ForumResponse)
 }
 
 
 type ForumResponsesR = {
-  forumResponses :: (Array  ForumResponse)
+  forumResponses :: (Array ForumResponse)
 }
 
 
 _ForumResponses :: LensP ForumResponses {
-  forumResponses :: (Array  ForumResponse)
+  forumResponses :: (Array ForumResponse)
 }
 _ForumResponses f (ForumResponses o) = ForumResponses <$> f o
 
 
-mkForumResponses :: (Array  ForumResponse) -> ForumResponses
+mkForumResponses :: (Array ForumResponse) -> ForumResponses
 mkForumResponses forumResponses =
   ForumResponses{forumResponses}
 
@@ -2194,22 +2194,22 @@ instance forumStatResponseShow :: Show ForumStatResponse where
     show (ForumStatResponse o) = show "forumId: " ++ show o.forumId ++ ", " ++ show "boards: " ++ show o.boards ++ ", " ++ show "threads: " ++ show o.threads ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "views: " ++ show o.views
 
 newtype ForumStatResponses = ForumStatResponses {
-  forumStatResponses :: (Array  ForumStatResponse)
+  forumStatResponses :: (Array ForumStatResponse)
 }
 
 
 type ForumStatResponsesR = {
-  forumStatResponses :: (Array  ForumStatResponse)
+  forumStatResponses :: (Array ForumStatResponse)
 }
 
 
 _ForumStatResponses :: LensP ForumStatResponses {
-  forumStatResponses :: (Array  ForumStatResponse)
+  forumStatResponses :: (Array ForumStatResponse)
 }
 _ForumStatResponses f (ForumStatResponses o) = ForumStatResponses <$> f o
 
 
-mkForumStatResponses :: (Array  ForumStatResponse) -> ForumStatResponses
+mkForumStatResponses :: (Array ForumStatResponse) -> ForumStatResponses
 mkForumStatResponses forumStatResponses =
   ForumStatResponses{forumStatResponses}
 
@@ -2261,13 +2261,13 @@ newtype LeuronRequest = LeuronRequest {
   description :: (Maybe String),
   section :: (Maybe String),
   page :: (Maybe String),
-  examples :: (Maybe (Array  String)),
-  strengths :: (Maybe (Array  String)),
+  examples :: (Maybe (Array String)),
+  strengths :: (Maybe (Array String)),
   categories :: (DepList String),
-  splits :: (Maybe (Array  Splits)),
-  substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Array  String),
-  style :: (Maybe (Array  String)),
+  splits :: (Maybe (Array Splits)),
+  substitutions :: (Maybe (Array Substitutions)),
+  tags :: (Array String),
+  style :: (Maybe (Array String)),
   guard :: Int
 }
 
@@ -2278,13 +2278,13 @@ type LeuronRequestR = {
   description :: (Maybe String),
   section :: (Maybe String),
   page :: (Maybe String),
-  examples :: (Maybe (Array  String)),
-  strengths :: (Maybe (Array  String)),
+  examples :: (Maybe (Array String)),
+  strengths :: (Maybe (Array String)),
   categories :: (DepList String),
-  splits :: (Maybe (Array  Splits)),
-  substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Array  String),
-  style :: (Maybe (Array  String)),
+  splits :: (Maybe (Array Splits)),
+  substitutions :: (Maybe (Array Substitutions)),
+  tags :: (Array String),
+  style :: (Maybe (Array String)),
   guard :: Int
 }
 
@@ -2295,19 +2295,19 @@ _LeuronRequest :: LensP LeuronRequest {
   description :: (Maybe String),
   section :: (Maybe String),
   page :: (Maybe String),
-  examples :: (Maybe (Array  String)),
-  strengths :: (Maybe (Array  String)),
+  examples :: (Maybe (Array String)),
+  strengths :: (Maybe (Array String)),
   categories :: (DepList String),
-  splits :: (Maybe (Array  Splits)),
-  substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Array  String),
-  style :: (Maybe (Array  String)),
+  splits :: (Maybe (Array Splits)),
+  substitutions :: (Maybe (Array Substitutions)),
+  tags :: (Array String),
+  style :: (Maybe (Array String)),
   guard :: Int
 }
 _LeuronRequest f (LeuronRequest o) = LeuronRequest <$> f o
 
 
-mkLeuronRequest :: LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (DepList String) -> (Maybe (Array  Splits)) -> (Maybe (Array  Substitutions)) -> (Array  String) -> (Maybe (Array  String)) -> Int -> LeuronRequest
+mkLeuronRequest :: LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array String)) -> (Maybe (Array String)) -> (DepList String) -> (Maybe (Array Splits)) -> (Maybe (Array Substitutions)) -> (Array String) -> (Maybe (Array String)) -> Int -> LeuronRequest
 mkLeuronRequest dataP title description section page examples strengths categories splits substitutions tags style guard =
   LeuronRequest{dataP, title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style, guard}
 
@@ -2422,13 +2422,13 @@ newtype LeuronResponse = LeuronResponse {
   description :: (Maybe String),
   section :: (Maybe String),
   page :: (Maybe String),
-  examples :: (Maybe (Array  String)),
-  strengths :: (Maybe (Array  String)),
+  examples :: (Maybe (Array String)),
+  strengths :: (Maybe (Array String)),
   categories :: (DepList String),
-  splits :: (Maybe (Array  Splits)),
-  substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Array  String),
-  style :: (Maybe (Array  String)),
+  splits :: (Maybe (Array Splits)),
+  substitutions :: (Maybe (Array Substitutions)),
+  tags :: (Array String),
+  style :: (Maybe (Array String)),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -2446,13 +2446,13 @@ type LeuronResponseR = {
   description :: (Maybe String),
   section :: (Maybe String),
   page :: (Maybe String),
-  examples :: (Maybe (Array  String)),
-  strengths :: (Maybe (Array  String)),
+  examples :: (Maybe (Array String)),
+  strengths :: (Maybe (Array String)),
   categories :: (DepList String),
-  splits :: (Maybe (Array  Splits)),
-  substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Array  String),
-  style :: (Maybe (Array  String)),
+  splits :: (Maybe (Array Splits)),
+  substitutions :: (Maybe (Array Substitutions)),
+  tags :: (Array String),
+  style :: (Maybe (Array String)),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -2470,13 +2470,13 @@ _LeuronResponse :: LensP LeuronResponse {
   description :: (Maybe String),
   section :: (Maybe String),
   page :: (Maybe String),
-  examples :: (Maybe (Array  String)),
-  strengths :: (Maybe (Array  String)),
+  examples :: (Maybe (Array String)),
+  strengths :: (Maybe (Array String)),
   categories :: (DepList String),
-  splits :: (Maybe (Array  Splits)),
-  substitutions :: (Maybe (Array  Substitutions)),
-  tags :: (Array  String),
-  style :: (Maybe (Array  String)),
+  splits :: (Maybe (Array Splits)),
+  substitutions :: (Maybe (Array Substitutions)),
+  tags :: (Array String),
+  style :: (Maybe (Array String)),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -2486,7 +2486,7 @@ _LeuronResponse :: LensP LeuronResponse {
 _LeuronResponse f (LeuronResponse o) = LeuronResponse <$> f o
 
 
-mkLeuronResponse :: Int -> Int -> Int -> LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe (Array  String)) -> (DepList String) -> (Maybe (Array  Splits)) -> (Maybe (Array  Substitutions)) -> (Array  String) -> (Maybe (Array  String)) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> LeuronResponse
+mkLeuronResponse :: Int -> Int -> Int -> LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array String)) -> (Maybe (Array String)) -> (DepList String) -> (Maybe (Array Splits)) -> (Maybe (Array Substitutions)) -> (Array String) -> (Maybe (Array String)) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> LeuronResponse
 mkLeuronResponse id userId resourceId dataP title description section page examples strengths categories splits substitutions tags style active guard createdAt modifiedAt activityAt =
   LeuronResponse{id, userId, resourceId, dataP, title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style, active, guard, createdAt, modifiedAt, activityAt}
 
@@ -2628,22 +2628,22 @@ instance leuronResponseShow :: Show LeuronResponse where
     show (LeuronResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "resourceId: " ++ show o.resourceId ++ ", " ++ show "dataP: " ++ show o.dataP ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "section: " ++ show o.section ++ ", " ++ show "page: " ++ show o.page ++ ", " ++ show "examples: " ++ show o.examples ++ ", " ++ show "strengths: " ++ show o.strengths ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "splits: " ++ show o.splits ++ ", " ++ show "substitutions: " ++ show o.substitutions ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "style: " ++ show o.style ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype LeuronResponses = LeuronResponses {
-  leuronResponses :: (Array  LeuronResponse)
+  leuronResponses :: (Array LeuronResponse)
 }
 
 
 type LeuronResponsesR = {
-  leuronResponses :: (Array  LeuronResponse)
+  leuronResponses :: (Array LeuronResponse)
 }
 
 
 _LeuronResponses :: LensP LeuronResponses {
-  leuronResponses :: (Array  LeuronResponse)
+  leuronResponses :: (Array LeuronResponse)
 }
 _LeuronResponses f (LeuronResponses o) = LeuronResponses <$> f o
 
 
-mkLeuronResponses :: (Array  LeuronResponse) -> LeuronResponses
+mkLeuronResponses :: (Array LeuronResponse) -> LeuronResponses
 mkLeuronResponses leuronResponses =
   LeuronResponses{leuronResponses}
 
@@ -2792,22 +2792,22 @@ instance leuronStatResponseShow :: Show LeuronStatResponse where
     show (LeuronStatResponse o) = show "leuronId: " ++ show o.leuronId ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "stars: " ++ show o.stars ++ ", " ++ show "views: " ++ show o.views
 
 newtype LeuronStatResponses = LeuronStatResponses {
-  leuronStatResponses :: (Array  LeuronStatResponse)
+  leuronStatResponses :: (Array LeuronStatResponse)
 }
 
 
 type LeuronStatResponsesR = {
-  leuronStatResponses :: (Array  LeuronStatResponse)
+  leuronStatResponses :: (Array LeuronStatResponse)
 }
 
 
 _LeuronStatResponses :: LensP LeuronStatResponses {
-  leuronStatResponses :: (Array  LeuronStatResponse)
+  leuronStatResponses :: (Array LeuronStatResponse)
 }
 _LeuronStatResponses f (LeuronStatResponses o) = LeuronStatResponses <$> f o
 
 
-mkLeuronStatResponses :: (Array  LeuronStatResponse) -> LeuronStatResponses
+mkLeuronStatResponses :: (Array LeuronStatResponse) -> LeuronStatResponses
 mkLeuronStatResponses leuronStatResponses =
   LeuronStatResponses{leuronStatResponses}
 
@@ -3161,22 +3161,22 @@ instance leuronTrainingResponseShow :: Show LeuronTrainingResponse where
     show (LeuronTrainingResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "summary: " ++ show o.summary ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype LeuronTrainingResponses = LeuronTrainingResponses {
-  leuronTrainingResponses :: (Array  LeuronTrainingResponse)
+  leuronTrainingResponses :: (Array LeuronTrainingResponse)
 }
 
 
 type LeuronTrainingResponsesR = {
-  leuronTrainingResponses :: (Array  LeuronTrainingResponse)
+  leuronTrainingResponses :: (Array LeuronTrainingResponse)
 }
 
 
 _LeuronTrainingResponses :: LensP LeuronTrainingResponses {
-  leuronTrainingResponses :: (Array  LeuronTrainingResponse)
+  leuronTrainingResponses :: (Array LeuronTrainingResponse)
 }
 _LeuronTrainingResponses f (LeuronTrainingResponses o) = LeuronTrainingResponses <$> f o
 
 
-mkLeuronTrainingResponses :: (Array  LeuronTrainingResponse) -> LeuronTrainingResponses
+mkLeuronTrainingResponses :: (Array LeuronTrainingResponse) -> LeuronTrainingResponses
 mkLeuronTrainingResponses leuronTrainingResponses =
   LeuronTrainingResponses{leuronTrainingResponses}
 
@@ -3285,22 +3285,22 @@ instance leuronTrainingStatResponseShow :: Show LeuronTrainingStatResponse where
     show (LeuronTrainingStatResponse o) = show "leuronTrainingId: " ++ show o.leuronTrainingId
 
 newtype LeuronTrainingStatResponses = LeuronTrainingStatResponses {
-  leuronTrainingStatResponses :: (Array  LeuronTrainingStatResponse)
+  leuronTrainingStatResponses :: (Array LeuronTrainingStatResponse)
 }
 
 
 type LeuronTrainingStatResponsesR = {
-  leuronTrainingStatResponses :: (Array  LeuronTrainingStatResponse)
+  leuronTrainingStatResponses :: (Array LeuronTrainingStatResponse)
 }
 
 
 _LeuronTrainingStatResponses :: LensP LeuronTrainingStatResponses {
-  leuronTrainingStatResponses :: (Array  LeuronTrainingStatResponse)
+  leuronTrainingStatResponses :: (Array LeuronTrainingStatResponse)
 }
 _LeuronTrainingStatResponses f (LeuronTrainingStatResponses o) = LeuronTrainingStatResponses <$> f o
 
 
-mkLeuronTrainingStatResponses :: (Array  LeuronTrainingStatResponse) -> LeuronTrainingStatResponses
+mkLeuronTrainingStatResponses :: (Array LeuronTrainingStatResponse) -> LeuronTrainingStatResponses
 mkLeuronTrainingStatResponses leuronTrainingStatResponses =
   LeuronTrainingStatResponses{leuronTrainingStatResponses}
 
@@ -3650,22 +3650,22 @@ instance likeResponseShow :: Show LikeResponse where
     show (LikeResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "opt: " ++ show o.opt ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype LikeResponses = LikeResponses {
-  likeResponses :: (Array  LikeResponse)
+  likeResponses :: (Array LikeResponse)
 }
 
 
 type LikeResponsesR = {
-  likeResponses :: (Array  LikeResponse)
+  likeResponses :: (Array LikeResponse)
 }
 
 
 _LikeResponses :: LensP LikeResponses {
-  likeResponses :: (Array  LikeResponse)
+  likeResponses :: (Array LikeResponse)
 }
 _LikeResponses f (LikeResponses o) = LikeResponses <$> f o
 
 
-mkLikeResponses :: (Array  LikeResponse) -> LikeResponses
+mkLikeResponses :: (Array LikeResponse) -> LikeResponses
 mkLikeResponses likeResponses =
   LikeResponses{likeResponses}
 
@@ -3806,22 +3806,22 @@ instance likeStatResponseShow :: Show LikeStatResponse where
     show (LikeStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "dislike: " ++ show o.dislike
 
 newtype LikeStatResponses = LikeStatResponses {
-  likeStatResponses :: (Array  LikeStatResponse)
+  likeStatResponses :: (Array LikeStatResponse)
 }
 
 
 type LikeStatResponsesR = {
-  likeStatResponses :: (Array  LikeStatResponse)
+  likeStatResponses :: (Array LikeStatResponse)
 }
 
 
 _LikeStatResponses :: LensP LikeStatResponses {
-  likeStatResponses :: (Array  LikeStatResponse)
+  likeStatResponses :: (Array LikeStatResponse)
 }
 _LikeStatResponses f (LikeStatResponses o) = LikeStatResponses <$> f o
 
 
-mkLikeStatResponses :: (Array  LikeStatResponse) -> LikeStatResponses
+mkLikeStatResponses :: (Array LikeStatResponse) -> LikeStatResponses
 mkLikeStatResponses likeStatResponses =
   LikeStatResponses{likeStatResponses}
 
@@ -4548,24 +4548,24 @@ instance factShow :: Show Fact where
 
 newtype FactList = FactList {
   fact :: String,
-  list :: (Array  String)
+  list :: (Array String)
 }
 
 
 type FactListR = {
   fact :: String,
-  list :: (Array  String)
+  list :: (Array String)
 }
 
 
 _FactList :: LensP FactList {
   fact :: String,
-  list :: (Array  String)
+  list :: (Array String)
 }
 _FactList f (FactList o) = FactList <$> f o
 
 
-mkFactList :: String -> (Array  String) -> FactList
+mkFactList :: String -> (Array String) -> FactList
 mkFactList fact list =
   FactList{fact, list}
 
@@ -4757,25 +4757,25 @@ instance dCardShow :: Show DCard where
     show (DCard o) = show "front: " ++ show o.front ++ ", " ++ show "back: " ++ show o.back
 
 newtype DCardX = DCardX {
-  front :: (Array  String),
-  back :: (Array  String)
+  front :: (Array String),
+  back :: (Array String)
 }
 
 
 type DCardXR = {
-  front :: (Array  String),
-  back :: (Array  String)
+  front :: (Array String),
+  back :: (Array String)
 }
 
 
 _DCardX :: LensP DCardX {
-  front :: (Array  String),
-  back :: (Array  String)
+  front :: (Array String),
+  back :: (Array String)
 }
 _DCardX f (DCardX o) = DCardX <$> f o
 
 
-mkDCardX :: (Array  String) -> (Array  String) -> DCardX
+mkDCardX :: (Array String) -> (Array String) -> DCardX
 mkDCardX front back =
   DCardX{front, back}
 
@@ -5038,24 +5038,24 @@ instance antonymShow :: Show Antonym where
 
 newtype Template = Template {
   template :: String,
-  values :: (Array  TemplateValue)
+  values :: (Array TemplateValue)
 }
 
 
 type TemplateR = {
   template :: String,
-  values :: (Array  TemplateValue)
+  values :: (Array TemplateValue)
 }
 
 
 _Template :: LensP Template {
   template :: String,
-  values :: (Array  TemplateValue)
+  values :: (Array TemplateValue)
 }
 _Template f (Template o) = Template <$> f o
 
 
-mkTemplate :: String -> (Array  TemplateValue) -> Template
+mkTemplate :: String -> (Array TemplateValue) -> Template
 mkTemplate template values =
   Template{template, values}
 
@@ -5106,32 +5106,32 @@ instance templateIsForeign :: IsForeign Template where
 instance templateShow :: Show Template where
     show (Template o) = show "template: " ++ show o.template ++ ", " ++ show "values: " ++ show o.values
 
-type TemplateValue  = ((Tuple  String) (Array  String))
+type TemplateValue  = ((Tuple String) (Array String))
 
 
 newtype ImageAssociation = ImageAssociation {
-  imageUrl :: (Array  String),
-  assocBy :: (Array  String),
-  assocResult :: (Array  String)
+  imageUrl :: (Array String),
+  assocBy :: (Array String),
+  assocResult :: (Array String)
 }
 
 
 type ImageAssociationR = {
-  imageUrl :: (Array  String),
-  assocBy :: (Array  String),
-  assocResult :: (Array  String)
+  imageUrl :: (Array String),
+  assocBy :: (Array String),
+  assocResult :: (Array String)
 }
 
 
 _ImageAssociation :: LensP ImageAssociation {
-  imageUrl :: (Array  String),
-  assocBy :: (Array  String),
-  assocResult :: (Array  String)
+  imageUrl :: (Array String),
+  assocBy :: (Array String),
+  assocResult :: (Array String)
 }
 _ImageAssociation f (ImageAssociation o) = ImageAssociation <$> f o
 
 
-mkImageAssociation :: (Array  String) -> (Array  String) -> (Array  String) -> ImageAssociation
+mkImageAssociation :: (Array String) -> (Array String) -> (Array String) -> ImageAssociation
 mkImageAssociation imageUrl assocBy assocResult =
   ImageAssociation{imageUrl, assocBy, assocResult}
 
@@ -5271,29 +5271,29 @@ type LDContent  = String
 type LDHint  = (Maybe String)
 
 
-type LinearDemoNode  = ((Tuple  LDContent) LDHint)
+type LinearDemoNode  = ((Tuple LDContent) LDHint)
 
 
 newtype LinearDemo = LinearDemo {
   label :: String,
-  content :: (Array  LinearDemoNode)
+  content :: (Array LinearDemoNode)
 }
 
 
 type LinearDemoR = {
   label :: String,
-  content :: (Array  LinearDemoNode)
+  content :: (Array LinearDemoNode)
 }
 
 
 _LinearDemo :: LensP LinearDemo {
   label :: String,
-  content :: (Array  LinearDemoNode)
+  content :: (Array LinearDemoNode)
 }
 _LinearDemo f (LinearDemo o) = LinearDemo <$> f o
 
 
-mkLinearDemo :: String -> (Array  LinearDemoNode) -> LinearDemo
+mkLinearDemo :: String -> (Array LinearDemoNode) -> LinearDemo
 mkLinearDemo label content =
   LinearDemo{label, content}
 
@@ -5416,27 +5416,27 @@ instance qAShow :: Show QA where
 
 newtype Table = Table {
   title :: String,
-  columns :: (Array  String),
-  rows :: (Array  (Array  (Maybe String)))
+  columns :: (Array String),
+  rows :: (Array (Array (Maybe String)))
 }
 
 
 type TableR = {
   title :: String,
-  columns :: (Array  String),
-  rows :: (Array  (Array  (Maybe String)))
+  columns :: (Array String),
+  rows :: (Array (Array (Maybe String)))
 }
 
 
 _Table :: LensP Table {
   title :: String,
-  columns :: (Array  String),
-  rows :: (Array  (Array  (Maybe String)))
+  columns :: (Array String),
+  rows :: (Array (Array (Maybe String)))
 }
 _Table f (Table o) = Table <$> f o
 
 
-mkTable :: String -> (Array  String) -> (Array  (Array  (Maybe String))) -> Table
+mkTable :: String -> (Array String) -> (Array (Array (Maybe String))) -> Table
 mkTable title columns rows =
   Table{title, columns, rows}
 
@@ -5604,7 +5604,7 @@ newtype OrganizationRequest = OrganizationRequest {
   location :: String,
   email :: String,
   membership :: Membership,
-  tags :: (Array  String),
+  tags :: (Array String),
   icon :: (Maybe String),
   visibility :: Visibility,
   guard :: Int
@@ -5618,7 +5618,7 @@ type OrganizationRequestR = {
   location :: String,
   email :: String,
   membership :: Membership,
-  tags :: (Array  String),
+  tags :: (Array String),
   icon :: (Maybe String),
   visibility :: Visibility,
   guard :: Int
@@ -5632,7 +5632,7 @@ _OrganizationRequest :: LensP OrganizationRequest {
   location :: String,
   email :: String,
   membership :: Membership,
-  tags :: (Array  String),
+  tags :: (Array String),
   icon :: (Maybe String),
   visibility :: Visibility,
   guard :: Int
@@ -5640,7 +5640,7 @@ _OrganizationRequest :: LensP OrganizationRequest {
 _OrganizationRequest f (OrganizationRequest o) = OrganizationRequest <$> f o
 
 
-mkOrganizationRequest :: String -> (Maybe String) -> String -> String -> String -> Membership -> (Array  String) -> (Maybe String) -> Visibility -> Int -> OrganizationRequest
+mkOrganizationRequest :: String -> (Maybe String) -> String -> String -> String -> Membership -> (Array String) -> (Maybe String) -> Visibility -> Int -> OrganizationRequest
 mkOrganizationRequest displayName description company location email membership tags icon visibility guard =
   OrganizationRequest{displayName, description, company, location, email, membership, tags, icon, visibility, guard}
 
@@ -5743,7 +5743,7 @@ newtype OrganizationResponse = OrganizationResponse {
   emailMD5 :: String,
   membership :: Membership,
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   active :: Boolean,
   guard :: Int,
@@ -5766,7 +5766,7 @@ type OrganizationResponseR = {
   emailMD5 :: String,
   membership :: Membership,
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   active :: Boolean,
   guard :: Int,
@@ -5789,7 +5789,7 @@ _OrganizationResponse :: LensP OrganizationResponse {
   emailMD5 :: String,
   membership :: Membership,
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   active :: Boolean,
   guard :: Int,
@@ -5801,7 +5801,7 @@ _OrganizationResponse :: LensP OrganizationResponse {
 _OrganizationResponse f (OrganizationResponse o) = OrganizationResponse <$> f o
 
 
-mkOrganizationResponse :: Int -> Int -> String -> String -> (Maybe String) -> String -> String -> String -> String -> Membership -> (Maybe String) -> (Array  String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> OrganizationResponse
+mkOrganizationResponse :: Int -> Int -> String -> String -> (Maybe String) -> String -> String -> String -> String -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> OrganizationResponse
 mkOrganizationResponse id userId name displayName description company location email emailMD5 membership icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
   OrganizationResponse{id, userId, name, displayName, description, company, location, email, emailMD5, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
@@ -5938,22 +5938,22 @@ instance organizationResponseShow :: Show OrganizationResponse where
     show (OrganizationResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "company: " ++ show o.company ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype OrganizationResponses = OrganizationResponses {
-  organizationResponses :: (Array  OrganizationResponse)
+  organizationResponses :: (Array OrganizationResponse)
 }
 
 
 type OrganizationResponsesR = {
-  organizationResponses :: (Array  OrganizationResponse)
+  organizationResponses :: (Array OrganizationResponse)
 }
 
 
 _OrganizationResponses :: LensP OrganizationResponses {
-  organizationResponses :: (Array  OrganizationResponse)
+  organizationResponses :: (Array OrganizationResponse)
 }
 _OrganizationResponses f (OrganizationResponses o) = OrganizationResponses <$> f o
 
 
-mkOrganizationResponses :: (Array  OrganizationResponse) -> OrganizationResponses
+mkOrganizationResponses :: (Array OrganizationResponse) -> OrganizationResponses
 mkOrganizationResponses organizationResponses =
   OrganizationResponses{organizationResponses}
 
@@ -6118,22 +6118,22 @@ instance organizationStatResponseShow :: Show OrganizationStatResponse where
     show (OrganizationStatResponse o) = show "organizationId: " ++ show o.organizationId ++ ", " ++ show "teams: " ++ show o.teams ++ ", " ++ show "members: " ++ show o.members ++ ", " ++ show "forums: " ++ show o.forums ++ ", " ++ show "boards: " ++ show o.boards ++ ", " ++ show "threads: " ++ show o.threads ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "views: " ++ show o.views
 
 newtype OrganizationStatResponses = OrganizationStatResponses {
-  organizationStatResponses :: (Array  OrganizationStatResponse)
+  organizationStatResponses :: (Array OrganizationStatResponse)
 }
 
 
 type OrganizationStatResponsesR = {
-  organizationStatResponses :: (Array  OrganizationStatResponse)
+  organizationStatResponses :: (Array OrganizationStatResponse)
 }
 
 
 _OrganizationStatResponses :: LensP OrganizationStatResponses {
-  organizationStatResponses :: (Array  OrganizationStatResponse)
+  organizationStatResponses :: (Array OrganizationStatResponse)
 }
 _OrganizationStatResponses f (OrganizationStatResponses o) = OrganizationStatResponses <$> f o
 
 
-mkOrganizationStatResponses :: (Array  OrganizationStatResponse) -> OrganizationStatResponses
+mkOrganizationStatResponses :: (Array OrganizationStatResponse) -> OrganizationStatResponses
 mkOrganizationStatResponses organizationStatResponses =
   OrganizationStatResponses{organizationStatResponses}
 
@@ -6185,43 +6185,43 @@ data Param
   | SortOrder SortOrderBy
   | Order OrderBy
   | ByOrganizationId Int
-  | ByOrganizationsIds (Array  Int)
+  | ByOrganizationsIds (Array Int)
   | ByOrganizationName String
   | ByTeamId Int
-  | ByTeamsIds (Array  Int)
+  | ByTeamsIds (Array Int)
   | ByTeamName String
   | ByUserId Int
-  | ByUsersIds (Array  Int)
+  | ByUsersIds (Array Int)
   | ByUserNick String
-  | ByUsersNicks (Array  String)
+  | ByUsersNicks (Array String)
   | ByForumId Int
-  | ByForumsIds (Array  Int)
+  | ByForumsIds (Array Int)
   | ByForumName String
   | ByBoardId Int
-  | ByBoardsIds (Array  Int)
+  | ByBoardsIds (Array Int)
   | ByBoardName String
   | ByThreadId Int
-  | ByThreadsIds (Array  Int)
+  | ByThreadsIds (Array Int)
   | ByThreadName String
   | ByThreadPostId Int
-  | ByThreadPostsIds (Array  Int)
+  | ByThreadPostsIds (Array Int)
   | ByThreadPostName String
   | ByThreadPostLikeId Int
-  | ByThreadPostLikesIds (Array  Int)
+  | ByThreadPostLikesIds (Array Int)
   | ByThreadPostStarId Int
-  | ByThreadPostStarsIds (Array  Int)
+  | ByThreadPostStarsIds (Array Int)
   | ByBucketId Int
   | ByResourceId Int
-  | ByResourcesIds (Array  Int)
+  | ByResourcesIds (Array Int)
   | ByResourceName String
   | ByLeuronId Int
-  | ByLeuronsIds (Array  Int)
+  | ByLeuronsIds (Array Int)
   | ByPmId Int
-  | ByPmsIds (Array  Int)
+  | ByPmsIds (Array Int)
   | ByReminderId Int
   | ByReminderFolderId Int
   | ByParentId Int
-  | ByParentsIds (Array  Int)
+  | ByParentsIds (Array Int)
   | ByParentName String
   | Timestamp Date
   | UnixTimestamp Int
@@ -8275,22 +8275,22 @@ instance pmResponseShow :: Show PmResponse where
     show (PmResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "toUserId: " ++ show o.toUserId ++ ", " ++ show "subject: " ++ show o.subject ++ ", " ++ show "body: " ++ show o.body ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype PmResponses = PmResponses {
-  pmResponses :: (Array  PmResponse)
+  pmResponses :: (Array PmResponse)
 }
 
 
 type PmResponsesR = {
-  pmResponses :: (Array  PmResponse)
+  pmResponses :: (Array PmResponse)
 }
 
 
 _PmResponses :: LensP PmResponses {
-  pmResponses :: (Array  PmResponse)
+  pmResponses :: (Array PmResponse)
 }
 _PmResponses f (PmResponses o) = PmResponses <$> f o
 
 
-mkPmResponses :: (Array  PmResponse) -> PmResponses
+mkPmResponses :: (Array PmResponse) -> PmResponses
 mkPmResponses pmResponses =
   PmResponses{pmResponses}
 
@@ -8573,22 +8573,22 @@ instance pmInResponseShow :: Show PmInResponse where
     show (PmInResponse o) = show "id: " ++ show o.id ++ ", " ++ show "pmId: " ++ show o.pmId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "label: " ++ show o.label ++ ", " ++ show "isRead: " ++ show o.isRead ++ ", " ++ show "isStarred: " ++ show o.isStarred ++ ", " ++ show "isNew: " ++ show o.isNew ++ ", " ++ show "isSaved: " ++ show o.isSaved ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype PmInResponses = PmInResponses {
-  pmInResponses :: (Array  PmInResponse)
+  pmInResponses :: (Array PmInResponse)
 }
 
 
 type PmInResponsesR = {
-  pmInResponses :: (Array  PmInResponse)
+  pmInResponses :: (Array PmInResponse)
 }
 
 
 _PmInResponses :: LensP PmInResponses {
-  pmInResponses :: (Array  PmInResponse)
+  pmInResponses :: (Array PmInResponse)
 }
 _PmInResponses f (PmInResponses o) = PmInResponses <$> f o
 
 
-mkPmInResponses :: (Array  PmInResponse) -> PmInResponses
+mkPmInResponses :: (Array PmInResponse) -> PmInResponses
 mkPmInResponses pmInResponses =
   PmInResponses{pmInResponses}
 
@@ -8831,22 +8831,22 @@ instance pmOutResponseShow :: Show PmOutResponse where
     show (PmOutResponse o) = show "id: " ++ show o.id ++ ", " ++ show "pmId: " ++ show o.pmId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "label: " ++ show o.label ++ ", " ++ show "isSaved: " ++ show o.isSaved ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype PmOutResponses = PmOutResponses {
-  pmOutResponses :: (Array  PmOutResponse)
+  pmOutResponses :: (Array PmOutResponse)
 }
 
 
 type PmOutResponsesR = {
-  pmOutResponses :: (Array  PmOutResponse)
+  pmOutResponses :: (Array PmOutResponse)
 }
 
 
 _PmOutResponses :: LensP PmOutResponses {
-  pmOutResponses :: (Array  PmOutResponse)
+  pmOutResponses :: (Array PmOutResponse)
 }
 _PmOutResponses f (PmOutResponses o) = PmOutResponses <$> f o
 
 
-mkPmOutResponses :: (Array  PmOutResponse) -> PmOutResponses
+mkPmOutResponses :: (Array PmOutResponse) -> PmOutResponses
 mkPmOutResponses pmOutResponses =
   PmOutResponses{pmOutResponses}
 
@@ -9304,22 +9304,22 @@ instance profileResponseShow :: Show ProfileResponse where
     show (ProfileResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entityId: " ++ show o.entityId ++ ", " ++ show "gender: " ++ show o.gender ++ ", " ++ show "birthdate: " ++ show o.birthdate ++ ", " ++ show "website: " ++ show o.website ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "signature: " ++ show o.signature ++ ", " ++ show "karmaGood: " ++ show o.karmaGood ++ ", " ++ show "karmaBad: " ++ show o.karmaBad ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype ProfileResponses = ProfileResponses {
-  profileResponses :: (Array  ProfileResponse)
+  profileResponses :: (Array ProfileResponse)
 }
 
 
 type ProfileResponsesR = {
-  profileResponses :: (Array  ProfileResponse)
+  profileResponses :: (Array ProfileResponse)
 }
 
 
 _ProfileResponses :: LensP ProfileResponses {
-  profileResponses :: (Array  ProfileResponse)
+  profileResponses :: (Array ProfileResponse)
 }
 _ProfileResponses f (ProfileResponses o) = ProfileResponses <$> f o
 
 
-mkProfileResponses :: (Array  ProfileResponse) -> ProfileResponses
+mkProfileResponses :: (Array ProfileResponse) -> ProfileResponses
 mkProfileResponses profileResponses =
   ProfileResponses{profileResponses}
 
@@ -9562,22 +9562,22 @@ instance reminderResponseShow :: Show ReminderResponse where
     show (ReminderResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "parentFolderId: " ++ show o.parentFolderId ++ ", " ++ show "dataP: " ++ show o.dataP ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ReminderResponses = ReminderResponses {
-  reminderResponses :: (Array  ReminderResponse)
+  reminderResponses :: (Array ReminderResponse)
 }
 
 
 type ReminderResponsesR = {
-  reminderResponses :: (Array  ReminderResponse)
+  reminderResponses :: (Array ReminderResponse)
 }
 
 
 _ReminderResponses :: LensP ReminderResponses {
-  reminderResponses :: (Array  ReminderResponse)
+  reminderResponses :: (Array ReminderResponse)
 }
 _ReminderResponses f (ReminderResponses o) = ReminderResponses <$> f o
 
 
-mkReminderResponses :: (Array  ReminderResponse) -> ReminderResponses
+mkReminderResponses :: (Array ReminderResponse) -> ReminderResponses
 mkReminderResponses reminderResponses =
   ReminderResponses{reminderResponses}
 
@@ -9860,22 +9860,22 @@ instance reminderFolderResponseShow :: Show ReminderFolderResponse where
     show (ReminderFolderResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "parentFolderId: " ++ show o.parentFolderId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ReminderFolderResponses = ReminderFolderResponses {
-  reminderFolderResponses :: (Array  ReminderFolderResponse)
+  reminderFolderResponses :: (Array ReminderFolderResponse)
 }
 
 
 type ReminderFolderResponsesR = {
-  reminderFolderResponses :: (Array  ReminderFolderResponse)
+  reminderFolderResponses :: (Array ReminderFolderResponse)
 }
 
 
 _ReminderFolderResponses :: LensP ReminderFolderResponses {
-  reminderFolderResponses :: (Array  ReminderFolderResponse)
+  reminderFolderResponses :: (Array ReminderFolderResponse)
 }
 _ReminderFolderResponses f (ReminderFolderResponses o) = ReminderFolderResponses <$> f o
 
 
-mkReminderFolderResponses :: (Array  ReminderFolderResponse) -> ReminderFolderResponses
+mkReminderFolderResponses :: (Array ReminderFolderResponse) -> ReminderFolderResponses
 mkReminderFolderResponses reminderFolderResponses =
   ReminderFolderResponses{reminderFolderResponses}
 
@@ -10171,15 +10171,15 @@ newtype ResourceRequest = ResourceRequest {
   displayName :: String,
   description :: String,
   source :: ResourceType,
-  author :: (Maybe (Array  String)),
+  author :: (Maybe (Array String)),
   prerequisites :: (DepList String),
   categories :: (DepList String),
   visibility :: Visibility,
   counter :: Int,
   version :: (Maybe String),
-  urls :: (Maybe (Array  String)),
+  urls :: (Maybe (Array String)),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   guard :: Int
 }
 
@@ -10188,15 +10188,15 @@ type ResourceRequestR = {
   displayName :: String,
   description :: String,
   source :: ResourceType,
-  author :: (Maybe (Array  String)),
+  author :: (Maybe (Array String)),
   prerequisites :: (DepList String),
   categories :: (DepList String),
   visibility :: Visibility,
   counter :: Int,
   version :: (Maybe String),
-  urls :: (Maybe (Array  String)),
+  urls :: (Maybe (Array String)),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   guard :: Int
 }
 
@@ -10205,21 +10205,21 @@ _ResourceRequest :: LensP ResourceRequest {
   displayName :: String,
   description :: String,
   source :: ResourceType,
-  author :: (Maybe (Array  String)),
+  author :: (Maybe (Array String)),
   prerequisites :: (DepList String),
   categories :: (DepList String),
   visibility :: Visibility,
   counter :: Int,
   version :: (Maybe String),
-  urls :: (Maybe (Array  String)),
+  urls :: (Maybe (Array String)),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   guard :: Int
 }
 _ResourceRequest f (ResourceRequest o) = ResourceRequest <$> f o
 
 
-mkResourceRequest :: String -> String -> ResourceType -> (Maybe (Array  String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe String) -> (Array  String) -> Int -> ResourceRequest
+mkResourceRequest :: String -> String -> ResourceType -> (Maybe (Array String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array String)) -> (Maybe String) -> (Array String) -> Int -> ResourceRequest
 mkResourceRequest displayName description source author prerequisites categories visibility counter version urls icon tags guard =
   ResourceRequest{displayName, description, source, author, prerequisites, categories, visibility, counter, version, urls, icon, tags, guard}
 
@@ -10332,15 +10332,15 @@ newtype ResourceResponse = ResourceResponse {
   displayName :: String,
   description :: String,
   source :: ResourceType,
-  author :: (Maybe (Array  String)),
+  author :: (Maybe (Array String)),
   prerequisites :: (DepList String),
   categories :: (DepList String),
   visibility :: Visibility,
   counter :: Int,
   version :: (Maybe String),
-  urls :: (Maybe (Array  String)),
+  urls :: (Maybe (Array String)),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -10356,15 +10356,15 @@ type ResourceResponseR = {
   displayName :: String,
   description :: String,
   source :: ResourceType,
-  author :: (Maybe (Array  String)),
+  author :: (Maybe (Array String)),
   prerequisites :: (DepList String),
   categories :: (DepList String),
   visibility :: Visibility,
   counter :: Int,
   version :: (Maybe String),
-  urls :: (Maybe (Array  String)),
+  urls :: (Maybe (Array String)),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -10380,15 +10380,15 @@ _ResourceResponse :: LensP ResourceResponse {
   displayName :: String,
   description :: String,
   source :: ResourceType,
-  author :: (Maybe (Array  String)),
+  author :: (Maybe (Array String)),
   prerequisites :: (DepList String),
   categories :: (DepList String),
   visibility :: Visibility,
   counter :: Int,
   version :: (Maybe String),
-  urls :: (Maybe (Array  String)),
+  urls :: (Maybe (Array String)),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -10398,7 +10398,7 @@ _ResourceResponse :: LensP ResourceResponse {
 _ResourceResponse f (ResourceResponse o) = ResourceResponse <$> f o
 
 
-mkResourceResponse :: Int -> Int -> String -> String -> String -> ResourceType -> (Maybe (Array  String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array  String)) -> (Maybe String) -> (Array  String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> ResourceResponse
+mkResourceResponse :: Int -> Int -> String -> String -> String -> ResourceType -> (Maybe (Array String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array String)) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> ResourceResponse
 mkResourceResponse id userId name displayName description source author prerequisites categories visibility counter version urls icon tags active guard createdAt modifiedAt activityAt =
   ResourceResponse{id, userId, name, displayName, description, source, author, prerequisites, categories, visibility, counter, version, urls, icon, tags, active, guard, createdAt, modifiedAt, activityAt}
 
@@ -10540,22 +10540,22 @@ instance resourceResponseShow :: Show ResourceResponse where
     show (ResourceResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "source: " ++ show o.source ++ ", " ++ show "author: " ++ show o.author ++ ", " ++ show "prerequisites: " ++ show o.prerequisites ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "counter: " ++ show o.counter ++ ", " ++ show "version: " ++ show o.version ++ ", " ++ show "urls: " ++ show o.urls ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ResourceResponses = ResourceResponses {
-  resourceResponses :: (Array  ResourceResponse)
+  resourceResponses :: (Array ResourceResponse)
 }
 
 
 type ResourceResponsesR = {
-  resourceResponses :: (Array  ResourceResponse)
+  resourceResponses :: (Array ResourceResponse)
 }
 
 
 _ResourceResponses :: LensP ResourceResponses {
-  resourceResponses :: (Array  ResourceResponse)
+  resourceResponses :: (Array ResourceResponse)
 }
 _ResourceResponses f (ResourceResponses o) = ResourceResponses <$> f o
 
 
-mkResourceResponses :: (Array  ResourceResponse) -> ResourceResponses
+mkResourceResponses :: (Array ResourceResponse) -> ResourceResponses
 mkResourceResponses resourceResponses =
   ResourceResponses{resourceResponses}
 
@@ -10712,22 +10712,22 @@ instance resourceStatResponseShow :: Show ResourceStatResponse where
     show (ResourceStatResponse o) = show "resourceId: " ++ show o.resourceId ++ ", " ++ show "leurons: " ++ show o.leurons ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "stars: " ++ show o.stars ++ ", " ++ show "views: " ++ show o.views
 
 newtype ResourceStatResponses = ResourceStatResponses {
-  resourceStatResponses :: (Array  ResourceStatResponse)
+  resourceStatResponses :: (Array ResourceStatResponse)
 }
 
 
 type ResourceStatResponsesR = {
-  resourceStatResponses :: (Array  ResourceStatResponse)
+  resourceStatResponses :: (Array ResourceStatResponse)
 }
 
 
 _ResourceStatResponses :: LensP ResourceStatResponses {
-  resourceStatResponses :: (Array  ResourceStatResponse)
+  resourceStatResponses :: (Array ResourceStatResponse)
 }
 _ResourceStatResponses f (ResourceStatResponses o) = ResourceStatResponses <$> f o
 
 
-mkResourceStatResponses :: (Array  ResourceStatResponse) -> ResourceStatResponses
+mkResourceStatResponses :: (Array ResourceStatResponse) -> ResourceStatResponses
 mkResourceStatResponses resourceStatResponses =
   ResourceStatResponses{resourceStatResponses}
 
@@ -11040,8 +11040,8 @@ instance tySplitsEq :: Eq TySplits where
 
 data Substitutions
   = SubsExpr Substitutions Substitutions
-  | SubsOneOf (Array  String)
-  | SubsAllOf (Array  String)
+  | SubsOneOf (Array String)
+  | SubsAllOf (Array String)
   | SubsBoth Substitutions Substitutions
 
 
@@ -11442,22 +11442,22 @@ instance starResponseShow :: Show StarResponse where
     show (StarResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype StarResponses = StarResponses {
-  starResponses :: (Array  StarResponse)
+  starResponses :: (Array StarResponse)
 }
 
 
 type StarResponsesR = {
-  starResponses :: (Array  StarResponse)
+  starResponses :: (Array StarResponse)
 }
 
 
 _StarResponses :: LensP StarResponses {
-  starResponses :: (Array  StarResponse)
+  starResponses :: (Array StarResponse)
 }
 _StarResponses f (StarResponses o) = StarResponses <$> f o
 
 
-mkStarResponses :: (Array  StarResponse) -> StarResponses
+mkStarResponses :: (Array StarResponse) -> StarResponses
 mkStarResponses starResponses =
   StarResponses{starResponses}
 
@@ -11582,22 +11582,22 @@ instance starStatResponseShow :: Show StarStatResponse where
     show (StarStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "stars: " ++ show o.stars
 
 newtype StarStatResponses = StarStatResponses {
-  starStatResponses :: (Array  StarStatResponse)
+  starStatResponses :: (Array StarStatResponse)
 }
 
 
 type StarStatResponsesR = {
-  starStatResponses :: (Array  StarStatResponse)
+  starStatResponses :: (Array StarStatResponse)
 }
 
 
 _StarStatResponses :: LensP StarStatResponses {
-  starStatResponses :: (Array  StarStatResponse)
+  starStatResponses :: (Array StarStatResponse)
 }
 _StarStatResponses f (StarStatResponses o) = StarStatResponses <$> f o
 
 
-mkStarStatResponses :: (Array  StarStatResponse) -> StarStatResponses
+mkStarStatResponses :: (Array StarStatResponse) -> StarStatResponses
 mkStarStatResponses starStatResponses =
   StarStatResponses{starStatResponses}
 
@@ -11648,7 +11648,7 @@ newtype TeamRequest = TeamRequest {
   description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   guard :: Int
 }
@@ -11659,7 +11659,7 @@ type TeamRequestR = {
   description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   guard :: Int
 }
@@ -11670,14 +11670,14 @@ _TeamRequest :: LensP TeamRequest {
   description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   guard :: Int
 }
 _TeamRequest f (TeamRequest o) = TeamRequest <$> f o
 
 
-mkTeamRequest :: String -> (Maybe String) -> Membership -> (Maybe String) -> (Array  String) -> Visibility -> Int -> TeamRequest
+mkTeamRequest :: String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Int -> TeamRequest
 mkTeamRequest displayName description membership icon tags visibility guard =
   TeamRequest{displayName, description, membership, icon, tags, visibility, guard}
 
@@ -11762,7 +11762,7 @@ newtype TeamResponse = TeamResponse {
   description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   active :: Boolean,
   guard :: Int,
@@ -11782,7 +11782,7 @@ type TeamResponseR = {
   description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   active :: Boolean,
   guard :: Int,
@@ -11802,7 +11802,7 @@ _TeamResponse :: LensP TeamResponse {
   description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   visibility :: Visibility,
   active :: Boolean,
   guard :: Int,
@@ -11814,7 +11814,7 @@ _TeamResponse :: LensP TeamResponse {
 _TeamResponse f (TeamResponse o) = TeamResponse <$> f o
 
 
-mkTeamResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array  String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamResponse
+mkTeamResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamResponse
 mkTeamResponse id userId orgId name teamRespponseDisplayName description membership icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
   TeamResponse{id, userId, orgId, name, teamRespponseDisplayName, description, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
@@ -11936,22 +11936,22 @@ instance teamResponseShow :: Show TeamResponse where
     show (TeamResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "teamRespponseDisplayName: " ++ show o.teamRespponseDisplayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype TeamResponses = TeamResponses {
-  teamResponses :: (Array  TeamResponse)
+  teamResponses :: (Array TeamResponse)
 }
 
 
 type TeamResponsesR = {
-  teamResponses :: (Array  TeamResponse)
+  teamResponses :: (Array TeamResponse)
 }
 
 
 _TeamResponses :: LensP TeamResponses {
-  teamResponses :: (Array  TeamResponse)
+  teamResponses :: (Array TeamResponse)
 }
 _TeamResponses f (TeamResponses o) = TeamResponses <$> f o
 
 
-mkTeamResponses :: (Array  TeamResponse) -> TeamResponses
+mkTeamResponses :: (Array TeamResponse) -> TeamResponses
 mkTeamResponses teamResponses =
   TeamResponses{teamResponses}
 
@@ -12060,22 +12060,22 @@ instance teamStatResponseShow :: Show TeamStatResponse where
     show (TeamStatResponse o) = show "members: " ++ show o.members
 
 newtype TeamStatResponses = TeamStatResponses {
-  teamStatResponses :: (Array  TeamStatResponse)
+  teamStatResponses :: (Array TeamStatResponse)
 }
 
 
 type TeamStatResponsesR = {
-  teamStatResponses :: (Array  TeamStatResponse)
+  teamStatResponses :: (Array TeamStatResponse)
 }
 
 
 _TeamStatResponses :: LensP TeamStatResponses {
-  teamStatResponses :: (Array  TeamStatResponse)
+  teamStatResponses :: (Array TeamStatResponse)
 }
 _TeamStatResponses f (TeamStatResponses o) = TeamStatResponses <$> f o
 
 
-mkTeamStatResponses :: (Array  TeamStatResponse) -> TeamStatResponses
+mkTeamStatResponses :: (Array TeamStatResponse) -> TeamStatResponses
 mkTeamStatResponses teamStatResponses =
   TeamStatResponses{teamStatResponses}
 
@@ -12278,22 +12278,22 @@ instance testResponseShow :: Show TestResponse where
     show (TestResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "msg: " ++ show o.msg ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype TestResponses = TestResponses {
-  testResponses :: (Array  TestResponse)
+  testResponses :: (Array TestResponse)
 }
 
 
 type TestResponsesR = {
-  testResponses :: (Array  TestResponse)
+  testResponses :: (Array TestResponse)
 }
 
 
 _TestResponses :: LensP TestResponses {
-  testResponses :: (Array  TestResponse)
+  testResponses :: (Array TestResponse)
 }
 _TestResponses f (TestResponses o) = TestResponses <$> f o
 
 
-mkTestResponses :: (Array  TestResponse) -> TestResponses
+mkTestResponses :: (Array TestResponse) -> TestResponses
 mkTestResponses testResponses =
   TestResponses{testResponses}
 
@@ -12346,7 +12346,7 @@ newtype ThreadRequest = ThreadRequest {
   locked :: Boolean,
   poll :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   guard :: Int
 }
 
@@ -12358,7 +12358,7 @@ type ThreadRequestR = {
   locked :: Boolean,
   poll :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   guard :: Int
 }
 
@@ -12370,13 +12370,13 @@ _ThreadRequest :: LensP ThreadRequest {
   locked :: Boolean,
   poll :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   guard :: Int
 }
 _ThreadRequest f (ThreadRequest o) = ThreadRequest <$> f o
 
 
-mkThreadRequest :: String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array  String) -> Int -> ThreadRequest
+mkThreadRequest :: String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array String) -> Int -> ThreadRequest
 mkThreadRequest displayName description sticky locked poll icon tags guard =
   ThreadRequest{displayName, description, sticky, locked, poll, icon, tags, guard}
 
@@ -12468,7 +12468,7 @@ newtype ThreadResponse = ThreadResponse {
   locked :: Boolean,
   poll :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -12489,7 +12489,7 @@ type ThreadResponseR = {
   locked :: Boolean,
   poll :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -12510,7 +12510,7 @@ _ThreadResponse :: LensP ThreadResponse {
   locked :: Boolean,
   poll :: (Maybe String),
   icon :: (Maybe String),
-  tags :: (Array  String),
+  tags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -12521,7 +12521,7 @@ _ThreadResponse :: LensP ThreadResponse {
 _ThreadResponse f (ThreadResponse o) = ThreadResponse <$> f o
 
 
-mkThreadResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array  String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadResponse
+mkThreadResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadResponse
 mkThreadResponse id userId boardId name displayName description sticky locked poll icon tags active guard createdAt modifiedBy modifiedAt activityAt =
   ThreadResponse{id, userId, boardId, name, displayName, description, sticky, locked, poll, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
@@ -12648,22 +12648,22 @@ instance threadResponseShow :: Show ThreadResponse where
     show (ThreadResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "sticky: " ++ show o.sticky ++ ", " ++ show "locked: " ++ show o.locked ++ ", " ++ show "poll: " ++ show o.poll ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ThreadResponses = ThreadResponses {
-  threadResponses :: (Array  ThreadResponse)
+  threadResponses :: (Array ThreadResponse)
 }
 
 
 type ThreadResponsesR = {
-  threadResponses :: (Array  ThreadResponse)
+  threadResponses :: (Array ThreadResponse)
 }
 
 
 _ThreadResponses :: LensP ThreadResponses {
-  threadResponses :: (Array  ThreadResponse)
+  threadResponses :: (Array ThreadResponse)
 }
 _ThreadResponses f (ThreadResponses o) = ThreadResponses <$> f o
 
 
-mkThreadResponses :: (Array  ThreadResponse) -> ThreadResponses
+mkThreadResponses :: (Array ThreadResponse) -> ThreadResponses
 mkThreadResponses threadResponses =
   ThreadResponses{threadResponses}
 
@@ -12788,22 +12788,22 @@ instance threadStatResponseShow :: Show ThreadStatResponse where
     show (ThreadStatResponse o) = show "threadId: " ++ show o.threadId ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "views: " ++ show o.views
 
 newtype ThreadStatResponses = ThreadStatResponses {
-  threadStatResponses :: (Array  ThreadStatResponse)
+  threadStatResponses :: (Array ThreadStatResponse)
 }
 
 
 type ThreadStatResponsesR = {
-  threadStatResponses :: (Array  ThreadStatResponse)
+  threadStatResponses :: (Array ThreadStatResponse)
 }
 
 
 _ThreadStatResponses :: LensP ThreadStatResponses {
-  threadStatResponses :: (Array  ThreadStatResponse)
+  threadStatResponses :: (Array ThreadStatResponse)
 }
 _ThreadStatResponses f (ThreadStatResponses o) = ThreadStatResponses <$> f o
 
 
-mkThreadStatResponses :: (Array  ThreadStatResponse) -> ThreadStatResponses
+mkThreadStatResponses :: (Array ThreadStatResponse) -> ThreadStatResponses
 mkThreadStatResponses threadStatResponses =
   ThreadStatResponses{threadStatResponses}
 
@@ -12995,8 +12995,8 @@ instance postDataShow :: Show PostData where
 newtype ThreadPostRequest = ThreadPostRequest {
   title :: (Maybe String),
   body :: PostData,
-  tags :: (Array  String),
-  privateTags :: (Array  String),
+  tags :: (Array String),
+  privateTags :: (Array String),
   guard :: Int
 }
 
@@ -13004,8 +13004,8 @@ newtype ThreadPostRequest = ThreadPostRequest {
 type ThreadPostRequestR = {
   title :: (Maybe String),
   body :: PostData,
-  tags :: (Array  String),
-  privateTags :: (Array  String),
+  tags :: (Array String),
+  privateTags :: (Array String),
   guard :: Int
 }
 
@@ -13013,14 +13013,14 @@ type ThreadPostRequestR = {
 _ThreadPostRequest :: LensP ThreadPostRequest {
   title :: (Maybe String),
   body :: PostData,
-  tags :: (Array  String),
-  privateTags :: (Array  String),
+  tags :: (Array String),
+  privateTags :: (Array String),
   guard :: Int
 }
 _ThreadPostRequest f (ThreadPostRequest o) = ThreadPostRequest <$> f o
 
 
-mkThreadPostRequest :: (Maybe String) -> PostData -> (Array  String) -> (Array  String) -> Int -> ThreadPostRequest
+mkThreadPostRequest :: (Maybe String) -> PostData -> (Array String) -> (Array String) -> Int -> ThreadPostRequest
 mkThreadPostRequest title body tags privateTags guard =
   ThreadPostRequest{title, body, tags, privateTags, guard}
 
@@ -13093,8 +13093,8 @@ newtype ThreadPostResponse = ThreadPostResponse {
   parentId :: (Maybe Int),
   title :: (Maybe String),
   body :: PostData,
-  tags :: (Array  String),
-  privateTags :: (Array  String),
+  tags :: (Array String),
+  privateTags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -13111,8 +13111,8 @@ type ThreadPostResponseR = {
   parentId :: (Maybe Int),
   title :: (Maybe String),
   body :: PostData,
-  tags :: (Array  String),
-  privateTags :: (Array  String),
+  tags :: (Array String),
+  privateTags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -13129,8 +13129,8 @@ _ThreadPostResponse :: LensP ThreadPostResponse {
   parentId :: (Maybe Int),
   title :: (Maybe String),
   body :: PostData,
-  tags :: (Array  String),
-  privateTags :: (Array  String),
+  tags :: (Array String),
+  privateTags :: (Array String),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -13141,7 +13141,7 @@ _ThreadPostResponse :: LensP ThreadPostResponse {
 _ThreadPostResponse f (ThreadPostResponse o) = ThreadPostResponse <$> f o
 
 
-mkThreadPostResponse :: Int -> Int -> Int -> (Maybe Int) -> (Maybe String) -> PostData -> (Array  String) -> (Array  String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostResponse
+mkThreadPostResponse :: Int -> Int -> Int -> (Maybe Int) -> (Maybe String) -> PostData -> (Array String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostResponse
 mkThreadPostResponse id userId threadId parentId title body tags privateTags active guard createdAt modifiedBy modifiedAt activityAt =
   ThreadPostResponse{id, userId, threadId, parentId, title, body, tags, privateTags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
@@ -13253,22 +13253,22 @@ instance threadPostResponseShow :: Show ThreadPostResponse where
     show (ThreadPostResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "threadId: " ++ show o.threadId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "body: " ++ show o.body ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "privateTags: " ++ show o.privateTags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ThreadPostResponses = ThreadPostResponses {
-  threadPostResponses :: (Array  ThreadPostResponse)
+  threadPostResponses :: (Array ThreadPostResponse)
 }
 
 
 type ThreadPostResponsesR = {
-  threadPostResponses :: (Array  ThreadPostResponse)
+  threadPostResponses :: (Array ThreadPostResponse)
 }
 
 
 _ThreadPostResponses :: LensP ThreadPostResponses {
-  threadPostResponses :: (Array  ThreadPostResponse)
+  threadPostResponses :: (Array ThreadPostResponse)
 }
 _ThreadPostResponses f (ThreadPostResponses o) = ThreadPostResponses <$> f o
 
 
-mkThreadPostResponses :: (Array  ThreadPostResponse) -> ThreadPostResponses
+mkThreadPostResponses :: (Array ThreadPostResponse) -> ThreadPostResponses
 mkThreadPostResponses threadPostResponses =
   ThreadPostResponses{threadPostResponses}
 
@@ -13417,22 +13417,22 @@ instance threadPostStatResponseShow :: Show ThreadPostStatResponse where
     show (ThreadPostStatResponse o) = show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "stars: " ++ show o.stars ++ ", " ++ show "views: " ++ show o.views
 
 newtype ThreadPostStatResponses = ThreadPostStatResponses {
-  threadPostStatResponses :: (Array  ThreadPostStatResponse)
+  threadPostStatResponses :: (Array ThreadPostStatResponse)
 }
 
 
 type ThreadPostStatResponsesR = {
-  threadPostStatResponses :: (Array  ThreadPostStatResponse)
+  threadPostStatResponses :: (Array ThreadPostStatResponse)
 }
 
 
 _ThreadPostStatResponses :: LensP ThreadPostStatResponses {
-  threadPostStatResponses :: (Array  ThreadPostStatResponse)
+  threadPostStatResponses :: (Array ThreadPostStatResponse)
 }
 _ThreadPostStatResponses f (ThreadPostStatResponses o) = ThreadPostStatResponses <$> f o
 
 
-mkThreadPostStatResponses :: (Array  ThreadPostStatResponse) -> ThreadPostStatResponses
+mkThreadPostStatResponses :: (Array ThreadPostStatResponse) -> ThreadPostStatResponses
 mkThreadPostStatResponses threadPostStatResponses =
   ThreadPostStatResponses{threadPostStatResponses}
 
@@ -13739,22 +13739,22 @@ instance userResponseShow :: Show UserResponse where
     show (UserResponse o) = show "id: " ++ show o.id ++ ", " ++ show "nick: " ++ show o.nick ++ ", " ++ show "displayNick: " ++ show o.displayNick ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "plugin: " ++ show o.plugin ++ ", " ++ show "ident: " ++ show o.ident ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "deactivatedAt: " ++ show o.deactivatedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype UserResponses = UserResponses {
-  userResponses :: (Array  UserResponse)
+  userResponses :: (Array UserResponse)
 }
 
 
 type UserResponsesR = {
-  userResponses :: (Array  UserResponse)
+  userResponses :: (Array UserResponse)
 }
 
 
 _UserResponses :: LensP UserResponses {
-  userResponses :: (Array  UserResponse)
+  userResponses :: (Array UserResponse)
 }
 _UserResponses f (UserResponses o) = UserResponses <$> f o
 
 
-mkUserResponses :: (Array  UserResponse) -> UserResponses
+mkUserResponses :: (Array UserResponse) -> UserResponses
 mkUserResponses userResponses =
   UserResponses{userResponses}
 
@@ -13919,22 +13919,22 @@ instance userSanitizedResponseShow :: Show UserSanitizedResponse where
     show (UserSanitizedResponse o) = show "id: " ++ show o.id ++ ", " ++ show "nick: " ++ show o.nick ++ ", " ++ show "displayNick: " ++ show o.displayNick ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype UserSanitizedResponses = UserSanitizedResponses {
-  userSanitizedResponses :: (Array  UserSanitizedResponse)
+  userSanitizedResponses :: (Array UserSanitizedResponse)
 }
 
 
 type UserSanitizedResponsesR = {
-  userSanitizedResponses :: (Array  UserSanitizedResponse)
+  userSanitizedResponses :: (Array UserSanitizedResponse)
 }
 
 
 _UserSanitizedResponses :: LensP UserSanitizedResponses {
-  userSanitizedResponses :: (Array  UserSanitizedResponse)
+  userSanitizedResponses :: (Array UserSanitizedResponse)
 }
 _UserSanitizedResponses f (UserSanitizedResponses o) = UserSanitizedResponses <$> f o
 
 
-mkUserSanitizedResponses :: (Array  UserSanitizedResponse) -> UserSanitizedResponses
+mkUserSanitizedResponses :: (Array UserSanitizedResponse) -> UserSanitizedResponses
 mkUserSanitizedResponses userSanitizedResponses =
   UserSanitizedResponses{userSanitizedResponses}
 
@@ -14091,22 +14091,22 @@ instance userSanitizedStatResponseShow :: Show UserSanitizedStatResponse where
     show (UserSanitizedStatResponse o) = show "userId: " ++ show o.userId ++ ", " ++ show "threads: " ++ show o.threads ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "respect: " ++ show o.respect ++ ", " ++ show "resources: " ++ show o.resources ++ ", " ++ show "leurons: " ++ show o.leurons ++ ", " ++ show "workouts: " ++ show o.workouts
 
 newtype UserSanitizedStatResponses = UserSanitizedStatResponses {
-  userSanitizedStatResponses :: (Array  UserSanitizedStatResponse)
+  userSanitizedStatResponses :: (Array UserSanitizedStatResponse)
 }
 
 
 type UserSanitizedStatResponsesR = {
-  userSanitizedStatResponses :: (Array  UserSanitizedStatResponse)
+  userSanitizedStatResponses :: (Array UserSanitizedStatResponse)
 }
 
 
 _UserSanitizedStatResponses :: LensP UserSanitizedStatResponses {
-  userSanitizedStatResponses :: (Array  UserSanitizedStatResponse)
+  userSanitizedStatResponses :: (Array UserSanitizedStatResponse)
 }
 _UserSanitizedStatResponses f (UserSanitizedStatResponses o) = UserSanitizedStatResponses <$> f o
 
 
-mkUserSanitizedStatResponses :: (Array  UserSanitizedStatResponse) -> UserSanitizedStatResponses
+mkUserSanitizedStatResponses :: (Array UserSanitizedStatResponse) -> UserSanitizedStatResponses
 mkUserSanitizedStatResponses userSanitizedStatResponses =
   UserSanitizedStatResponses{userSanitizedStatResponses}
 
@@ -14336,22 +14336,22 @@ instance organizationPackResponseShow :: Show OrganizationPackResponse where
     show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype OrganizationPackResponses = OrganizationPackResponses {
-  organizationPackResponses :: (Array  OrganizationPackResponse)
+  organizationPackResponses :: (Array OrganizationPackResponse)
 }
 
 
 type OrganizationPackResponsesR = {
-  organizationPackResponses :: (Array  OrganizationPackResponse)
+  organizationPackResponses :: (Array OrganizationPackResponse)
 }
 
 
 _OrganizationPackResponses :: LensP OrganizationPackResponses {
-  organizationPackResponses :: (Array  OrganizationPackResponse)
+  organizationPackResponses :: (Array OrganizationPackResponse)
 }
 _OrganizationPackResponses f (OrganizationPackResponses o) = OrganizationPackResponses <$> f o
 
 
-mkOrganizationPackResponses :: (Array  OrganizationPackResponse) -> OrganizationPackResponses
+mkOrganizationPackResponses :: (Array OrganizationPackResponse) -> OrganizationPackResponses
 mkOrganizationPackResponses organizationPackResponses =
   OrganizationPackResponses{organizationPackResponses}
 
@@ -14508,22 +14508,22 @@ instance teamPackResponseShow :: Show TeamPackResponse where
     show (TeamPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "team: " ++ show o.team ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype TeamPackResponses = TeamPackResponses {
-  teamPackResponses :: (Array  TeamPackResponse)
+  teamPackResponses :: (Array TeamPackResponse)
 }
 
 
 type TeamPackResponsesR = {
-  teamPackResponses :: (Array  TeamPackResponse)
+  teamPackResponses :: (Array TeamPackResponse)
 }
 
 
 _TeamPackResponses :: LensP TeamPackResponses {
-  teamPackResponses :: (Array  TeamPackResponse)
+  teamPackResponses :: (Array TeamPackResponse)
 }
 _TeamPackResponses f (TeamPackResponses o) = TeamPackResponses <$> f o
 
 
-mkTeamPackResponses :: (Array  TeamPackResponse) -> TeamPackResponses
+mkTeamPackResponses :: (Array TeamPackResponse) -> TeamPackResponses
 mkTeamPackResponses teamPackResponses =
   TeamPackResponses{teamPackResponses}
 
@@ -14664,22 +14664,22 @@ instance userPackResponseShow :: Show UserPackResponse where
     show (UserPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "profile: " ++ show o.profile ++ ", " ++ show "profileId: " ++ show o.profileId
 
 newtype UserPackResponses = UserPackResponses {
-  userPackResponses :: (Array  UserPackResponse)
+  userPackResponses :: (Array UserPackResponse)
 }
 
 
 type UserPackResponsesR = {
-  userPackResponses :: (Array  UserPackResponse)
+  userPackResponses :: (Array UserPackResponse)
 }
 
 
 _UserPackResponses :: LensP UserPackResponses {
-  userPackResponses :: (Array  UserPackResponse)
+  userPackResponses :: (Array UserPackResponse)
 }
 _UserPackResponses f (UserPackResponses o) = UserPackResponses <$> f o
 
 
-mkUserPackResponses :: (Array  UserPackResponse) -> UserPackResponses
+mkUserPackResponses :: (Array UserPackResponse) -> UserPackResponses
 mkUserPackResponses userPackResponses =
   UserPackResponses{userPackResponses}
 
@@ -14836,22 +14836,22 @@ instance userSanitizedPackResponseShow :: Show UserSanitizedPackResponse where
     show (UserSanitizedPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "profile: " ++ show o.profile ++ ", " ++ show "profileId: " ++ show o.profileId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype UserSanitizedPackResponses = UserSanitizedPackResponses {
-  userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
+  userSanitizedPackResponses :: (Array UserSanitizedPackResponse)
 }
 
 
 type UserSanitizedPackResponsesR = {
-  userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
+  userSanitizedPackResponses :: (Array UserSanitizedPackResponse)
 }
 
 
 _UserSanitizedPackResponses :: LensP UserSanitizedPackResponses {
-  userSanitizedPackResponses :: (Array  UserSanitizedPackResponse)
+  userSanitizedPackResponses :: (Array UserSanitizedPackResponse)
 }
 _UserSanitizedPackResponses f (UserSanitizedPackResponses o) = UserSanitizedPackResponses <$> f o
 
 
-mkUserSanitizedPackResponses :: (Array  UserSanitizedPackResponse) -> UserSanitizedPackResponses
+mkUserSanitizedPackResponses :: (Array UserSanitizedPackResponse) -> UserSanitizedPackResponses
 mkUserSanitizedPackResponses userSanitizedPackResponses =
   UserSanitizedPackResponses{userSanitizedPackResponses}
 
@@ -14992,22 +14992,22 @@ instance forumPackResponseShow :: Show ForumPackResponse where
     show (ForumPackResponse o) = show "forum: " ++ show o.forum ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype ForumPackResponses = ForumPackResponses {
-  forumPackResponses :: (Array  ForumPackResponse)
+  forumPackResponses :: (Array ForumPackResponse)
 }
 
 
 type ForumPackResponsesR = {
-  forumPackResponses :: (Array  ForumPackResponse)
+  forumPackResponses :: (Array ForumPackResponse)
 }
 
 
 _ForumPackResponses :: LensP ForumPackResponses {
-  forumPackResponses :: (Array  ForumPackResponse)
+  forumPackResponses :: (Array ForumPackResponse)
 }
 _ForumPackResponses f (ForumPackResponses o) = ForumPackResponses <$> f o
 
 
-mkForumPackResponses :: (Array  ForumPackResponse) -> ForumPackResponses
+mkForumPackResponses :: (Array ForumPackResponse) -> ForumPackResponses
 mkForumPackResponses forumPackResponses =
   ForumPackResponses{forumPackResponses}
 
@@ -15172,22 +15172,22 @@ instance boardPackResponseShow :: Show BoardPackResponse where
     show (BoardPackResponse o) = show "board: " ++ show o.board ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "latestThread: " ++ show o.latestThread ++ ", " ++ show "latestThreadPost: " ++ show o.latestThreadPost ++ ", " ++ show "latestThreadPostUser: " ++ show o.latestThreadPostUser
 
 newtype BoardPackResponses = BoardPackResponses {
-  boardPackResponses :: (Array  BoardPackResponse)
+  boardPackResponses :: (Array BoardPackResponse)
 }
 
 
 type BoardPackResponsesR = {
-  boardPackResponses :: (Array  BoardPackResponse)
+  boardPackResponses :: (Array BoardPackResponse)
 }
 
 
 _BoardPackResponses :: LensP BoardPackResponses {
-  boardPackResponses :: (Array  BoardPackResponse)
+  boardPackResponses :: (Array BoardPackResponse)
 }
 _BoardPackResponses f (BoardPackResponses o) = BoardPackResponses <$> f o
 
 
-mkBoardPackResponses :: (Array  BoardPackResponse) -> BoardPackResponses
+mkBoardPackResponses :: (Array BoardPackResponse) -> BoardPackResponses
 mkBoardPackResponses boardPackResponses =
   BoardPackResponses{boardPackResponses}
 
@@ -15360,22 +15360,22 @@ instance threadPackResponseShow :: Show ThreadPackResponse where
     show (ThreadPackResponse o) = show "thread: " ++ show o.thread ++ ", " ++ show "threadId: " ++ show o.threadId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "latestThreadPost: " ++ show o.latestThreadPost ++ ", " ++ show "latestThreadPostUser: " ++ show o.latestThreadPostUser
 
 newtype ThreadPackResponses = ThreadPackResponses {
-  threadPackResponses :: (Array  ThreadPackResponse)
+  threadPackResponses :: (Array ThreadPackResponse)
 }
 
 
 type ThreadPackResponsesR = {
-  threadPackResponses :: (Array  ThreadPackResponse)
+  threadPackResponses :: (Array ThreadPackResponse)
 }
 
 
 _ThreadPackResponses :: LensP ThreadPackResponses {
-  threadPackResponses :: (Array  ThreadPackResponse)
+  threadPackResponses :: (Array ThreadPackResponse)
 }
 _ThreadPackResponses f (ThreadPackResponses o) = ThreadPackResponses <$> f o
 
 
-mkThreadPackResponses :: (Array  ThreadPackResponse) -> ThreadPackResponses
+mkThreadPackResponses :: (Array ThreadPackResponse) -> ThreadPackResponses
 mkThreadPackResponses threadPackResponses =
   ThreadPackResponses{threadPackResponses}
 
@@ -15532,22 +15532,22 @@ instance threadPostPackResponseShow :: Show ThreadPostPackResponse where
     show (ThreadPostPackResponse o) = show "threadPost: " ++ show o.threadPost ++ ", " ++ show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype ThreadPostPackResponses = ThreadPostPackResponses {
-  threadPostPackResponses :: (Array  ThreadPostPackResponse)
+  threadPostPackResponses :: (Array ThreadPostPackResponse)
 }
 
 
 type ThreadPostPackResponsesR = {
-  threadPostPackResponses :: (Array  ThreadPostPackResponse)
+  threadPostPackResponses :: (Array ThreadPostPackResponse)
 }
 
 
 _ThreadPostPackResponses :: LensP ThreadPostPackResponses {
-  threadPostPackResponses :: (Array  ThreadPostPackResponse)
+  threadPostPackResponses :: (Array ThreadPostPackResponse)
 }
 _ThreadPostPackResponses f (ThreadPostPackResponses o) = ThreadPostPackResponses <$> f o
 
 
-mkThreadPostPackResponses :: (Array  ThreadPostPackResponse) -> ThreadPostPackResponses
+mkThreadPostPackResponses :: (Array ThreadPostPackResponse) -> ThreadPostPackResponses
 mkThreadPostPackResponses threadPostPackResponses =
   ThreadPostPackResponses{threadPostPackResponses}
 
@@ -15704,22 +15704,22 @@ instance resourcePackResponseShow :: Show ResourcePackResponse where
     show (ResourcePackResponse o) = show "resource: " ++ show o.resource ++ ", " ++ show "resourceId: " ++ show o.resourceId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype ResourcePackResponses = ResourcePackResponses {
-  resourcePackResponses :: (Array  ResourcePackResponse)
+  resourcePackResponses :: (Array ResourcePackResponse)
 }
 
 
 type ResourcePackResponsesR = {
-  resourcePackResponses :: (Array  ResourcePackResponse)
+  resourcePackResponses :: (Array ResourcePackResponse)
 }
 
 
 _ResourcePackResponses :: LensP ResourcePackResponses {
-  resourcePackResponses :: (Array  ResourcePackResponse)
+  resourcePackResponses :: (Array ResourcePackResponse)
 }
 _ResourcePackResponses f (ResourcePackResponses o) = ResourcePackResponses <$> f o
 
 
-mkResourcePackResponses :: (Array  ResourcePackResponse) -> ResourcePackResponses
+mkResourcePackResponses :: (Array ResourcePackResponse) -> ResourcePackResponses
 mkResourcePackResponses resourcePackResponses =
   ResourcePackResponses{resourcePackResponses}
 
@@ -15884,22 +15884,22 @@ instance leuronPackResponseShow :: Show LeuronPackResponse where
     show (LeuronPackResponse o) = show "leuron: " ++ show o.leuron ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "training: " ++ show o.training ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
 
 newtype LeuronPackResponses = LeuronPackResponses {
-  leuronPackResponses :: (Array  LeuronPackResponse)
+  leuronPackResponses :: (Array LeuronPackResponse)
 }
 
 
 type LeuronPackResponsesR = {
-  leuronPackResponses :: (Array  LeuronPackResponse)
+  leuronPackResponses :: (Array LeuronPackResponse)
 }
 
 
 _LeuronPackResponses :: LensP LeuronPackResponses {
-  leuronPackResponses :: (Array  LeuronPackResponse)
+  leuronPackResponses :: (Array LeuronPackResponse)
 }
 _LeuronPackResponses f (LeuronPackResponses o) = LeuronPackResponses <$> f o
 
 
-mkLeuronPackResponses :: (Array  LeuronPackResponse) -> LeuronPackResponses
+mkLeuronPackResponses :: (Array LeuronPackResponse) -> LeuronPackResponses
 mkLeuronPackResponses leuronPackResponses =
   LeuronPackResponses{leuronPackResponses}
 
