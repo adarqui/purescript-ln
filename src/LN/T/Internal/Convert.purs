@@ -32,6 +32,7 @@ apiRequestToApiResponse id userId key createdAt modifiedAt (ApiRequest o) =
     userId: userId,
     key: key,
     comment: o.comment,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
@@ -40,43 +41,50 @@ apiRequestToApiResponse id userId key createdAt modifiedAt (ApiRequest o) =
 apiResponseToApiRequest :: ApiResponse -> ApiRequest
 apiResponseToApiRequest  (ApiResponse o) =
   ApiRequest {
-    comment: o.comment
+    comment: o.comment,
+    guard: o.guard
   }
 
 
-boardRequestToBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> BoardRequest -> BoardResponse
-boardRequestToBoardResponse id userId forumId parentId createdAt modifiedBy modifiedAt (BoardRequest o) =
+boardRequestToBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardRequest -> BoardResponse
+boardRequestToBoardResponse id userId forumId parentId name active createdAt modifiedBy modifiedAt activityAt (BoardRequest o) =
   BoardResponse {
     id: id,
     userId: userId,
     forumId: forumId,
     parentId: parentId,
-    name: o.name,
+    name: name,
+    displayName: o.displayName,
     description: o.description,
     icon: o.icon,
     tags: o.tags,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
 boardResponseToBoardRequest :: BoardResponse -> BoardRequest
 boardResponseToBoardRequest  (BoardResponse o) =
   BoardRequest {
-    name: o.name,
+    displayName: o.displayName,
     description: o.description,
     icon: o.icon,
-    tags: o.tags
+    tags: o.tags,
+    guard: o.guard
   }
 
 
-bucketRequestToBucketResponse :: Int -> Int -> (Maybe Date) -> (Maybe Date) -> BucketRequest -> BucketResponse
-bucketRequestToBucketResponse id userId createdAt modifiedAt (BucketRequest o) =
+bucketRequestToBucketResponse :: Int -> Int -> String -> Boolean -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> BucketRequest -> BucketResponse
+bucketRequestToBucketResponse id userId name active createdAt modifiedAt activityAt (BucketRequest o) =
   BucketResponse {
     id: id,
     userId: userId,
-    name: o.name,
+    name: name,
+    displayName: o.displayName,
     description: o.description,
     scoreLo: o.scoreLo,
     scoreHi: o.scoreHi,
@@ -84,22 +92,26 @@ bucketRequestToBucketResponse id userId createdAt modifiedAt (BucketRequest o) =
     resources: o.resources,
     categories: o.categories,
     filters: o.filters,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
 bucketResponseToBucketRequest :: BucketResponse -> BucketRequest
 bucketResponseToBucketRequest  (BucketResponse o) =
   BucketRequest {
-    name: o.name,
+    displayName: o.displayName,
     description: o.description,
     scoreLo: o.scoreLo,
     scoreHi: o.scoreHi,
     leurons: o.leurons,
     resources: o.resources,
     categories: o.categories,
-    filters: o.filters
+    filters: o.filters,
+    guard: o.guard
   }
 
 
@@ -121,36 +133,41 @@ emptyResponseToEmptyRequest  (EmptyResponse o) =
   }
 
 
-forumRequestToForumResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> ForumRequest -> ForumResponse
-forumRequestToForumResponse id userId orgId createdAt modifiedBy modifiedAt (ForumRequest o) =
+forumRequestToForumResponse :: Int -> Int -> Int -> String -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumRequest -> ForumResponse
+forumRequestToForumResponse id userId orgId name displayNAme active createdAt modifiedBy modifiedAt activityAt (ForumRequest o) =
   ForumResponse {
     id: id,
     userId: userId,
     orgId: orgId,
-    name: o.name,
+    name: name,
+    displayNAme: displayNAme,
     description: o.description,
     icon: o.icon,
     tags: o.tags,
     visibility: o.visibility,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
-forumResponseToForumRequest :: ForumResponse -> ForumRequest
-forumResponseToForumRequest  (ForumResponse o) =
+forumResponseToForumRequest :: String -> ForumResponse -> ForumRequest
+forumResponseToForumRequest displayName (ForumResponse o) =
   ForumRequest {
-    name: o.name,
+    displayName: displayName,
     description: o.description,
     icon: o.icon,
     tags: o.tags,
-    visibility: o.visibility
+    visibility: o.visibility,
+    guard: o.guard
   }
 
 
-leuronRequestToLeuronResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> LeuronRequest -> LeuronResponse
-leuronRequestToLeuronResponse id userId resourceId createdAt modifiedAt (LeuronRequest o) =
+leuronRequestToLeuronResponse :: Int -> Int -> Int -> Boolean -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> LeuronRequest -> LeuronResponse
+leuronRequestToLeuronResponse id userId resourceId active createdAt modifiedAt activityAt (LeuronRequest o) =
   LeuronResponse {
     id: id,
     userId: userId,
@@ -167,8 +184,11 @@ leuronRequestToLeuronResponse id userId resourceId createdAt modifiedAt (LeuronR
     substitutions: o.substitutions,
     tags: o.tags,
     style: o.style,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
@@ -186,7 +206,8 @@ leuronResponseToLeuronRequest  (LeuronResponse o) =
     splits: o.splits,
     substitutions: o.substitutions,
     tags: o.tags,
-    style: o.style
+    style: o.style,
+    guard: o.guard
   }
 
 
@@ -209,8 +230,8 @@ leuronTrainingResponseToLeuronTrainingRequest  (LeuronTrainingResponse o) =
   }
 
 
-likeRequestToLikeResponse :: Int -> Ent -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> LikeRequest -> LikeResponse
-likeRequestToLikeResponse id ent entId userId score createdAt modifiedAt (LikeRequest o) =
+likeRequestToLikeResponse :: Int -> Ent -> Int -> Int -> Int -> Boolean -> (Maybe Date) -> (Maybe Date) -> LikeRequest -> LikeResponse
+likeRequestToLikeResponse id ent entId userId score active createdAt modifiedAt (LikeRequest o) =
   LikeResponse {
     id: id,
     ent: ent,
@@ -219,6 +240,8 @@ likeRequestToLikeResponse id ent entId userId score createdAt modifiedAt (LikeRe
     opt: o.opt,
     score: score,
     reason: o.reason,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
@@ -228,16 +251,18 @@ likeResponseToLikeRequest :: LikeResponse -> LikeRequest
 likeResponseToLikeRequest  (LikeResponse o) =
   LikeRequest {
     opt: o.opt,
-    reason: o.reason
+    reason: o.reason,
+    guard: o.guard
   }
 
 
-organizationRequestToOrganizationResponse :: Int -> Int -> String -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> OrganizationRequest -> OrganizationResponse
-organizationRequestToOrganizationResponse id userId emailMD5 createdAt modifiedBy modifiedAt (OrganizationRequest o) =
+organizationRequestToOrganizationResponse :: Int -> Int -> String -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> OrganizationRequest -> OrganizationResponse
+organizationRequestToOrganizationResponse id userId name emailMD5 active createdAt modifiedBy modifiedAt activityAt (OrganizationRequest o) =
   OrganizationResponse {
     id: id,
     userId: userId,
-    name: o.name,
+    name: name,
+    displayName: o.displayName,
     description: o.description,
     company: o.company,
     location: o.location,
@@ -247,16 +272,19 @@ organizationRequestToOrganizationResponse id userId emailMD5 createdAt modifiedB
     icon: o.icon,
     tags: o.tags,
     visibility: o.visibility,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
 organizationResponseToOrganizationRequest :: OrganizationResponse -> OrganizationRequest
 organizationResponseToOrganizationRequest  (OrganizationResponse o) =
   OrganizationRequest {
-    name: o.name,
+    displayName: o.displayName,
     description: o.description,
     company: o.company,
     location: o.location,
@@ -264,20 +292,24 @@ organizationResponseToOrganizationRequest  (OrganizationResponse o) =
     membership: o.membership,
     tags: o.tags,
     icon: o.icon,
-    visibility: o.visibility
+    visibility: o.visibility,
+    guard: o.guard
   }
 
 
-pmRequestToPmResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> PmRequest -> PmResponse
-pmRequestToPmResponse id userId toUserId createdAt modifiedAt (PmRequest o) =
+pmRequestToPmResponse :: Int -> Int -> Int -> Boolean -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> PmRequest -> PmResponse
+pmRequestToPmResponse id userId toUserId active createdAt modifiedAt activityAt (PmRequest o) =
   PmResponse {
     id: id,
     userId: userId,
     toUserId: toUserId,
     subject: o.subject,
     body: o.body,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
@@ -285,12 +317,13 @@ pmResponseToPmRequest :: PmResponse -> PmRequest
 pmResponseToPmRequest  (PmResponse o) =
   PmRequest {
     subject: o.subject,
-    body: o.body
+    body: o.body,
+    guard: o.guard
   }
 
 
-pmInRequestToPmInResponse :: Int -> Int -> Int -> Boolean -> Boolean -> (Maybe Date) -> (Maybe Date) -> PmInRequest -> PmInResponse
-pmInRequestToPmInResponse id pmId userId isNew isSaved createdAt modifiedAt (PmInRequest o) =
+pmInRequestToPmInResponse :: Int -> Int -> Int -> Boolean -> Boolean -> Boolean -> (Maybe Date) -> (Maybe Date) -> PmInRequest -> PmInResponse
+pmInRequestToPmInResponse id pmId userId isNew isSaved active createdAt modifiedAt (PmInRequest o) =
   PmInResponse {
     id: id,
     pmId: pmId,
@@ -300,6 +333,8 @@ pmInRequestToPmInResponse id pmId userId isNew isSaved createdAt modifiedAt (PmI
     isStarred: o.isStarred,
     isNew: isNew,
     isSaved: isSaved,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
@@ -310,18 +345,21 @@ pmInResponseToPmInRequest  (PmInResponse o) =
   PmInRequest {
     label: o.label,
     isRead: o.isRead,
-    isStarred: o.isStarred
+    isStarred: o.isStarred,
+    guard: o.guard
   }
 
 
-pmOutRequestToPmOutResponse :: Int -> Int -> Int -> Boolean -> (Maybe Date) -> (Maybe Date) -> PmOutRequest -> PmOutResponse
-pmOutRequestToPmOutResponse id pmId userId isSaved createdAt modifiedAt (PmOutRequest o) =
+pmOutRequestToPmOutResponse :: Int -> Int -> Int -> Boolean -> Boolean -> (Maybe Date) -> (Maybe Date) -> PmOutRequest -> PmOutResponse
+pmOutRequestToPmOutResponse id pmId userId isSaved active createdAt modifiedAt (PmOutRequest o) =
   PmOutResponse {
     id: id,
     pmId: pmId,
     userId: userId,
     label: o.label,
     isSaved: isSaved,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
@@ -330,7 +368,8 @@ pmOutRequestToPmOutResponse id pmId userId isSaved createdAt modifiedAt (PmOutRe
 pmOutResponseToPmOutRequest :: PmOutResponse -> PmOutRequest
 pmOutResponseToPmOutRequest  (PmOutResponse o) =
   PmOutRequest {
-    label: o.label
+    label: o.label,
+    guard: o.guard
   }
 
 
@@ -346,6 +385,7 @@ profileRequestToProfileResponse id entityId karmaGood karmaBad createdAt modifie
     signature: o.signature,
     karmaGood: karmaGood,
     karmaBad: karmaBad,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
@@ -358,58 +398,69 @@ profileResponseToProfileRequest  (ProfileResponse o) =
     birthdate: o.birthdate,
     website: o.website,
     location: o.location,
-    signature: o.signature
+    signature: o.signature,
+    guard: o.guard
   }
 
 
-reminderRequestToReminderResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ReminderRequest -> ReminderResponse
-reminderRequestToReminderResponse id userId parentFolderId createdAt modifiedAt (ReminderRequest o) =
+reminderRequestToReminderResponse :: Int -> Int -> Int -> Boolean -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> ReminderRequest -> ReminderResponse
+reminderRequestToReminderResponse id userId parentFolderId active createdAt modifiedAt activityAt (ReminderRequest o) =
   ReminderResponse {
     id: id,
     userId: userId,
     parentFolderId: parentFolderId,
     dataP: o.dataP,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
 reminderResponseToReminderRequest :: ReminderResponse -> ReminderRequest
 reminderResponseToReminderRequest  (ReminderResponse o) =
   ReminderRequest {
-    dataP: o.dataP
+    dataP: o.dataP,
+    guard: o.guard
   }
 
 
-reminderFolderRequestToReminderFolderResponse :: Int -> Int -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ReminderFolderRequest -> ReminderFolderResponse
-reminderFolderRequestToReminderFolderResponse id userId parentFolderId createdAt modifiedAt (ReminderFolderRequest o) =
+reminderFolderRequestToReminderFolderResponse :: Int -> Int -> (Maybe Int) -> String -> Boolean -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> ReminderFolderRequest -> ReminderFolderResponse
+reminderFolderRequestToReminderFolderResponse id userId parentFolderId name active createdAt modifiedAt activityAt (ReminderFolderRequest o) =
   ReminderFolderResponse {
     id: id,
     userId: userId,
     parentFolderId: parentFolderId,
-    name: o.name,
+    name: name,
+    displayName: o.displayName,
     visibility: o.visibility,
     description: o.description,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
 reminderFolderResponseToReminderFolderRequest :: ReminderFolderResponse -> ReminderFolderRequest
 reminderFolderResponseToReminderFolderRequest  (ReminderFolderResponse o) =
   ReminderFolderRequest {
-    name: o.name,
+    displayName: o.displayName,
     description: o.description,
-    visibility: o.visibility
+    visibility: o.visibility,
+    guard: o.guard
   }
 
 
-resourceRequestToResourceResponse :: Int -> Int -> (Maybe Date) -> (Maybe Date) -> ResourceRequest -> ResourceResponse
-resourceRequestToResourceResponse id userId createdAt modifiedAt (ResourceRequest o) =
+resourceRequestToResourceResponse :: Int -> Int -> String -> Boolean -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> ResourceRequest -> ResourceResponse
+resourceRequestToResourceResponse id userId name active createdAt modifiedAt activityAt (ResourceRequest o) =
   ResourceResponse {
     id: id,
     userId: userId,
-    title: o.title,
+    name: name,
+    displayName: o.displayName,
     description: o.description,
     source: o.source,
     author: o.author,
@@ -421,15 +472,18 @@ resourceRequestToResourceResponse id userId createdAt modifiedAt (ResourceReques
     urls: o.urls,
     icon: o.icon,
     tags: o.tags,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
 resourceResponseToResourceRequest :: ResourceResponse -> ResourceRequest
 resourceResponseToResourceRequest  (ResourceResponse o) =
   ResourceRequest {
-    title: o.title,
+    displayName: o.displayName,
     description: o.description,
     source: o.source,
     author: o.author,
@@ -440,17 +494,20 @@ resourceResponseToResourceRequest  (ResourceResponse o) =
     version: o.version,
     urls: o.urls,
     icon: o.icon,
-    tags: o.tags
+    tags: o.tags,
+    guard: o.guard
   }
 
 
-starRequestToStarResponse :: Int -> Ent -> Int -> (Maybe Date) -> (Maybe Date) -> StarRequest -> StarResponse
-starRequestToStarResponse id entity userId createdAt modifiedAt (StarRequest o) =
+starRequestToStarResponse :: Int -> Ent -> Int -> Boolean -> (Maybe Date) -> (Maybe Date) -> StarRequest -> StarResponse
+starRequestToStarResponse id entity userId active createdAt modifiedAt (StarRequest o) =
   StarResponse {
     id: id,
     entity: entity,
     userId: userId,
     reason: o.reason,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
@@ -459,53 +516,62 @@ starRequestToStarResponse id entity userId createdAt modifiedAt (StarRequest o) 
 starResponseToStarRequest :: StarResponse -> StarRequest
 starResponseToStarRequest  (StarResponse o) =
   StarRequest {
-    reason: o.reason
+    reason: o.reason,
+    guard: o.guard
   }
 
 
-teamRequestToTeamResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> TeamRequest -> TeamResponse
-teamRequestToTeamResponse id userId orgId createdAt modifiedBy modifiedAt (TeamRequest o) =
+teamRequestToTeamResponse :: Int -> Int -> Int -> String -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamRequest -> TeamResponse
+teamRequestToTeamResponse id userId orgId name teamRespponseDisplayName active createdAt modifiedBy modifiedAt activityAt (TeamRequest o) =
   TeamResponse {
     id: id,
     userId: userId,
     orgId: orgId,
-    name: o.name,
+    name: name,
+    teamRespponseDisplayName: teamRespponseDisplayName,
     description: o.description,
     membership: o.membership,
     icon: o.icon,
     tags: o.tags,
     visibility: o.visibility,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
-teamResponseToTeamRequest :: TeamResponse -> TeamRequest
-teamResponseToTeamRequest  (TeamResponse o) =
+teamResponseToTeamRequest :: String -> TeamResponse -> TeamRequest
+teamResponseToTeamRequest displayName (TeamResponse o) =
   TeamRequest {
-    name: o.name,
+    displayName: displayName,
     description: o.description,
     membership: o.membership,
     icon: o.icon,
     tags: o.tags,
-    visibility: o.visibility
+    visibility: o.visibility,
+    guard: o.guard
   }
 
 
-threadRequestToThreadResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadRequest -> ThreadResponse
-threadRequestToThreadResponse id userId boardId createdAt modifiedBy modifiedAt activityAt (ThreadRequest o) =
+threadRequestToThreadResponse :: Int -> Int -> Int -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadRequest -> ThreadResponse
+threadRequestToThreadResponse id userId boardId name active createdAt modifiedBy modifiedAt activityAt (ThreadRequest o) =
   ThreadResponse {
     id: id,
     userId: userId,
     boardId: boardId,
-    name: o.name,
+    name: name,
+    displayName: o.displayName,
     description: o.description,
     sticky: o.sticky,
     locked: o.locked,
     poll: o.poll,
     icon: o.icon,
     tags: o.tags,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
     modifiedAt: modifiedAt,
@@ -516,18 +582,19 @@ threadRequestToThreadResponse id userId boardId createdAt modifiedBy modifiedAt 
 threadResponseToThreadRequest :: ThreadResponse -> ThreadRequest
 threadResponseToThreadRequest  (ThreadResponse o) =
   ThreadRequest {
-    name: o.name,
+    displayName: o.displayName,
     description: o.description,
     sticky: o.sticky,
     locked: o.locked,
     poll: o.poll,
     icon: o.icon,
-    tags: o.tags
+    tags: o.tags,
+    guard: o.guard
   }
 
 
-threadPostRequestToThreadPostResponse :: Int -> Int -> Int -> (Maybe Int) -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> ThreadPostRequest -> ThreadPostResponse
-threadPostRequestToThreadPostResponse id userId threadId parentId createdAt modifiedBy modifiedAt (ThreadPostRequest o) =
+threadPostRequestToThreadPostResponse :: Int -> Int -> Int -> (Maybe Int) -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostRequest -> ThreadPostResponse
+threadPostRequestToThreadPostResponse id userId threadId parentId active createdAt modifiedBy modifiedAt activityAt (ThreadPostRequest o) =
   ThreadPostResponse {
     id: id,
     userId: userId,
@@ -537,9 +604,12 @@ threadPostRequestToThreadPostResponse id userId threadId parentId createdAt modi
     body: o.body,
     tags: o.tags,
     privateTags: o.privateTags,
+    active: active,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedBy: modifiedBy,
-    modifiedAt: modifiedAt
+    modifiedAt: modifiedAt,
+    activityAt: activityAt
   }
 
 
@@ -549,15 +619,16 @@ threadPostResponseToThreadPostRequest  (ThreadPostResponse o) =
     title: o.title,
     body: o.body,
     tags: o.tags,
-    privateTags: o.privateTags
+    privateTags: o.privateTags,
+    guard: o.guard
   }
 
 
-userRequestToUserResponse :: Int -> String -> Boolean -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> UserRequest -> UserResponse
-userRequestToUserResponse id emailMD5 active createdAt modifiedAt deactivatedAt (UserRequest o) =
+userRequestToUserResponse :: Int -> String -> String -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> UserRequest -> UserResponse
+userRequestToUserResponse id nick emailMD5 active guard createdAt modifiedAt deactivatedAt activityAt (UserRequest o) =
   UserResponse {
     id: id,
-    nick: o.nick,
+    nick: nick,
     displayNick: o.displayNick,
     name: o.name,
     email: o.email,
@@ -565,16 +636,17 @@ userRequestToUserResponse id emailMD5 active createdAt modifiedAt deactivatedAt 
     plugin: o.plugin,
     ident: o.ident,
     active: active,
+    guard: guard,
     createdAt: createdAt,
     modifiedAt: modifiedAt,
-    deactivatedAt: deactivatedAt
+    deactivatedAt: deactivatedAt,
+    activityAt: activityAt
   }
 
 
 userResponseToUserRequest :: UserResponse -> UserRequest
 userResponseToUserRequest  (UserResponse o) =
   UserRequest {
-    nick: o.nick,
     displayNick: o.displayNick,
     name: o.name,
     email: o.email,
@@ -583,22 +655,23 @@ userResponseToUserRequest  (UserResponse o) =
   }
 
 
-userRequestToUserSanitizedResponse :: Int -> String -> Boolean -> (Maybe Date) -> UserRequest -> UserSanitizedResponse
-userRequestToUserSanitizedResponse id emailMD5 active createdAt (UserRequest o) =
+userRequestToUserSanitizedResponse :: Int -> String -> String -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> UserRequest -> UserSanitizedResponse
+userRequestToUserSanitizedResponse id nick emailMD5 active guard createdAt activityAt (UserRequest o) =
   UserSanitizedResponse {
     id: id,
-    nick: o.nick,
+    nick: nick,
     displayNick: o.displayNick,
     emailMD5: emailMD5,
     active: active,
-    createdAt: createdAt
+    guard: guard,
+    createdAt: createdAt,
+    activityAt: activityAt
   }
 
 
 userSanitizedResponseToUserRequest :: String -> String -> String -> String -> UserSanitizedResponse -> UserRequest
 userSanitizedResponseToUserRequest name email plugin ident (UserSanitizedResponse o) =
   UserRequest {
-    nick: o.nick,
     displayNick: o.displayNick,
     name: name,
     email: email,

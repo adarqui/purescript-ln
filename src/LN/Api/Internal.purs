@@ -76,10 +76,10 @@ getBoards params = handleError <$> getAt params ["boards"]
 getBoards' :: ApiEff (Either ApiError BoardResponses)
 getBoards'  = handleError <$> getAt ([] :: Array Boolean) ["boards"]
 
-getBoards_ByBoardsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError BoardResponses)
+getBoards_ByBoardsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError BoardResponses)
 getBoards_ByBoardsIds params _ByBoardsIds = handleError <$> getAt (map qp params ++ map qp [ByBoardsIds _ByBoardsIds]) ["boards"]
 
-getBoards_ByBoardsIds' :: (Array  Int) -> ApiEff (Either ApiError BoardResponses)
+getBoards_ByBoardsIds' :: (Array Int) -> ApiEff (Either ApiError BoardResponses)
 getBoards_ByBoardsIds' _ByBoardsIds = handleError <$> getAt [ByBoardsIds _ByBoardsIds] ["boards"]
 
 getBoards_ByForumId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError BoardResponses)
@@ -88,11 +88,17 @@ getBoards_ByForumId params _ByForumId = handleError <$> getAt (map qp params ++ 
 getBoards_ByForumId' :: Int -> ApiEff (Either ApiError BoardResponses)
 getBoards_ByForumId' _ByForumId = handleError <$> getAt [ByForumId _ByForumId] ["boards"]
 
-postBoard :: forall qp. QueryParam qp => Array qp -> BoardRequest -> ApiEff (Either ApiError BoardResponse)
-postBoard params board_request = handleError <$> postAt params ["board"] board_request
+postBoard_ByForumId :: forall qp. QueryParam qp => Array qp -> Int -> BoardRequest -> ApiEff (Either ApiError BoardResponse)
+postBoard_ByForumId params _ByForumId board_request = handleError <$> postAt (map qp params ++ map qp [ByForumId _ByForumId]) ["board"] board_request
 
-postBoard' :: BoardRequest -> ApiEff (Either ApiError BoardResponse)
-postBoard' board_request = handleError <$> postAt ([] :: Array Boolean) ["board"] board_request
+postBoard_ByForumId' :: Int -> BoardRequest -> ApiEff (Either ApiError BoardResponse)
+postBoard_ByForumId' _ByForumId board_request = handleError <$> postAt [ByForumId _ByForumId] ["board"] board_request
+
+postBoard_ByBoardId :: forall qp. QueryParam qp => Array qp -> Int -> BoardRequest -> ApiEff (Either ApiError BoardResponse)
+postBoard_ByBoardId params _ByBoardId board_request = handleError <$> postAt (map qp params ++ map qp [ByBoardId _ByBoardId]) ["board"] board_request
+
+postBoard_ByBoardId' :: Int -> BoardRequest -> ApiEff (Either ApiError BoardResponse)
+postBoard_ByBoardId' _ByBoardId board_request = handleError <$> postAt [ByBoardId _ByBoardId] ["board"] board_request
 
 getBoard :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError BoardResponse)
 getBoard params board_id = handleError <$> getAt params ["board", show board_id]
@@ -202,10 +208,10 @@ getForums_ByOrganizationName params _ByOrganizationName = handleError <$> getAt 
 getForums_ByOrganizationName' :: String -> ApiEff (Either ApiError ForumResponses)
 getForums_ByOrganizationName' _ByOrganizationName = handleError <$> getAt [ByOrganizationName _ByOrganizationName] ["forums"]
 
-getForums_ByForumsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ForumResponses)
+getForums_ByForumsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError ForumResponses)
 getForums_ByForumsIds params _ByForumsIds = handleError <$> getAt (map qp params ++ map qp [ByForumsIds _ByForumsIds]) ["forums"]
 
-getForums_ByForumsIds' :: (Array  Int) -> ApiEff (Either ApiError ForumResponses)
+getForums_ByForumsIds' :: (Array Int) -> ApiEff (Either ApiError ForumResponses)
 getForums_ByForumsIds' _ByForumsIds = handleError <$> getAt [ByForumsIds _ByForumsIds] ["forums"]
 
 getForums_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ForumResponses)
@@ -214,11 +220,11 @@ getForums_ByOrganizationId params _ByOrganizationId = handleError <$> getAt (map
 getForums_ByOrganizationId' :: Int -> ApiEff (Either ApiError ForumResponses)
 getForums_ByOrganizationId' _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["forums"]
 
-postForum :: forall qp. QueryParam qp => Array qp -> ForumRequest -> ApiEff (Either ApiError ForumResponse)
-postForum params forum_request = handleError <$> postAt params ["forum"] forum_request
+postForum_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> Int -> ForumRequest -> ApiEff (Either ApiError ForumResponse)
+postForum_ByOrganizationId params _ByOrganizationId forum_request = handleError <$> postAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["forum"] forum_request
 
-postForum' :: ForumRequest -> ApiEff (Either ApiError ForumResponse)
-postForum' forum_request = handleError <$> postAt ([] :: Array Boolean) ["forum"] forum_request
+postForum_ByOrganizationId' :: Int -> ForumRequest -> ApiEff (Either ApiError ForumResponse)
+postForum_ByOrganizationId' _ByOrganizationId forum_request = handleError <$> postAt [ByOrganizationId _ByOrganizationId] ["forum"] forum_request
 
 getForum :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ForumResponse)
 getForum params forum_id = handleError <$> getAt params ["forum", show forum_id]
@@ -286,10 +292,10 @@ getLikes params = handleError <$> getAt params ["likes"]
 getLikes' :: ApiEff (Either ApiError LikeResponses)
 getLikes'  = handleError <$> getAt ([] :: Array Boolean) ["likes"]
 
-getLikes_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LikeResponses)
+getLikes_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError LikeResponses)
 getLikes_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["likes"]
 
-getLikes_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError LikeResponses)
+getLikes_ByThreadPostsIds' :: (Array Int) -> ApiEff (Either ApiError LikeResponses)
 getLikes_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["likes"]
 
 getLikes_ByThreadPostId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LikeResponses)
@@ -334,10 +340,10 @@ deleteLike params like_id = handleError <$> deleteAt params ["like", show like_i
 deleteLike' :: Int -> ApiEff (Either ApiError Unit)
 deleteLike' like_id = handleError <$> deleteAt ([] :: Array Boolean) ["like", show like_id]
 
-getLikeStats_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LikeStatResponses)
+getLikeStats_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError LikeStatResponses)
 getLikeStats_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["like_stats"]
 
-getLikeStats_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError LikeStatResponses)
+getLikeStats_ByThreadPostsIds' :: (Array Int) -> ApiEff (Either ApiError LikeStatResponses)
 getLikeStats_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["like_stats"]
 
 getLikeStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LikeStatResponse)
@@ -376,10 +382,10 @@ getStars_ByThreadId params _ByThreadId = handleError <$> getAt (map qp params ++
 getStars_ByThreadId' :: Int -> ApiEff (Either ApiError StarResponses)
 getStars_ByThreadId' _ByThreadId = handleError <$> getAt [ByThreadId _ByThreadId] ["stars"]
 
-getStars_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError StarResponses)
+getStars_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError StarResponses)
 getStars_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["stars"]
 
-getStars_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError StarResponses)
+getStars_ByThreadPostsIds' :: (Array Int) -> ApiEff (Either ApiError StarResponses)
 getStars_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["stars"]
 
 getStars_ByThreadPostId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError StarResponses)
@@ -484,10 +490,10 @@ getStarStats_ByThreadId params _ByThreadId = handleError <$> getAt (map qp param
 getStarStats_ByThreadId' :: Int -> ApiEff (Either ApiError StarStatResponses)
 getStarStats_ByThreadId' _ByThreadId = handleError <$> getAt [ByThreadId _ByThreadId] ["star_stats"]
 
-getStarStats_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError StarStatResponses)
+getStarStats_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError StarStatResponses)
 getStarStats_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["star_stats"]
 
-getStarStats_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError StarStatResponses)
+getStarStats_ByThreadPostsIds' :: (Array Int) -> ApiEff (Either ApiError StarStatResponses)
 getStarStats_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["star_stats"]
 
 getStarStats_ByThreadPostId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError StarStatResponses)
@@ -574,11 +580,17 @@ getPms params = handleError <$> getAt params ["pms"]
 getPms' :: ApiEff (Either ApiError PmResponses)
 getPms'  = handleError <$> getAt ([] :: Array Boolean) ["pms"]
 
-postPm :: forall qp. QueryParam qp => Array qp -> PmRequest -> ApiEff (Either ApiError PmResponse)
-postPm params pm_request = handleError <$> postAt params ["pm"] pm_request
+postPm_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> PmRequest -> ApiEff (Either ApiError PmResponse)
+postPm_ByUsersIds params _ByUsersIds pm_request = handleError <$> postAt (map qp params ++ map qp [ByUsersIds _ByUsersIds]) ["pm"] pm_request
 
-postPm' :: PmRequest -> ApiEff (Either ApiError PmResponse)
-postPm' pm_request = handleError <$> postAt ([] :: Array Boolean) ["pm"] pm_request
+postPm_ByUsersIds' :: (Array Int) -> PmRequest -> ApiEff (Either ApiError PmResponse)
+postPm_ByUsersIds' _ByUsersIds pm_request = handleError <$> postAt [ByUsersIds _ByUsersIds] ["pm"] pm_request
+
+postPm_ByUserId :: forall qp. QueryParam qp => Array qp -> Int -> PmRequest -> ApiEff (Either ApiError PmResponse)
+postPm_ByUserId params _ByUserId pm_request = handleError <$> postAt (map qp params ++ map qp [ByUserId _ByUserId]) ["pm"] pm_request
+
+postPm_ByUserId' :: Int -> PmRequest -> ApiEff (Either ApiError PmResponse)
+postPm_ByUserId' _ByUserId pm_request = handleError <$> postAt [ByUserId _ByUserId] ["pm"] pm_request
 
 getPm :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmResponse)
 getPm params pm_id = handleError <$> getAt params ["pm", show pm_id]
@@ -688,10 +700,10 @@ deleteResource params resource_id = handleError <$> deleteAt params ["resource",
 deleteResource' :: Int -> ApiEff (Either ApiError Unit)
 deleteResource' resource_id = handleError <$> deleteAt ([] :: Array Boolean) ["resource", show resource_id]
 
-getResourceStats_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ResourceStatResponses)
+getResourceStats_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError ResourceStatResponses)
 getResourceStats_ByResourcesIds params _ByResourcesIds = handleError <$> getAt (map qp params ++ map qp [ByResourcesIds _ByResourcesIds]) ["resource_stats"]
 
-getResourceStats_ByResourcesIds' :: (Array  Int) -> ApiEff (Either ApiError ResourceStatResponses)
+getResourceStats_ByResourcesIds' :: (Array Int) -> ApiEff (Either ApiError ResourceStatResponses)
 getResourceStats_ByResourcesIds' _ByResourcesIds = handleError <$> getAt [ByResourcesIds _ByResourcesIds] ["resource_stats"]
 
 getResourceStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourceStatResponse)
@@ -808,10 +820,10 @@ deleteThreadPost params thread_post_id = handleError <$> deleteAt params ["threa
 deleteThreadPost' :: Int -> ApiEff (Either ApiError Unit)
 deleteThreadPost' thread_post_id = handleError <$> deleteAt ([] :: Array Boolean) ["thread_post", show thread_post_id]
 
-getThreadPostStats_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ThreadPostStatResponses)
+getThreadPostStats_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError ThreadPostStatResponses)
 getThreadPostStats_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["thread_post_stats"]
 
-getThreadPostStats_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPostStatResponses)
+getThreadPostStats_ByThreadPostsIds' :: (Array Int) -> ApiEff (Either ApiError ThreadPostStatResponses)
 getThreadPostStats_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["thread_post_stats"]
 
 getThreadPostStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostStatResponse)
@@ -826,16 +838,16 @@ getUsers params = handleError <$> getAt params ["users"]
 getUsers' :: ApiEff (Either ApiError UserResponses)
 getUsers'  = handleError <$> getAt ([] :: Array Boolean) ["users"]
 
-getUsers_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError UserResponses)
+getUsers_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError UserResponses)
 getUsers_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params ++ map qp [ByUsersIds _ByUsersIds]) ["users"]
 
-getUsers_ByUsersIds' :: (Array  Int) -> ApiEff (Either ApiError UserResponses)
+getUsers_ByUsersIds' :: (Array Int) -> ApiEff (Either ApiError UserResponses)
 getUsers_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["users"]
 
-getUsers_ByUsersNicks :: forall qp. QueryParam qp => Array qp -> (Array  String) -> ApiEff (Either ApiError UserResponses)
+getUsers_ByUsersNicks :: forall qp. QueryParam qp => Array qp -> (Array String) -> ApiEff (Either ApiError UserResponses)
 getUsers_ByUsersNicks params _ByUsersNicks = handleError <$> getAt (map qp params ++ map qp [ByUsersNicks _ByUsersNicks]) ["users"]
 
-getUsers_ByUsersNicks' :: (Array  String) -> ApiEff (Either ApiError UserResponses)
+getUsers_ByUsersNicks' :: (Array String) -> ApiEff (Either ApiError UserResponses)
 getUsers_ByUsersNicks' _ByUsersNicks = handleError <$> getAt [ByUsersNicks _ByUsersNicks] ["users"]
 
 postUser :: forall qp. QueryParam qp => Array qp -> UserRequest -> ApiEff (Either ApiError UserResponse)
@@ -868,10 +880,10 @@ getUserProfiles params = handleError <$> getAt params ["user_profiles"]
 getUserProfiles' :: ApiEff (Either ApiError ProfileResponses)
 getUserProfiles'  = handleError <$> getAt ([] :: Array Boolean) ["user_profiles"]
 
-getUserProfiles_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ProfileResponses)
+getUserProfiles_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError ProfileResponses)
 getUserProfiles_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params ++ map qp [ByUsersIds _ByUsersIds]) ["user_profiles"]
 
-getUserProfiles_ByUsersIds' :: (Array  Int) -> ApiEff (Either ApiError ProfileResponses)
+getUserProfiles_ByUsersIds' :: (Array Int) -> ApiEff (Either ApiError ProfileResponses)
 getUserProfiles_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["user_profiles"]
 
 getUserProfile :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ProfileResponse)
@@ -898,16 +910,16 @@ getUsersSanitized params = handleError <$> getAt params ["users_sanitized"]
 getUsersSanitized' :: ApiEff (Either ApiError UserSanitizedResponses)
 getUsersSanitized'  = handleError <$> getAt ([] :: Array Boolean) ["users_sanitized"]
 
-getUsersSanitized_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError UserSanitizedResponses)
+getUsersSanitized_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError UserSanitizedResponses)
 getUsersSanitized_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params ++ map qp [ByUsersIds _ByUsersIds]) ["users_sanitized"]
 
-getUsersSanitized_ByUsersIds' :: (Array  Int) -> ApiEff (Either ApiError UserSanitizedResponses)
+getUsersSanitized_ByUsersIds' :: (Array Int) -> ApiEff (Either ApiError UserSanitizedResponses)
 getUsersSanitized_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["users_sanitized"]
 
-getUsersSanitized_ByUsersNicks :: forall qp. QueryParam qp => Array qp -> (Array  String) -> ApiEff (Either ApiError UserSanitizedResponses)
+getUsersSanitized_ByUsersNicks :: forall qp. QueryParam qp => Array qp -> (Array String) -> ApiEff (Either ApiError UserSanitizedResponses)
 getUsersSanitized_ByUsersNicks params _ByUsersNicks = handleError <$> getAt (map qp params ++ map qp [ByUsersNicks _ByUsersNicks]) ["users_sanitized"]
 
-getUsersSanitized_ByUsersNicks' :: (Array  String) -> ApiEff (Either ApiError UserSanitizedResponses)
+getUsersSanitized_ByUsersNicks' :: (Array String) -> ApiEff (Either ApiError UserSanitizedResponses)
 getUsersSanitized_ByUsersNicks' _ByUsersNicks = handleError <$> getAt [ByUsersNicks _ByUsersNicks] ["users_sanitized"]
 
 getUserSanitized :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError UserSanitizedResponse)
@@ -922,10 +934,10 @@ getUserSanitizedStats params = handleError <$> getAt params ["user_sanitized_sta
 getUserSanitizedStats' :: ApiEff (Either ApiError UserSanitizedStatResponse)
 getUserSanitizedStats'  = handleError <$> getAt ([] :: Array Boolean) ["user_sanitized_stats"]
 
-getUserSanitizedStats_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError UserSanitizedStatResponse)
+getUserSanitizedStats_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError UserSanitizedStatResponse)
 getUserSanitizedStats_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params ++ map qp [ByUsersIds _ByUsersIds]) ["user_sanitized_stats"]
 
-getUserSanitizedStats_ByUsersIds' :: (Array  Int) -> ApiEff (Either ApiError UserSanitizedStatResponse)
+getUserSanitizedStats_ByUsersIds' :: (Array Int) -> ApiEff (Either ApiError UserSanitizedStatResponse)
 getUserSanitizedStats_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["user_sanitized_stats"]
 
 getUserSanitizedStat :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError UserSanitizedStatResponse)
@@ -940,10 +952,10 @@ getOrganizationPacks params = handleError <$> getAt params ["organization_packs"
 getOrganizationPacks' :: ApiEff (Either ApiError OrganizationPackResponses)
 getOrganizationPacks'  = handleError <$> getAt ([] :: Array Boolean) ["organization_packs"]
 
-getOrganizationPacks_ByOrganizationsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError OrganizationPackResponses)
+getOrganizationPacks_ByOrganizationsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError OrganizationPackResponses)
 getOrganizationPacks_ByOrganizationsIds params _ByOrganizationsIds = handleError <$> getAt (map qp params ++ map qp [ByOrganizationsIds _ByOrganizationsIds]) ["organization_packs"]
 
-getOrganizationPacks_ByOrganizationsIds' :: (Array  Int) -> ApiEff (Either ApiError OrganizationPackResponses)
+getOrganizationPacks_ByOrganizationsIds' :: (Array Int) -> ApiEff (Either ApiError OrganizationPackResponses)
 getOrganizationPacks_ByOrganizationsIds' _ByOrganizationsIds = handleError <$> getAt [ByOrganizationsIds _ByOrganizationsIds] ["organization_packs"]
 
 getOrganizationPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError OrganizationPackResponse)
@@ -976,10 +988,10 @@ getUserPacks params = handleError <$> getAt params ["user_packs"]
 getUserPacks' :: ApiEff (Either ApiError UserPackResponses)
 getUserPacks'  = handleError <$> getAt ([] :: Array Boolean) ["user_packs"]
 
-getUserPacks_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError UserPackResponses)
+getUserPacks_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError UserPackResponses)
 getUserPacks_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params ++ map qp [ByUsersIds _ByUsersIds]) ["user_packs"]
 
-getUserPacks_ByUsersIds' :: (Array  Int) -> ApiEff (Either ApiError UserPackResponses)
+getUserPacks_ByUsersIds' :: (Array Int) -> ApiEff (Either ApiError UserPackResponses)
 getUserPacks_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["user_packs"]
 
 getUserPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError UserPackResponse)
@@ -994,10 +1006,10 @@ getUserSanitizedPacks params = handleError <$> getAt params ["user_sanitized_pac
 getUserSanitizedPacks' :: ApiEff (Either ApiError UserSanitizedPackResponses)
 getUserSanitizedPacks'  = handleError <$> getAt ([] :: Array Boolean) ["user_sanitized_packs"]
 
-getUserSanitizedPacks_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError UserSanitizedPackResponses)
+getUserSanitizedPacks_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError UserSanitizedPackResponses)
 getUserSanitizedPacks_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params ++ map qp [ByUsersIds _ByUsersIds]) ["user_sanitized_packs"]
 
-getUserSanitizedPacks_ByUsersIds' :: (Array  Int) -> ApiEff (Either ApiError UserSanitizedPackResponses)
+getUserSanitizedPacks_ByUsersIds' :: (Array Int) -> ApiEff (Either ApiError UserSanitizedPackResponses)
 getUserSanitizedPacks_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["user_sanitized_packs"]
 
 getUserSanitizedPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError UserSanitizedPackResponse)
@@ -1018,10 +1030,10 @@ getForumPacks_ByForumId params _ByForumId = handleError <$> getAt (map qp params
 getForumPacks_ByForumId' :: Int -> ApiEff (Either ApiError ForumPackResponses)
 getForumPacks_ByForumId' _ByForumId = handleError <$> getAt [ByForumId _ByForumId] ["forum_packs"]
 
-getForumPacks_ByForumsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ForumPackResponses)
+getForumPacks_ByForumsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError ForumPackResponses)
 getForumPacks_ByForumsIds params _ByForumsIds = handleError <$> getAt (map qp params ++ map qp [ByForumsIds _ByForumsIds]) ["forum_packs"]
 
-getForumPacks_ByForumsIds' :: (Array  Int) -> ApiEff (Either ApiError ForumPackResponses)
+getForumPacks_ByForumsIds' :: (Array Int) -> ApiEff (Either ApiError ForumPackResponses)
 getForumPacks_ByForumsIds' _ByForumsIds = handleError <$> getAt [ByForumsIds _ByForumsIds] ["forum_packs"]
 
 getForumPacks_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ForumPackResponses)
@@ -1054,10 +1066,10 @@ getBoardPacks_ByForumId params _ByForumId = handleError <$> getAt (map qp params
 getBoardPacks_ByForumId' :: Int -> ApiEff (Either ApiError BoardPackResponses)
 getBoardPacks_ByForumId' _ByForumId = handleError <$> getAt [ByForumId _ByForumId] ["board_packs"]
 
-getBoardPacks_ByBoardsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError BoardPackResponses)
+getBoardPacks_ByBoardsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError BoardPackResponses)
 getBoardPacks_ByBoardsIds params _ByBoardsIds = handleError <$> getAt (map qp params ++ map qp [ByBoardsIds _ByBoardsIds]) ["board_packs"]
 
-getBoardPacks_ByBoardsIds' :: (Array  Int) -> ApiEff (Either ApiError BoardPackResponses)
+getBoardPacks_ByBoardsIds' :: (Array Int) -> ApiEff (Either ApiError BoardPackResponses)
 getBoardPacks_ByBoardsIds' _ByBoardsIds = handleError <$> getAt [ByBoardsIds _ByBoardsIds] ["board_packs"]
 
 getBoardPacks_ByBoardId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError BoardPackResponses)
@@ -1078,10 +1090,10 @@ getThreadPacks params = handleError <$> getAt params ["thread_packs"]
 getThreadPacks' :: ApiEff (Either ApiError ThreadPackResponses)
 getThreadPacks'  = handleError <$> getAt ([] :: Array Boolean) ["thread_packs"]
 
-getThreadPacks_ByThreadsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ThreadPackResponses)
+getThreadPacks_ByThreadsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError ThreadPackResponses)
 getThreadPacks_ByThreadsIds params _ByThreadsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadsIds _ByThreadsIds]) ["thread_packs"]
 
-getThreadPacks_ByThreadsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPackResponses)
+getThreadPacks_ByThreadsIds' :: (Array Int) -> ApiEff (Either ApiError ThreadPackResponses)
 getThreadPacks_ByThreadsIds' _ByThreadsIds = handleError <$> getAt [ByThreadsIds _ByThreadsIds] ["thread_packs"]
 
 getThreadPacks_ByBoardId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPackResponses)
@@ -1102,10 +1114,10 @@ getThreadPostPacks params = handleError <$> getAt params ["thread_post_packs"]
 getThreadPostPacks' :: ApiEff (Either ApiError ThreadPostPackResponses)
 getThreadPostPacks'  = handleError <$> getAt ([] :: Array Boolean) ["thread_post_packs"]
 
-getThreadPostPacks_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ThreadPostPackResponses)
+getThreadPostPacks_ByThreadPostsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError ThreadPostPackResponses)
 getThreadPostPacks_ByThreadPostsIds params _ByThreadPostsIds = handleError <$> getAt (map qp params ++ map qp [ByThreadPostsIds _ByThreadPostsIds]) ["thread_post_packs"]
 
-getThreadPostPacks_ByThreadPostsIds' :: (Array  Int) -> ApiEff (Either ApiError ThreadPostPackResponses)
+getThreadPostPacks_ByThreadPostsIds' :: (Array Int) -> ApiEff (Either ApiError ThreadPostPackResponses)
 getThreadPostPacks_ByThreadPostsIds' _ByThreadPostsIds = handleError <$> getAt [ByThreadPostsIds _ByThreadPostsIds] ["thread_post_packs"]
 
 getThreadPostPacks_ByThreadId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostPackResponses)
@@ -1126,10 +1138,10 @@ getResourcePacks params = handleError <$> getAt params ["resource_packs"]
 getResourcePacks' :: ApiEff (Either ApiError ResourcePackResponses)
 getResourcePacks'  = handleError <$> getAt ([] :: Array Boolean) ["resource_packs"]
 
-getResourcePacks_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError ResourcePackResponses)
+getResourcePacks_ByResourcesIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError ResourcePackResponses)
 getResourcePacks_ByResourcesIds params _ByResourcesIds = handleError <$> getAt (map qp params ++ map qp [ByResourcesIds _ByResourcesIds]) ["resource_packs"]
 
-getResourcePacks_ByResourcesIds' :: (Array  Int) -> ApiEff (Either ApiError ResourcePackResponses)
+getResourcePacks_ByResourcesIds' :: (Array Int) -> ApiEff (Either ApiError ResourcePackResponses)
 getResourcePacks_ByResourcesIds' _ByResourcesIds = handleError <$> getAt [ByResourcesIds _ByResourcesIds] ["resource_packs"]
 
 getResourcePack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ResourcePackResponse)
@@ -1144,10 +1156,10 @@ getLeuronPacks params = handleError <$> getAt params ["leuron_packs"]
 getLeuronPacks' :: ApiEff (Either ApiError LeuronPackResponses)
 getLeuronPacks'  = handleError <$> getAt ([] :: Array Boolean) ["leuron_packs"]
 
-getLeuronPacks_ByLeuronsIds :: forall qp. QueryParam qp => Array qp -> (Array  Int) -> ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks_ByLeuronsIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either ApiError LeuronPackResponses)
 getLeuronPacks_ByLeuronsIds params _ByLeuronsIds = handleError <$> getAt (map qp params ++ map qp [ByLeuronsIds _ByLeuronsIds]) ["leuron_packs"]
 
-getLeuronPacks_ByLeuronsIds' :: (Array  Int) -> ApiEff (Either ApiError LeuronPackResponses)
+getLeuronPacks_ByLeuronsIds' :: (Array Int) -> ApiEff (Either ApiError LeuronPackResponses)
 getLeuronPacks_ByLeuronsIds' _ByLeuronsIds = handleError <$> getAt [ByLeuronsIds _ByLeuronsIds] ["leuron_packs"]
 
 getLeuronPacks_ByResourceId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError LeuronPackResponses)

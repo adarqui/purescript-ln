@@ -7,7 +7,6 @@ module LN.T (
 -- These are only found in purescript-ln
 --
 import           LN.T.Param                          as A
-import           LN.T.Profile.Helper                 as A
 {-
 import           LN.T.Date                           as A
 import           LN.T.DateMaybe                      as A

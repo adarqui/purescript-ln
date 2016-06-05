@@ -15,5 +15,7 @@ userResponseToSanitizedResponse (UserResponse u) =
     displayNick: u.displayNick,
     emailMD5:    u.emailMD5,
     active:      u.active,
-    createdAt:   u.createdAt
+    guard:       u.guard,
+    createdAt:   u.createdAt,
+    activityAt:  u.activityAt
   }
