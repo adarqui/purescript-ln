@@ -11758,7 +11758,7 @@ newtype TeamResponse = TeamResponse {
   userId :: Int,
   orgId :: Int,
   name :: String,
-  teamRespponseDisplayName :: String,
+  displayName :: String,
   description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
@@ -11778,7 +11778,7 @@ type TeamResponseR = {
   userId :: Int,
   orgId :: Int,
   name :: String,
-  teamRespponseDisplayName :: String,
+  displayName :: String,
   description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
@@ -11798,7 +11798,7 @@ _TeamResponse :: LensP TeamResponse {
   userId :: Int,
   orgId :: Int,
   name :: String,
-  teamRespponseDisplayName :: String,
+  displayName :: String,
   description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
@@ -11815,8 +11815,8 @@ _TeamResponse f (TeamResponse o) = TeamResponse <$> f o
 
 
 mkTeamResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamResponse
-mkTeamResponse id userId orgId name teamRespponseDisplayName description membership icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
-  TeamResponse{id, userId, orgId, name, teamRespponseDisplayName, description, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkTeamResponse id userId orgId name displayName description membership icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
+  TeamResponse{id, userId, orgId, name, displayName, description, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapTeamResponse (TeamResponse r) = r
@@ -11828,7 +11828,7 @@ instance teamResponseEncodeJson :: EncodeJson TeamResponse where
     ~> "user_id" := o.userId
     ~> "org_id" := o.orgId
     ~> "name" := o.name
-    ~> "team_respponse_display_name" := o.teamRespponseDisplayName
+    ~> "display_name" := o.displayName
     ~> "description" := o.description
     ~> "membership" := o.membership
     ~> "icon" := o.icon
@@ -11850,7 +11850,7 @@ instance teamResponseDecodeJson :: DecodeJson TeamResponse where
     userId <- obj .? "user_id"
     orgId <- obj .? "org_id"
     name <- obj .? "name"
-    teamRespponseDisplayName <- obj .? "team_respponse_display_name"
+    displayName <- obj .? "display_name"
     description <- obj .? "description"
     membership <- obj .? "membership"
     icon <- obj .? "icon"
@@ -11867,7 +11867,7 @@ instance teamResponseDecodeJson :: DecodeJson TeamResponse where
       userId,
       orgId,
       name,
-      teamRespponseDisplayName,
+      displayName,
       description,
       membership,
       icon,
@@ -11897,7 +11897,7 @@ instance teamResponseRespondable :: Respondable TeamResponse where
       <*> readProp "user_id" json
       <*> readProp "org_id" json
       <*> readProp "name" json
-      <*> readProp "team_respponse_display_name" json
+      <*> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "membership" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
@@ -11918,7 +11918,7 @@ instance teamResponseIsForeign :: IsForeign TeamResponse where
       <*> readProp "user_id" json
       <*> readProp "org_id" json
       <*> readProp "name" json
-      <*> readProp "team_respponse_display_name" json
+      <*> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "membership" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
@@ -11933,7 +11933,7 @@ instance teamResponseIsForeign :: IsForeign TeamResponse where
 
 
 instance teamResponseShow :: Show TeamResponse where
-    show (TeamResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "teamRespponseDisplayName: " ++ show o.teamRespponseDisplayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (TeamResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype TeamResponses = TeamResponses {
   teamResponses :: (Array TeamResponse)
@@ -16563,10 +16563,6 @@ teamPackResponses_ f o = o { teamPackResponses = _ } <$> f o.teamPackResponses
 
 teamResponses_ :: forall b a r. Lens { teamResponses :: a | r } { teamResponses :: b | r } a b
 teamResponses_ f o = o { teamResponses = _ } <$> f o.teamResponses
-
-
-teamRespponseDisplayName_ :: forall b a r. Lens { teamRespponseDisplayName :: a | r } { teamRespponseDisplayName :: b | r } a b
-teamRespponseDisplayName_ f o = o { teamRespponseDisplayName = _ } <$> f o.teamRespponseDisplayName
 
 
 teamStatResponses_ :: forall b a r. Lens { teamStatResponses :: a | r } { teamStatResponses :: b | r } a b
