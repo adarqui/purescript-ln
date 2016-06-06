@@ -1868,7 +1868,7 @@ newtype ForumResponse = ForumResponse {
   userId :: Int,
   orgId :: Int,
   name :: String,
-  displayNAme :: String,
+  displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
   tags :: (Array String),
@@ -1887,7 +1887,7 @@ type ForumResponseR = {
   userId :: Int,
   orgId :: Int,
   name :: String,
-  displayNAme :: String,
+  displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
   tags :: (Array String),
@@ -1906,7 +1906,7 @@ _ForumResponse :: LensP ForumResponse {
   userId :: Int,
   orgId :: Int,
   name :: String,
-  displayNAme :: String,
+  displayName :: String,
   description :: (Maybe String),
   icon :: (Maybe String),
   tags :: (Array String),
@@ -1922,8 +1922,8 @@ _ForumResponse f (ForumResponse o) = ForumResponse <$> f o
 
 
 mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
-mkForumResponse id userId orgId name displayNAme description icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
-  ForumResponse{id, userId, orgId, name, displayNAme, description, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkForumResponse id userId orgId name displayName description icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
+  ForumResponse{id, userId, orgId, name, displayName, description, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapForumResponse (ForumResponse r) = r
@@ -1935,7 +1935,7 @@ instance forumResponseEncodeJson :: EncodeJson ForumResponse where
     ~> "user_id" := o.userId
     ~> "org_id" := o.orgId
     ~> "name" := o.name
-    ~> "display_name" := o.displayNAme
+    ~> "display_name" := o.displayName
     ~> "description" := o.description
     ~> "icon" := o.icon
     ~> "tags" := o.tags
@@ -1956,7 +1956,7 @@ instance forumResponseDecodeJson :: DecodeJson ForumResponse where
     userId <- obj .? "user_id"
     orgId <- obj .? "org_id"
     name <- obj .? "name"
-    displayNAme <- obj .? "display_name"
+    displayName <- obj .? "display_name"
     description <- obj .? "description"
     icon <- obj .? "icon"
     tags <- obj .? "tags"
@@ -1972,7 +1972,7 @@ instance forumResponseDecodeJson :: DecodeJson ForumResponse where
       userId,
       orgId,
       name,
-      displayNAme,
+      displayName,
       description,
       icon,
       tags,
@@ -2035,7 +2035,7 @@ instance forumResponseIsForeign :: IsForeign ForumResponse where
 
 
 instance forumResponseShow :: Show ForumResponse where
-    show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayNAme: " ++ show o.displayNAme ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ForumResponses = ForumResponses {
   forumResponses :: (Array ForumResponse)
@@ -16079,10 +16079,6 @@ dislike_ f o = o { dislike = _ } <$> f o.dislike
 
 dislikes_ :: forall b a r. Lens { dislikes :: a | r } { dislikes :: b | r } a b
 dislikes_ f o = o { dislikes = _ } <$> f o.dislikes
-
-
-displayNAme_ :: forall b a r. Lens { displayNAme :: a | r } { displayNAme :: b | r } a b
-displayNAme_ f o = o { displayNAme = _ } <$> f o.displayNAme
 
 
 displayName_ :: forall b a r. Lens { displayName :: a | r } { displayName :: b | r } a b

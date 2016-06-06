@@ -133,14 +133,14 @@ emptyResponseToEmptyRequest  (EmptyResponse o) =
   }
 
 
-forumRequestToForumResponse :: Int -> Int -> Int -> String -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumRequest -> ForumResponse
-forumRequestToForumResponse id userId orgId name displayNAme active createdAt modifiedBy modifiedAt activityAt (ForumRequest o) =
+forumRequestToForumResponse :: Int -> Int -> Int -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumRequest -> ForumResponse
+forumRequestToForumResponse id userId orgId name active createdAt modifiedBy modifiedAt activityAt (ForumRequest o) =
   ForumResponse {
     id: id,
     userId: userId,
     orgId: orgId,
     name: name,
-    displayNAme: displayNAme,
+    displayName: o.displayName,
     description: o.description,
     icon: o.icon,
     tags: o.tags,
@@ -154,10 +154,10 @@ forumRequestToForumResponse id userId orgId name displayNAme active createdAt mo
   }
 
 
-forumResponseToForumRequest :: String -> ForumResponse -> ForumRequest
-forumResponseToForumRequest displayName (ForumResponse o) =
+forumResponseToForumRequest :: ForumResponse -> ForumRequest
+forumResponseToForumRequest  (ForumResponse o) =
   ForumRequest {
-    displayName: displayName,
+    displayName: o.displayName,
     description: o.description,
     icon: o.icon,
     tags: o.tags,
