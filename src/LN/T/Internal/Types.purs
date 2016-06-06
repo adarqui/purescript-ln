@@ -2997,24 +2997,27 @@ instance leuronTrainingSummaryShow :: Show LeuronTrainingSummary where
 
 
 newtype LeuronTrainingRequest = LeuronTrainingRequest {
-  summary :: LeuronTrainingSummary
+  summary :: LeuronTrainingSummary,
+  guard :: Int
 }
 
 
 type LeuronTrainingRequestR = {
-  summary :: LeuronTrainingSummary
+  summary :: LeuronTrainingSummary,
+  guard :: Int
 }
 
 
 _LeuronTrainingRequest :: LensP LeuronTrainingRequest {
-  summary :: LeuronTrainingSummary
+  summary :: LeuronTrainingSummary,
+  guard :: Int
 }
 _LeuronTrainingRequest f (LeuronTrainingRequest o) = LeuronTrainingRequest <$> f o
 
 
-mkLeuronTrainingRequest :: LeuronTrainingSummary -> LeuronTrainingRequest
-mkLeuronTrainingRequest summary =
-  LeuronTrainingRequest{summary}
+mkLeuronTrainingRequest :: LeuronTrainingSummary -> Int -> LeuronTrainingRequest
+mkLeuronTrainingRequest summary guard =
+  LeuronTrainingRequest{summary, guard}
 
 
 unwrapLeuronTrainingRequest (LeuronTrainingRequest r) = r
@@ -3023,6 +3026,7 @@ instance leuronTrainingRequestEncodeJson :: EncodeJson LeuronTrainingRequest whe
   encodeJson (LeuronTrainingRequest o) =
        "tag" := "LeuronTrainingRequest"
     ~> "summary" := o.summary
+    ~> "guard" := o.guard
     ~> jsonEmptyObject
 
 
@@ -3030,8 +3034,10 @@ instance leuronTrainingRequestDecodeJson :: DecodeJson LeuronTrainingRequest whe
   decodeJson o = do
     obj <- decodeJson o
     summary <- obj .? "summary"
+    guard <- obj .? "guard"
     pure $ LeuronTrainingRequest {
-      summary
+      summary,
+      guard
     }
 
 
@@ -3047,22 +3053,25 @@ instance leuronTrainingRequestRespondable :: Respondable LeuronTrainingRequest w
   fromResponse json =
       mkLeuronTrainingRequest
       <$> readProp "summary" json
+      <*> readProp "guard" json
 
 
 instance leuronTrainingRequestIsForeign :: IsForeign LeuronTrainingRequest where
   read json =
       mkLeuronTrainingRequest
       <$> readProp "summary" json
+      <*> readProp "guard" json
 
 
 instance leuronTrainingRequestShow :: Show LeuronTrainingRequest where
-    show (LeuronTrainingRequest o) = show "summary: " ++ show o.summary
+    show (LeuronTrainingRequest o) = show "summary: " ++ show o.summary ++ ", " ++ show "guard: " ++ show o.guard
 
 newtype LeuronTrainingResponse = LeuronTrainingResponse {
   id :: Int,
   userId :: Int,
   leuronId :: Int,
   summary :: LeuronTrainingSummary,
+  guard :: Int,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
@@ -3073,6 +3082,7 @@ type LeuronTrainingResponseR = {
   userId :: Int,
   leuronId :: Int,
   summary :: LeuronTrainingSummary,
+  guard :: Int,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
@@ -3083,15 +3093,16 @@ _LeuronTrainingResponse :: LensP LeuronTrainingResponse {
   userId :: Int,
   leuronId :: Int,
   summary :: LeuronTrainingSummary,
+  guard :: Int,
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
 _LeuronTrainingResponse f (LeuronTrainingResponse o) = LeuronTrainingResponse <$> f o
 
 
-mkLeuronTrainingResponse :: Int -> Int -> Int -> LeuronTrainingSummary -> (Maybe Date) -> (Maybe Date) -> LeuronTrainingResponse
-mkLeuronTrainingResponse id userId leuronId summary createdAt modifiedAt =
-  LeuronTrainingResponse{id, userId, leuronId, summary, createdAt, modifiedAt}
+mkLeuronTrainingResponse :: Int -> Int -> Int -> LeuronTrainingSummary -> Int -> (Maybe Date) -> (Maybe Date) -> LeuronTrainingResponse
+mkLeuronTrainingResponse id userId leuronId summary guard createdAt modifiedAt =
+  LeuronTrainingResponse{id, userId, leuronId, summary, guard, createdAt, modifiedAt}
 
 
 unwrapLeuronTrainingResponse (LeuronTrainingResponse r) = r
@@ -3103,6 +3114,7 @@ instance leuronTrainingResponseEncodeJson :: EncodeJson LeuronTrainingResponse w
     ~> "user_id" := o.userId
     ~> "leuron_id" := o.leuronId
     ~> "summary" := o.summary
+    ~> "guard" := o.guard
     ~> "created_at" := o.createdAt
     ~> "modified_at" := o.modifiedAt
     ~> jsonEmptyObject
@@ -3115,6 +3127,7 @@ instance leuronTrainingResponseDecodeJson :: DecodeJson LeuronTrainingResponse w
     userId <- obj .? "user_id"
     leuronId <- obj .? "leuron_id"
     summary <- obj .? "summary"
+    guard <- obj .? "guard"
     createdAt <- obj .? "created_at"
     modifiedAt <- obj .? "modified_at"
     pure $ LeuronTrainingResponse {
@@ -3122,6 +3135,7 @@ instance leuronTrainingResponseDecodeJson :: DecodeJson LeuronTrainingResponse w
       userId,
       leuronId,
       summary,
+      guard,
       createdAt,
       modifiedAt
     }
@@ -3142,6 +3156,7 @@ instance leuronTrainingResponseRespondable :: Respondable LeuronTrainingResponse
       <*> readProp "user_id" json
       <*> readProp "leuron_id" json
       <*> readProp "summary" json
+      <*> readProp "guard" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
@@ -3153,12 +3168,13 @@ instance leuronTrainingResponseIsForeign :: IsForeign LeuronTrainingResponse whe
       <*> readProp "user_id" json
       <*> readProp "leuron_id" json
       <*> readProp "summary" json
+      <*> readProp "guard" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
       <*> (runNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance leuronTrainingResponseShow :: Show LeuronTrainingResponse where
-    show (LeuronTrainingResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "summary: " ++ show o.summary ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (LeuronTrainingResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "summary: " ++ show o.summary ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype LeuronTrainingResponses = LeuronTrainingResponses {
   leuronTrainingResponses :: (Array LeuronTrainingResponse)

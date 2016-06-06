@@ -218,6 +218,7 @@ leuronTrainingRequestToLeuronTrainingResponse id userId leuronId createdAt modif
     userId: userId,
     leuronId: leuronId,
     summary: o.summary,
+    guard: o.guard,
     createdAt: createdAt,
     modifiedAt: modifiedAt
   }
@@ -226,7 +227,8 @@ leuronTrainingRequestToLeuronTrainingResponse id userId leuronId createdAt modif
 leuronTrainingResponseToLeuronTrainingRequest :: LeuronTrainingResponse -> LeuronTrainingRequest
 leuronTrainingResponseToLeuronTrainingRequest  (LeuronTrainingResponse o) =
   LeuronTrainingRequest {
-    summary: o.summary
+    summary: o.summary,
+    guard: o.guard
   }
 
 
