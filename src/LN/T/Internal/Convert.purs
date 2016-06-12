@@ -56,6 +56,9 @@ boardRequestToBoardResponse id userId forumId parentId name active createdAt mod
     name: name,
     displayName: o.displayName,
     description: o.description,
+    isAnonymous: o.isAnonymous,
+    canCreateSubBoards: o.canCreateSubBoards,
+    canCreateThreads: o.canCreateThreads,
     icon: o.icon,
     tags: o.tags,
     active: active,
@@ -72,6 +75,9 @@ boardResponseToBoardRequest  (BoardResponse o) =
   BoardRequest {
     displayName: o.displayName,
     description: o.description,
+    isAnonymous: o.isAnonymous,
+    canCreateSubBoards: o.canCreateSubBoards,
+    canCreateThreads: o.canCreateThreads,
     icon: o.icon,
     tags: o.tags,
     guard: o.guard

@@ -28,17 +28,17 @@ getOrganizationPack params organization_name = handleError <$> getAt params ["or
 getOrganizationPack' :: String -> ApiEff (Either ApiError OrganizationPackResponse)
 getOrganizationPack' organization_name = handleError <$> getAt ([] :: Array Boolean) ["organization_pack", organization_name]
 
-getForum_ByOrganizationName :: forall qp. QueryParam qp => Array qp -> String -> String -> ApiEff (Either ApiError ForumResponse)
-getForum_ByOrganizationName params forum_name _ByOrganizationName = handleError <$> getAt (map qp params ++ map qp [ByOrganizationName _ByOrganizationName]) ["forum", forum_name]
+getForum_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError ForumResponse)
+getForum_ByOrganizationId params forum_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["forum", forum_name]
 
-getForum_ByOrganizationName' :: String -> String -> ApiEff (Either ApiError ForumResponse)
-getForum_ByOrganizationName' forum_name _ByOrganizationName = handleError <$> getAt [ByOrganizationName _ByOrganizationName] ["forum", forum_name]
+getForum_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError ForumResponse)
+getForum_ByOrganizationId' forum_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["forum", forum_name]
 
-getForumPack_ByOrganizationName :: forall qp. QueryParam qp => Array qp -> String -> String -> ApiEff (Either ApiError ForumPackResponse)
-getForumPack_ByOrganizationName params forum_name _ByOrganizationName = handleError <$> getAt (map qp params ++ map qp [ByOrganizationName _ByOrganizationName]) ["forum_pack", forum_name]
+getForumPack_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError ForumPackResponse)
+getForumPack_ByOrganizationId params forum_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["forum_pack", forum_name]
 
-getForumPack_ByOrganizationName' :: String -> String -> ApiEff (Either ApiError ForumPackResponse)
-getForumPack_ByOrganizationName' forum_name _ByOrganizationName = handleError <$> getAt [ByOrganizationName _ByOrganizationName] ["forum_pack", forum_name]
+getForumPack_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError ForumPackResponse)
+getForumPack_ByOrganizationId' forum_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["forum_pack", forum_name]
 
 getBoard_ByForumId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError BoardResponse)
 getBoard_ByForumId params board_name _ByForumId = handleError <$> getAt (map qp params ++ map qp [ByForumId _ByForumId]) ["board", board_name]

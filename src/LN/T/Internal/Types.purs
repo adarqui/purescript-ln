@@ -270,6 +270,9 @@ instance apiResponsesShow :: Show ApiResponses where
 newtype BoardRequest = BoardRequest {
   displayName :: String,
   description :: (Maybe String),
+  isAnonymous :: Boolean,
+  canCreateSubBoards :: Boolean,
+  canCreateThreads :: Boolean,
   icon :: (Maybe String),
   tags :: (Array String),
   guard :: Int
@@ -279,6 +282,9 @@ newtype BoardRequest = BoardRequest {
 type BoardRequestR = {
   displayName :: String,
   description :: (Maybe String),
+  isAnonymous :: Boolean,
+  canCreateSubBoards :: Boolean,
+  canCreateThreads :: Boolean,
   icon :: (Maybe String),
   tags :: (Array String),
   guard :: Int
@@ -288,6 +294,9 @@ type BoardRequestR = {
 _BoardRequest :: LensP BoardRequest {
   displayName :: String,
   description :: (Maybe String),
+  isAnonymous :: Boolean,
+  canCreateSubBoards :: Boolean,
+  canCreateThreads :: Boolean,
   icon :: (Maybe String),
   tags :: (Array String),
   guard :: Int
@@ -295,9 +304,9 @@ _BoardRequest :: LensP BoardRequest {
 _BoardRequest f (BoardRequest o) = BoardRequest <$> f o
 
 
-mkBoardRequest :: String -> (Maybe String) -> (Maybe String) -> (Array String) -> Int -> BoardRequest
-mkBoardRequest displayName description icon tags guard =
-  BoardRequest{displayName, description, icon, tags, guard}
+mkBoardRequest :: String -> (Maybe String) -> Boolean -> Boolean -> Boolean -> (Maybe String) -> (Array String) -> Int -> BoardRequest
+mkBoardRequest displayName description isAnonymous canCreateSubBoards canCreateThreads icon tags guard =
+  BoardRequest{displayName, description, isAnonymous, canCreateSubBoards, canCreateThreads, icon, tags, guard}
 
 
 unwrapBoardRequest (BoardRequest r) = r
@@ -307,6 +316,9 @@ instance boardRequestEncodeJson :: EncodeJson BoardRequest where
        "tag" := "BoardRequest"
     ~> "display_name" := o.displayName
     ~> "description" := o.description
+    ~> "is_anonymous" := o.isAnonymous
+    ~> "can_create_sub_boards" := o.canCreateSubBoards
+    ~> "can_create_threads" := o.canCreateThreads
     ~> "icon" := o.icon
     ~> "tags" := o.tags
     ~> "guard" := o.guard
@@ -318,12 +330,18 @@ instance boardRequestDecodeJson :: DecodeJson BoardRequest where
     obj <- decodeJson o
     displayName <- obj .? "display_name"
     description <- obj .? "description"
+    isAnonymous <- obj .? "is_anonymous"
+    canCreateSubBoards <- obj .? "can_create_sub_boards"
+    canCreateThreads <- obj .? "can_create_threads"
     icon <- obj .? "icon"
     tags <- obj .? "tags"
     guard <- obj .? "guard"
     pure $ BoardRequest {
       displayName,
       description,
+      isAnonymous,
+      canCreateSubBoards,
+      canCreateThreads,
       icon,
       tags,
       guard
@@ -343,6 +361,9 @@ instance boardRequestRespondable :: Respondable BoardRequest where
       mkBoardRequest
       <$> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "is_anonymous" json
+      <*> readProp "can_create_sub_boards" json
+      <*> readProp "can_create_threads" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "guard" json
@@ -353,13 +374,16 @@ instance boardRequestIsForeign :: IsForeign BoardRequest where
       mkBoardRequest
       <$> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "is_anonymous" json
+      <*> readProp "can_create_sub_boards" json
+      <*> readProp "can_create_threads" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "guard" json
 
 
 instance boardRequestShow :: Show BoardRequest where
-    show (BoardRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "guard: " ++ show o.guard
+    show (BoardRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "isAnonymous: " ++ show o.isAnonymous ++ ", " ++ show "canCreateSubBoards: " ++ show o.canCreateSubBoards ++ ", " ++ show "canCreateThreads: " ++ show o.canCreateThreads ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "guard: " ++ show o.guard
 
 newtype BoardResponse = BoardResponse {
   id :: Int,
@@ -369,6 +393,9 @@ newtype BoardResponse = BoardResponse {
   name :: String,
   displayName :: String,
   description :: (Maybe String),
+  isAnonymous :: Boolean,
+  canCreateSubBoards :: Boolean,
+  canCreateThreads :: Boolean,
   icon :: (Maybe String),
   tags :: (Array String),
   active :: Boolean,
@@ -388,6 +415,9 @@ type BoardResponseR = {
   name :: String,
   displayName :: String,
   description :: (Maybe String),
+  isAnonymous :: Boolean,
+  canCreateSubBoards :: Boolean,
+  canCreateThreads :: Boolean,
   icon :: (Maybe String),
   tags :: (Array String),
   active :: Boolean,
@@ -407,6 +437,9 @@ _BoardResponse :: LensP BoardResponse {
   name :: String,
   displayName :: String,
   description :: (Maybe String),
+  isAnonymous :: Boolean,
+  canCreateSubBoards :: Boolean,
+  canCreateThreads :: Boolean,
   icon :: (Maybe String),
   tags :: (Array String),
   active :: Boolean,
@@ -419,9 +452,9 @@ _BoardResponse :: LensP BoardResponse {
 _BoardResponse f (BoardResponse o) = BoardResponse <$> f o
 
 
-mkBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> String -> (Maybe String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardResponse
-mkBoardResponse id userId forumId parentId name displayName description icon tags active guard createdAt modifiedBy modifiedAt activityAt =
-  BoardResponse{id, userId, forumId, parentId, name, displayName, description, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> String -> (Maybe String) -> Boolean -> Boolean -> Boolean -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardResponse
+mkBoardResponse id userId forumId parentId name displayName description isAnonymous canCreateSubBoards canCreateThreads icon tags active guard createdAt modifiedBy modifiedAt activityAt =
+  BoardResponse{id, userId, forumId, parentId, name, displayName, description, isAnonymous, canCreateSubBoards, canCreateThreads, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapBoardResponse (BoardResponse r) = r
@@ -436,6 +469,9 @@ instance boardResponseEncodeJson :: EncodeJson BoardResponse where
     ~> "name" := o.name
     ~> "display_name" := o.displayName
     ~> "description" := o.description
+    ~> "is_anonymous" := o.isAnonymous
+    ~> "can_create_sub_boards" := o.canCreateSubBoards
+    ~> "can_create_threads" := o.canCreateThreads
     ~> "icon" := o.icon
     ~> "tags" := o.tags
     ~> "active" := o.active
@@ -457,6 +493,9 @@ instance boardResponseDecodeJson :: DecodeJson BoardResponse where
     name <- obj .? "name"
     displayName <- obj .? "display_name"
     description <- obj .? "description"
+    isAnonymous <- obj .? "is_anonymous"
+    canCreateSubBoards <- obj .? "can_create_sub_boards"
+    canCreateThreads <- obj .? "can_create_threads"
     icon <- obj .? "icon"
     tags <- obj .? "tags"
     active <- obj .? "active"
@@ -473,6 +512,9 @@ instance boardResponseDecodeJson :: DecodeJson BoardResponse where
       name,
       displayName,
       description,
+      isAnonymous,
+      canCreateSubBoards,
+      canCreateThreads,
       icon,
       tags,
       active,
@@ -502,6 +544,9 @@ instance boardResponseRespondable :: Respondable BoardResponse where
       <*> readProp "name" json
       <*> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "is_anonymous" json
+      <*> readProp "can_create_sub_boards" json
+      <*> readProp "can_create_threads" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "active" json
@@ -522,6 +567,9 @@ instance boardResponseIsForeign :: IsForeign BoardResponse where
       <*> readProp "name" json
       <*> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "is_anonymous" json
+      <*> readProp "can_create_sub_boards" json
+      <*> readProp "can_create_threads" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "active" json
@@ -533,7 +581,7 @@ instance boardResponseIsForeign :: IsForeign BoardResponse where
 
 
 instance boardResponseShow :: Show BoardResponse where
-    show (BoardResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (BoardResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "isAnonymous: " ++ show o.isAnonymous ++ ", " ++ show "canCreateSubBoards: " ++ show o.canCreateSubBoards ++ ", " ++ show "canCreateThreads: " ++ show o.canCreateThreads ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype BoardResponses = BoardResponses {
   boardResponses :: (Array BoardResponse)
@@ -16041,6 +16089,14 @@ bucketResponses_ :: forall b a r. Lens { bucketResponses :: a | r } { bucketResp
 bucketResponses_ f o = o { bucketResponses = _ } <$> f o.bucketResponses
 
 
+canCreateSubBoards_ :: forall b a r. Lens { canCreateSubBoards :: a | r } { canCreateSubBoards :: b | r } a b
+canCreateSubBoards_ f o = o { canCreateSubBoards = _ } <$> f o.canCreateSubBoards
+
+
+canCreateThreads_ :: forall b a r. Lens { canCreateThreads :: a | r } { canCreateThreads :: b | r } a b
+canCreateThreads_ f o = o { canCreateThreads = _ } <$> f o.canCreateThreads
+
+
 categories_ :: forall b a r. Lens { categories :: a | r } { categories :: b | r } a b
 categories_ f o = o { categories = _ } <$> f o.categories
 
@@ -16195,6 +16251,10 @@ ident_ f o = o { ident = _ } <$> f o.ident
 
 imageUrl_ :: forall b a r. Lens { imageUrl :: a | r } { imageUrl :: b | r } a b
 imageUrl_ f o = o { imageUrl = _ } <$> f o.imageUrl
+
+
+isAnonymous_ :: forall b a r. Lens { isAnonymous :: a | r } { isAnonymous :: b | r } a b
+isAnonymous_ f o = o { isAnonymous = _ } <$> f o.isAnonymous
 
 
 isNew_ :: forall b a r. Lens { isNew :: a | r } { isNew :: b | r } a b
