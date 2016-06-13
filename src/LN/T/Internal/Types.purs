@@ -7486,10 +7486,18 @@ data Param
   | ByTeamId Int
   | ByTeamsIds (Array Int)
   | ByTeamName String
+  | ByTeamMemberId Int
+  | ByTeamMembersIds (Array Int)
   | ByUserId Int
   | ByUsersIds (Array Int)
   | ByUserNick String
   | ByUsersNicks (Array String)
+  | ByGlobalGroupId Int
+  | ByGlobalGroupsIds (Array Int)
+  | ByGroupId Int
+  | ByGroupsIds (Array Int)
+  | ByGroupMemberId Int
+  | ByGroupMembersIds (Array Int)
   | ByForumId Int
   | ByForumsIds (Array Int)
   | ByForumName String
@@ -7569,6 +7577,14 @@ instance paramEncodeJson :: EncodeJson Param where
        "tag" := "ByTeamName"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
+  encodeJson (ByTeamMemberId x0) =
+       "tag" := "ByTeamMemberId"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByTeamMembersIds x0) =
+       "tag" := "ByTeamMembersIds"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
   encodeJson (ByUserId x0) =
        "tag" := "ByUserId"
     ~> "contents" := encodeJson x0
@@ -7583,6 +7599,30 @@ instance paramEncodeJson :: EncodeJson Param where
     ~> jsonEmptyObject
   encodeJson (ByUsersNicks x0) =
        "tag" := "ByUsersNicks"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByGlobalGroupId x0) =
+       "tag" := "ByGlobalGroupId"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByGlobalGroupsIds x0) =
+       "tag" := "ByGlobalGroupsIds"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByGroupId x0) =
+       "tag" := "ByGroupId"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByGroupsIds x0) =
+       "tag" := "ByGroupsIds"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByGroupMemberId x0) =
+       "tag" := "ByGroupMemberId"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
+  encodeJson (ByGroupMembersIds x0) =
+       "tag" := "ByGroupMembersIds"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
   encodeJson (ByForumId x0) =
@@ -7772,6 +7812,14 @@ instance paramDecodeJson :: DecodeJson Param where
           x0 <- obj .? "contents"
           ByTeamName <$> decodeJson x0
 
+        "ByTeamMemberId" -> do
+          x0 <- obj .? "contents"
+          ByTeamMemberId <$> decodeJson x0
+
+        "ByTeamMembersIds" -> do
+          x0 <- obj .? "contents"
+          ByTeamMembersIds <$> decodeJson x0
+
         "ByUserId" -> do
           x0 <- obj .? "contents"
           ByUserId <$> decodeJson x0
@@ -7787,6 +7835,30 @@ instance paramDecodeJson :: DecodeJson Param where
         "ByUsersNicks" -> do
           x0 <- obj .? "contents"
           ByUsersNicks <$> decodeJson x0
+
+        "ByGlobalGroupId" -> do
+          x0 <- obj .? "contents"
+          ByGlobalGroupId <$> decodeJson x0
+
+        "ByGlobalGroupsIds" -> do
+          x0 <- obj .? "contents"
+          ByGlobalGroupsIds <$> decodeJson x0
+
+        "ByGroupId" -> do
+          x0 <- obj .? "contents"
+          ByGroupId <$> decodeJson x0
+
+        "ByGroupsIds" -> do
+          x0 <- obj .? "contents"
+          ByGroupsIds <$> decodeJson x0
+
+        "ByGroupMemberId" -> do
+          x0 <- obj .? "contents"
+          ByGroupMemberId <$> decodeJson x0
+
+        "ByGroupMembersIds" -> do
+          x0 <- obj .? "contents"
+          ByGroupMembersIds <$> decodeJson x0
 
         "ByForumId" -> do
           x0 <- obj .? "contents"
@@ -7983,6 +8055,14 @@ instance paramRespondable :: Respondable Param where
           x0 <- readProp "contents" json
           ByTeamName <$> read x0
 
+        "ByTeamMemberId" -> do
+          x0 <- readProp "contents" json
+          ByTeamMemberId <$> read x0
+
+        "ByTeamMembersIds" -> do
+          x0 <- readProp "contents" json
+          ByTeamMembersIds <$> read x0
+
         "ByUserId" -> do
           x0 <- readProp "contents" json
           ByUserId <$> read x0
@@ -7998,6 +8078,30 @@ instance paramRespondable :: Respondable Param where
         "ByUsersNicks" -> do
           x0 <- readProp "contents" json
           ByUsersNicks <$> read x0
+
+        "ByGlobalGroupId" -> do
+          x0 <- readProp "contents" json
+          ByGlobalGroupId <$> read x0
+
+        "ByGlobalGroupsIds" -> do
+          x0 <- readProp "contents" json
+          ByGlobalGroupsIds <$> read x0
+
+        "ByGroupId" -> do
+          x0 <- readProp "contents" json
+          ByGroupId <$> read x0
+
+        "ByGroupsIds" -> do
+          x0 <- readProp "contents" json
+          ByGroupsIds <$> read x0
+
+        "ByGroupMemberId" -> do
+          x0 <- readProp "contents" json
+          ByGroupMemberId <$> read x0
+
+        "ByGroupMembersIds" -> do
+          x0 <- readProp "contents" json
+          ByGroupMembersIds <$> read x0
 
         "ByForumId" -> do
           x0 <- readProp "contents" json
@@ -8185,6 +8289,14 @@ instance paramIsForeign :: IsForeign Param where
           x0 <- readProp "contents" json
           ByTeamName <$> read x0
 
+        "ByTeamMemberId" -> do
+          x0 <- readProp "contents" json
+          ByTeamMemberId <$> read x0
+
+        "ByTeamMembersIds" -> do
+          x0 <- readProp "contents" json
+          ByTeamMembersIds <$> read x0
+
         "ByUserId" -> do
           x0 <- readProp "contents" json
           ByUserId <$> read x0
@@ -8200,6 +8312,30 @@ instance paramIsForeign :: IsForeign Param where
         "ByUsersNicks" -> do
           x0 <- readProp "contents" json
           ByUsersNicks <$> read x0
+
+        "ByGlobalGroupId" -> do
+          x0 <- readProp "contents" json
+          ByGlobalGroupId <$> read x0
+
+        "ByGlobalGroupsIds" -> do
+          x0 <- readProp "contents" json
+          ByGlobalGroupsIds <$> read x0
+
+        "ByGroupId" -> do
+          x0 <- readProp "contents" json
+          ByGroupId <$> read x0
+
+        "ByGroupsIds" -> do
+          x0 <- readProp "contents" json
+          ByGroupsIds <$> read x0
+
+        "ByGroupMemberId" -> do
+          x0 <- readProp "contents" json
+          ByGroupMemberId <$> read x0
+
+        "ByGroupMembersIds" -> do
+          x0 <- readProp "contents" json
+          ByGroupMembersIds <$> read x0
 
         "ByForumId" -> do
           x0 <- readProp "contents" json
@@ -8354,10 +8490,18 @@ data ParamTag
   | ParamTag_ByTeamId 
   | ParamTag_ByTeamsIds 
   | ParamTag_ByTeamName 
+  | ParamTag_ByTeamMemberId 
+  | ParamTag_ByTeamMembersIds 
   | ParamTag_ByUserId 
   | ParamTag_ByUsersIds 
   | ParamTag_ByUserNick 
   | ParamTag_ByUsersNicks 
+  | ParamTag_ByGlobalGroupId 
+  | ParamTag_ByGlobalGroupsIds 
+  | ParamTag_ByGroupId 
+  | ParamTag_ByGroupsIds 
+  | ParamTag_ByGroupMemberId 
+  | ParamTag_ByGroupMembersIds 
   | ParamTag_ByForumId 
   | ParamTag_ByForumsIds 
   | ParamTag_ByForumName 
@@ -8437,6 +8581,14 @@ instance paramTagEncodeJson :: EncodeJson ParamTag where
        "tag" := "ParamTag_ByTeamName"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
+  encodeJson (ParamTag_ByTeamMemberId ) =
+       "tag" := "ParamTag_ByTeamMemberId"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByTeamMembersIds ) =
+       "tag" := "ParamTag_ByTeamMembersIds"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
   encodeJson (ParamTag_ByUserId ) =
        "tag" := "ParamTag_ByUserId"
     ~> "contents" := ([] :: Array String)
@@ -8451,6 +8603,30 @@ instance paramTagEncodeJson :: EncodeJson ParamTag where
     ~> jsonEmptyObject
   encodeJson (ParamTag_ByUsersNicks ) =
        "tag" := "ParamTag_ByUsersNicks"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByGlobalGroupId ) =
+       "tag" := "ParamTag_ByGlobalGroupId"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByGlobalGroupsIds ) =
+       "tag" := "ParamTag_ByGlobalGroupsIds"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByGroupId ) =
+       "tag" := "ParamTag_ByGroupId"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByGroupsIds ) =
+       "tag" := "ParamTag_ByGroupsIds"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByGroupMemberId ) =
+       "tag" := "ParamTag_ByGroupMemberId"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (ParamTag_ByGroupMembersIds ) =
+       "tag" := "ParamTag_ByGroupMembersIds"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (ParamTag_ByForumId ) =
@@ -8630,6 +8806,12 @@ instance paramTagDecodeJson :: DecodeJson ParamTag where
         "ParamTag_ByTeamName" -> do
           return ParamTag_ByTeamName
 
+        "ParamTag_ByTeamMemberId" -> do
+          return ParamTag_ByTeamMemberId
+
+        "ParamTag_ByTeamMembersIds" -> do
+          return ParamTag_ByTeamMembersIds
+
         "ParamTag_ByUserId" -> do
           return ParamTag_ByUserId
 
@@ -8641,6 +8823,24 @@ instance paramTagDecodeJson :: DecodeJson ParamTag where
 
         "ParamTag_ByUsersNicks" -> do
           return ParamTag_ByUsersNicks
+
+        "ParamTag_ByGlobalGroupId" -> do
+          return ParamTag_ByGlobalGroupId
+
+        "ParamTag_ByGlobalGroupsIds" -> do
+          return ParamTag_ByGlobalGroupsIds
+
+        "ParamTag_ByGroupId" -> do
+          return ParamTag_ByGroupId
+
+        "ParamTag_ByGroupsIds" -> do
+          return ParamTag_ByGroupsIds
+
+        "ParamTag_ByGroupMemberId" -> do
+          return ParamTag_ByGroupMemberId
+
+        "ParamTag_ByGroupMembersIds" -> do
+          return ParamTag_ByGroupMembersIds
 
         "ParamTag_ByForumId" -> do
           return ParamTag_ByForumId
@@ -8792,6 +8992,12 @@ instance paramTagRespondable :: Respondable ParamTag where
         "ParamTag_ByTeamName" -> do
           return ParamTag_ByTeamName
 
+        "ParamTag_ByTeamMemberId" -> do
+          return ParamTag_ByTeamMemberId
+
+        "ParamTag_ByTeamMembersIds" -> do
+          return ParamTag_ByTeamMembersIds
+
         "ParamTag_ByUserId" -> do
           return ParamTag_ByUserId
 
@@ -8803,6 +9009,24 @@ instance paramTagRespondable :: Respondable ParamTag where
 
         "ParamTag_ByUsersNicks" -> do
           return ParamTag_ByUsersNicks
+
+        "ParamTag_ByGlobalGroupId" -> do
+          return ParamTag_ByGlobalGroupId
+
+        "ParamTag_ByGlobalGroupsIds" -> do
+          return ParamTag_ByGlobalGroupsIds
+
+        "ParamTag_ByGroupId" -> do
+          return ParamTag_ByGroupId
+
+        "ParamTag_ByGroupsIds" -> do
+          return ParamTag_ByGroupsIds
+
+        "ParamTag_ByGroupMemberId" -> do
+          return ParamTag_ByGroupMemberId
+
+        "ParamTag_ByGroupMembersIds" -> do
+          return ParamTag_ByGroupMembersIds
 
         "ParamTag_ByForumId" -> do
           return ParamTag_ByForumId
@@ -8945,6 +9169,12 @@ instance paramTagIsForeign :: IsForeign ParamTag where
         "ParamTag_ByTeamName" -> do
           return ParamTag_ByTeamName
 
+        "ParamTag_ByTeamMemberId" -> do
+          return ParamTag_ByTeamMemberId
+
+        "ParamTag_ByTeamMembersIds" -> do
+          return ParamTag_ByTeamMembersIds
+
         "ParamTag_ByUserId" -> do
           return ParamTag_ByUserId
 
@@ -8956,6 +9186,24 @@ instance paramTagIsForeign :: IsForeign ParamTag where
 
         "ParamTag_ByUsersNicks" -> do
           return ParamTag_ByUsersNicks
+
+        "ParamTag_ByGlobalGroupId" -> do
+          return ParamTag_ByGlobalGroupId
+
+        "ParamTag_ByGlobalGroupsIds" -> do
+          return ParamTag_ByGlobalGroupsIds
+
+        "ParamTag_ByGroupId" -> do
+          return ParamTag_ByGroupId
+
+        "ParamTag_ByGroupsIds" -> do
+          return ParamTag_ByGroupsIds
+
+        "ParamTag_ByGroupMemberId" -> do
+          return ParamTag_ByGroupMemberId
+
+        "ParamTag_ByGroupMembersIds" -> do
+          return ParamTag_ByGroupMembersIds
 
         "ParamTag_ByForumId" -> do
           return ParamTag_ByForumId
@@ -19103,10 +19351,18 @@ instance paramQueryParam :: QueryParam Param where
   qp (ByTeamId team_id)                  = Tuple "team_id" (show team_id)
   qp (ByTeamsIds teams_ids)              = Tuple "teams_ids" (show teams_ids)
   qp (ByTeamName team_name)              = Tuple "team_name" (team_name)
+  qp (ByTeamMemberId team_member_id)     = Tuple "team_id" (show team_member_id)
+  qp (ByTeamMembersIds team_members_ids) = Tuple "teams_ids" (show teams_members_ids)
   qp (ByUserId user_id)                  = Tuple "user_id" (show user_id)
   qp (ByUsersIds users_ids)              = Tuple "users_ids" (show users_ids)
   qp (ByUserNick nick)                   = Tuple "user_nick" (show nick)
   qp (ByUsersNicks nicks)                = Tuple "users_nicks" (show nicks)
+  qp (ByGlobalGroupId group_id)          = Tuple "group_id" (show group_id)
+  qp (ByGlobalGroupsIds groups_ids)      = Tuple "groups_ids" (show groups_ids)
+  qp (ByGroupId group_id)                = Tuple "group_id" (show group_id)
+  qp (ByGroupsIds groups_ids)            = Tuple "groups_ids" (show groups_ids)
+  qp (ByGroupMemberId group_member_id)   = Tuple "group_id" (show group_member_id)
+  qp (ByGroupMembersIds group_members_ids) = Tuple "groups_ids" (show groups_members_ids)
   qp (ByForumId forum_id)                = Tuple "forum_id" (show forum_id)
   qp (ByForumsIds forums_ids)            = Tuple "forums_ids" (show forums_ids)
   qp (ByForumName forum_name)            = Tuple "forum_name" (forum_name)
@@ -19156,10 +19412,18 @@ instance paramTagShow :: Show ParamTag where
   show ParamTag_ByTeamId               = "team_id"
   show ParamTag_ByTeamsIds             = "teams_ids"
   show ParamTag_ByTeamName             = "team_name"
+  show ParamTag_ByTeamMemberId         = "team_member_id"
+  show ParamTag_ByTeamMembersIds       = "teams_member_ids"
   show ParamTag_ByUserId               = "user_id"
   show ParamTag_ByUsersIds             = "users_ids"
   show ParamTag_ByUserNick             = "user_nick"
   show ParamTag_ByUsersNicks           = "users_nicks"
+  show ParamTag_ByGlobalGroupId        = "global_group_id"
+  show ParamTag_ByGlobalGroupsIds      = "global_groups_ids"
+  show ParamTag_ByGroupId              = "group_id"
+  show ParamTag_ByGroupsIds            = "groups_ids"
+  show ParamTag_ByGroupMemberId        = "group_member_id"
+  show ParamTag_ByGroupMembersIds      = "groups_member_ids"
   show ParamTag_ByForumId              = "forum_id"
   show ParamTag_ByForumsIds            = "forums_ids"
   show ParamTag_ByForumName            = "forum_name"
