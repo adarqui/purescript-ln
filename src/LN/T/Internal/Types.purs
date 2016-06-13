@@ -1812,6 +1812,8 @@ instance entShow :: Show Ent where
 newtype ForumRequest = ForumRequest {
   displayName :: String,
   description :: (Maybe String),
+  threadsPerBoard :: Int,
+  threadPostsPerThread :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -1822,6 +1824,8 @@ newtype ForumRequest = ForumRequest {
 type ForumRequestR = {
   displayName :: String,
   description :: (Maybe String),
+  threadsPerBoard :: Int,
+  threadPostsPerThread :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -1832,6 +1836,8 @@ type ForumRequestR = {
 _ForumRequest :: LensP ForumRequest {
   displayName :: String,
   description :: (Maybe String),
+  threadsPerBoard :: Int,
+  threadPostsPerThread :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -1840,9 +1846,9 @@ _ForumRequest :: LensP ForumRequest {
 _ForumRequest f (ForumRequest o) = ForumRequest <$> f o
 
 
-mkForumRequest :: String -> (Maybe String) -> (Maybe String) -> (Array String) -> Visibility -> Int -> ForumRequest
-mkForumRequest displayName description icon tags visibility guard =
-  ForumRequest{displayName, description, icon, tags, visibility, guard}
+mkForumRequest :: String -> (Maybe String) -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Int -> ForumRequest
+mkForumRequest displayName description threadsPerBoard threadPostsPerThread icon tags visibility guard =
+  ForumRequest{displayName, description, threadsPerBoard, threadPostsPerThread, icon, tags, visibility, guard}
 
 
 unwrapForumRequest (ForumRequest r) = r
@@ -1852,6 +1858,8 @@ instance forumRequestEncodeJson :: EncodeJson ForumRequest where
        "tag" := "ForumRequest"
     ~> "display_name" := o.displayName
     ~> "description" := o.description
+    ~> "threads_per_board" := o.threadsPerBoard
+    ~> "thread_posts_per_thread" := o.threadPostsPerThread
     ~> "icon" := o.icon
     ~> "tags" := o.tags
     ~> "visibility" := o.visibility
@@ -1864,6 +1872,8 @@ instance forumRequestDecodeJson :: DecodeJson ForumRequest where
     obj <- decodeJson o
     displayName <- obj .? "display_name"
     description <- obj .? "description"
+    threadsPerBoard <- obj .? "threads_per_board"
+    threadPostsPerThread <- obj .? "thread_posts_per_thread"
     icon <- obj .? "icon"
     tags <- obj .? "tags"
     visibility <- obj .? "visibility"
@@ -1871,6 +1881,8 @@ instance forumRequestDecodeJson :: DecodeJson ForumRequest where
     pure $ ForumRequest {
       displayName,
       description,
+      threadsPerBoard,
+      threadPostsPerThread,
       icon,
       tags,
       visibility,
@@ -1891,6 +1903,8 @@ instance forumRequestRespondable :: Respondable ForumRequest where
       mkForumRequest
       <$> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "threads_per_board" json
+      <*> readProp "thread_posts_per_thread" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -1902,6 +1916,8 @@ instance forumRequestIsForeign :: IsForeign ForumRequest where
       mkForumRequest
       <$> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "threads_per_board" json
+      <*> readProp "thread_posts_per_thread" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -1909,7 +1925,7 @@ instance forumRequestIsForeign :: IsForeign ForumRequest where
 
 
 instance forumRequestShow :: Show ForumRequest where
-    show (ForumRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
+    show (ForumRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "threadsPerBoard: " ++ show o.threadsPerBoard ++ ", " ++ show "threadPostsPerThread: " ++ show o.threadPostsPerThread ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
 
 newtype ForumResponse = ForumResponse {
   id :: Int,
@@ -1918,6 +1934,8 @@ newtype ForumResponse = ForumResponse {
   name :: String,
   displayName :: String,
   description :: (Maybe String),
+  threadsPerBoard :: Int,
+  threadPostsPerThread :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -1937,6 +1955,8 @@ type ForumResponseR = {
   name :: String,
   displayName :: String,
   description :: (Maybe String),
+  threadsPerBoard :: Int,
+  threadPostsPerThread :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -1956,6 +1976,8 @@ _ForumResponse :: LensP ForumResponse {
   name :: String,
   displayName :: String,
   description :: (Maybe String),
+  threadsPerBoard :: Int,
+  threadPostsPerThread :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -1969,9 +1991,9 @@ _ForumResponse :: LensP ForumResponse {
 _ForumResponse f (ForumResponse o) = ForumResponse <$> f o
 
 
-mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
-mkForumResponse id userId orgId name displayName description icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
-  ForumResponse{id, userId, orgId, name, displayName, description, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
+mkForumResponse id userId orgId name displayName description threadsPerBoard threadPostsPerThread icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
+  ForumResponse{id, userId, orgId, name, displayName, description, threadsPerBoard, threadPostsPerThread, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapForumResponse (ForumResponse r) = r
@@ -1985,6 +2007,8 @@ instance forumResponseEncodeJson :: EncodeJson ForumResponse where
     ~> "name" := o.name
     ~> "display_name" := o.displayName
     ~> "description" := o.description
+    ~> "threads_per_board" := o.threadsPerBoard
+    ~> "thread_posts_per_thread" := o.threadPostsPerThread
     ~> "icon" := o.icon
     ~> "tags" := o.tags
     ~> "visibility" := o.visibility
@@ -2006,6 +2030,8 @@ instance forumResponseDecodeJson :: DecodeJson ForumResponse where
     name <- obj .? "name"
     displayName <- obj .? "display_name"
     description <- obj .? "description"
+    threadsPerBoard <- obj .? "threads_per_board"
+    threadPostsPerThread <- obj .? "thread_posts_per_thread"
     icon <- obj .? "icon"
     tags <- obj .? "tags"
     visibility <- obj .? "visibility"
@@ -2022,6 +2048,8 @@ instance forumResponseDecodeJson :: DecodeJson ForumResponse where
       name,
       displayName,
       description,
+      threadsPerBoard,
+      threadPostsPerThread,
       icon,
       tags,
       visibility,
@@ -2051,6 +2079,8 @@ instance forumResponseRespondable :: Respondable ForumResponse where
       <*> readProp "name" json
       <*> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "threads_per_board" json
+      <*> readProp "thread_posts_per_thread" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -2071,6 +2101,8 @@ instance forumResponseIsForeign :: IsForeign ForumResponse where
       <*> readProp "name" json
       <*> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "threads_per_board" json
+      <*> readProp "thread_posts_per_thread" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -2083,7 +2115,7 @@ instance forumResponseIsForeign :: IsForeign ForumResponse where
 
 
 instance forumResponseShow :: Show ForumResponse where
-    show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "threadsPerBoard: " ++ show o.threadsPerBoard ++ ", " ++ show "threadPostsPerThread: " ++ show o.threadPostsPerThread ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ForumResponses = ForumResponses {
   forumResponses :: (Array ForumResponse)
@@ -2302,6 +2334,1206 @@ instance forumStatResponsesIsForeign :: IsForeign ForumStatResponses where
 
 instance forumStatResponsesShow :: Show ForumStatResponses where
     show (ForumStatResponses o) = show "forumStatResponses: " ++ show o.forumStatResponses
+
+newtype GlobalGroupRequest = GlobalGroupRequest {
+  displayName :: String,
+  description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  guard :: Int
+}
+
+
+type GlobalGroupRequestR = {
+  displayName :: String,
+  description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  guard :: Int
+}
+
+
+_GlobalGroupRequest :: LensP GlobalGroupRequest {
+  displayName :: String,
+  description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  guard :: Int
+}
+_GlobalGroupRequest f (GlobalGroupRequest o) = GlobalGroupRequest <$> f o
+
+
+mkGlobalGroupRequest :: String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Int -> GlobalGroupRequest
+mkGlobalGroupRequest displayName description membership icon tags visibility guard =
+  GlobalGroupRequest{displayName, description, membership, icon, tags, visibility, guard}
+
+
+unwrapGlobalGroupRequest (GlobalGroupRequest r) = r
+
+instance globalGroupRequestEncodeJson :: EncodeJson GlobalGroupRequest where
+  encodeJson (GlobalGroupRequest o) =
+       "tag" := "GlobalGroupRequest"
+    ~> "display_name" := o.displayName
+    ~> "description" := o.description
+    ~> "membership" := o.membership
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
+    ~> "visibility" := o.visibility
+    ~> "guard" := o.guard
+    ~> jsonEmptyObject
+
+
+instance globalGroupRequestDecodeJson :: DecodeJson GlobalGroupRequest where
+  decodeJson o = do
+    obj <- decodeJson o
+    displayName <- obj .? "display_name"
+    description <- obj .? "description"
+    membership <- obj .? "membership"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
+    visibility <- obj .? "visibility"
+    guard <- obj .? "guard"
+    pure $ GlobalGroupRequest {
+      displayName,
+      description,
+      membership,
+      icon,
+      tags,
+      visibility,
+      guard
+    }
+
+
+instance globalGroupRequestRequestable :: Requestable GlobalGroupRequest where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance globalGroupRequestRespondable :: Respondable GlobalGroupRequest where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGlobalGroupRequest
+      <$> readProp "display_name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
+      <*> readProp "guard" json
+
+
+instance globalGroupRequestIsForeign :: IsForeign GlobalGroupRequest where
+  read json =
+      mkGlobalGroupRequest
+      <$> readProp "display_name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
+      <*> readProp "guard" json
+
+
+instance globalGroupRequestShow :: Show GlobalGroupRequest where
+    show (GlobalGroupRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
+
+newtype GlobalGroupResponse = GlobalGroupResponse {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  name :: String,
+  displayName :: String,
+  description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+
+
+type GlobalGroupResponseR = {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  name :: String,
+  displayName :: String,
+  description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+
+
+_GlobalGroupResponse :: LensP GlobalGroupResponse {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  name :: String,
+  displayName :: String,
+  description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+_GlobalGroupResponse f (GlobalGroupResponse o) = GlobalGroupResponse <$> f o
+
+
+mkGlobalGroupResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> GlobalGroupResponse
+mkGlobalGroupResponse id userId orgId name displayName description membership icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
+  GlobalGroupResponse{id, userId, orgId, name, displayName, description, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+
+
+unwrapGlobalGroupResponse (GlobalGroupResponse r) = r
+
+instance globalGroupResponseEncodeJson :: EncodeJson GlobalGroupResponse where
+  encodeJson (GlobalGroupResponse o) =
+       "tag" := "GlobalGroupResponse"
+    ~> "id" := o.id
+    ~> "user_id" := o.userId
+    ~> "org_id" := o.orgId
+    ~> "name" := o.name
+    ~> "display_name" := o.displayName
+    ~> "description" := o.description
+    ~> "membership" := o.membership
+    ~> "icon" := o.icon
+    ~> "tags" := o.tags
+    ~> "visibility" := o.visibility
+    ~> "active" := o.active
+    ~> "guard" := o.guard
+    ~> "created_at" := o.createdAt
+    ~> "modified_by" := o.modifiedBy
+    ~> "modified_at" := o.modifiedAt
+    ~> "activity_at" := o.activityAt
+    ~> jsonEmptyObject
+
+
+instance globalGroupResponseDecodeJson :: DecodeJson GlobalGroupResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    userId <- obj .? "user_id"
+    orgId <- obj .? "org_id"
+    name <- obj .? "name"
+    displayName <- obj .? "display_name"
+    description <- obj .? "description"
+    membership <- obj .? "membership"
+    icon <- obj .? "icon"
+    tags <- obj .? "tags"
+    visibility <- obj .? "visibility"
+    active <- obj .? "active"
+    guard <- obj .? "guard"
+    createdAt <- obj .? "created_at"
+    modifiedBy <- obj .? "modified_by"
+    modifiedAt <- obj .? "modified_at"
+    activityAt <- obj .? "activity_at"
+    pure $ GlobalGroupResponse {
+      id,
+      userId,
+      orgId,
+      name,
+      displayName,
+      description,
+      membership,
+      icon,
+      tags,
+      visibility,
+      active,
+      guard,
+      createdAt,
+      modifiedBy,
+      modifiedAt,
+      activityAt
+    }
+
+
+instance globalGroupResponseRequestable :: Requestable GlobalGroupResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance globalGroupResponseRespondable :: Respondable GlobalGroupResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGlobalGroupResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "org_id" json
+      <*> readProp "name" json
+      <*> readProp "display_name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
+      <*> readProp "active" json
+      <*> readProp "guard" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+
+
+instance globalGroupResponseIsForeign :: IsForeign GlobalGroupResponse where
+  read json =
+      mkGlobalGroupResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "org_id" json
+      <*> readProp "name" json
+      <*> readProp "display_name" json
+      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "membership" json
+      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> readProp "tags" json
+      <*> readProp "visibility" json
+      <*> readProp "active" json
+      <*> readProp "guard" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+
+
+instance globalGroupResponseShow :: Show GlobalGroupResponse where
+    show (GlobalGroupResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+
+newtype GlobalGroupResponses = GlobalGroupResponses {
+  globalGroupResponses :: (Array GlobalGroupResponse)
+}
+
+
+type GlobalGroupResponsesR = {
+  globalGroupResponses :: (Array GlobalGroupResponse)
+}
+
+
+_GlobalGroupResponses :: LensP GlobalGroupResponses {
+  globalGroupResponses :: (Array GlobalGroupResponse)
+}
+_GlobalGroupResponses f (GlobalGroupResponses o) = GlobalGroupResponses <$> f o
+
+
+mkGlobalGroupResponses :: (Array GlobalGroupResponse) -> GlobalGroupResponses
+mkGlobalGroupResponses globalGroupResponses =
+  GlobalGroupResponses{globalGroupResponses}
+
+
+unwrapGlobalGroupResponses (GlobalGroupResponses r) = r
+
+instance globalGroupResponsesEncodeJson :: EncodeJson GlobalGroupResponses where
+  encodeJson (GlobalGroupResponses o) =
+       "tag" := "GlobalGroupResponses"
+    ~> "global_group_responses" := o.globalGroupResponses
+    ~> jsonEmptyObject
+
+
+instance globalGroupResponsesDecodeJson :: DecodeJson GlobalGroupResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    globalGroupResponses <- obj .? "global_group_responses"
+    pure $ GlobalGroupResponses {
+      globalGroupResponses
+    }
+
+
+instance globalGroupResponsesRequestable :: Requestable GlobalGroupResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance globalGroupResponsesRespondable :: Respondable GlobalGroupResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGlobalGroupResponses
+      <$> readProp "global_group_responses" json
+
+
+instance globalGroupResponsesIsForeign :: IsForeign GlobalGroupResponses where
+  read json =
+      mkGlobalGroupResponses
+      <$> readProp "global_group_responses" json
+
+
+instance globalGroupResponsesShow :: Show GlobalGroupResponses where
+    show (GlobalGroupResponses o) = show "globalGroupResponses: " ++ show o.globalGroupResponses
+
+newtype GlobalGroupStatResponse = GlobalGroupStatResponse {
+  groups :: Int
+}
+
+
+type GlobalGroupStatResponseR = {
+  groups :: Int
+}
+
+
+_GlobalGroupStatResponse :: LensP GlobalGroupStatResponse {
+  groups :: Int
+}
+_GlobalGroupStatResponse f (GlobalGroupStatResponse o) = GlobalGroupStatResponse <$> f o
+
+
+mkGlobalGroupStatResponse :: Int -> GlobalGroupStatResponse
+mkGlobalGroupStatResponse groups =
+  GlobalGroupStatResponse{groups}
+
+
+unwrapGlobalGroupStatResponse (GlobalGroupStatResponse r) = r
+
+instance globalGroupStatResponseEncodeJson :: EncodeJson GlobalGroupStatResponse where
+  encodeJson (GlobalGroupStatResponse o) =
+       "tag" := "GlobalGroupStatResponse"
+    ~> "groups" := o.groups
+    ~> jsonEmptyObject
+
+
+instance globalGroupStatResponseDecodeJson :: DecodeJson GlobalGroupStatResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    groups <- obj .? "groups"
+    pure $ GlobalGroupStatResponse {
+      groups
+    }
+
+
+instance globalGroupStatResponseRequestable :: Requestable GlobalGroupStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance globalGroupStatResponseRespondable :: Respondable GlobalGroupStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGlobalGroupStatResponse
+      <$> readProp "groups" json
+
+
+instance globalGroupStatResponseIsForeign :: IsForeign GlobalGroupStatResponse where
+  read json =
+      mkGlobalGroupStatResponse
+      <$> readProp "groups" json
+
+
+instance globalGroupStatResponseShow :: Show GlobalGroupStatResponse where
+    show (GlobalGroupStatResponse o) = show "groups: " ++ show o.groups
+
+newtype GlobalGroupStatResponses = GlobalGroupStatResponses {
+  globalGroupStatResponses :: (Array GlobalGroupStatResponse)
+}
+
+
+type GlobalGroupStatResponsesR = {
+  globalGroupStatResponses :: (Array GlobalGroupStatResponse)
+}
+
+
+_GlobalGroupStatResponses :: LensP GlobalGroupStatResponses {
+  globalGroupStatResponses :: (Array GlobalGroupStatResponse)
+}
+_GlobalGroupStatResponses f (GlobalGroupStatResponses o) = GlobalGroupStatResponses <$> f o
+
+
+mkGlobalGroupStatResponses :: (Array GlobalGroupStatResponse) -> GlobalGroupStatResponses
+mkGlobalGroupStatResponses globalGroupStatResponses =
+  GlobalGroupStatResponses{globalGroupStatResponses}
+
+
+unwrapGlobalGroupStatResponses (GlobalGroupStatResponses r) = r
+
+instance globalGroupStatResponsesEncodeJson :: EncodeJson GlobalGroupStatResponses where
+  encodeJson (GlobalGroupStatResponses o) =
+       "tag" := "GlobalGroupStatResponses"
+    ~> "global_group_stat_responses" := o.globalGroupStatResponses
+    ~> jsonEmptyObject
+
+
+instance globalGroupStatResponsesDecodeJson :: DecodeJson GlobalGroupStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    globalGroupStatResponses <- obj .? "global_group_stat_responses"
+    pure $ GlobalGroupStatResponses {
+      globalGroupStatResponses
+    }
+
+
+instance globalGroupStatResponsesRequestable :: Requestable GlobalGroupStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance globalGroupStatResponsesRespondable :: Respondable GlobalGroupStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGlobalGroupStatResponses
+      <$> readProp "global_group_stat_responses" json
+
+
+instance globalGroupStatResponsesIsForeign :: IsForeign GlobalGroupStatResponses where
+  read json =
+      mkGlobalGroupStatResponses
+      <$> readProp "global_group_stat_responses" json
+
+
+instance globalGroupStatResponsesShow :: Show GlobalGroupStatResponses where
+    show (GlobalGroupStatResponses o) = show "globalGroupStatResponses: " ++ show o.globalGroupStatResponses
+
+newtype GroupRequest = GroupRequest {
+  guard :: Int
+}
+
+
+type GroupRequestR = {
+  guard :: Int
+}
+
+
+_GroupRequest :: LensP GroupRequest {
+  guard :: Int
+}
+_GroupRequest f (GroupRequest o) = GroupRequest <$> f o
+
+
+mkGroupRequest :: Int -> GroupRequest
+mkGroupRequest guard =
+  GroupRequest{guard}
+
+
+unwrapGroupRequest (GroupRequest r) = r
+
+instance groupRequestEncodeJson :: EncodeJson GroupRequest where
+  encodeJson (GroupRequest o) =
+       "tag" := "GroupRequest"
+    ~> "guard" := o.guard
+    ~> jsonEmptyObject
+
+
+instance groupRequestDecodeJson :: DecodeJson GroupRequest where
+  decodeJson o = do
+    obj <- decodeJson o
+    guard <- obj .? "guard"
+    pure $ GroupRequest {
+      guard
+    }
+
+
+instance groupRequestRequestable :: Requestable GroupRequest where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupRequestRespondable :: Respondable GroupRequest where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupRequest
+      <$> readProp "guard" json
+
+
+instance groupRequestIsForeign :: IsForeign GroupRequest where
+  read json =
+      mkGroupRequest
+      <$> readProp "guard" json
+
+
+instance groupRequestShow :: Show GroupRequest where
+    show (GroupRequest o) = show "guard: " ++ show o.guard
+
+newtype GroupResponse = GroupResponse {
+  id :: Int,
+  userId :: Int,
+  globalGroupId :: Int,
+  organizationId :: Int,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+
+
+type GroupResponseR = {
+  id :: Int,
+  userId :: Int,
+  globalGroupId :: Int,
+  organizationId :: Int,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+
+
+_GroupResponse :: LensP GroupResponse {
+  id :: Int,
+  userId :: Int,
+  globalGroupId :: Int,
+  organizationId :: Int,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+_GroupResponse f (GroupResponse o) = GroupResponse <$> f o
+
+
+mkGroupResponse :: Int -> Int -> Int -> Int -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> GroupResponse
+mkGroupResponse id userId globalGroupId organizationId active guard createdAt modifiedBy modifiedAt activityAt =
+  GroupResponse{id, userId, globalGroupId, organizationId, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+
+
+unwrapGroupResponse (GroupResponse r) = r
+
+instance groupResponseEncodeJson :: EncodeJson GroupResponse where
+  encodeJson (GroupResponse o) =
+       "tag" := "GroupResponse"
+    ~> "id" := o.id
+    ~> "user_id" := o.userId
+    ~> "global_group_id" := o.globalGroupId
+    ~> "organization_id" := o.organizationId
+    ~> "active" := o.active
+    ~> "guard" := o.guard
+    ~> "created_at" := o.createdAt
+    ~> "modified_by" := o.modifiedBy
+    ~> "modified_at" := o.modifiedAt
+    ~> "activity_at" := o.activityAt
+    ~> jsonEmptyObject
+
+
+instance groupResponseDecodeJson :: DecodeJson GroupResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    userId <- obj .? "user_id"
+    globalGroupId <- obj .? "global_group_id"
+    organizationId <- obj .? "organization_id"
+    active <- obj .? "active"
+    guard <- obj .? "guard"
+    createdAt <- obj .? "created_at"
+    modifiedBy <- obj .? "modified_by"
+    modifiedAt <- obj .? "modified_at"
+    activityAt <- obj .? "activity_at"
+    pure $ GroupResponse {
+      id,
+      userId,
+      globalGroupId,
+      organizationId,
+      active,
+      guard,
+      createdAt,
+      modifiedBy,
+      modifiedAt,
+      activityAt
+    }
+
+
+instance groupResponseRequestable :: Requestable GroupResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupResponseRespondable :: Respondable GroupResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "global_group_id" json
+      <*> readProp "organization_id" json
+      <*> readProp "active" json
+      <*> readProp "guard" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+
+
+instance groupResponseIsForeign :: IsForeign GroupResponse where
+  read json =
+      mkGroupResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "global_group_id" json
+      <*> readProp "organization_id" json
+      <*> readProp "active" json
+      <*> readProp "guard" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+
+
+instance groupResponseShow :: Show GroupResponse where
+    show (GroupResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "globalGroupId: " ++ show o.globalGroupId ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+
+newtype GroupResponses = GroupResponses {
+  groupResponses :: (Array GroupResponse)
+}
+
+
+type GroupResponsesR = {
+  groupResponses :: (Array GroupResponse)
+}
+
+
+_GroupResponses :: LensP GroupResponses {
+  groupResponses :: (Array GroupResponse)
+}
+_GroupResponses f (GroupResponses o) = GroupResponses <$> f o
+
+
+mkGroupResponses :: (Array GroupResponse) -> GroupResponses
+mkGroupResponses groupResponses =
+  GroupResponses{groupResponses}
+
+
+unwrapGroupResponses (GroupResponses r) = r
+
+instance groupResponsesEncodeJson :: EncodeJson GroupResponses where
+  encodeJson (GroupResponses o) =
+       "tag" := "GroupResponses"
+    ~> "group_responses" := o.groupResponses
+    ~> jsonEmptyObject
+
+
+instance groupResponsesDecodeJson :: DecodeJson GroupResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    groupResponses <- obj .? "group_responses"
+    pure $ GroupResponses {
+      groupResponses
+    }
+
+
+instance groupResponsesRequestable :: Requestable GroupResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupResponsesRespondable :: Respondable GroupResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupResponses
+      <$> readProp "group_responses" json
+
+
+instance groupResponsesIsForeign :: IsForeign GroupResponses where
+  read json =
+      mkGroupResponses
+      <$> readProp "group_responses" json
+
+
+instance groupResponsesShow :: Show GroupResponses where
+    show (GroupResponses o) = show "groupResponses: " ++ show o.groupResponses
+
+newtype GroupStatResponse = GroupStatResponse {
+  members :: Int
+}
+
+
+type GroupStatResponseR = {
+  members :: Int
+}
+
+
+_GroupStatResponse :: LensP GroupStatResponse {
+  members :: Int
+}
+_GroupStatResponse f (GroupStatResponse o) = GroupStatResponse <$> f o
+
+
+mkGroupStatResponse :: Int -> GroupStatResponse
+mkGroupStatResponse members =
+  GroupStatResponse{members}
+
+
+unwrapGroupStatResponse (GroupStatResponse r) = r
+
+instance groupStatResponseEncodeJson :: EncodeJson GroupStatResponse where
+  encodeJson (GroupStatResponse o) =
+       "tag" := "GroupStatResponse"
+    ~> "members" := o.members
+    ~> jsonEmptyObject
+
+
+instance groupStatResponseDecodeJson :: DecodeJson GroupStatResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    members <- obj .? "members"
+    pure $ GroupStatResponse {
+      members
+    }
+
+
+instance groupStatResponseRequestable :: Requestable GroupStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupStatResponseRespondable :: Respondable GroupStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupStatResponse
+      <$> readProp "members" json
+
+
+instance groupStatResponseIsForeign :: IsForeign GroupStatResponse where
+  read json =
+      mkGroupStatResponse
+      <$> readProp "members" json
+
+
+instance groupStatResponseShow :: Show GroupStatResponse where
+    show (GroupStatResponse o) = show "members: " ++ show o.members
+
+newtype GroupStatResponses = GroupStatResponses {
+  groupStatResponses :: (Array GroupStatResponse)
+}
+
+
+type GroupStatResponsesR = {
+  groupStatResponses :: (Array GroupStatResponse)
+}
+
+
+_GroupStatResponses :: LensP GroupStatResponses {
+  groupStatResponses :: (Array GroupStatResponse)
+}
+_GroupStatResponses f (GroupStatResponses o) = GroupStatResponses <$> f o
+
+
+mkGroupStatResponses :: (Array GroupStatResponse) -> GroupStatResponses
+mkGroupStatResponses groupStatResponses =
+  GroupStatResponses{groupStatResponses}
+
+
+unwrapGroupStatResponses (GroupStatResponses r) = r
+
+instance groupStatResponsesEncodeJson :: EncodeJson GroupStatResponses where
+  encodeJson (GroupStatResponses o) =
+       "tag" := "GroupStatResponses"
+    ~> "group_stat_responses" := o.groupStatResponses
+    ~> jsonEmptyObject
+
+
+instance groupStatResponsesDecodeJson :: DecodeJson GroupStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    groupStatResponses <- obj .? "group_stat_responses"
+    pure $ GroupStatResponses {
+      groupStatResponses
+    }
+
+
+instance groupStatResponsesRequestable :: Requestable GroupStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupStatResponsesRespondable :: Respondable GroupStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupStatResponses
+      <$> readProp "group_stat_responses" json
+
+
+instance groupStatResponsesIsForeign :: IsForeign GroupStatResponses where
+  read json =
+      mkGroupStatResponses
+      <$> readProp "group_stat_responses" json
+
+
+instance groupStatResponsesShow :: Show GroupStatResponses where
+    show (GroupStatResponses o) = show "groupStatResponses: " ++ show o.groupStatResponses
+
+newtype GroupMemberRequest = GroupMemberRequest {
+  guard :: Int
+}
+
+
+type GroupMemberRequestR = {
+  guard :: Int
+}
+
+
+_GroupMemberRequest :: LensP GroupMemberRequest {
+  guard :: Int
+}
+_GroupMemberRequest f (GroupMemberRequest o) = GroupMemberRequest <$> f o
+
+
+mkGroupMemberRequest :: Int -> GroupMemberRequest
+mkGroupMemberRequest guard =
+  GroupMemberRequest{guard}
+
+
+unwrapGroupMemberRequest (GroupMemberRequest r) = r
+
+instance groupMemberRequestEncodeJson :: EncodeJson GroupMemberRequest where
+  encodeJson (GroupMemberRequest o) =
+       "tag" := "GroupMemberRequest"
+    ~> "guard" := o.guard
+    ~> jsonEmptyObject
+
+
+instance groupMemberRequestDecodeJson :: DecodeJson GroupMemberRequest where
+  decodeJson o = do
+    obj <- decodeJson o
+    guard <- obj .? "guard"
+    pure $ GroupMemberRequest {
+      guard
+    }
+
+
+instance groupMemberRequestRequestable :: Requestable GroupMemberRequest where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupMemberRequestRespondable :: Respondable GroupMemberRequest where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupMemberRequest
+      <$> readProp "guard" json
+
+
+instance groupMemberRequestIsForeign :: IsForeign GroupMemberRequest where
+  read json =
+      mkGroupMemberRequest
+      <$> readProp "guard" json
+
+
+instance groupMemberRequestShow :: Show GroupMemberRequest where
+    show (GroupMemberRequest o) = show "guard: " ++ show o.guard
+
+newtype GroupMemberResponse = GroupMemberResponse {
+  id :: Int,
+  userId :: Int,
+  globalGroupId :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+
+
+type GroupMemberResponseR = {
+  id :: Int,
+  userId :: Int,
+  globalGroupId :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+
+
+_GroupMemberResponse :: LensP GroupMemberResponse {
+  id :: Int,
+  userId :: Int,
+  globalGroupId :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+_GroupMemberResponse f (GroupMemberResponse o) = GroupMemberResponse <$> f o
+
+
+mkGroupMemberResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> GroupMemberResponse
+mkGroupMemberResponse id userId globalGroupId createdAt modifiedBy modifiedAt activityAt =
+  GroupMemberResponse{id, userId, globalGroupId, createdAt, modifiedBy, modifiedAt, activityAt}
+
+
+unwrapGroupMemberResponse (GroupMemberResponse r) = r
+
+instance groupMemberResponseEncodeJson :: EncodeJson GroupMemberResponse where
+  encodeJson (GroupMemberResponse o) =
+       "tag" := "GroupMemberResponse"
+    ~> "id" := o.id
+    ~> "user_id" := o.userId
+    ~> "global_group_id" := o.globalGroupId
+    ~> "created_at" := o.createdAt
+    ~> "modified_by" := o.modifiedBy
+    ~> "modified_at" := o.modifiedAt
+    ~> "activity_at" := o.activityAt
+    ~> jsonEmptyObject
+
+
+instance groupMemberResponseDecodeJson :: DecodeJson GroupMemberResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    userId <- obj .? "user_id"
+    globalGroupId <- obj .? "global_group_id"
+    createdAt <- obj .? "created_at"
+    modifiedBy <- obj .? "modified_by"
+    modifiedAt <- obj .? "modified_at"
+    activityAt <- obj .? "activity_at"
+    pure $ GroupMemberResponse {
+      id,
+      userId,
+      globalGroupId,
+      createdAt,
+      modifiedBy,
+      modifiedAt,
+      activityAt
+    }
+
+
+instance groupMemberResponseRequestable :: Requestable GroupMemberResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupMemberResponseRespondable :: Respondable GroupMemberResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupMemberResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "global_group_id" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+
+
+instance groupMemberResponseIsForeign :: IsForeign GroupMemberResponse where
+  read json =
+      mkGroupMemberResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "global_group_id" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+
+
+instance groupMemberResponseShow :: Show GroupMemberResponse where
+    show (GroupMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "globalGroupId: " ++ show o.globalGroupId ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+
+newtype GroupMemberResponses = GroupMemberResponses {
+  groupMemberResponses :: (Array GroupMemberResponse)
+}
+
+
+type GroupMemberResponsesR = {
+  groupMemberResponses :: (Array GroupMemberResponse)
+}
+
+
+_GroupMemberResponses :: LensP GroupMemberResponses {
+  groupMemberResponses :: (Array GroupMemberResponse)
+}
+_GroupMemberResponses f (GroupMemberResponses o) = GroupMemberResponses <$> f o
+
+
+mkGroupMemberResponses :: (Array GroupMemberResponse) -> GroupMemberResponses
+mkGroupMemberResponses groupMemberResponses =
+  GroupMemberResponses{groupMemberResponses}
+
+
+unwrapGroupMemberResponses (GroupMemberResponses r) = r
+
+instance groupMemberResponsesEncodeJson :: EncodeJson GroupMemberResponses where
+  encodeJson (GroupMemberResponses o) =
+       "tag" := "GroupMemberResponses"
+    ~> "group_member_responses" := o.groupMemberResponses
+    ~> jsonEmptyObject
+
+
+instance groupMemberResponsesDecodeJson :: DecodeJson GroupMemberResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    groupMemberResponses <- obj .? "group_member_responses"
+    pure $ GroupMemberResponses {
+      groupMemberResponses
+    }
+
+
+instance groupMemberResponsesRequestable :: Requestable GroupMemberResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupMemberResponsesRespondable :: Respondable GroupMemberResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupMemberResponses
+      <$> readProp "group_member_responses" json
+
+
+instance groupMemberResponsesIsForeign :: IsForeign GroupMemberResponses where
+  read json =
+      mkGroupMemberResponses
+      <$> readProp "group_member_responses" json
+
+
+instance groupMemberResponsesShow :: Show GroupMemberResponses where
+    show (GroupMemberResponses o) = show "groupMemberResponses: " ++ show o.groupMemberResponses
+
+data GroupMemberStatResponse
+  = GroupMemberStatResponse 
+
+
+
+instance groupMemberStatResponseEncodeJson :: EncodeJson GroupMemberStatResponse where
+  encodeJson (GroupMemberStatResponse ) =
+       "tag" := "GroupMemberStatResponse"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance groupMemberStatResponseDecodeJson :: DecodeJson GroupMemberStatResponse where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "GroupMemberStatResponse" -> do
+          return GroupMemberStatResponse
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance groupMemberStatResponseRequestable :: Requestable GroupMemberStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupMemberStatResponseRespondable :: Respondable GroupMemberStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "GroupMemberStatResponse" -> do
+          return GroupMemberStatResponse
+
+
+
+instance groupMemberStatResponseIsForeign :: IsForeign GroupMemberStatResponse where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "GroupMemberStatResponse" -> do
+          return GroupMemberStatResponse
+
+
+
+instance groupMemberStatResponseShow :: Show GroupMemberStatResponse where
+  show (GroupMemberStatResponse) = "GroupMemberStatResponse"
+
+
+data GroupMemberStatResponses
+  = GroupMemberStatResponses 
+
+
+
+instance groupMemberStatResponsesEncodeJson :: EncodeJson GroupMemberStatResponses where
+  encodeJson (GroupMemberStatResponses ) =
+       "tag" := "GroupMemberStatResponses"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance groupMemberStatResponsesDecodeJson :: DecodeJson GroupMemberStatResponses where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "GroupMemberStatResponses" -> do
+          return GroupMemberStatResponses
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance groupMemberStatResponsesRequestable :: Requestable GroupMemberStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupMemberStatResponsesRespondable :: Respondable GroupMemberStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "GroupMemberStatResponses" -> do
+          return GroupMemberStatResponses
+
+
+
+instance groupMemberStatResponsesIsForeign :: IsForeign GroupMemberStatResponses where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "GroupMemberStatResponses" -> do
+          return GroupMemberStatResponses
+
+
+
+instance groupMemberStatResponsesShow :: Show GroupMemberStatResponses where
+  show (GroupMemberStatResponses) = "GroupMemberStatResponses"
+
 
 newtype LeuronRequest = LeuronRequest {
   dataP :: LeuronData,
@@ -12185,6 +13417,371 @@ instance teamStatResponsesIsForeign :: IsForeign TeamStatResponses where
 instance teamStatResponsesShow :: Show TeamStatResponses where
     show (TeamStatResponses o) = show "teamStatResponses: " ++ show o.teamStatResponses
 
+newtype TeamMemberRequest = TeamMemberRequest {
+  guard :: Int
+}
+
+
+type TeamMemberRequestR = {
+  guard :: Int
+}
+
+
+_TeamMemberRequest :: LensP TeamMemberRequest {
+  guard :: Int
+}
+_TeamMemberRequest f (TeamMemberRequest o) = TeamMemberRequest <$> f o
+
+
+mkTeamMemberRequest :: Int -> TeamMemberRequest
+mkTeamMemberRequest guard =
+  TeamMemberRequest{guard}
+
+
+unwrapTeamMemberRequest (TeamMemberRequest r) = r
+
+instance teamMemberRequestEncodeJson :: EncodeJson TeamMemberRequest where
+  encodeJson (TeamMemberRequest o) =
+       "tag" := "TeamMemberRequest"
+    ~> "guard" := o.guard
+    ~> jsonEmptyObject
+
+
+instance teamMemberRequestDecodeJson :: DecodeJson TeamMemberRequest where
+  decodeJson o = do
+    obj <- decodeJson o
+    guard <- obj .? "guard"
+    pure $ TeamMemberRequest {
+      guard
+    }
+
+
+instance teamMemberRequestRequestable :: Requestable TeamMemberRequest where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamMemberRequestRespondable :: Respondable TeamMemberRequest where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamMemberRequest
+      <$> readProp "guard" json
+
+
+instance teamMemberRequestIsForeign :: IsForeign TeamMemberRequest where
+  read json =
+      mkTeamMemberRequest
+      <$> readProp "guard" json
+
+
+instance teamMemberRequestShow :: Show TeamMemberRequest where
+    show (TeamMemberRequest o) = show "guard: " ++ show o.guard
+
+newtype TeamMemberResponse = TeamMemberResponse {
+  id :: Int,
+  userId :: Int,
+  teamId :: Int,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+
+
+type TeamMemberResponseR = {
+  id :: Int,
+  userId :: Int,
+  teamId :: Int,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+
+
+_TeamMemberResponse :: LensP TeamMemberResponse {
+  id :: Int,
+  userId :: Int,
+  teamId :: Int,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
+_TeamMemberResponse f (TeamMemberResponse o) = TeamMemberResponse <$> f o
+
+
+mkTeamMemberResponse :: Int -> Int -> Int -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamMemberResponse
+mkTeamMemberResponse id userId teamId active guard createdAt modifiedBy modifiedAt activityAt =
+  TeamMemberResponse{id, userId, teamId, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+
+
+unwrapTeamMemberResponse (TeamMemberResponse r) = r
+
+instance teamMemberResponseEncodeJson :: EncodeJson TeamMemberResponse where
+  encodeJson (TeamMemberResponse o) =
+       "tag" := "TeamMemberResponse"
+    ~> "id" := o.id
+    ~> "user_id" := o.userId
+    ~> "team_id" := o.teamId
+    ~> "active" := o.active
+    ~> "guard" := o.guard
+    ~> "created_at" := o.createdAt
+    ~> "modified_by" := o.modifiedBy
+    ~> "modified_at" := o.modifiedAt
+    ~> "activity_at" := o.activityAt
+    ~> jsonEmptyObject
+
+
+instance teamMemberResponseDecodeJson :: DecodeJson TeamMemberResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    id <- obj .? "id"
+    userId <- obj .? "user_id"
+    teamId <- obj .? "team_id"
+    active <- obj .? "active"
+    guard <- obj .? "guard"
+    createdAt <- obj .? "created_at"
+    modifiedBy <- obj .? "modified_by"
+    modifiedAt <- obj .? "modified_at"
+    activityAt <- obj .? "activity_at"
+    pure $ TeamMemberResponse {
+      id,
+      userId,
+      teamId,
+      active,
+      guard,
+      createdAt,
+      modifiedBy,
+      modifiedAt,
+      activityAt
+    }
+
+
+instance teamMemberResponseRequestable :: Requestable TeamMemberResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamMemberResponseRespondable :: Respondable TeamMemberResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamMemberResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "team_id" json
+      <*> readProp "active" json
+      <*> readProp "guard" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+
+
+instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
+  read json =
+      mkTeamMemberResponse
+      <$> readProp "id" json
+      <*> readProp "user_id" json
+      <*> readProp "team_id" json
+      <*> readProp "active" json
+      <*> readProp "guard" json
+      <*> (runNullOrUndefined <$> readProp "created_at" json)
+      <*> (runNullOrUndefined <$> readProp "modified_by" json)
+      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+
+
+instance teamMemberResponseShow :: Show TeamMemberResponse where
+    show (TeamMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+
+newtype TeamMemberResponses = TeamMemberResponses {
+  teamMemberResponses :: (Array TeamMemberResponse)
+}
+
+
+type TeamMemberResponsesR = {
+  teamMemberResponses :: (Array TeamMemberResponse)
+}
+
+
+_TeamMemberResponses :: LensP TeamMemberResponses {
+  teamMemberResponses :: (Array TeamMemberResponse)
+}
+_TeamMemberResponses f (TeamMemberResponses o) = TeamMemberResponses <$> f o
+
+
+mkTeamMemberResponses :: (Array TeamMemberResponse) -> TeamMemberResponses
+mkTeamMemberResponses teamMemberResponses =
+  TeamMemberResponses{teamMemberResponses}
+
+
+unwrapTeamMemberResponses (TeamMemberResponses r) = r
+
+instance teamMemberResponsesEncodeJson :: EncodeJson TeamMemberResponses where
+  encodeJson (TeamMemberResponses o) =
+       "tag" := "TeamMemberResponses"
+    ~> "team_member_responses" := o.teamMemberResponses
+    ~> jsonEmptyObject
+
+
+instance teamMemberResponsesDecodeJson :: DecodeJson TeamMemberResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    teamMemberResponses <- obj .? "team_member_responses"
+    pure $ TeamMemberResponses {
+      teamMemberResponses
+    }
+
+
+instance teamMemberResponsesRequestable :: Requestable TeamMemberResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamMemberResponsesRespondable :: Respondable TeamMemberResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamMemberResponses
+      <$> readProp "team_member_responses" json
+
+
+instance teamMemberResponsesIsForeign :: IsForeign TeamMemberResponses where
+  read json =
+      mkTeamMemberResponses
+      <$> readProp "team_member_responses" json
+
+
+instance teamMemberResponsesShow :: Show TeamMemberResponses where
+    show (TeamMemberResponses o) = show "teamMemberResponses: " ++ show o.teamMemberResponses
+
+data TeamMemberStatResponse
+  = TeamMemberStatResponse 
+
+
+
+instance teamMemberStatResponseEncodeJson :: EncodeJson TeamMemberStatResponse where
+  encodeJson (TeamMemberStatResponse ) =
+       "tag" := "TeamMemberStatResponse"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance teamMemberStatResponseDecodeJson :: DecodeJson TeamMemberStatResponse where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "TeamMemberStatResponse" -> do
+          return TeamMemberStatResponse
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance teamMemberStatResponseRequestable :: Requestable TeamMemberStatResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamMemberStatResponseRespondable :: Respondable TeamMemberStatResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TeamMemberStatResponse" -> do
+          return TeamMemberStatResponse
+
+
+
+instance teamMemberStatResponseIsForeign :: IsForeign TeamMemberStatResponse where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "TeamMemberStatResponse" -> do
+          return TeamMemberStatResponse
+
+
+
+instance teamMemberStatResponseShow :: Show TeamMemberStatResponse where
+  show (TeamMemberStatResponse) = "TeamMemberStatResponse"
+
+
+newtype TeamMemberStatResponses = TeamMemberStatResponses {
+  teamMemberStatResponses :: (Array TeamMemberStatResponse)
+}
+
+
+type TeamMemberStatResponsesR = {
+  teamMemberStatResponses :: (Array TeamMemberStatResponse)
+}
+
+
+_TeamMemberStatResponses :: LensP TeamMemberStatResponses {
+  teamMemberStatResponses :: (Array TeamMemberStatResponse)
+}
+_TeamMemberStatResponses f (TeamMemberStatResponses o) = TeamMemberStatResponses <$> f o
+
+
+mkTeamMemberStatResponses :: (Array TeamMemberStatResponse) -> TeamMemberStatResponses
+mkTeamMemberStatResponses teamMemberStatResponses =
+  TeamMemberStatResponses{teamMemberStatResponses}
+
+
+unwrapTeamMemberStatResponses (TeamMemberStatResponses r) = r
+
+instance teamMemberStatResponsesEncodeJson :: EncodeJson TeamMemberStatResponses where
+  encodeJson (TeamMemberStatResponses o) =
+       "tag" := "TeamMemberStatResponses"
+    ~> "team_member_stat_responses" := o.teamMemberStatResponses
+    ~> jsonEmptyObject
+
+
+instance teamMemberStatResponsesDecodeJson :: DecodeJson TeamMemberStatResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    teamMemberStatResponses <- obj .? "team_member_stat_responses"
+    pure $ TeamMemberStatResponses {
+      teamMemberStatResponses
+    }
+
+
+instance teamMemberStatResponsesRequestable :: Requestable TeamMemberStatResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamMemberStatResponsesRespondable :: Respondable TeamMemberStatResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamMemberStatResponses
+      <$> readProp "team_member_stat_responses" json
+
+
+instance teamMemberStatResponsesIsForeign :: IsForeign TeamMemberStatResponses where
+  read json =
+      mkTeamMemberStatResponses
+      <$> readProp "team_member_stat_responses" json
+
+
+instance teamMemberStatResponsesShow :: Show TeamMemberStatResponses where
+    show (TeamMemberStatResponses o) = show "teamMemberStatResponses: " ++ show o.teamMemberStatResponses
+
 newtype TestRequest = TestRequest {
   msg :: String
 }
@@ -14633,6 +16230,154 @@ instance teamPackResponsesIsForeign :: IsForeign TeamPackResponses where
 instance teamPackResponsesShow :: Show TeamPackResponses where
     show (TeamPackResponses o) = show "teamPackResponses: " ++ show o.teamPackResponses
 
+newtype TeamMemberPackResponse = TeamMemberPackResponse {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  teamMember :: TeamMemberResponse,
+  teamMemberId :: Int
+}
+
+
+type TeamMemberPackResponseR = {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  teamMember :: TeamMemberResponse,
+  teamMemberId :: Int
+}
+
+
+_TeamMemberPackResponse :: LensP TeamMemberPackResponse {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  teamMember :: TeamMemberResponse,
+  teamMemberId :: Int
+}
+_TeamMemberPackResponse f (TeamMemberPackResponse o) = TeamMemberPackResponse <$> f o
+
+
+mkTeamMemberPackResponse :: UserSanitizedResponse -> Int -> TeamMemberResponse -> Int -> TeamMemberPackResponse
+mkTeamMemberPackResponse user userId teamMember teamMemberId =
+  TeamMemberPackResponse{user, userId, teamMember, teamMemberId}
+
+
+unwrapTeamMemberPackResponse (TeamMemberPackResponse r) = r
+
+instance teamMemberPackResponseEncodeJson :: EncodeJson TeamMemberPackResponse where
+  encodeJson (TeamMemberPackResponse o) =
+       "tag" := "TeamMemberPackResponse"
+    ~> "user" := o.user
+    ~> "user_id" := o.userId
+    ~> "team_member" := o.teamMember
+    ~> "team_member_id" := o.teamMemberId
+    ~> jsonEmptyObject
+
+
+instance teamMemberPackResponseDecodeJson :: DecodeJson TeamMemberPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    user <- obj .? "user"
+    userId <- obj .? "user_id"
+    teamMember <- obj .? "team_member"
+    teamMemberId <- obj .? "team_member_id"
+    pure $ TeamMemberPackResponse {
+      user,
+      userId,
+      teamMember,
+      teamMemberId
+    }
+
+
+instance teamMemberPackResponseRequestable :: Requestable TeamMemberPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamMemberPackResponseRespondable :: Respondable TeamMemberPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamMemberPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_id" json
+      <*> readProp "team_member" json
+      <*> readProp "team_member_id" json
+
+
+instance teamMemberPackResponseIsForeign :: IsForeign TeamMemberPackResponse where
+  read json =
+      mkTeamMemberPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_id" json
+      <*> readProp "team_member" json
+      <*> readProp "team_member_id" json
+
+
+instance teamMemberPackResponseShow :: Show TeamMemberPackResponse where
+    show (TeamMemberPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamMember: " ++ show o.teamMember ++ ", " ++ show "teamMemberId: " ++ show o.teamMemberId
+
+newtype TeamMemberPackResponses = TeamMemberPackResponses {
+  teamMemberPackResponses :: (Array TeamMemberPackResponse)
+}
+
+
+type TeamMemberPackResponsesR = {
+  teamMemberPackResponses :: (Array TeamMemberPackResponse)
+}
+
+
+_TeamMemberPackResponses :: LensP TeamMemberPackResponses {
+  teamMemberPackResponses :: (Array TeamMemberPackResponse)
+}
+_TeamMemberPackResponses f (TeamMemberPackResponses o) = TeamMemberPackResponses <$> f o
+
+
+mkTeamMemberPackResponses :: (Array TeamMemberPackResponse) -> TeamMemberPackResponses
+mkTeamMemberPackResponses teamMemberPackResponses =
+  TeamMemberPackResponses{teamMemberPackResponses}
+
+
+unwrapTeamMemberPackResponses (TeamMemberPackResponses r) = r
+
+instance teamMemberPackResponsesEncodeJson :: EncodeJson TeamMemberPackResponses where
+  encodeJson (TeamMemberPackResponses o) =
+       "tag" := "TeamMemberPackResponses"
+    ~> "team_member_pack_responses" := o.teamMemberPackResponses
+    ~> jsonEmptyObject
+
+
+instance teamMemberPackResponsesDecodeJson :: DecodeJson TeamMemberPackResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    teamMemberPackResponses <- obj .? "team_member_pack_responses"
+    pure $ TeamMemberPackResponses {
+      teamMemberPackResponses
+    }
+
+
+instance teamMemberPackResponsesRequestable :: Requestable TeamMemberPackResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance teamMemberPackResponsesRespondable :: Respondable TeamMemberPackResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkTeamMemberPackResponses
+      <$> readProp "team_member_pack_responses" json
+
+
+instance teamMemberPackResponsesIsForeign :: IsForeign TeamMemberPackResponses where
+  read json =
+      mkTeamMemberPackResponses
+      <$> readProp "team_member_pack_responses" json
+
+
+instance teamMemberPackResponsesShow :: Show TeamMemberPackResponses where
+    show (TeamMemberPackResponses o) = show "teamMemberPackResponses: " ++ show o.teamMemberPackResponses
+
 newtype UserPackResponse = UserPackResponse {
   user :: UserResponse,
   userId :: Int,
@@ -14960,6 +16705,482 @@ instance userSanitizedPackResponsesIsForeign :: IsForeign UserSanitizedPackRespo
 
 instance userSanitizedPackResponsesShow :: Show UserSanitizedPackResponses where
     show (UserSanitizedPackResponses o) = show "userSanitizedPackResponses: " ++ show o.userSanitizedPackResponses
+
+newtype GlobalGroupPackResponse = GlobalGroupPackResponse {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  globalGroup :: GlobalGroupResponse,
+  globalGroupId :: Int,
+  stat :: GlobalGroupStatResponse
+}
+
+
+type GlobalGroupPackResponseR = {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  globalGroup :: GlobalGroupResponse,
+  globalGroupId :: Int,
+  stat :: GlobalGroupStatResponse
+}
+
+
+_GlobalGroupPackResponse :: LensP GlobalGroupPackResponse {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  globalGroup :: GlobalGroupResponse,
+  globalGroupId :: Int,
+  stat :: GlobalGroupStatResponse
+}
+_GlobalGroupPackResponse f (GlobalGroupPackResponse o) = GlobalGroupPackResponse <$> f o
+
+
+mkGlobalGroupPackResponse :: UserSanitizedResponse -> Int -> GlobalGroupResponse -> Int -> GlobalGroupStatResponse -> GlobalGroupPackResponse
+mkGlobalGroupPackResponse user userId globalGroup globalGroupId stat =
+  GlobalGroupPackResponse{user, userId, globalGroup, globalGroupId, stat}
+
+
+unwrapGlobalGroupPackResponse (GlobalGroupPackResponse r) = r
+
+instance globalGroupPackResponseEncodeJson :: EncodeJson GlobalGroupPackResponse where
+  encodeJson (GlobalGroupPackResponse o) =
+       "tag" := "GlobalGroupPackResponse"
+    ~> "user" := o.user
+    ~> "user_id" := o.userId
+    ~> "global_group" := o.globalGroup
+    ~> "global_group_id" := o.globalGroupId
+    ~> "stat" := o.stat
+    ~> jsonEmptyObject
+
+
+instance globalGroupPackResponseDecodeJson :: DecodeJson GlobalGroupPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    user <- obj .? "user"
+    userId <- obj .? "user_id"
+    globalGroup <- obj .? "global_group"
+    globalGroupId <- obj .? "global_group_id"
+    stat <- obj .? "stat"
+    pure $ GlobalGroupPackResponse {
+      user,
+      userId,
+      globalGroup,
+      globalGroupId,
+      stat
+    }
+
+
+instance globalGroupPackResponseRequestable :: Requestable GlobalGroupPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance globalGroupPackResponseRespondable :: Respondable GlobalGroupPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGlobalGroupPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_id" json
+      <*> readProp "global_group" json
+      <*> readProp "global_group_id" json
+      <*> readProp "stat" json
+
+
+instance globalGroupPackResponseIsForeign :: IsForeign GlobalGroupPackResponse where
+  read json =
+      mkGlobalGroupPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_id" json
+      <*> readProp "global_group" json
+      <*> readProp "global_group_id" json
+      <*> readProp "stat" json
+
+
+instance globalGroupPackResponseShow :: Show GlobalGroupPackResponse where
+    show (GlobalGroupPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "globalGroup: " ++ show o.globalGroup ++ ", " ++ show "globalGroupId: " ++ show o.globalGroupId ++ ", " ++ show "stat: " ++ show o.stat
+
+newtype GlobalGroupPackResponses = GlobalGroupPackResponses {
+  globalGroupPackResponses :: (Array GlobalGroupPackResponse)
+}
+
+
+type GlobalGroupPackResponsesR = {
+  globalGroupPackResponses :: (Array GlobalGroupPackResponse)
+}
+
+
+_GlobalGroupPackResponses :: LensP GlobalGroupPackResponses {
+  globalGroupPackResponses :: (Array GlobalGroupPackResponse)
+}
+_GlobalGroupPackResponses f (GlobalGroupPackResponses o) = GlobalGroupPackResponses <$> f o
+
+
+mkGlobalGroupPackResponses :: (Array GlobalGroupPackResponse) -> GlobalGroupPackResponses
+mkGlobalGroupPackResponses globalGroupPackResponses =
+  GlobalGroupPackResponses{globalGroupPackResponses}
+
+
+unwrapGlobalGroupPackResponses (GlobalGroupPackResponses r) = r
+
+instance globalGroupPackResponsesEncodeJson :: EncodeJson GlobalGroupPackResponses where
+  encodeJson (GlobalGroupPackResponses o) =
+       "tag" := "GlobalGroupPackResponses"
+    ~> "global_group_pack_responses" := o.globalGroupPackResponses
+    ~> jsonEmptyObject
+
+
+instance globalGroupPackResponsesDecodeJson :: DecodeJson GlobalGroupPackResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    globalGroupPackResponses <- obj .? "global_group_pack_responses"
+    pure $ GlobalGroupPackResponses {
+      globalGroupPackResponses
+    }
+
+
+instance globalGroupPackResponsesRequestable :: Requestable GlobalGroupPackResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance globalGroupPackResponsesRespondable :: Respondable GlobalGroupPackResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGlobalGroupPackResponses
+      <$> readProp "global_group_pack_responses" json
+
+
+instance globalGroupPackResponsesIsForeign :: IsForeign GlobalGroupPackResponses where
+  read json =
+      mkGlobalGroupPackResponses
+      <$> readProp "global_group_pack_responses" json
+
+
+instance globalGroupPackResponsesShow :: Show GlobalGroupPackResponses where
+    show (GlobalGroupPackResponses o) = show "globalGroupPackResponses: " ++ show o.globalGroupPackResponses
+
+newtype GroupPackResponse = GroupPackResponse {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  group :: GroupResponse,
+  groupId :: Int,
+  organization :: OrganizationResponse,
+  organizationId :: Int,
+  stat :: GroupStatResponse
+}
+
+
+type GroupPackResponseR = {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  group :: GroupResponse,
+  groupId :: Int,
+  organization :: OrganizationResponse,
+  organizationId :: Int,
+  stat :: GroupStatResponse
+}
+
+
+_GroupPackResponse :: LensP GroupPackResponse {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  group :: GroupResponse,
+  groupId :: Int,
+  organization :: OrganizationResponse,
+  organizationId :: Int,
+  stat :: GroupStatResponse
+}
+_GroupPackResponse f (GroupPackResponse o) = GroupPackResponse <$> f o
+
+
+mkGroupPackResponse :: UserSanitizedResponse -> Int -> GroupResponse -> Int -> OrganizationResponse -> Int -> GroupStatResponse -> GroupPackResponse
+mkGroupPackResponse user userId group groupId organization organizationId stat =
+  GroupPackResponse{user, userId, group, groupId, organization, organizationId, stat}
+
+
+unwrapGroupPackResponse (GroupPackResponse r) = r
+
+instance groupPackResponseEncodeJson :: EncodeJson GroupPackResponse where
+  encodeJson (GroupPackResponse o) =
+       "tag" := "GroupPackResponse"
+    ~> "user" := o.user
+    ~> "user_id" := o.userId
+    ~> "group" := o.group
+    ~> "group_id" := o.groupId
+    ~> "organization" := o.organization
+    ~> "organization_id" := o.organizationId
+    ~> "stat" := o.stat
+    ~> jsonEmptyObject
+
+
+instance groupPackResponseDecodeJson :: DecodeJson GroupPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    user <- obj .? "user"
+    userId <- obj .? "user_id"
+    group <- obj .? "group"
+    groupId <- obj .? "group_id"
+    organization <- obj .? "organization"
+    organizationId <- obj .? "organization_id"
+    stat <- obj .? "stat"
+    pure $ GroupPackResponse {
+      user,
+      userId,
+      group,
+      groupId,
+      organization,
+      organizationId,
+      stat
+    }
+
+
+instance groupPackResponseRequestable :: Requestable GroupPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupPackResponseRespondable :: Respondable GroupPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_id" json
+      <*> readProp "group" json
+      <*> readProp "group_id" json
+      <*> readProp "organization" json
+      <*> readProp "organization_id" json
+      <*> readProp "stat" json
+
+
+instance groupPackResponseIsForeign :: IsForeign GroupPackResponse where
+  read json =
+      mkGroupPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_id" json
+      <*> readProp "group" json
+      <*> readProp "group_id" json
+      <*> readProp "organization" json
+      <*> readProp "organization_id" json
+      <*> readProp "stat" json
+
+
+instance groupPackResponseShow :: Show GroupPackResponse where
+    show (GroupPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "group: " ++ show o.group ++ ", " ++ show "groupId: " ++ show o.groupId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat
+
+newtype GroupPackResponses = GroupPackResponses {
+  groupPackResponses :: (Array GroupPackResponse)
+}
+
+
+type GroupPackResponsesR = {
+  groupPackResponses :: (Array GroupPackResponse)
+}
+
+
+_GroupPackResponses :: LensP GroupPackResponses {
+  groupPackResponses :: (Array GroupPackResponse)
+}
+_GroupPackResponses f (GroupPackResponses o) = GroupPackResponses <$> f o
+
+
+mkGroupPackResponses :: (Array GroupPackResponse) -> GroupPackResponses
+mkGroupPackResponses groupPackResponses =
+  GroupPackResponses{groupPackResponses}
+
+
+unwrapGroupPackResponses (GroupPackResponses r) = r
+
+instance groupPackResponsesEncodeJson :: EncodeJson GroupPackResponses where
+  encodeJson (GroupPackResponses o) =
+       "tag" := "GroupPackResponses"
+    ~> "group_pack_responses" := o.groupPackResponses
+    ~> jsonEmptyObject
+
+
+instance groupPackResponsesDecodeJson :: DecodeJson GroupPackResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    groupPackResponses <- obj .? "group_pack_responses"
+    pure $ GroupPackResponses {
+      groupPackResponses
+    }
+
+
+instance groupPackResponsesRequestable :: Requestable GroupPackResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupPackResponsesRespondable :: Respondable GroupPackResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupPackResponses
+      <$> readProp "group_pack_responses" json
+
+
+instance groupPackResponsesIsForeign :: IsForeign GroupPackResponses where
+  read json =
+      mkGroupPackResponses
+      <$> readProp "group_pack_responses" json
+
+
+instance groupPackResponsesShow :: Show GroupPackResponses where
+    show (GroupPackResponses o) = show "groupPackResponses: " ++ show o.groupPackResponses
+
+newtype GroupMemberPackResponse = GroupMemberPackResponse {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  groupMember :: GroupMemberResponse,
+  groupMemberId :: Int
+}
+
+
+type GroupMemberPackResponseR = {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  groupMember :: GroupMemberResponse,
+  groupMemberId :: Int
+}
+
+
+_GroupMemberPackResponse :: LensP GroupMemberPackResponse {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  groupMember :: GroupMemberResponse,
+  groupMemberId :: Int
+}
+_GroupMemberPackResponse f (GroupMemberPackResponse o) = GroupMemberPackResponse <$> f o
+
+
+mkGroupMemberPackResponse :: UserSanitizedResponse -> Int -> GroupMemberResponse -> Int -> GroupMemberPackResponse
+mkGroupMemberPackResponse user userId groupMember groupMemberId =
+  GroupMemberPackResponse{user, userId, groupMember, groupMemberId}
+
+
+unwrapGroupMemberPackResponse (GroupMemberPackResponse r) = r
+
+instance groupMemberPackResponseEncodeJson :: EncodeJson GroupMemberPackResponse where
+  encodeJson (GroupMemberPackResponse o) =
+       "tag" := "GroupMemberPackResponse"
+    ~> "user" := o.user
+    ~> "user_id" := o.userId
+    ~> "group_member" := o.groupMember
+    ~> "group_member_id" := o.groupMemberId
+    ~> jsonEmptyObject
+
+
+instance groupMemberPackResponseDecodeJson :: DecodeJson GroupMemberPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    user <- obj .? "user"
+    userId <- obj .? "user_id"
+    groupMember <- obj .? "group_member"
+    groupMemberId <- obj .? "group_member_id"
+    pure $ GroupMemberPackResponse {
+      user,
+      userId,
+      groupMember,
+      groupMemberId
+    }
+
+
+instance groupMemberPackResponseRequestable :: Requestable GroupMemberPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupMemberPackResponseRespondable :: Respondable GroupMemberPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupMemberPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_id" json
+      <*> readProp "group_member" json
+      <*> readProp "group_member_id" json
+
+
+instance groupMemberPackResponseIsForeign :: IsForeign GroupMemberPackResponse where
+  read json =
+      mkGroupMemberPackResponse
+      <$> readProp "user" json
+      <*> readProp "user_id" json
+      <*> readProp "group_member" json
+      <*> readProp "group_member_id" json
+
+
+instance groupMemberPackResponseShow :: Show GroupMemberPackResponse where
+    show (GroupMemberPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "groupMember: " ++ show o.groupMember ++ ", " ++ show "groupMemberId: " ++ show o.groupMemberId
+
+newtype GroupMemberPackResponses = GroupMemberPackResponses {
+  groupMemberPackResponses :: (Array GroupMemberPackResponse)
+}
+
+
+type GroupMemberPackResponsesR = {
+  groupMemberPackResponses :: (Array GroupMemberPackResponse)
+}
+
+
+_GroupMemberPackResponses :: LensP GroupMemberPackResponses {
+  groupMemberPackResponses :: (Array GroupMemberPackResponse)
+}
+_GroupMemberPackResponses f (GroupMemberPackResponses o) = GroupMemberPackResponses <$> f o
+
+
+mkGroupMemberPackResponses :: (Array GroupMemberPackResponse) -> GroupMemberPackResponses
+mkGroupMemberPackResponses groupMemberPackResponses =
+  GroupMemberPackResponses{groupMemberPackResponses}
+
+
+unwrapGroupMemberPackResponses (GroupMemberPackResponses r) = r
+
+instance groupMemberPackResponsesEncodeJson :: EncodeJson GroupMemberPackResponses where
+  encodeJson (GroupMemberPackResponses o) =
+       "tag" := "GroupMemberPackResponses"
+    ~> "group_member_pack_responses" := o.groupMemberPackResponses
+    ~> jsonEmptyObject
+
+
+instance groupMemberPackResponsesDecodeJson :: DecodeJson GroupMemberPackResponses where
+  decodeJson o = do
+    obj <- decodeJson o
+    groupMemberPackResponses <- obj .? "group_member_pack_responses"
+    pure $ GroupMemberPackResponses {
+      groupMemberPackResponses
+    }
+
+
+instance groupMemberPackResponsesRequestable :: Requestable GroupMemberPackResponses where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance groupMemberPackResponsesRespondable :: Respondable GroupMemberPackResponses where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkGroupMemberPackResponses
+      <$> readProp "group_member_pack_responses" json
+
+
+instance groupMemberPackResponsesIsForeign :: IsForeign GroupMemberPackResponses where
+  read json =
+      mkGroupMemberPackResponses
+      <$> readProp "group_member_pack_responses" json
+
+
+instance groupMemberPackResponsesShow :: Show GroupMemberPackResponses where
+    show (GroupMemberPackResponses o) = show "groupMemberPackResponses: " ++ show o.groupMemberPackResponses
 
 newtype ForumPackResponse = ForumPackResponse {
   forum :: ForumResponse,
@@ -16233,6 +18454,66 @@ gender_ :: forall b a r. Lens { gender :: a | r } { gender :: b | r } a b
 gender_ f o = o { gender = _ } <$> f o.gender
 
 
+globalGroup_ :: forall b a r. Lens { globalGroup :: a | r } { globalGroup :: b | r } a b
+globalGroup_ f o = o { globalGroup = _ } <$> f o.globalGroup
+
+
+globalGroupId_ :: forall b a r. Lens { globalGroupId :: a | r } { globalGroupId :: b | r } a b
+globalGroupId_ f o = o { globalGroupId = _ } <$> f o.globalGroupId
+
+
+globalGroupPackResponses_ :: forall b a r. Lens { globalGroupPackResponses :: a | r } { globalGroupPackResponses :: b | r } a b
+globalGroupPackResponses_ f o = o { globalGroupPackResponses = _ } <$> f o.globalGroupPackResponses
+
+
+globalGroupResponses_ :: forall b a r. Lens { globalGroupResponses :: a | r } { globalGroupResponses :: b | r } a b
+globalGroupResponses_ f o = o { globalGroupResponses = _ } <$> f o.globalGroupResponses
+
+
+globalGroupStatResponses_ :: forall b a r. Lens { globalGroupStatResponses :: a | r } { globalGroupStatResponses :: b | r } a b
+globalGroupStatResponses_ f o = o { globalGroupStatResponses = _ } <$> f o.globalGroupStatResponses
+
+
+group_ :: forall b a r. Lens { group :: a | r } { group :: b | r } a b
+group_ f o = o { group = _ } <$> f o.group
+
+
+groupId_ :: forall b a r. Lens { groupId :: a | r } { groupId :: b | r } a b
+groupId_ f o = o { groupId = _ } <$> f o.groupId
+
+
+groupMember_ :: forall b a r. Lens { groupMember :: a | r } { groupMember :: b | r } a b
+groupMember_ f o = o { groupMember = _ } <$> f o.groupMember
+
+
+groupMemberId_ :: forall b a r. Lens { groupMemberId :: a | r } { groupMemberId :: b | r } a b
+groupMemberId_ f o = o { groupMemberId = _ } <$> f o.groupMemberId
+
+
+groupMemberPackResponses_ :: forall b a r. Lens { groupMemberPackResponses :: a | r } { groupMemberPackResponses :: b | r } a b
+groupMemberPackResponses_ f o = o { groupMemberPackResponses = _ } <$> f o.groupMemberPackResponses
+
+
+groupMemberResponses_ :: forall b a r. Lens { groupMemberResponses :: a | r } { groupMemberResponses :: b | r } a b
+groupMemberResponses_ f o = o { groupMemberResponses = _ } <$> f o.groupMemberResponses
+
+
+groupPackResponses_ :: forall b a r. Lens { groupPackResponses :: a | r } { groupPackResponses :: b | r } a b
+groupPackResponses_ f o = o { groupPackResponses = _ } <$> f o.groupPackResponses
+
+
+groupResponses_ :: forall b a r. Lens { groupResponses :: a | r } { groupResponses :: b | r } a b
+groupResponses_ f o = o { groupResponses = _ } <$> f o.groupResponses
+
+
+groupStatResponses_ :: forall b a r. Lens { groupStatResponses :: a | r } { groupStatResponses :: b | r } a b
+groupStatResponses_ f o = o { groupStatResponses = _ } <$> f o.groupStatResponses
+
+
+groups_ :: forall b a r. Lens { groups :: a | r } { groups :: b | r } a b
+groups_ f o = o { groups = _ } <$> f o.groups
+
+
 guard_ :: forall b a r. Lens { guard :: a | r } { guard :: b | r } a b
 guard_ f o = o { guard = _ } <$> f o.guard
 
@@ -16629,6 +18910,26 @@ teamId_ :: forall b a r. Lens { teamId :: a | r } { teamId :: b | r } a b
 teamId_ f o = o { teamId = _ } <$> f o.teamId
 
 
+teamMember_ :: forall b a r. Lens { teamMember :: a | r } { teamMember :: b | r } a b
+teamMember_ f o = o { teamMember = _ } <$> f o.teamMember
+
+
+teamMemberId_ :: forall b a r. Lens { teamMemberId :: a | r } { teamMemberId :: b | r } a b
+teamMemberId_ f o = o { teamMemberId = _ } <$> f o.teamMemberId
+
+
+teamMemberPackResponses_ :: forall b a r. Lens { teamMemberPackResponses :: a | r } { teamMemberPackResponses :: b | r } a b
+teamMemberPackResponses_ f o = o { teamMemberPackResponses = _ } <$> f o.teamMemberPackResponses
+
+
+teamMemberResponses_ :: forall b a r. Lens { teamMemberResponses :: a | r } { teamMemberResponses :: b | r } a b
+teamMemberResponses_ f o = o { teamMemberResponses = _ } <$> f o.teamMemberResponses
+
+
+teamMemberStatResponses_ :: forall b a r. Lens { teamMemberStatResponses :: a | r } { teamMemberStatResponses :: b | r } a b
+teamMemberStatResponses_ f o = o { teamMemberStatResponses = _ } <$> f o.teamMemberStatResponses
+
+
 teamPackResponses_ :: forall b a r. Lens { teamPackResponses :: a | r } { teamPackResponses :: b | r } a b
 teamPackResponses_ f o = o { teamPackResponses = _ } <$> f o.teamPackResponses
 
@@ -16693,6 +18994,10 @@ threadPosts_ :: forall b a r. Lens { threadPosts :: a | r } { threadPosts :: b |
 threadPosts_ f o = o { threadPosts = _ } <$> f o.threadPosts
 
 
+threadPostsPerThread_ :: forall b a r. Lens { threadPostsPerThread :: a | r } { threadPostsPerThread :: b | r } a b
+threadPostsPerThread_ f o = o { threadPostsPerThread = _ } <$> f o.threadPostsPerThread
+
+
 threadResponses_ :: forall b a r. Lens { threadResponses :: a | r } { threadResponses :: b | r } a b
 threadResponses_ f o = o { threadResponses = _ } <$> f o.threadResponses
 
@@ -16703,6 +19008,10 @@ threadStatResponses_ f o = o { threadStatResponses = _ } <$> f o.threadStatRespo
 
 threads_ :: forall b a r. Lens { threads :: a | r } { threads :: b | r } a b
 threads_ f o = o { threads = _ } <$> f o.threads
+
+
+threadsPerBoard_ :: forall b a r. Lens { threadsPerBoard :: a | r } { threadsPerBoard :: b | r } a b
+threadsPerBoard_ f o = o { threadsPerBoard = _ } <$> f o.threadsPerBoard
 
 
 title_ :: forall b a r. Lens { title :: a | r } { title :: b | r } a b

@@ -148,6 +148,8 @@ forumRequestToForumResponse id userId orgId name active createdAt modifiedBy mod
     name: name,
     displayName: o.displayName,
     description: o.description,
+    threadsPerBoard: o.threadsPerBoard,
+    threadPostsPerThread: o.threadPostsPerThread,
     icon: o.icon,
     tags: o.tags,
     visibility: o.visibility,
@@ -165,6 +167,8 @@ forumResponseToForumRequest  (ForumResponse o) =
   ForumRequest {
     displayName: o.displayName,
     description: o.description,
+    threadsPerBoard: o.threadsPerBoard,
+    threadPostsPerThread: o.threadPostsPerThread,
     icon: o.icon,
     tags: o.tags,
     visibility: o.visibility,
