@@ -1324,11 +1324,11 @@ getGroupMemberPacks_ByGlobalGroupId params _ByGlobalGroupId = handleError <$> ge
 getGroupMemberPacks_ByGlobalGroupId' :: Int -> ApiEff (Either ApiError GroupMemberPackResponses)
 getGroupMemberPacks_ByGlobalGroupId' _ByGlobalGroupId = handleError <$> getAt [ByGlobalGroupId _ByGlobalGroupId] ["group_member_packs"]
 
-getGroupMemberPacks_ByroupId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError GroupMemberPackResponses)
-getGroupMemberPacks_ByroupId params _ByroupId = handleError <$> getAt (map qp params ++ map qp [ByroupId _ByroupId]) ["group_member_packs"]
+getGroupMemberPacks_ByGroupId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError GroupMemberPackResponses)
+getGroupMemberPacks_ByGroupId params _ByGroupId = handleError <$> getAt (map qp params ++ map qp [ByGroupId _ByGroupId]) ["group_member_packs"]
 
-getGroupMemberPacks_ByroupId' :: Int -> ApiEff (Either ApiError GroupMemberPackResponses)
-getGroupMemberPacks_ByroupId' _ByroupId = handleError <$> getAt [ByroupId _ByroupId] ["group_member_packs"]
+getGroupMemberPacks_ByGroupId' :: Int -> ApiEff (Either ApiError GroupMemberPackResponses)
+getGroupMemberPacks_ByGroupId' _ByGroupId = handleError <$> getAt [ByGroupId _ByGroupId] ["group_member_packs"]
 
 getGroupMemberPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError GroupMemberPackResponse)
 getGroupMemberPack params group_member_id = handleError <$> getAt params ["group_member_pack", show group_member_id]
