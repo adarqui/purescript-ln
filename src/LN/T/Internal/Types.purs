@@ -2448,7 +2448,6 @@ instance globalGroupRequestShow :: Show GlobalGroupRequest where
 newtype GlobalGroupResponse = GlobalGroupResponse {
   id :: Int,
   userId :: Int,
-  orgId :: Int,
   name :: String,
   displayName :: String,
   description :: (Maybe String),
@@ -2468,7 +2467,6 @@ newtype GlobalGroupResponse = GlobalGroupResponse {
 type GlobalGroupResponseR = {
   id :: Int,
   userId :: Int,
-  orgId :: Int,
   name :: String,
   displayName :: String,
   description :: (Maybe String),
@@ -2488,7 +2486,6 @@ type GlobalGroupResponseR = {
 _GlobalGroupResponse :: LensP GlobalGroupResponse {
   id :: Int,
   userId :: Int,
-  orgId :: Int,
   name :: String,
   displayName :: String,
   description :: (Maybe String),
@@ -2506,9 +2503,9 @@ _GlobalGroupResponse :: LensP GlobalGroupResponse {
 _GlobalGroupResponse f (GlobalGroupResponse o) = GlobalGroupResponse <$> f o
 
 
-mkGlobalGroupResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> GlobalGroupResponse
-mkGlobalGroupResponse id userId orgId name displayName description membership icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
-  GlobalGroupResponse{id, userId, orgId, name, displayName, description, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkGlobalGroupResponse :: Int -> Int -> String -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> GlobalGroupResponse
+mkGlobalGroupResponse id userId name displayName description membership icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
+  GlobalGroupResponse{id, userId, name, displayName, description, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapGlobalGroupResponse (GlobalGroupResponse r) = r
@@ -2518,7 +2515,6 @@ instance globalGroupResponseEncodeJson :: EncodeJson GlobalGroupResponse where
        "tag" := "GlobalGroupResponse"
     ~> "id" := o.id
     ~> "user_id" := o.userId
-    ~> "org_id" := o.orgId
     ~> "name" := o.name
     ~> "display_name" := o.displayName
     ~> "description" := o.description
@@ -2540,7 +2536,6 @@ instance globalGroupResponseDecodeJson :: DecodeJson GlobalGroupResponse where
     obj <- decodeJson o
     id <- obj .? "id"
     userId <- obj .? "user_id"
-    orgId <- obj .? "org_id"
     name <- obj .? "name"
     displayName <- obj .? "display_name"
     description <- obj .? "description"
@@ -2557,7 +2552,6 @@ instance globalGroupResponseDecodeJson :: DecodeJson GlobalGroupResponse where
     pure $ GlobalGroupResponse {
       id,
       userId,
-      orgId,
       name,
       displayName,
       description,
@@ -2587,7 +2581,6 @@ instance globalGroupResponseRespondable :: Respondable GlobalGroupResponse where
       mkGlobalGroupResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
-      <*> readProp "org_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
@@ -2608,7 +2601,6 @@ instance globalGroupResponseIsForeign :: IsForeign GlobalGroupResponse where
       mkGlobalGroupResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
-      <*> readProp "org_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
       <*> (runNullOrUndefined <$> readProp "description" json)
@@ -2625,7 +2617,7 @@ instance globalGroupResponseIsForeign :: IsForeign GlobalGroupResponse where
 
 
 instance globalGroupResponseShow :: Show GlobalGroupResponse where
-    show (GlobalGroupResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (GlobalGroupResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype GlobalGroupResponses = GlobalGroupResponses {
   globalGroupResponses :: (Array GlobalGroupResponse)
