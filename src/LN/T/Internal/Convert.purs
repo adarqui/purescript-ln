@@ -59,6 +59,7 @@ boardRequestToBoardResponse id userId forumId parentId name active createdAt mod
     isAnonymous: o.isAnonymous,
     canCreateSubBoards: o.canCreateSubBoards,
     canCreateThreads: o.canCreateThreads,
+    suggestedTags: o.suggestedTags,
     icon: o.icon,
     tags: o.tags,
     active: active,
@@ -78,6 +79,7 @@ boardResponseToBoardRequest  (BoardResponse o) =
     isAnonymous: o.isAnonymous,
     canCreateSubBoards: o.canCreateSubBoards,
     canCreateThreads: o.canCreateThreads,
+    suggestedTags: o.suggestedTags,
     icon: o.icon,
     tags: o.tags,
     guard: o.guard
