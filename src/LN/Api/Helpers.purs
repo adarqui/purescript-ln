@@ -4,10 +4,10 @@ module LN.Api.Helpers (
 
 
 
-import Halogen (liftAff')
-import Prelude ((<<<))
+import Control.Monad.Aff.Free (fromAff)
+import Prelude                ((<<<))
 import Purescript.Api.Helpers (rD)
 
 
 
-rd = liftAff' <<< rD
+rd = fromAff <<< rD

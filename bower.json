@@ -29,7 +29,8 @@
     "purescript-lens": "^0.9.1",
     "purescript-argonaut": "^0.12.0",
     "purescript-enums": "^0.7.0",
-    "purescript-globals": "^0.2.2"
+    "purescript-globals": "^0.2.2",
+    "purescript-aff-free": "^0.1.2"
   },
   "resolutions": {
     "purescript-aff": "^0.14.1",
