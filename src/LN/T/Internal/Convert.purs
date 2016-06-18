@@ -649,6 +649,7 @@ userRequestToUserResponse id nick emailMD5 active guard createdAt modifiedAt dea
     emailMD5: emailMD5,
     plugin: o.plugin,
     ident: o.ident,
+    acceptTOS: o.acceptTOS,
     active: active,
     guard: guard,
     createdAt: createdAt,
@@ -665,7 +666,8 @@ userResponseToUserRequest  (UserResponse o) =
     name: o.name,
     email: o.email,
     plugin: o.plugin,
-    ident: o.ident
+    ident: o.ident,
+    acceptTOS: o.acceptTOS
   }
 
 
@@ -683,14 +685,15 @@ userRequestToUserSanitizedResponse id nick emailMD5 active guard createdAt activ
   }
 
 
-userSanitizedResponseToUserRequest :: String -> String -> String -> String -> UserSanitizedResponse -> UserRequest
-userSanitizedResponseToUserRequest name email plugin ident (UserSanitizedResponse o) =
+userSanitizedResponseToUserRequest :: String -> String -> String -> String -> (Maybe Date) -> UserSanitizedResponse -> UserRequest
+userSanitizedResponseToUserRequest name email plugin ident acceptTOS (UserSanitizedResponse o) =
   UserRequest {
     displayNick: o.displayNick,
     name: name,
     email: email,
     plugin: plugin,
-    ident: ident
+    ident: ident,
+    acceptTOS: acceptTOS
   }
 
 

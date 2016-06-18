@@ -15400,7 +15400,8 @@ newtype UserRequest = UserRequest {
   name :: String,
   email :: String,
   plugin :: String,
-  ident :: String
+  ident :: String,
+  acceptTOS :: (Maybe Date)
 }
 
 
@@ -15409,7 +15410,8 @@ type UserRequestR = {
   name :: String,
   email :: String,
   plugin :: String,
-  ident :: String
+  ident :: String,
+  acceptTOS :: (Maybe Date)
 }
 
 
@@ -15418,14 +15420,15 @@ _UserRequest :: LensP UserRequest {
   name :: String,
   email :: String,
   plugin :: String,
-  ident :: String
+  ident :: String,
+  acceptTOS :: (Maybe Date)
 }
 _UserRequest f (UserRequest o) = UserRequest <$> f o
 
 
-mkUserRequest :: String -> String -> String -> String -> String -> UserRequest
-mkUserRequest displayNick name email plugin ident =
-  UserRequest{displayNick, name, email, plugin, ident}
+mkUserRequest :: String -> String -> String -> String -> String -> (Maybe Date) -> UserRequest
+mkUserRequest displayNick name email plugin ident acceptTOS =
+  UserRequest{displayNick, name, email, plugin, ident, acceptTOS}
 
 
 unwrapUserRequest (UserRequest r) = r
@@ -15438,6 +15441,7 @@ instance userRequestEncodeJson :: EncodeJson UserRequest where
     ~> "email" := o.email
     ~> "plugin" := o.plugin
     ~> "ident" := o.ident
+    ~> "accept_tos" := o.acceptTOS
     ~> jsonEmptyObject
 
 
@@ -15449,12 +15453,14 @@ instance userRequestDecodeJson :: DecodeJson UserRequest where
     email <- obj .? "email"
     plugin <- obj .? "plugin"
     ident <- obj .? "ident"
+    acceptTOS <- obj .? "accept_tos"
     pure $ UserRequest {
       displayNick,
       name,
       email,
       plugin,
-      ident
+      ident,
+      acceptTOS
     }
 
 
@@ -15474,6 +15480,7 @@ instance userRequestRespondable :: Respondable UserRequest where
       <*> readProp "email" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
+      <*> (runNullOrUndefined <$> readProp "accept_tos" json)
 
 
 instance userRequestIsForeign :: IsForeign UserRequest where
@@ -15484,10 +15491,11 @@ instance userRequestIsForeign :: IsForeign UserRequest where
       <*> readProp "email" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
+      <*> (runNullOrUndefined <$> readProp "accept_tos" json)
 
 
 instance userRequestShow :: Show UserRequest where
-    show (UserRequest o) = show "displayNick: " ++ show o.displayNick ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "plugin: " ++ show o.plugin ++ ", " ++ show "ident: " ++ show o.ident
+    show (UserRequest o) = show "displayNick: " ++ show o.displayNick ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "plugin: " ++ show o.plugin ++ ", " ++ show "ident: " ++ show o.ident ++ ", " ++ show "acceptTOS: " ++ show o.acceptTOS
 
 newtype UserResponse = UserResponse {
   id :: Int,
@@ -15498,6 +15506,7 @@ newtype UserResponse = UserResponse {
   emailMD5 :: String,
   plugin :: String,
   ident :: String,
+  acceptTOS :: (Maybe Date),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -15516,6 +15525,7 @@ type UserResponseR = {
   emailMD5 :: String,
   plugin :: String,
   ident :: String,
+  acceptTOS :: (Maybe Date),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -15534,6 +15544,7 @@ _UserResponse :: LensP UserResponse {
   emailMD5 :: String,
   plugin :: String,
   ident :: String,
+  acceptTOS :: (Maybe Date),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -15544,9 +15555,9 @@ _UserResponse :: LensP UserResponse {
 _UserResponse f (UserResponse o) = UserResponse <$> f o
 
 
-mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> String -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> UserResponse
-mkUserResponse id nick displayNick name email emailMD5 plugin ident active guard createdAt modifiedAt deactivatedAt activityAt =
-  UserResponse{id, nick, displayNick, name, email, emailMD5, plugin, ident, active, guard, createdAt, modifiedAt, deactivatedAt, activityAt}
+mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> String -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> UserResponse
+mkUserResponse id nick displayNick name email emailMD5 plugin ident acceptTOS active guard createdAt modifiedAt deactivatedAt activityAt =
+  UserResponse{id, nick, displayNick, name, email, emailMD5, plugin, ident, acceptTOS, active, guard, createdAt, modifiedAt, deactivatedAt, activityAt}
 
 
 unwrapUserResponse (UserResponse r) = r
@@ -15562,6 +15573,7 @@ instance userResponseEncodeJson :: EncodeJson UserResponse where
     ~> "email_md5" := o.emailMD5
     ~> "plugin" := o.plugin
     ~> "ident" := o.ident
+    ~> "accept_tos" := o.acceptTOS
     ~> "active" := o.active
     ~> "guard" := o.guard
     ~> "created_at" := o.createdAt
@@ -15582,6 +15594,7 @@ instance userResponseDecodeJson :: DecodeJson UserResponse where
     emailMD5 <- obj .? "email_md5"
     plugin <- obj .? "plugin"
     ident <- obj .? "ident"
+    acceptTOS <- obj .? "accept_tos"
     active <- obj .? "active"
     guard <- obj .? "guard"
     createdAt <- obj .? "created_at"
@@ -15597,6 +15610,7 @@ instance userResponseDecodeJson :: DecodeJson UserResponse where
       emailMD5,
       plugin,
       ident,
+      acceptTOS,
       active,
       guard,
       createdAt,
@@ -15625,6 +15639,7 @@ instance userResponseRespondable :: Respondable UserResponse where
       <*> readProp "email_md5" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
+      <*> (runNullOrUndefined <$> readProp "accept_tos" json)
       <*> readProp "active" json
       <*> readProp "guard" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
@@ -15644,6 +15659,7 @@ instance userResponseIsForeign :: IsForeign UserResponse where
       <*> readProp "email_md5" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
+      <*> (runNullOrUndefined <$> readProp "accept_tos" json)
       <*> readProp "active" json
       <*> readProp "guard" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
@@ -15653,7 +15669,7 @@ instance userResponseIsForeign :: IsForeign UserResponse where
 
 
 instance userResponseShow :: Show UserResponse where
-    show (UserResponse o) = show "id: " ++ show o.id ++ ", " ++ show "nick: " ++ show o.nick ++ ", " ++ show "displayNick: " ++ show o.displayNick ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "plugin: " ++ show o.plugin ++ ", " ++ show "ident: " ++ show o.ident ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "deactivatedAt: " ++ show o.deactivatedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (UserResponse o) = show "id: " ++ show o.id ++ ", " ++ show "nick: " ++ show o.nick ++ ", " ++ show "displayNick: " ++ show o.displayNick ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "plugin: " ++ show o.plugin ++ ", " ++ show "ident: " ++ show o.ident ++ ", " ++ show "acceptTOS: " ++ show o.acceptTOS ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "deactivatedAt: " ++ show o.deactivatedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype UserResponses = UserResponses {
   userResponses :: (Array UserResponse)
@@ -16149,7 +16165,8 @@ newtype OrganizationPackResponse = OrganizationPackResponse {
   organizationId :: Int,
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -16160,7 +16177,8 @@ type OrganizationPackResponseR = {
   organizationId :: Int,
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -16171,14 +16189,15 @@ _OrganizationPackResponse :: LensP OrganizationPackResponse {
   organizationId :: Int,
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 _OrganizationPackResponse f (OrganizationPackResponse o) = OrganizationPackResponse <$> f o
 
 
-mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> OrganizationPackResponse
-mkOrganizationPackResponse user userId organization organizationId stat like star =
-  OrganizationPackResponse{user, userId, organization, organizationId, stat, like, star}
+mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> OrganizationPackResponse
+mkOrganizationPackResponse user userId organization organizationId stat like star isOwner =
+  OrganizationPackResponse{user, userId, organization, organizationId, stat, like, star, isOwner}
 
 
 unwrapOrganizationPackResponse (OrganizationPackResponse r) = r
@@ -16193,6 +16212,7 @@ instance organizationPackResponseEncodeJson :: EncodeJson OrganizationPackRespon
     ~> "stat" := o.stat
     ~> "like" := o.like
     ~> "star" := o.star
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -16206,6 +16226,7 @@ instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackRespon
     stat <- obj .? "stat"
     like <- obj .? "like"
     star <- obj .? "star"
+    isOwner <- obj .? "is_owner"
     pure $ OrganizationPackResponse {
       user,
       userId,
@@ -16213,7 +16234,8 @@ instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackRespon
       organizationId,
       stat,
       like,
-      star
+      star,
+      isOwner
     }
 
 
@@ -16235,6 +16257,7 @@ instance organizationPackResponseRespondable :: Respondable OrganizationPackResp
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse where
@@ -16247,10 +16270,11 @@ instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance organizationPackResponseShow :: Show OrganizationPackResponse where
-    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
+    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype OrganizationPackResponses = OrganizationPackResponses {
   organizationPackResponses :: (Array OrganizationPackResponse)
@@ -16321,7 +16345,8 @@ newtype TeamPackResponse = TeamPackResponse {
   teamId :: Int,
   stat :: TeamStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -16332,7 +16357,8 @@ type TeamPackResponseR = {
   teamId :: Int,
   stat :: TeamStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -16343,14 +16369,15 @@ _TeamPackResponse :: LensP TeamPackResponse {
   teamId :: Int,
   stat :: TeamStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 _TeamPackResponse f (TeamPackResponse o) = TeamPackResponse <$> f o
 
 
-mkTeamPackResponse :: UserSanitizedResponse -> Int -> TeamResponse -> Int -> TeamStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> TeamPackResponse
-mkTeamPackResponse user userId team teamId stat like star =
-  TeamPackResponse{user, userId, team, teamId, stat, like, star}
+mkTeamPackResponse :: UserSanitizedResponse -> Int -> TeamResponse -> Int -> TeamStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> TeamPackResponse
+mkTeamPackResponse user userId team teamId stat like star isOwner =
+  TeamPackResponse{user, userId, team, teamId, stat, like, star, isOwner}
 
 
 unwrapTeamPackResponse (TeamPackResponse r) = r
@@ -16365,6 +16392,7 @@ instance teamPackResponseEncodeJson :: EncodeJson TeamPackResponse where
     ~> "stat" := o.stat
     ~> "like" := o.like
     ~> "star" := o.star
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -16378,6 +16406,7 @@ instance teamPackResponseDecodeJson :: DecodeJson TeamPackResponse where
     stat <- obj .? "stat"
     like <- obj .? "like"
     star <- obj .? "star"
+    isOwner <- obj .? "is_owner"
     pure $ TeamPackResponse {
       user,
       userId,
@@ -16385,7 +16414,8 @@ instance teamPackResponseDecodeJson :: DecodeJson TeamPackResponse where
       teamId,
       stat,
       like,
-      star
+      star,
+      isOwner
     }
 
 
@@ -16407,6 +16437,7 @@ instance teamPackResponseRespondable :: Respondable TeamPackResponse where
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance teamPackResponseIsForeign :: IsForeign TeamPackResponse where
@@ -16419,10 +16450,11 @@ instance teamPackResponseIsForeign :: IsForeign TeamPackResponse where
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance teamPackResponseShow :: Show TeamPackResponse where
-    show (TeamPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "team: " ++ show o.team ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
+    show (TeamPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "team: " ++ show o.team ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype TeamPackResponses = TeamPackResponses {
   teamPackResponses :: (Array TeamPackResponse)
@@ -16490,7 +16522,8 @@ newtype TeamMemberPackResponse = TeamMemberPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   teamMember :: TeamMemberResponse,
-  teamMemberId :: Int
+  teamMemberId :: Int,
+  isOwner :: Boolean
 }
 
 
@@ -16498,7 +16531,8 @@ type TeamMemberPackResponseR = {
   user :: UserSanitizedResponse,
   userId :: Int,
   teamMember :: TeamMemberResponse,
-  teamMemberId :: Int
+  teamMemberId :: Int,
+  isOwner :: Boolean
 }
 
 
@@ -16506,14 +16540,15 @@ _TeamMemberPackResponse :: LensP TeamMemberPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   teamMember :: TeamMemberResponse,
-  teamMemberId :: Int
+  teamMemberId :: Int,
+  isOwner :: Boolean
 }
 _TeamMemberPackResponse f (TeamMemberPackResponse o) = TeamMemberPackResponse <$> f o
 
 
-mkTeamMemberPackResponse :: UserSanitizedResponse -> Int -> TeamMemberResponse -> Int -> TeamMemberPackResponse
-mkTeamMemberPackResponse user userId teamMember teamMemberId =
-  TeamMemberPackResponse{user, userId, teamMember, teamMemberId}
+mkTeamMemberPackResponse :: UserSanitizedResponse -> Int -> TeamMemberResponse -> Int -> Boolean -> TeamMemberPackResponse
+mkTeamMemberPackResponse user userId teamMember teamMemberId isOwner =
+  TeamMemberPackResponse{user, userId, teamMember, teamMemberId, isOwner}
 
 
 unwrapTeamMemberPackResponse (TeamMemberPackResponse r) = r
@@ -16525,6 +16560,7 @@ instance teamMemberPackResponseEncodeJson :: EncodeJson TeamMemberPackResponse w
     ~> "user_id" := o.userId
     ~> "team_member" := o.teamMember
     ~> "team_member_id" := o.teamMemberId
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -16535,11 +16571,13 @@ instance teamMemberPackResponseDecodeJson :: DecodeJson TeamMemberPackResponse w
     userId <- obj .? "user_id"
     teamMember <- obj .? "team_member"
     teamMemberId <- obj .? "team_member_id"
+    isOwner <- obj .? "is_owner"
     pure $ TeamMemberPackResponse {
       user,
       userId,
       teamMember,
-      teamMemberId
+      teamMemberId,
+      isOwner
     }
 
 
@@ -16558,6 +16596,7 @@ instance teamMemberPackResponseRespondable :: Respondable TeamMemberPackResponse
       <*> readProp "user_id" json
       <*> readProp "team_member" json
       <*> readProp "team_member_id" json
+      <*> readProp "is_owner" json
 
 
 instance teamMemberPackResponseIsForeign :: IsForeign TeamMemberPackResponse where
@@ -16567,10 +16606,11 @@ instance teamMemberPackResponseIsForeign :: IsForeign TeamMemberPackResponse whe
       <*> readProp "user_id" json
       <*> readProp "team_member" json
       <*> readProp "team_member_id" json
+      <*> readProp "is_owner" json
 
 
 instance teamMemberPackResponseShow :: Show TeamMemberPackResponse where
-    show (TeamMemberPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamMember: " ++ show o.teamMember ++ ", " ++ show "teamMemberId: " ++ show o.teamMemberId
+    show (TeamMemberPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamMember: " ++ show o.teamMember ++ ", " ++ show "teamMemberId: " ++ show o.teamMemberId ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype TeamMemberPackResponses = TeamMemberPackResponses {
   teamMemberPackResponses :: (Array TeamMemberPackResponse)
@@ -16967,7 +17007,8 @@ newtype GlobalGroupPackResponse = GlobalGroupPackResponse {
   userId :: Int,
   globalGroup :: GlobalGroupResponse,
   globalGroupId :: Int,
-  stat :: GlobalGroupStatResponse
+  stat :: GlobalGroupStatResponse,
+  isOwner :: Boolean
 }
 
 
@@ -16976,7 +17017,8 @@ type GlobalGroupPackResponseR = {
   userId :: Int,
   globalGroup :: GlobalGroupResponse,
   globalGroupId :: Int,
-  stat :: GlobalGroupStatResponse
+  stat :: GlobalGroupStatResponse,
+  isOwner :: Boolean
 }
 
 
@@ -16985,14 +17027,15 @@ _GlobalGroupPackResponse :: LensP GlobalGroupPackResponse {
   userId :: Int,
   globalGroup :: GlobalGroupResponse,
   globalGroupId :: Int,
-  stat :: GlobalGroupStatResponse
+  stat :: GlobalGroupStatResponse,
+  isOwner :: Boolean
 }
 _GlobalGroupPackResponse f (GlobalGroupPackResponse o) = GlobalGroupPackResponse <$> f o
 
 
-mkGlobalGroupPackResponse :: UserSanitizedResponse -> Int -> GlobalGroupResponse -> Int -> GlobalGroupStatResponse -> GlobalGroupPackResponse
-mkGlobalGroupPackResponse user userId globalGroup globalGroupId stat =
-  GlobalGroupPackResponse{user, userId, globalGroup, globalGroupId, stat}
+mkGlobalGroupPackResponse :: UserSanitizedResponse -> Int -> GlobalGroupResponse -> Int -> GlobalGroupStatResponse -> Boolean -> GlobalGroupPackResponse
+mkGlobalGroupPackResponse user userId globalGroup globalGroupId stat isOwner =
+  GlobalGroupPackResponse{user, userId, globalGroup, globalGroupId, stat, isOwner}
 
 
 unwrapGlobalGroupPackResponse (GlobalGroupPackResponse r) = r
@@ -17005,6 +17048,7 @@ instance globalGroupPackResponseEncodeJson :: EncodeJson GlobalGroupPackResponse
     ~> "global_group" := o.globalGroup
     ~> "global_group_id" := o.globalGroupId
     ~> "stat" := o.stat
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -17016,12 +17060,14 @@ instance globalGroupPackResponseDecodeJson :: DecodeJson GlobalGroupPackResponse
     globalGroup <- obj .? "global_group"
     globalGroupId <- obj .? "global_group_id"
     stat <- obj .? "stat"
+    isOwner <- obj .? "is_owner"
     pure $ GlobalGroupPackResponse {
       user,
       userId,
       globalGroup,
       globalGroupId,
-      stat
+      stat,
+      isOwner
     }
 
 
@@ -17041,6 +17087,7 @@ instance globalGroupPackResponseRespondable :: Respondable GlobalGroupPackRespon
       <*> readProp "global_group" json
       <*> readProp "global_group_id" json
       <*> readProp "stat" json
+      <*> readProp "is_owner" json
 
 
 instance globalGroupPackResponseIsForeign :: IsForeign GlobalGroupPackResponse where
@@ -17051,10 +17098,11 @@ instance globalGroupPackResponseIsForeign :: IsForeign GlobalGroupPackResponse w
       <*> readProp "global_group" json
       <*> readProp "global_group_id" json
       <*> readProp "stat" json
+      <*> readProp "is_owner" json
 
 
 instance globalGroupPackResponseShow :: Show GlobalGroupPackResponse where
-    show (GlobalGroupPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "globalGroup: " ++ show o.globalGroup ++ ", " ++ show "globalGroupId: " ++ show o.globalGroupId ++ ", " ++ show "stat: " ++ show o.stat
+    show (GlobalGroupPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "globalGroup: " ++ show o.globalGroup ++ ", " ++ show "globalGroupId: " ++ show o.globalGroupId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype GlobalGroupPackResponses = GlobalGroupPackResponses {
   globalGroupPackResponses :: (Array GlobalGroupPackResponse)
@@ -17125,7 +17173,8 @@ newtype GroupPackResponse = GroupPackResponse {
   groupId :: Int,
   organization :: OrganizationResponse,
   organizationId :: Int,
-  stat :: GroupStatResponse
+  stat :: GroupStatResponse,
+  isOwner :: Boolean
 }
 
 
@@ -17136,7 +17185,8 @@ type GroupPackResponseR = {
   groupId :: Int,
   organization :: OrganizationResponse,
   organizationId :: Int,
-  stat :: GroupStatResponse
+  stat :: GroupStatResponse,
+  isOwner :: Boolean
 }
 
 
@@ -17147,14 +17197,15 @@ _GroupPackResponse :: LensP GroupPackResponse {
   groupId :: Int,
   organization :: OrganizationResponse,
   organizationId :: Int,
-  stat :: GroupStatResponse
+  stat :: GroupStatResponse,
+  isOwner :: Boolean
 }
 _GroupPackResponse f (GroupPackResponse o) = GroupPackResponse <$> f o
 
 
-mkGroupPackResponse :: UserSanitizedResponse -> Int -> GroupResponse -> Int -> OrganizationResponse -> Int -> GroupStatResponse -> GroupPackResponse
-mkGroupPackResponse user userId group groupId organization organizationId stat =
-  GroupPackResponse{user, userId, group, groupId, organization, organizationId, stat}
+mkGroupPackResponse :: UserSanitizedResponse -> Int -> GroupResponse -> Int -> OrganizationResponse -> Int -> GroupStatResponse -> Boolean -> GroupPackResponse
+mkGroupPackResponse user userId group groupId organization organizationId stat isOwner =
+  GroupPackResponse{user, userId, group, groupId, organization, organizationId, stat, isOwner}
 
 
 unwrapGroupPackResponse (GroupPackResponse r) = r
@@ -17169,6 +17220,7 @@ instance groupPackResponseEncodeJson :: EncodeJson GroupPackResponse where
     ~> "organization" := o.organization
     ~> "organization_id" := o.organizationId
     ~> "stat" := o.stat
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -17182,6 +17234,7 @@ instance groupPackResponseDecodeJson :: DecodeJson GroupPackResponse where
     organization <- obj .? "organization"
     organizationId <- obj .? "organization_id"
     stat <- obj .? "stat"
+    isOwner <- obj .? "is_owner"
     pure $ GroupPackResponse {
       user,
       userId,
@@ -17189,7 +17242,8 @@ instance groupPackResponseDecodeJson :: DecodeJson GroupPackResponse where
       groupId,
       organization,
       organizationId,
-      stat
+      stat,
+      isOwner
     }
 
 
@@ -17211,6 +17265,7 @@ instance groupPackResponseRespondable :: Respondable GroupPackResponse where
       <*> readProp "organization" json
       <*> readProp "organization_id" json
       <*> readProp "stat" json
+      <*> readProp "is_owner" json
 
 
 instance groupPackResponseIsForeign :: IsForeign GroupPackResponse where
@@ -17223,10 +17278,11 @@ instance groupPackResponseIsForeign :: IsForeign GroupPackResponse where
       <*> readProp "organization" json
       <*> readProp "organization_id" json
       <*> readProp "stat" json
+      <*> readProp "is_owner" json
 
 
 instance groupPackResponseShow :: Show GroupPackResponse where
-    show (GroupPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "group: " ++ show o.group ++ ", " ++ show "groupId: " ++ show o.groupId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat
+    show (GroupPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "group: " ++ show o.group ++ ", " ++ show "groupId: " ++ show o.groupId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype GroupPackResponses = GroupPackResponses {
   groupPackResponses :: (Array GroupPackResponse)
@@ -17294,7 +17350,8 @@ newtype GroupMemberPackResponse = GroupMemberPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   groupMember :: GroupMemberResponse,
-  groupMemberId :: Int
+  groupMemberId :: Int,
+  isOwner :: Boolean
 }
 
 
@@ -17302,7 +17359,8 @@ type GroupMemberPackResponseR = {
   user :: UserSanitizedResponse,
   userId :: Int,
   groupMember :: GroupMemberResponse,
-  groupMemberId :: Int
+  groupMemberId :: Int,
+  isOwner :: Boolean
 }
 
 
@@ -17310,14 +17368,15 @@ _GroupMemberPackResponse :: LensP GroupMemberPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   groupMember :: GroupMemberResponse,
-  groupMemberId :: Int
+  groupMemberId :: Int,
+  isOwner :: Boolean
 }
 _GroupMemberPackResponse f (GroupMemberPackResponse o) = GroupMemberPackResponse <$> f o
 
 
-mkGroupMemberPackResponse :: UserSanitizedResponse -> Int -> GroupMemberResponse -> Int -> GroupMemberPackResponse
-mkGroupMemberPackResponse user userId groupMember groupMemberId =
-  GroupMemberPackResponse{user, userId, groupMember, groupMemberId}
+mkGroupMemberPackResponse :: UserSanitizedResponse -> Int -> GroupMemberResponse -> Int -> Boolean -> GroupMemberPackResponse
+mkGroupMemberPackResponse user userId groupMember groupMemberId isOwner =
+  GroupMemberPackResponse{user, userId, groupMember, groupMemberId, isOwner}
 
 
 unwrapGroupMemberPackResponse (GroupMemberPackResponse r) = r
@@ -17329,6 +17388,7 @@ instance groupMemberPackResponseEncodeJson :: EncodeJson GroupMemberPackResponse
     ~> "user_id" := o.userId
     ~> "group_member" := o.groupMember
     ~> "group_member_id" := o.groupMemberId
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -17339,11 +17399,13 @@ instance groupMemberPackResponseDecodeJson :: DecodeJson GroupMemberPackResponse
     userId <- obj .? "user_id"
     groupMember <- obj .? "group_member"
     groupMemberId <- obj .? "group_member_id"
+    isOwner <- obj .? "is_owner"
     pure $ GroupMemberPackResponse {
       user,
       userId,
       groupMember,
-      groupMemberId
+      groupMemberId,
+      isOwner
     }
 
 
@@ -17362,6 +17424,7 @@ instance groupMemberPackResponseRespondable :: Respondable GroupMemberPackRespon
       <*> readProp "user_id" json
       <*> readProp "group_member" json
       <*> readProp "group_member_id" json
+      <*> readProp "is_owner" json
 
 
 instance groupMemberPackResponseIsForeign :: IsForeign GroupMemberPackResponse where
@@ -17371,10 +17434,11 @@ instance groupMemberPackResponseIsForeign :: IsForeign GroupMemberPackResponse w
       <*> readProp "user_id" json
       <*> readProp "group_member" json
       <*> readProp "group_member_id" json
+      <*> readProp "is_owner" json
 
 
 instance groupMemberPackResponseShow :: Show GroupMemberPackResponse where
-    show (GroupMemberPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "groupMember: " ++ show o.groupMember ++ ", " ++ show "groupMemberId: " ++ show o.groupMemberId
+    show (GroupMemberPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "groupMember: " ++ show o.groupMember ++ ", " ++ show "groupMemberId: " ++ show o.groupMemberId ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype GroupMemberPackResponses = GroupMemberPackResponses {
   groupMemberPackResponses :: (Array GroupMemberPackResponse)
@@ -17443,7 +17507,8 @@ newtype ForumPackResponse = ForumPackResponse {
   forumId :: Int,
   stat :: ForumStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -17452,7 +17517,8 @@ type ForumPackResponseR = {
   forumId :: Int,
   stat :: ForumStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -17461,14 +17527,15 @@ _ForumPackResponse :: LensP ForumPackResponse {
   forumId :: Int,
   stat :: ForumStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 _ForumPackResponse f (ForumPackResponse o) = ForumPackResponse <$> f o
 
 
-mkForumPackResponse :: ForumResponse -> Int -> ForumStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> ForumPackResponse
-mkForumPackResponse forum forumId stat like star =
-  ForumPackResponse{forum, forumId, stat, like, star}
+mkForumPackResponse :: ForumResponse -> Int -> ForumStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> ForumPackResponse
+mkForumPackResponse forum forumId stat like star isOwner =
+  ForumPackResponse{forum, forumId, stat, like, star, isOwner}
 
 
 unwrapForumPackResponse (ForumPackResponse r) = r
@@ -17481,6 +17548,7 @@ instance forumPackResponseEncodeJson :: EncodeJson ForumPackResponse where
     ~> "stat" := o.stat
     ~> "like" := o.like
     ~> "star" := o.star
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -17492,12 +17560,14 @@ instance forumPackResponseDecodeJson :: DecodeJson ForumPackResponse where
     stat <- obj .? "stat"
     like <- obj .? "like"
     star <- obj .? "star"
+    isOwner <- obj .? "is_owner"
     pure $ ForumPackResponse {
       forum,
       forumId,
       stat,
       like,
-      star
+      star,
+      isOwner
     }
 
 
@@ -17517,6 +17587,7 @@ instance forumPackResponseRespondable :: Respondable ForumPackResponse where
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance forumPackResponseIsForeign :: IsForeign ForumPackResponse where
@@ -17527,10 +17598,11 @@ instance forumPackResponseIsForeign :: IsForeign ForumPackResponse where
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance forumPackResponseShow :: Show ForumPackResponse where
-    show (ForumPackResponse o) = show "forum: " ++ show o.forum ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
+    show (ForumPackResponse o) = show "forum: " ++ show o.forum ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype ForumPackResponses = ForumPackResponses {
   forumPackResponses :: (Array ForumPackResponse)
@@ -17602,7 +17674,8 @@ newtype BoardPackResponse = BoardPackResponse {
   star :: (Maybe StarResponse),
   latestThread :: (Maybe ThreadResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
-  latestThreadPostUser :: (Maybe UserSanitizedResponse)
+  latestThreadPostUser :: (Maybe UserSanitizedResponse),
+  isOwner :: Boolean
 }
 
 
@@ -17614,7 +17687,8 @@ type BoardPackResponseR = {
   star :: (Maybe StarResponse),
   latestThread :: (Maybe ThreadResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
-  latestThreadPostUser :: (Maybe UserSanitizedResponse)
+  latestThreadPostUser :: (Maybe UserSanitizedResponse),
+  isOwner :: Boolean
 }
 
 
@@ -17626,14 +17700,15 @@ _BoardPackResponse :: LensP BoardPackResponse {
   star :: (Maybe StarResponse),
   latestThread :: (Maybe ThreadResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
-  latestThreadPostUser :: (Maybe UserSanitizedResponse)
+  latestThreadPostUser :: (Maybe UserSanitizedResponse),
+  isOwner :: Boolean
 }
 _BoardPackResponse f (BoardPackResponse o) = BoardPackResponse <$> f o
 
 
-mkBoardPackResponse :: BoardResponse -> Int -> BoardStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> BoardPackResponse
-mkBoardPackResponse board boardId stat like star latestThread latestThreadPost latestThreadPostUser =
-  BoardPackResponse{board, boardId, stat, like, star, latestThread, latestThreadPost, latestThreadPostUser}
+mkBoardPackResponse :: BoardResponse -> Int -> BoardStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> Boolean -> BoardPackResponse
+mkBoardPackResponse board boardId stat like star latestThread latestThreadPost latestThreadPostUser isOwner =
+  BoardPackResponse{board, boardId, stat, like, star, latestThread, latestThreadPost, latestThreadPostUser, isOwner}
 
 
 unwrapBoardPackResponse (BoardPackResponse r) = r
@@ -17649,6 +17724,7 @@ instance boardPackResponseEncodeJson :: EncodeJson BoardPackResponse where
     ~> "latest_thread" := o.latestThread
     ~> "latest_thread_post" := o.latestThreadPost
     ~> "latest_thread_post_user" := o.latestThreadPostUser
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -17663,6 +17739,7 @@ instance boardPackResponseDecodeJson :: DecodeJson BoardPackResponse where
     latestThread <- obj .? "latest_thread"
     latestThreadPost <- obj .? "latest_thread_post"
     latestThreadPostUser <- obj .? "latest_thread_post_user"
+    isOwner <- obj .? "is_owner"
     pure $ BoardPackResponse {
       board,
       boardId,
@@ -17671,7 +17748,8 @@ instance boardPackResponseDecodeJson :: DecodeJson BoardPackResponse where
       star,
       latestThread,
       latestThreadPost,
-      latestThreadPostUser
+      latestThreadPostUser,
+      isOwner
     }
 
 
@@ -17694,6 +17772,7 @@ instance boardPackResponseRespondable :: Respondable BoardPackResponse where
       <*> (runNullOrUndefined <$> readProp "latest_thread" json)
       <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
       <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
+      <*> readProp "is_owner" json
 
 
 instance boardPackResponseIsForeign :: IsForeign BoardPackResponse where
@@ -17707,10 +17786,11 @@ instance boardPackResponseIsForeign :: IsForeign BoardPackResponse where
       <*> (runNullOrUndefined <$> readProp "latest_thread" json)
       <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
       <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
+      <*> readProp "is_owner" json
 
 
 instance boardPackResponseShow :: Show BoardPackResponse where
-    show (BoardPackResponse o) = show "board: " ++ show o.board ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "latestThread: " ++ show o.latestThread ++ ", " ++ show "latestThreadPost: " ++ show o.latestThreadPost ++ ", " ++ show "latestThreadPostUser: " ++ show o.latestThreadPostUser
+    show (BoardPackResponse o) = show "board: " ++ show o.board ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "latestThread: " ++ show o.latestThread ++ ", " ++ show "latestThreadPost: " ++ show o.latestThreadPost ++ ", " ++ show "latestThreadPostUser: " ++ show o.latestThreadPostUser ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype BoardPackResponses = BoardPackResponses {
   boardPackResponses :: (Array BoardPackResponse)
@@ -17783,7 +17863,8 @@ newtype ThreadPackResponse = ThreadPackResponse {
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
-  latestThreadPostUser :: (Maybe UserSanitizedResponse)
+  latestThreadPostUser :: (Maybe UserSanitizedResponse),
+  isOwner :: Boolean
 }
 
 
@@ -17796,7 +17877,8 @@ type ThreadPackResponseR = {
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
-  latestThreadPostUser :: (Maybe UserSanitizedResponse)
+  latestThreadPostUser :: (Maybe UserSanitizedResponse),
+  isOwner :: Boolean
 }
 
 
@@ -17809,14 +17891,15 @@ _ThreadPackResponse :: LensP ThreadPackResponse {
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
   latestThreadPost :: (Maybe ThreadPostResponse),
-  latestThreadPostUser :: (Maybe UserSanitizedResponse)
+  latestThreadPostUser :: (Maybe UserSanitizedResponse),
+  isOwner :: Boolean
 }
 _ThreadPackResponse f (ThreadPackResponse o) = ThreadPackResponse <$> f o
 
 
-mkThreadPackResponse :: ThreadResponse -> Int -> UserSanitizedResponse -> Int -> ThreadStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> ThreadPackResponse
-mkThreadPackResponse thread threadId user userId stat like star latestThreadPost latestThreadPostUser =
-  ThreadPackResponse{thread, threadId, user, userId, stat, like, star, latestThreadPost, latestThreadPostUser}
+mkThreadPackResponse :: ThreadResponse -> Int -> UserSanitizedResponse -> Int -> ThreadStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> Boolean -> ThreadPackResponse
+mkThreadPackResponse thread threadId user userId stat like star latestThreadPost latestThreadPostUser isOwner =
+  ThreadPackResponse{thread, threadId, user, userId, stat, like, star, latestThreadPost, latestThreadPostUser, isOwner}
 
 
 unwrapThreadPackResponse (ThreadPackResponse r) = r
@@ -17833,6 +17916,7 @@ instance threadPackResponseEncodeJson :: EncodeJson ThreadPackResponse where
     ~> "star" := o.star
     ~> "latest_thread_post" := o.latestThreadPost
     ~> "latest_thread_post_user" := o.latestThreadPostUser
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -17848,6 +17932,7 @@ instance threadPackResponseDecodeJson :: DecodeJson ThreadPackResponse where
     star <- obj .? "star"
     latestThreadPost <- obj .? "latest_thread_post"
     latestThreadPostUser <- obj .? "latest_thread_post_user"
+    isOwner <- obj .? "is_owner"
     pure $ ThreadPackResponse {
       thread,
       threadId,
@@ -17857,7 +17942,8 @@ instance threadPackResponseDecodeJson :: DecodeJson ThreadPackResponse where
       like,
       star,
       latestThreadPost,
-      latestThreadPostUser
+      latestThreadPostUser,
+      isOwner
     }
 
 
@@ -17881,6 +17967,7 @@ instance threadPackResponseRespondable :: Respondable ThreadPackResponse where
       <*> (runNullOrUndefined <$> readProp "star" json)
       <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
       <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
+      <*> readProp "is_owner" json
 
 
 instance threadPackResponseIsForeign :: IsForeign ThreadPackResponse where
@@ -17895,10 +17982,11 @@ instance threadPackResponseIsForeign :: IsForeign ThreadPackResponse where
       <*> (runNullOrUndefined <$> readProp "star" json)
       <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
       <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
+      <*> readProp "is_owner" json
 
 
 instance threadPackResponseShow :: Show ThreadPackResponse where
-    show (ThreadPackResponse o) = show "thread: " ++ show o.thread ++ ", " ++ show "threadId: " ++ show o.threadId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "latestThreadPost: " ++ show o.latestThreadPost ++ ", " ++ show "latestThreadPostUser: " ++ show o.latestThreadPostUser
+    show (ThreadPackResponse o) = show "thread: " ++ show o.thread ++ ", " ++ show "threadId: " ++ show o.threadId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "latestThreadPost: " ++ show o.latestThreadPost ++ ", " ++ show "latestThreadPostUser: " ++ show o.latestThreadPostUser ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype ThreadPackResponses = ThreadPackResponses {
   threadPackResponses :: (Array ThreadPackResponse)
@@ -17969,7 +18057,8 @@ newtype ThreadPostPackResponse = ThreadPostPackResponse {
   userId :: Int,
   stat :: ThreadPostStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -17980,7 +18069,8 @@ type ThreadPostPackResponseR = {
   userId :: Int,
   stat :: ThreadPostStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -17991,14 +18081,15 @@ _ThreadPostPackResponse :: LensP ThreadPostPackResponse {
   userId :: Int,
   stat :: ThreadPostStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 _ThreadPostPackResponse f (ThreadPostPackResponse o) = ThreadPostPackResponse <$> f o
 
 
-mkThreadPostPackResponse :: ThreadPostResponse -> Int -> UserSanitizedResponse -> Int -> ThreadPostStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> ThreadPostPackResponse
-mkThreadPostPackResponse threadPost threadPostId user userId stat like star =
-  ThreadPostPackResponse{threadPost, threadPostId, user, userId, stat, like, star}
+mkThreadPostPackResponse :: ThreadPostResponse -> Int -> UserSanitizedResponse -> Int -> ThreadPostStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> ThreadPostPackResponse
+mkThreadPostPackResponse threadPost threadPostId user userId stat like star isOwner =
+  ThreadPostPackResponse{threadPost, threadPostId, user, userId, stat, like, star, isOwner}
 
 
 unwrapThreadPostPackResponse (ThreadPostPackResponse r) = r
@@ -18013,6 +18104,7 @@ instance threadPostPackResponseEncodeJson :: EncodeJson ThreadPostPackResponse w
     ~> "stat" := o.stat
     ~> "like" := o.like
     ~> "star" := o.star
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -18026,6 +18118,7 @@ instance threadPostPackResponseDecodeJson :: DecodeJson ThreadPostPackResponse w
     stat <- obj .? "stat"
     like <- obj .? "like"
     star <- obj .? "star"
+    isOwner <- obj .? "is_owner"
     pure $ ThreadPostPackResponse {
       threadPost,
       threadPostId,
@@ -18033,7 +18126,8 @@ instance threadPostPackResponseDecodeJson :: DecodeJson ThreadPostPackResponse w
       userId,
       stat,
       like,
-      star
+      star,
+      isOwner
     }
 
 
@@ -18055,6 +18149,7 @@ instance threadPostPackResponseRespondable :: Respondable ThreadPostPackResponse
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance threadPostPackResponseIsForeign :: IsForeign ThreadPostPackResponse where
@@ -18067,10 +18162,11 @@ instance threadPostPackResponseIsForeign :: IsForeign ThreadPostPackResponse whe
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance threadPostPackResponseShow :: Show ThreadPostPackResponse where
-    show (ThreadPostPackResponse o) = show "threadPost: " ++ show o.threadPost ++ ", " ++ show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
+    show (ThreadPostPackResponse o) = show "threadPost: " ++ show o.threadPost ++ ", " ++ show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype ThreadPostPackResponses = ThreadPostPackResponses {
   threadPostPackResponses :: (Array ThreadPostPackResponse)
@@ -18141,7 +18237,8 @@ newtype ResourcePackResponse = ResourcePackResponse {
   userId :: Int,
   stat :: ResourceStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -18152,7 +18249,8 @@ type ResourcePackResponseR = {
   userId :: Int,
   stat :: ResourceStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -18163,14 +18261,15 @@ _ResourcePackResponse :: LensP ResourcePackResponse {
   userId :: Int,
   stat :: ResourceStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 _ResourcePackResponse f (ResourcePackResponse o) = ResourcePackResponse <$> f o
 
 
-mkResourcePackResponse :: ResourceResponse -> Int -> UserSanitizedResponse -> Int -> ResourceStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> ResourcePackResponse
-mkResourcePackResponse resource resourceId user userId stat like star =
-  ResourcePackResponse{resource, resourceId, user, userId, stat, like, star}
+mkResourcePackResponse :: ResourceResponse -> Int -> UserSanitizedResponse -> Int -> ResourceStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> ResourcePackResponse
+mkResourcePackResponse resource resourceId user userId stat like star isOwner =
+  ResourcePackResponse{resource, resourceId, user, userId, stat, like, star, isOwner}
 
 
 unwrapResourcePackResponse (ResourcePackResponse r) = r
@@ -18185,6 +18284,7 @@ instance resourcePackResponseEncodeJson :: EncodeJson ResourcePackResponse where
     ~> "stat" := o.stat
     ~> "like" := o.like
     ~> "star" := o.star
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -18198,6 +18298,7 @@ instance resourcePackResponseDecodeJson :: DecodeJson ResourcePackResponse where
     stat <- obj .? "stat"
     like <- obj .? "like"
     star <- obj .? "star"
+    isOwner <- obj .? "is_owner"
     pure $ ResourcePackResponse {
       resource,
       resourceId,
@@ -18205,7 +18306,8 @@ instance resourcePackResponseDecodeJson :: DecodeJson ResourcePackResponse where
       userId,
       stat,
       like,
-      star
+      star,
+      isOwner
     }
 
 
@@ -18227,6 +18329,7 @@ instance resourcePackResponseRespondable :: Respondable ResourcePackResponse whe
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance resourcePackResponseIsForeign :: IsForeign ResourcePackResponse where
@@ -18239,10 +18342,11 @@ instance resourcePackResponseIsForeign :: IsForeign ResourcePackResponse where
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance resourcePackResponseShow :: Show ResourcePackResponse where
-    show (ResourcePackResponse o) = show "resource: " ++ show o.resource ++ ", " ++ show "resourceId: " ++ show o.resourceId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
+    show (ResourcePackResponse o) = show "resource: " ++ show o.resource ++ ", " ++ show "resourceId: " ++ show o.resourceId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype ResourcePackResponses = ResourcePackResponses {
   resourcePackResponses :: (Array ResourcePackResponse)
@@ -18314,7 +18418,8 @@ newtype LeuronPackResponse = LeuronPackResponse {
   training :: LeuronTrainingResponse,
   stat :: LeuronStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -18326,7 +18431,8 @@ type LeuronPackResponseR = {
   training :: LeuronTrainingResponse,
   stat :: LeuronStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 
 
@@ -18338,14 +18444,15 @@ _LeuronPackResponse :: LensP LeuronPackResponse {
   training :: LeuronTrainingResponse,
   stat :: LeuronStatResponse,
   like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
+  star :: (Maybe StarResponse),
+  isOwner :: Boolean
 }
 _LeuronPackResponse f (LeuronPackResponse o) = LeuronPackResponse <$> f o
 
 
-mkLeuronPackResponse :: LeuronResponse -> Int -> UserSanitizedResponse -> Int -> LeuronTrainingResponse -> LeuronStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> LeuronPackResponse
-mkLeuronPackResponse leuron leuronId user userId training stat like star =
-  LeuronPackResponse{leuron, leuronId, user, userId, training, stat, like, star}
+mkLeuronPackResponse :: LeuronResponse -> Int -> UserSanitizedResponse -> Int -> LeuronTrainingResponse -> LeuronStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> LeuronPackResponse
+mkLeuronPackResponse leuron leuronId user userId training stat like star isOwner =
+  LeuronPackResponse{leuron, leuronId, user, userId, training, stat, like, star, isOwner}
 
 
 unwrapLeuronPackResponse (LeuronPackResponse r) = r
@@ -18361,6 +18468,7 @@ instance leuronPackResponseEncodeJson :: EncodeJson LeuronPackResponse where
     ~> "stat" := o.stat
     ~> "like" := o.like
     ~> "star" := o.star
+    ~> "is_owner" := o.isOwner
     ~> jsonEmptyObject
 
 
@@ -18375,6 +18483,7 @@ instance leuronPackResponseDecodeJson :: DecodeJson LeuronPackResponse where
     stat <- obj .? "stat"
     like <- obj .? "like"
     star <- obj .? "star"
+    isOwner <- obj .? "is_owner"
     pure $ LeuronPackResponse {
       leuron,
       leuronId,
@@ -18383,7 +18492,8 @@ instance leuronPackResponseDecodeJson :: DecodeJson LeuronPackResponse where
       training,
       stat,
       like,
-      star
+      star,
+      isOwner
     }
 
 
@@ -18406,6 +18516,7 @@ instance leuronPackResponseRespondable :: Respondable LeuronPackResponse where
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance leuronPackResponseIsForeign :: IsForeign LeuronPackResponse where
@@ -18419,10 +18530,11 @@ instance leuronPackResponseIsForeign :: IsForeign LeuronPackResponse where
       <*> readProp "stat" json
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> readProp "is_owner" json
 
 
 instance leuronPackResponseShow :: Show LeuronPackResponse where
-    show (LeuronPackResponse o) = show "leuron: " ++ show o.leuron ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "training: " ++ show o.training ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
+    show (LeuronPackResponse o) = show "leuron: " ++ show o.leuron ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "training: " ++ show o.training ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "isOwner: " ++ show o.isOwner
 
 newtype LeuronPackResponses = LeuronPackResponses {
   leuronPackResponses :: (Array LeuronPackResponse)
@@ -18492,6 +18604,10 @@ a_ f o = o { a = _ } <$> f o.a
 
 abbreviation_ :: forall b a r. Lens { abbreviation :: a | r } { abbreviation :: b | r } a b
 abbreviation_ f o = o { abbreviation = _ } <$> f o.abbreviation
+
+
+acceptTOS_ :: forall b a r. Lens { acceptTOS :: a | r } { acceptTOS :: b | r } a b
+acceptTOS_ f o = o { acceptTOS = _ } <$> f o.acceptTOS
 
 
 active_ :: forall b a r. Lens { active :: a | r } { active :: b | r } a b
@@ -18796,6 +18912,10 @@ isAnonymous_ f o = o { isAnonymous = _ } <$> f o.isAnonymous
 
 isNew_ :: forall b a r. Lens { isNew :: a | r } { isNew :: b | r } a b
 isNew_ f o = o { isNew = _ } <$> f o.isNew
+
+
+isOwner_ :: forall b a r. Lens { isOwner :: a | r } { isOwner :: b | r } a b
+isOwner_ f o = o { isOwner = _ } <$> f o.isOwner
 
 
 isRead_ :: forall b a r. Lens { isRead :: a | r } { isRead :: b | r } a b
