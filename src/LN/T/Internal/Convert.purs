@@ -387,11 +387,12 @@ pmOutResponseToPmOutRequest  (PmOutResponse o) =
   }
 
 
-profileRequestToProfileResponse :: Int -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ProfileRequest -> ProfileResponse
-profileRequestToProfileResponse id entityId karmaGood karmaBad createdAt modifiedAt (ProfileRequest o) =
+profileRequestToProfileResponse :: Int -> Ent -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ProfileRequest -> ProfileResponse
+profileRequestToProfileResponse id ent entId karmaGood karmaBad createdAt modifiedAt (ProfileRequest o) =
   ProfileResponse {
     id: id,
-    entityId: entityId,
+    ent: ent,
+    entId: entId,
     gender: o.gender,
     birthdate: o.birthdate,
     website: o.website,
@@ -513,11 +514,12 @@ resourceResponseToResourceRequest  (ResourceResponse o) =
   }
 
 
-starRequestToStarResponse :: Int -> Ent -> Int -> Boolean -> (Maybe Date) -> (Maybe Date) -> StarRequest -> StarResponse
-starRequestToStarResponse id entity userId active createdAt modifiedAt (StarRequest o) =
+starRequestToStarResponse :: Int -> Ent -> Int -> Int -> Boolean -> (Maybe Date) -> (Maybe Date) -> StarRequest -> StarResponse
+starRequestToStarResponse id ent entId userId active createdAt modifiedAt (StarRequest o) =
   StarResponse {
     id: id,
-    entity: entity,
+    ent: ent,
+    entId: entId,
     userId: userId,
     reason: o.reason,
     active: active,

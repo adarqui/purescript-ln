@@ -1535,6 +1535,10 @@ instance emptyResponsesShow :: Show EmptyResponses where
 data Ent
   = Ent_Organization 
   | Ent_Team 
+  | Ent_TeamMember 
+  | Ent_GlobalGroup 
+  | Ent_Group 
+  | Ent_GroupMember 
   | Ent_User 
   | Ent_UserSanitized 
   | Ent_Forum 
@@ -1550,6 +1554,7 @@ data Ent
   | Ent_Api 
   | Ent_Like 
   | Ent_Star 
+  | Ent_None 
 
 
 
@@ -1560,6 +1565,22 @@ instance entEncodeJson :: EncodeJson Ent where
     ~> jsonEmptyObject
   encodeJson (Ent_Team ) =
        "tag" := "Ent_Team"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_TeamMember ) =
+       "tag" := "Ent_TeamMember"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_GlobalGroup ) =
+       "tag" := "Ent_GlobalGroup"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_Group ) =
+       "tag" := "Ent_Group"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Ent_GroupMember ) =
+       "tag" := "Ent_GroupMember"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (Ent_User ) =
@@ -1622,6 +1643,10 @@ instance entEncodeJson :: EncodeJson Ent where
        "tag" := "Ent_Star"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
+  encodeJson (Ent_None ) =
+       "tag" := "Ent_None"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
 
 
 instance entDecodeJson :: DecodeJson Ent where
@@ -1634,6 +1659,18 @@ instance entDecodeJson :: DecodeJson Ent where
 
         "Ent_Team" -> do
           return Ent_Team
+
+        "Ent_TeamMember" -> do
+          return Ent_TeamMember
+
+        "Ent_GlobalGroup" -> do
+          return Ent_GlobalGroup
+
+        "Ent_Group" -> do
+          return Ent_Group
+
+        "Ent_GroupMember" -> do
+          return Ent_GroupMember
 
         "Ent_User" -> do
           return Ent_User
@@ -1679,6 +1716,9 @@ instance entDecodeJson :: DecodeJson Ent where
 
         "Ent_Star" -> do
           return Ent_Star
+
+        "Ent_None" -> do
+          return Ent_None
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -1701,6 +1741,18 @@ instance entRespondable :: Respondable Ent where
         "Ent_Team" -> do
           return Ent_Team
 
+        "Ent_TeamMember" -> do
+          return Ent_TeamMember
+
+        "Ent_GlobalGroup" -> do
+          return Ent_GlobalGroup
+
+        "Ent_Group" -> do
+          return Ent_Group
+
+        "Ent_GroupMember" -> do
+          return Ent_GroupMember
+
         "Ent_User" -> do
           return Ent_User
 
@@ -1745,6 +1797,9 @@ instance entRespondable :: Respondable Ent where
 
         "Ent_Star" -> do
           return Ent_Star
+
+        "Ent_None" -> do
+          return Ent_None
 
 
 
@@ -1758,6 +1813,18 @@ instance entIsForeign :: IsForeign Ent where
         "Ent_Team" -> do
           return Ent_Team
 
+        "Ent_TeamMember" -> do
+          return Ent_TeamMember
+
+        "Ent_GlobalGroup" -> do
+          return Ent_GlobalGroup
+
+        "Ent_Group" -> do
+          return Ent_Group
+
+        "Ent_GroupMember" -> do
+          return Ent_GroupMember
+
         "Ent_User" -> do
           return Ent_User
 
@@ -1803,11 +1870,18 @@ instance entIsForeign :: IsForeign Ent where
         "Ent_Star" -> do
           return Ent_Star
 
+        "Ent_None" -> do
+          return Ent_None
+
 
 
 instance entShow :: Show Ent where
   show (Ent_Organization) = "Ent_Organization"
   show (Ent_Team) = "Ent_Team"
+  show (Ent_TeamMember) = "Ent_TeamMember"
+  show (Ent_GlobalGroup) = "Ent_GlobalGroup"
+  show (Ent_Group) = "Ent_Group"
+  show (Ent_GroupMember) = "Ent_GroupMember"
   show (Ent_User) = "Ent_User"
   show (Ent_UserSanitized) = "Ent_UserSanitized"
   show (Ent_Forum) = "Ent_Forum"
@@ -1823,6 +1897,7 @@ instance entShow :: Show Ent where
   show (Ent_Api) = "Ent_Api"
   show (Ent_Like) = "Ent_Like"
   show (Ent_Star) = "Ent_Star"
+  show (Ent_None) = "Ent_None"
 
 
 newtype ForumRequest = ForumRequest {
@@ -5017,35 +5092,41 @@ instance likeResponsesShow :: Show LikeResponses where
 
 newtype LikeStatResponse = LikeStatResponse {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   score :: Int,
   like :: Int,
+  neutral :: Int,
   dislike :: Int
 }
 
 
 type LikeStatResponseR = {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   score :: Int,
   like :: Int,
+  neutral :: Int,
   dislike :: Int
 }
 
 
 _LikeStatResponse :: LensP LikeStatResponse {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   score :: Int,
   like :: Int,
+  neutral :: Int,
   dislike :: Int
 }
 _LikeStatResponse f (LikeStatResponse o) = LikeStatResponse <$> f o
 
 
-mkLikeStatResponse :: Int -> Ent -> Int -> Int -> Int -> LikeStatResponse
-mkLikeStatResponse id entity score like dislike =
-  LikeStatResponse{id, entity, score, like, dislike}
+mkLikeStatResponse :: Int -> Ent -> Int -> Int -> Int -> Int -> Int -> LikeStatResponse
+mkLikeStatResponse id ent entId score like neutral dislike =
+  LikeStatResponse{id, ent, entId, score, like, neutral, dislike}
 
 
 unwrapLikeStatResponse (LikeStatResponse r) = r
@@ -5054,9 +5135,11 @@ instance likeStatResponseEncodeJson :: EncodeJson LikeStatResponse where
   encodeJson (LikeStatResponse o) =
        "tag" := "LikeStatResponse"
     ~> "id" := o.id
-    ~> "entity" := o.entity
+    ~> "ent" := o.ent
+    ~> "ent_id" := o.entId
     ~> "score" := o.score
     ~> "like" := o.like
+    ~> "neutral" := o.neutral
     ~> "dislike" := o.dislike
     ~> jsonEmptyObject
 
@@ -5065,15 +5148,19 @@ instance likeStatResponseDecodeJson :: DecodeJson LikeStatResponse where
   decodeJson o = do
     obj <- decodeJson o
     id <- obj .? "id"
-    entity <- obj .? "entity"
+    ent <- obj .? "ent"
+    entId <- obj .? "ent_id"
     score <- obj .? "score"
     like <- obj .? "like"
+    neutral <- obj .? "neutral"
     dislike <- obj .? "dislike"
     pure $ LikeStatResponse {
       id,
-      entity,
+      ent,
+      entId,
       score,
       like,
+      neutral,
       dislike
     }
 
@@ -5090,9 +5177,11 @@ instance likeStatResponseRespondable :: Respondable LikeStatResponse where
   fromResponse json =
       mkLikeStatResponse
       <$> readProp "id" json
-      <*> readProp "entity" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "score" json
       <*> readProp "like" json
+      <*> readProp "neutral" json
       <*> readProp "dislike" json
 
 
@@ -5100,14 +5189,16 @@ instance likeStatResponseIsForeign :: IsForeign LikeStatResponse where
   read json =
       mkLikeStatResponse
       <$> readProp "id" json
-      <*> readProp "entity" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "score" json
       <*> readProp "like" json
+      <*> readProp "neutral" json
       <*> readProp "dislike" json
 
 
 instance likeStatResponseShow :: Show LikeStatResponse where
-    show (LikeStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "dislike: " ++ show o.dislike
+    show (LikeStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislike: " ++ show o.dislike
 
 newtype LikeStatResponses = LikeStatResponses {
   likeStatResponses :: (Array LikeStatResponse)
@@ -10707,7 +10798,8 @@ instance profileRequestShow :: Show ProfileRequest where
 
 newtype ProfileResponse = ProfileResponse {
   id :: Int,
-  entityId :: Int,
+  ent :: Ent,
+  entId :: Int,
   gender :: ProfileGender,
   birthdate :: Date,
   website :: (Maybe String),
@@ -10723,7 +10815,8 @@ newtype ProfileResponse = ProfileResponse {
 
 type ProfileResponseR = {
   id :: Int,
-  entityId :: Int,
+  ent :: Ent,
+  entId :: Int,
   gender :: ProfileGender,
   birthdate :: Date,
   website :: (Maybe String),
@@ -10739,7 +10832,8 @@ type ProfileResponseR = {
 
 _ProfileResponse :: LensP ProfileResponse {
   id :: Int,
-  entityId :: Int,
+  ent :: Ent,
+  entId :: Int,
   gender :: ProfileGender,
   birthdate :: Date,
   website :: (Maybe String),
@@ -10754,9 +10848,9 @@ _ProfileResponse :: LensP ProfileResponse {
 _ProfileResponse f (ProfileResponse o) = ProfileResponse <$> f o
 
 
-mkProfileResponse :: Int -> Int -> ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ProfileResponse
-mkProfileResponse id entityId gender birthdate website location signature karmaGood karmaBad guard createdAt modifiedAt =
-  ProfileResponse{id, entityId, gender, birthdate, website, location, signature, karmaGood, karmaBad, guard, createdAt, modifiedAt}
+mkProfileResponse :: Int -> Ent -> Int -> ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ProfileResponse
+mkProfileResponse id ent entId gender birthdate website location signature karmaGood karmaBad guard createdAt modifiedAt =
+  ProfileResponse{id, ent, entId, gender, birthdate, website, location, signature, karmaGood, karmaBad, guard, createdAt, modifiedAt}
 
 
 unwrapProfileResponse (ProfileResponse r) = r
@@ -10765,7 +10859,8 @@ instance profileResponseEncodeJson :: EncodeJson ProfileResponse where
   encodeJson (ProfileResponse o) =
        "tag" := "ProfileResponse"
     ~> "id" := o.id
-    ~> "entity_id" := o.entityId
+    ~> "ent" := o.ent
+    ~> "ent_id" := o.entId
     ~> "gender" := o.gender
     ~> "birthdate" := o.birthdate
     ~> "website" := o.website
@@ -10783,7 +10878,8 @@ instance profileResponseDecodeJson :: DecodeJson ProfileResponse where
   decodeJson o = do
     obj <- decodeJson o
     id <- obj .? "id"
-    entityId <- obj .? "entity_id"
+    ent <- obj .? "ent"
+    entId <- obj .? "ent_id"
     gender <- obj .? "gender"
     birthdate <- obj .? "birthdate"
     website <- obj .? "website"
@@ -10796,7 +10892,8 @@ instance profileResponseDecodeJson :: DecodeJson ProfileResponse where
     modifiedAt <- obj .? "modified_at"
     pure $ ProfileResponse {
       id,
-      entityId,
+      ent,
+      entId,
       gender,
       birthdate,
       website,
@@ -10822,7 +10919,8 @@ instance profileResponseRespondable :: Respondable ProfileResponse where
   fromResponse json =
       mkProfileResponse
       <$> readProp "id" json
-      <*> readProp "entity_id" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "gender" json
       <*> readProp "birthdate" json
       <*> (runNullOrUndefined <$> readProp "website" json)
@@ -10839,7 +10937,8 @@ instance profileResponseIsForeign :: IsForeign ProfileResponse where
   read json =
       mkProfileResponse
       <$> readProp "id" json
-      <*> readProp "entity_id" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "gender" json
       <*> readProp "birthdate" json
       <*> (runNullOrUndefined <$> readProp "website" json)
@@ -10853,7 +10952,7 @@ instance profileResponseIsForeign :: IsForeign ProfileResponse where
 
 
 instance profileResponseShow :: Show ProfileResponse where
-    show (ProfileResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entityId: " ++ show o.entityId ++ ", " ++ show "gender: " ++ show o.gender ++ ", " ++ show "birthdate: " ++ show o.birthdate ++ ", " ++ show "website: " ++ show o.website ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "signature: " ++ show o.signature ++ ", " ++ show "karmaGood: " ++ show o.karmaGood ++ ", " ++ show "karmaBad: " ++ show o.karmaBad ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (ProfileResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "gender: " ++ show o.gender ++ ", " ++ show "birthdate: " ++ show o.birthdate ++ ", " ++ show "website: " ++ show o.website ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "signature: " ++ show o.signature ++ ", " ++ show "karmaGood: " ++ show o.karmaGood ++ ", " ++ show "karmaBad: " ++ show o.karmaBad ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype ProfileResponses = ProfileResponses {
   profileResponses :: (Array ProfileResponse)
@@ -12877,7 +12976,8 @@ instance starRequestShow :: Show StarRequest where
 
 newtype StarResponse = StarResponse {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   userId :: Int,
   reason :: (Maybe String),
   active :: Boolean,
@@ -12889,7 +12989,8 @@ newtype StarResponse = StarResponse {
 
 type StarResponseR = {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   userId :: Int,
   reason :: (Maybe String),
   active :: Boolean,
@@ -12901,7 +13002,8 @@ type StarResponseR = {
 
 _StarResponse :: LensP StarResponse {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   userId :: Int,
   reason :: (Maybe String),
   active :: Boolean,
@@ -12912,9 +13014,9 @@ _StarResponse :: LensP StarResponse {
 _StarResponse f (StarResponse o) = StarResponse <$> f o
 
 
-mkStarResponse :: Int -> Ent -> Int -> (Maybe String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> StarResponse
-mkStarResponse id entity userId reason active guard createdAt modifiedAt =
-  StarResponse{id, entity, userId, reason, active, guard, createdAt, modifiedAt}
+mkStarResponse :: Int -> Ent -> Int -> Int -> (Maybe String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> StarResponse
+mkStarResponse id ent entId userId reason active guard createdAt modifiedAt =
+  StarResponse{id, ent, entId, userId, reason, active, guard, createdAt, modifiedAt}
 
 
 unwrapStarResponse (StarResponse r) = r
@@ -12923,7 +13025,8 @@ instance starResponseEncodeJson :: EncodeJson StarResponse where
   encodeJson (StarResponse o) =
        "tag" := "StarResponse"
     ~> "id" := o.id
-    ~> "entity" := o.entity
+    ~> "ent" := o.ent
+    ~> "ent_id" := o.entId
     ~> "user_id" := o.userId
     ~> "reason" := o.reason
     ~> "active" := o.active
@@ -12937,7 +13040,8 @@ instance starResponseDecodeJson :: DecodeJson StarResponse where
   decodeJson o = do
     obj <- decodeJson o
     id <- obj .? "id"
-    entity <- obj .? "entity"
+    ent <- obj .? "ent"
+    entId <- obj .? "ent_id"
     userId <- obj .? "user_id"
     reason <- obj .? "reason"
     active <- obj .? "active"
@@ -12946,7 +13050,8 @@ instance starResponseDecodeJson :: DecodeJson StarResponse where
     modifiedAt <- obj .? "modified_at"
     pure $ StarResponse {
       id,
-      entity,
+      ent,
+      entId,
       userId,
       reason,
       active,
@@ -12968,7 +13073,8 @@ instance starResponseRespondable :: Respondable StarResponse where
   fromResponse json =
       mkStarResponse
       <$> readProp "id" json
-      <*> readProp "entity" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "user_id" json
       <*> (runNullOrUndefined <$> readProp "reason" json)
       <*> readProp "active" json
@@ -12981,7 +13087,8 @@ instance starResponseIsForeign :: IsForeign StarResponse where
   read json =
       mkStarResponse
       <$> readProp "id" json
-      <*> readProp "entity" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "user_id" json
       <*> (runNullOrUndefined <$> readProp "reason" json)
       <*> readProp "active" json
@@ -12991,7 +13098,7 @@ instance starResponseIsForeign :: IsForeign StarResponse where
 
 
 instance starResponseShow :: Show StarResponse where
-    show (StarResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (StarResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype StarResponses = StarResponses {
   starResponses :: (Array StarResponse)
@@ -13057,29 +13164,32 @@ instance starResponsesShow :: Show StarResponses where
 
 newtype StarStatResponse = StarStatResponse {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   stars :: Int
 }
 
 
 type StarStatResponseR = {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   stars :: Int
 }
 
 
 _StarStatResponse :: LensP StarStatResponse {
   id :: Int,
-  entity :: Ent,
+  ent :: Ent,
+  entId :: Int,
   stars :: Int
 }
 _StarStatResponse f (StarStatResponse o) = StarStatResponse <$> f o
 
 
-mkStarStatResponse :: Int -> Ent -> Int -> StarStatResponse
-mkStarStatResponse id entity stars =
-  StarStatResponse{id, entity, stars}
+mkStarStatResponse :: Int -> Ent -> Int -> Int -> StarStatResponse
+mkStarStatResponse id ent entId stars =
+  StarStatResponse{id, ent, entId, stars}
 
 
 unwrapStarStatResponse (StarStatResponse r) = r
@@ -13088,7 +13198,8 @@ instance starStatResponseEncodeJson :: EncodeJson StarStatResponse where
   encodeJson (StarStatResponse o) =
        "tag" := "StarStatResponse"
     ~> "id" := o.id
-    ~> "entity" := o.entity
+    ~> "ent" := o.ent
+    ~> "ent_id" := o.entId
     ~> "stars" := o.stars
     ~> jsonEmptyObject
 
@@ -13097,11 +13208,13 @@ instance starStatResponseDecodeJson :: DecodeJson StarStatResponse where
   decodeJson o = do
     obj <- decodeJson o
     id <- obj .? "id"
-    entity <- obj .? "entity"
+    ent <- obj .? "ent"
+    entId <- obj .? "ent_id"
     stars <- obj .? "stars"
     pure $ StarStatResponse {
       id,
-      entity,
+      ent,
+      entId,
       stars
     }
 
@@ -13118,7 +13231,8 @@ instance starStatResponseRespondable :: Respondable StarStatResponse where
   fromResponse json =
       mkStarStatResponse
       <$> readProp "id" json
-      <*> readProp "entity" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "stars" json
 
 
@@ -13126,12 +13240,13 @@ instance starStatResponseIsForeign :: IsForeign StarStatResponse where
   read json =
       mkStarStatResponse
       <$> readProp "id" json
-      <*> readProp "entity" json
+      <*> readProp "ent" json
+      <*> readProp "ent_id" json
       <*> readProp "stars" json
 
 
 instance starStatResponseShow :: Show StarStatResponse where
-    show (StarStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "entity: " ++ show o.entity ++ ", " ++ show "stars: " ++ show o.stars
+    show (StarStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "stars: " ++ show o.stars
 
 newtype StarStatResponses = StarStatResponses {
   starStatResponses :: (Array StarStatResponse)
@@ -13739,6 +13854,10 @@ newtype TeamMemberResponse = TeamMemberResponse {
   id :: Int,
   userId :: Int,
   teamId :: Int,
+  isAccepted :: Boolean,
+  accpetedAt :: (Maybe Date),
+  isBlocked :: Boolean,
+  blockedAt :: (Maybe Date),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -13752,6 +13871,10 @@ type TeamMemberResponseR = {
   id :: Int,
   userId :: Int,
   teamId :: Int,
+  isAccepted :: Boolean,
+  accpetedAt :: (Maybe Date),
+  isBlocked :: Boolean,
+  blockedAt :: (Maybe Date),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -13765,6 +13888,10 @@ _TeamMemberResponse :: LensP TeamMemberResponse {
   id :: Int,
   userId :: Int,
   teamId :: Int,
+  isAccepted :: Boolean,
+  accpetedAt :: (Maybe Date),
+  isBlocked :: Boolean,
+  blockedAt :: (Maybe Date),
   active :: Boolean,
   guard :: Int,
   createdAt :: (Maybe Date),
@@ -13775,9 +13902,9 @@ _TeamMemberResponse :: LensP TeamMemberResponse {
 _TeamMemberResponse f (TeamMemberResponse o) = TeamMemberResponse <$> f o
 
 
-mkTeamMemberResponse :: Int -> Int -> Int -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamMemberResponse
-mkTeamMemberResponse id userId teamId active guard createdAt modifiedBy modifiedAt activityAt =
-  TeamMemberResponse{id, userId, teamId, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkTeamMemberResponse :: Int -> Int -> Int -> Boolean -> (Maybe Date) -> Boolean -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamMemberResponse
+mkTeamMemberResponse id userId teamId isAccepted accpetedAt isBlocked blockedAt active guard createdAt modifiedBy modifiedAt activityAt =
+  TeamMemberResponse{id, userId, teamId, isAccepted, accpetedAt, isBlocked, blockedAt, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapTeamMemberResponse (TeamMemberResponse r) = r
@@ -13788,6 +13915,10 @@ instance teamMemberResponseEncodeJson :: EncodeJson TeamMemberResponse where
     ~> "id" := o.id
     ~> "user_id" := o.userId
     ~> "team_id" := o.teamId
+    ~> "is_accepted" := o.isAccepted
+    ~> "accpeted_at" := o.accpetedAt
+    ~> "is_blocked" := o.isBlocked
+    ~> "blocked_at" := o.blockedAt
     ~> "active" := o.active
     ~> "guard" := o.guard
     ~> "created_at" := o.createdAt
@@ -13803,6 +13934,10 @@ instance teamMemberResponseDecodeJson :: DecodeJson TeamMemberResponse where
     id <- obj .? "id"
     userId <- obj .? "user_id"
     teamId <- obj .? "team_id"
+    isAccepted <- obj .? "is_accepted"
+    accpetedAt <- obj .? "accpeted_at"
+    isBlocked <- obj .? "is_blocked"
+    blockedAt <- obj .? "blocked_at"
     active <- obj .? "active"
     guard <- obj .? "guard"
     createdAt <- obj .? "created_at"
@@ -13813,6 +13948,10 @@ instance teamMemberResponseDecodeJson :: DecodeJson TeamMemberResponse where
       id,
       userId,
       teamId,
+      isAccepted,
+      accpetedAt,
+      isBlocked,
+      blockedAt,
       active,
       guard,
       createdAt,
@@ -13836,6 +13975,10 @@ instance teamMemberResponseRespondable :: Respondable TeamMemberResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "team_id" json
+      <*> readProp "is_accepted" json
+      <*> (runNullOrUndefined <$> readProp "accpeted_at" json)
+      <*> readProp "is_blocked" json
+      <*> (runNullOrUndefined <$> readProp "blocked_at" json)
       <*> readProp "active" json
       <*> readProp "guard" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
@@ -13850,6 +13993,10 @@ instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "team_id" json
+      <*> readProp "is_accepted" json
+      <*> (runNullOrUndefined <$> readProp "accpeted_at" json)
+      <*> readProp "is_blocked" json
+      <*> (runNullOrUndefined <$> readProp "blocked_at" json)
       <*> readProp "active" json
       <*> readProp "guard" json
       <*> (runNullOrUndefined <$> readProp "created_at" json)
@@ -13859,7 +14006,7 @@ instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
 
 
 instance teamMemberResponseShow :: Show TeamMemberResponse where
-    show (TeamMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (TeamMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "isAccepted: " ++ show o.isAccepted ++ ", " ++ show "accpetedAt: " ++ show o.accpetedAt ++ ", " ++ show "isBlocked: " ++ show o.isBlocked ++ ", " ++ show "blockedAt: " ++ show o.blockedAt ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype TeamMemberResponses = TeamMemberResponses {
   teamMemberResponses :: (Array TeamMemberResponse)
@@ -18610,6 +18757,10 @@ acceptTOS_ :: forall b a r. Lens { acceptTOS :: a | r } { acceptTOS :: b | r } a
 acceptTOS_ f o = o { acceptTOS = _ } <$> f o.acceptTOS
 
 
+accpetedAt_ :: forall b a r. Lens { accpetedAt :: a | r } { accpetedAt :: b | r } a b
+accpetedAt_ f o = o { accpetedAt = _ } <$> f o.accpetedAt
+
+
 active_ :: forall b a r. Lens { active :: a | r } { active :: b | r } a b
 active_ f o = o { active = _ } <$> f o.active
 
@@ -18648,6 +18799,10 @@ back_ f o = o { back = _ } <$> f o.back
 
 birthdate_ :: forall b a r. Lens { birthdate :: a | r } { birthdate :: b | r } a b
 birthdate_ f o = o { birthdate = _ } <$> f o.birthdate
+
+
+blockedAt_ :: forall b a r. Lens { blockedAt :: a | r } { blockedAt :: b | r } a b
+blockedAt_ f o = o { blockedAt = _ } <$> f o.blockedAt
 
 
 board_ :: forall b a r. Lens { board :: a | r } { board :: b | r } a b
@@ -18774,14 +18929,6 @@ entId_ :: forall b a r. Lens { entId :: a | r } { entId :: b | r } a b
 entId_ f o = o { entId = _ } <$> f o.entId
 
 
-entity_ :: forall b a r. Lens { entity :: a | r } { entity :: b | r } a b
-entity_ f o = o { entity = _ } <$> f o.entity
-
-
-entityId_ :: forall b a r. Lens { entityId :: a | r } { entityId :: b | r } a b
-entityId_ f o = o { entityId = _ } <$> f o.entityId
-
-
 examples_ :: forall b a r. Lens { examples :: a | r } { examples :: b | r } a b
 examples_ f o = o { examples = _ } <$> f o.examples
 
@@ -18906,8 +19053,16 @@ imageUrl_ :: forall b a r. Lens { imageUrl :: a | r } { imageUrl :: b | r } a b
 imageUrl_ f o = o { imageUrl = _ } <$> f o.imageUrl
 
 
+isAccepted_ :: forall b a r. Lens { isAccepted :: a | r } { isAccepted :: b | r } a b
+isAccepted_ f o = o { isAccepted = _ } <$> f o.isAccepted
+
+
 isAnonymous_ :: forall b a r. Lens { isAnonymous :: a | r } { isAnonymous :: b | r } a b
 isAnonymous_ f o = o { isAnonymous = _ } <$> f o.isAnonymous
+
+
+isBlocked_ :: forall b a r. Lens { isBlocked :: a | r } { isBlocked :: b | r } a b
+isBlocked_ f o = o { isBlocked = _ } <$> f o.isBlocked
 
 
 isNew_ :: forall b a r. Lens { isNew :: a | r } { isNew :: b | r } a b
