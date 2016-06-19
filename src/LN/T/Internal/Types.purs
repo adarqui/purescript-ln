@@ -5091,7 +5091,6 @@ instance likeResponsesShow :: Show LikeResponses where
     show (LikeResponses o) = show "likeResponses: " ++ show o.likeResponses
 
 newtype LikeStatResponse = LikeStatResponse {
-  id :: Int,
   ent :: Ent,
   entId :: Int,
   score :: Int,
@@ -5102,7 +5101,6 @@ newtype LikeStatResponse = LikeStatResponse {
 
 
 type LikeStatResponseR = {
-  id :: Int,
   ent :: Ent,
   entId :: Int,
   score :: Int,
@@ -5113,7 +5111,6 @@ type LikeStatResponseR = {
 
 
 _LikeStatResponse :: LensP LikeStatResponse {
-  id :: Int,
   ent :: Ent,
   entId :: Int,
   score :: Int,
@@ -5124,9 +5121,9 @@ _LikeStatResponse :: LensP LikeStatResponse {
 _LikeStatResponse f (LikeStatResponse o) = LikeStatResponse <$> f o
 
 
-mkLikeStatResponse :: Int -> Ent -> Int -> Int -> Int -> Int -> Int -> LikeStatResponse
-mkLikeStatResponse id ent entId score like neutral dislike =
-  LikeStatResponse{id, ent, entId, score, like, neutral, dislike}
+mkLikeStatResponse :: Ent -> Int -> Int -> Int -> Int -> Int -> LikeStatResponse
+mkLikeStatResponse ent entId score like neutral dislike =
+  LikeStatResponse{ent, entId, score, like, neutral, dislike}
 
 
 unwrapLikeStatResponse (LikeStatResponse r) = r
@@ -5134,7 +5131,6 @@ unwrapLikeStatResponse (LikeStatResponse r) = r
 instance likeStatResponseEncodeJson :: EncodeJson LikeStatResponse where
   encodeJson (LikeStatResponse o) =
        "tag" := "LikeStatResponse"
-    ~> "id" := o.id
     ~> "ent" := o.ent
     ~> "ent_id" := o.entId
     ~> "score" := o.score
@@ -5147,7 +5143,6 @@ instance likeStatResponseEncodeJson :: EncodeJson LikeStatResponse where
 instance likeStatResponseDecodeJson :: DecodeJson LikeStatResponse where
   decodeJson o = do
     obj <- decodeJson o
-    id <- obj .? "id"
     ent <- obj .? "ent"
     entId <- obj .? "ent_id"
     score <- obj .? "score"
@@ -5155,7 +5150,6 @@ instance likeStatResponseDecodeJson :: DecodeJson LikeStatResponse where
     neutral <- obj .? "neutral"
     dislike <- obj .? "dislike"
     pure $ LikeStatResponse {
-      id,
       ent,
       entId,
       score,
@@ -5176,8 +5170,7 @@ instance likeStatResponseRespondable :: Respondable LikeStatResponse where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkLikeStatResponse
-      <$> readProp "id" json
-      <*> readProp "ent" json
+      <$> readProp "ent" json
       <*> readProp "ent_id" json
       <*> readProp "score" json
       <*> readProp "like" json
@@ -5188,8 +5181,7 @@ instance likeStatResponseRespondable :: Respondable LikeStatResponse where
 instance likeStatResponseIsForeign :: IsForeign LikeStatResponse where
   read json =
       mkLikeStatResponse
-      <$> readProp "id" json
-      <*> readProp "ent" json
+      <$> readProp "ent" json
       <*> readProp "ent_id" json
       <*> readProp "score" json
       <*> readProp "like" json
@@ -5198,7 +5190,7 @@ instance likeStatResponseIsForeign :: IsForeign LikeStatResponse where
 
 
 instance likeStatResponseShow :: Show LikeStatResponse where
-    show (LikeStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislike: " ++ show o.dislike
+    show (LikeStatResponse o) = show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislike: " ++ show o.dislike
 
 newtype LikeStatResponses = LikeStatResponses {
   likeStatResponses :: (Array LikeStatResponse)
@@ -13163,7 +13155,6 @@ instance starResponsesShow :: Show StarResponses where
     show (StarResponses o) = show "starResponses: " ++ show o.starResponses
 
 newtype StarStatResponse = StarStatResponse {
-  id :: Int,
   ent :: Ent,
   entId :: Int,
   stars :: Int
@@ -13171,7 +13162,6 @@ newtype StarStatResponse = StarStatResponse {
 
 
 type StarStatResponseR = {
-  id :: Int,
   ent :: Ent,
   entId :: Int,
   stars :: Int
@@ -13179,7 +13169,6 @@ type StarStatResponseR = {
 
 
 _StarStatResponse :: LensP StarStatResponse {
-  id :: Int,
   ent :: Ent,
   entId :: Int,
   stars :: Int
@@ -13187,9 +13176,9 @@ _StarStatResponse :: LensP StarStatResponse {
 _StarStatResponse f (StarStatResponse o) = StarStatResponse <$> f o
 
 
-mkStarStatResponse :: Int -> Ent -> Int -> Int -> StarStatResponse
-mkStarStatResponse id ent entId stars =
-  StarStatResponse{id, ent, entId, stars}
+mkStarStatResponse :: Ent -> Int -> Int -> StarStatResponse
+mkStarStatResponse ent entId stars =
+  StarStatResponse{ent, entId, stars}
 
 
 unwrapStarStatResponse (StarStatResponse r) = r
@@ -13197,7 +13186,6 @@ unwrapStarStatResponse (StarStatResponse r) = r
 instance starStatResponseEncodeJson :: EncodeJson StarStatResponse where
   encodeJson (StarStatResponse o) =
        "tag" := "StarStatResponse"
-    ~> "id" := o.id
     ~> "ent" := o.ent
     ~> "ent_id" := o.entId
     ~> "stars" := o.stars
@@ -13207,12 +13195,10 @@ instance starStatResponseEncodeJson :: EncodeJson StarStatResponse where
 instance starStatResponseDecodeJson :: DecodeJson StarStatResponse where
   decodeJson o = do
     obj <- decodeJson o
-    id <- obj .? "id"
     ent <- obj .? "ent"
     entId <- obj .? "ent_id"
     stars <- obj .? "stars"
     pure $ StarStatResponse {
-      id,
       ent,
       entId,
       stars
@@ -13230,8 +13216,7 @@ instance starStatResponseRespondable :: Respondable StarStatResponse where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkStarStatResponse
-      <$> readProp "id" json
-      <*> readProp "ent" json
+      <$> readProp "ent" json
       <*> readProp "ent_id" json
       <*> readProp "stars" json
 
@@ -13239,14 +13224,13 @@ instance starStatResponseRespondable :: Respondable StarStatResponse where
 instance starStatResponseIsForeign :: IsForeign StarStatResponse where
   read json =
       mkStarStatResponse
-      <$> readProp "id" json
-      <*> readProp "ent" json
+      <$> readProp "ent" json
       <*> readProp "ent_id" json
       <*> readProp "stars" json
 
 
 instance starStatResponseShow :: Show StarStatResponse where
-    show (StarStatResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "stars: " ++ show o.stars
+    show (StarStatResponse o) = show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "stars: " ++ show o.stars
 
 newtype StarStatResponses = StarStatResponses {
   starStatResponses :: (Array StarStatResponse)
@@ -16313,7 +16297,8 @@ newtype OrganizationPackResponse = OrganizationPackResponse {
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
-  isOwner :: Boolean
+  isOwner :: Boolean,
+  isMember :: Boolean
 }
 
 
@@ -16325,7 +16310,8 @@ type OrganizationPackResponseR = {
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
-  isOwner :: Boolean
+  isOwner :: Boolean,
+  isMember :: Boolean
 }
 
 
@@ -16337,14 +16323,15 @@ _OrganizationPackResponse :: LensP OrganizationPackResponse {
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
-  isOwner :: Boolean
+  isOwner :: Boolean,
+  isMember :: Boolean
 }
 _OrganizationPackResponse f (OrganizationPackResponse o) = OrganizationPackResponse <$> f o
 
 
-mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> OrganizationPackResponse
-mkOrganizationPackResponse user userId organization organizationId stat like star isOwner =
-  OrganizationPackResponse{user, userId, organization, organizationId, stat, like, star, isOwner}
+mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> Boolean -> OrganizationPackResponse
+mkOrganizationPackResponse user userId organization organizationId stat like star isOwner isMember =
+  OrganizationPackResponse{user, userId, organization, organizationId, stat, like, star, isOwner, isMember}
 
 
 unwrapOrganizationPackResponse (OrganizationPackResponse r) = r
@@ -16360,6 +16347,7 @@ instance organizationPackResponseEncodeJson :: EncodeJson OrganizationPackRespon
     ~> "like" := o.like
     ~> "star" := o.star
     ~> "is_owner" := o.isOwner
+    ~> "is_member" := o.isMember
     ~> jsonEmptyObject
 
 
@@ -16374,6 +16362,7 @@ instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackRespon
     like <- obj .? "like"
     star <- obj .? "star"
     isOwner <- obj .? "is_owner"
+    isMember <- obj .? "is_member"
     pure $ OrganizationPackResponse {
       user,
       userId,
@@ -16382,7 +16371,8 @@ instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackRespon
       stat,
       like,
       star,
-      isOwner
+      isOwner,
+      isMember
     }
 
 
@@ -16405,6 +16395,7 @@ instance organizationPackResponseRespondable :: Respondable OrganizationPackResp
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
       <*> readProp "is_owner" json
+      <*> readProp "is_member" json
 
 
 instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse where
@@ -16418,10 +16409,11 @@ instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
       <*> readProp "is_owner" json
+      <*> readProp "is_member" json
 
 
 instance organizationPackResponseShow :: Show OrganizationPackResponse where
-    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "isOwner: " ++ show o.isOwner
+    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "isOwner: " ++ show o.isOwner ++ ", " ++ show "isMember: " ++ show o.isMember
 
 newtype OrganizationPackResponses = OrganizationPackResponses {
   organizationPackResponses :: (Array OrganizationPackResponse)
@@ -19063,6 +19055,10 @@ isAnonymous_ f o = o { isAnonymous = _ } <$> f o.isAnonymous
 
 isBlocked_ :: forall b a r. Lens { isBlocked :: a | r } { isBlocked :: b | r } a b
 isBlocked_ f o = o { isBlocked = _ } <$> f o.isBlocked
+
+
+isMember_ :: forall b a r. Lens { isMember :: a | r } { isMember :: b | r } a b
+isMember_ f o = o { isMember = _ } <$> f o.isMember
 
 
 isNew_ :: forall b a r. Lens { isNew :: a | r } { isNew :: b | r } a b
