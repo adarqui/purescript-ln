@@ -13839,7 +13839,7 @@ newtype TeamMemberResponse = TeamMemberResponse {
   userId :: Int,
   teamId :: Int,
   isAccepted :: Boolean,
-  accpetedAt :: (Maybe Date),
+  acceptedAt :: (Maybe Date),
   isBlocked :: Boolean,
   blockedAt :: (Maybe Date),
   active :: Boolean,
@@ -13856,7 +13856,7 @@ type TeamMemberResponseR = {
   userId :: Int,
   teamId :: Int,
   isAccepted :: Boolean,
-  accpetedAt :: (Maybe Date),
+  acceptedAt :: (Maybe Date),
   isBlocked :: Boolean,
   blockedAt :: (Maybe Date),
   active :: Boolean,
@@ -13873,7 +13873,7 @@ _TeamMemberResponse :: LensP TeamMemberResponse {
   userId :: Int,
   teamId :: Int,
   isAccepted :: Boolean,
-  accpetedAt :: (Maybe Date),
+  acceptedAt :: (Maybe Date),
   isBlocked :: Boolean,
   blockedAt :: (Maybe Date),
   active :: Boolean,
@@ -13887,8 +13887,8 @@ _TeamMemberResponse f (TeamMemberResponse o) = TeamMemberResponse <$> f o
 
 
 mkTeamMemberResponse :: Int -> Int -> Int -> Boolean -> (Maybe Date) -> Boolean -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamMemberResponse
-mkTeamMemberResponse id userId teamId isAccepted accpetedAt isBlocked blockedAt active guard createdAt modifiedBy modifiedAt activityAt =
-  TeamMemberResponse{id, userId, teamId, isAccepted, accpetedAt, isBlocked, blockedAt, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkTeamMemberResponse id userId teamId isAccepted acceptedAt isBlocked blockedAt active guard createdAt modifiedBy modifiedAt activityAt =
+  TeamMemberResponse{id, userId, teamId, isAccepted, acceptedAt, isBlocked, blockedAt, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapTeamMemberResponse (TeamMemberResponse r) = r
@@ -13900,7 +13900,7 @@ instance teamMemberResponseEncodeJson :: EncodeJson TeamMemberResponse where
     ~> "user_id" := o.userId
     ~> "team_id" := o.teamId
     ~> "is_accepted" := o.isAccepted
-    ~> "accpeted_at" := o.accpetedAt
+    ~> "accepted_at" := o.acceptedAt
     ~> "is_blocked" := o.isBlocked
     ~> "blocked_at" := o.blockedAt
     ~> "active" := o.active
@@ -13919,7 +13919,7 @@ instance teamMemberResponseDecodeJson :: DecodeJson TeamMemberResponse where
     userId <- obj .? "user_id"
     teamId <- obj .? "team_id"
     isAccepted <- obj .? "is_accepted"
-    accpetedAt <- obj .? "accpeted_at"
+    acceptedAt <- obj .? "accepted_at"
     isBlocked <- obj .? "is_blocked"
     blockedAt <- obj .? "blocked_at"
     active <- obj .? "active"
@@ -13933,7 +13933,7 @@ instance teamMemberResponseDecodeJson :: DecodeJson TeamMemberResponse where
       userId,
       teamId,
       isAccepted,
-      accpetedAt,
+      acceptedAt,
       isBlocked,
       blockedAt,
       active,
@@ -13960,7 +13960,7 @@ instance teamMemberResponseRespondable :: Respondable TeamMemberResponse where
       <*> readProp "user_id" json
       <*> readProp "team_id" json
       <*> readProp "is_accepted" json
-      <*> (runNullOrUndefined <$> readProp "accpeted_at" json)
+      <*> (runNullOrUndefined <$> readProp "accepted_at" json)
       <*> readProp "is_blocked" json
       <*> (runNullOrUndefined <$> readProp "blocked_at" json)
       <*> readProp "active" json
@@ -13978,7 +13978,7 @@ instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
       <*> readProp "user_id" json
       <*> readProp "team_id" json
       <*> readProp "is_accepted" json
-      <*> (runNullOrUndefined <$> readProp "accpeted_at" json)
+      <*> (runNullOrUndefined <$> readProp "accepted_at" json)
       <*> readProp "is_blocked" json
       <*> (runNullOrUndefined <$> readProp "blocked_at" json)
       <*> readProp "active" json
@@ -13990,7 +13990,7 @@ instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
 
 
 instance teamMemberResponseShow :: Show TeamMemberResponse where
-    show (TeamMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "isAccepted: " ++ show o.isAccepted ++ ", " ++ show "accpetedAt: " ++ show o.accpetedAt ++ ", " ++ show "isBlocked: " ++ show o.isBlocked ++ ", " ++ show "blockedAt: " ++ show o.blockedAt ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (TeamMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "isAccepted: " ++ show o.isAccepted ++ ", " ++ show "acceptedAt: " ++ show o.acceptedAt ++ ", " ++ show "isBlocked: " ++ show o.isBlocked ++ ", " ++ show "blockedAt: " ++ show o.blockedAt ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype TeamMemberResponses = TeamMemberResponses {
   teamMemberResponses :: (Array TeamMemberResponse)
@@ -18749,8 +18749,8 @@ acceptTOS_ :: forall b a r. Lens { acceptTOS :: a | r } { acceptTOS :: b | r } a
 acceptTOS_ f o = o { acceptTOS = _ } <$> f o.acceptTOS
 
 
-accpetedAt_ :: forall b a r. Lens { accpetedAt :: a | r } { accpetedAt :: b | r } a b
-accpetedAt_ f o = o { accpetedAt = _ } <$> f o.accpetedAt
+acceptedAt_ :: forall b a r. Lens { acceptedAt :: a | r } { acceptedAt :: b | r } a b
+acceptedAt_ f o = o { acceptedAt = _ } <$> f o.acceptedAt
 
 
 active_ :: forall b a r. Lens { active :: a | r } { active :: b | r } a b
