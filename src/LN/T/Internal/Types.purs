@@ -10528,27 +10528,30 @@ instance pmOutResponsesShow :: Show PmOutResponses where
     show (PmOutResponses o) = show "pmOutResponses: " ++ show o.pmOutResponses
 
 newtype ProfileX = ProfileX {
+  profileLogin :: String,
   profileName :: String,
   profileEmail :: String
 }
 
 
 type ProfileXR = {
+  profileLogin :: String,
   profileName :: String,
   profileEmail :: String
 }
 
 
 _ProfileX :: LensP ProfileX {
+  profileLogin :: String,
   profileName :: String,
   profileEmail :: String
 }
 _ProfileX f (ProfileX o) = ProfileX <$> f o
 
 
-mkProfileX :: String -> String -> ProfileX
-mkProfileX profileName profileEmail =
-  ProfileX{profileName, profileEmail}
+mkProfileX :: String -> String -> String -> ProfileX
+mkProfileX profileLogin profileName profileEmail =
+  ProfileX{profileLogin, profileName, profileEmail}
 
 
 unwrapProfileX (ProfileX r) = r
@@ -10556,6 +10559,7 @@ unwrapProfileX (ProfileX r) = r
 instance profileXEncodeJson :: EncodeJson ProfileX where
   encodeJson (ProfileX o) =
        "tag" := "ProfileX"
+    ~> "profile_login" := o.profileLogin
     ~> "profile_name" := o.profileName
     ~> "profile_email" := o.profileEmail
     ~> jsonEmptyObject
@@ -10564,9 +10568,11 @@ instance profileXEncodeJson :: EncodeJson ProfileX where
 instance profileXDecodeJson :: DecodeJson ProfileX where
   decodeJson o = do
     obj <- decodeJson o
+    profileLogin <- obj .? "profile_login"
     profileName <- obj .? "profile_name"
     profileEmail <- obj .? "profile_email"
     pure $ ProfileX {
+      profileLogin,
       profileName,
       profileEmail
     }
@@ -10583,19 +10589,21 @@ instance profileXRespondable :: Respondable ProfileX where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkProfileX
-      <$> readProp "profile_name" json
+      <$> readProp "profile_login" json
+      <*> readProp "profile_name" json
       <*> readProp "profile_email" json
 
 
 instance profileXIsForeign :: IsForeign ProfileX where
   read json =
       mkProfileX
-      <$> readProp "profile_name" json
+      <$> readProp "profile_login" json
+      <*> readProp "profile_name" json
       <*> readProp "profile_email" json
 
 
 instance profileXShow :: Show ProfileX where
-    show (ProfileX o) = show "profileName: " ++ show o.profileName ++ ", " ++ show "profileEmail: " ++ show o.profileEmail
+    show (ProfileX o) = show "profileLogin: " ++ show o.profileLogin ++ ", " ++ show "profileName: " ++ show o.profileName ++ ", " ++ show "profileEmail: " ++ show o.profileEmail
 
 data ProfileGender
   = GenderMale 
@@ -19295,6 +19303,10 @@ profileEmail_ f o = o { profileEmail = _ } <$> f o.profileEmail
 
 profileId_ :: forall b a r. Lens { profileId :: a | r } { profileId :: b | r } a b
 profileId_ f o = o { profileId = _ } <$> f o.profileId
+
+
+profileLogin_ :: forall b a r. Lens { profileLogin :: a | r } { profileLogin :: b | r } a b
+profileLogin_ f o = o { profileLogin = _ } <$> f o.profileLogin
 
 
 profileName_ :: forall b a r. Lens { profileName :: a | r } { profileName :: b | r } a b
