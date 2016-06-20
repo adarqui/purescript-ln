@@ -1,9 +1,8 @@
 {
   "name": "purescript-ln",
-  "version": "1.0.0",
-  "moduleType": [
-    "node"
-  ],
+  "homepage": "https://github.com/adarqui/purescript-ln",
+  "description": "Some core auto-generated api routines & types for ln-ui",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git://github.com/adarqui/purescript-ln.git"
