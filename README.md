@@ -1,5 +1,7 @@
 # purescript-ln
 
+**LN PROJECT: WORK IN PROGRESS**
+
 Mostly auto-generated api helper & types, via ln-interop.
 
 ```
