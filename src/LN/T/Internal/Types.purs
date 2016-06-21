@@ -28,7 +28,6 @@ import Purescript.Api.Helpers
 data ACL
   = ACL_Grant Permissions
   | ACL_Deny 
-  | ACL_NotFound 
 
 
 
@@ -39,10 +38,6 @@ instance aCLEncodeJson :: EncodeJson ACL where
     ~> jsonEmptyObject
   encodeJson (ACL_Deny ) =
        "tag" := "ACL_Deny"
-    ~> "contents" := ([] :: Array String)
-    ~> jsonEmptyObject
-  encodeJson (ACL_NotFound ) =
-       "tag" := "ACL_NotFound"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
 
@@ -58,9 +53,6 @@ instance aCLDecodeJson :: DecodeJson ACL where
 
         "ACL_Deny" -> do
           return ACL_Deny
-
-        "ACL_NotFound" -> do
-          return ACL_NotFound
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -84,9 +76,6 @@ instance aCLRespondable :: Respondable ACL where
         "ACL_Deny" -> do
           return ACL_Deny
 
-        "ACL_NotFound" -> do
-          return ACL_NotFound
-
 
 
 instance aCLIsForeign :: IsForeign ACL where
@@ -100,21 +89,16 @@ instance aCLIsForeign :: IsForeign ACL where
         "ACL_Deny" -> do
           return ACL_Deny
 
-        "ACL_NotFound" -> do
-          return ACL_NotFound
-
 
 
 instance aCLShow :: Show ACL where
   show (ACL_Grant x0) = "ACL_Grant: " ++ show x0
   show (ACL_Deny) = "ACL_Deny"
-  show (ACL_NotFound) = "ACL_NotFound"
 
 
 instance aCLEq :: Eq ACL where
   eq (ACL_Grant x0a) (ACL_Grant x0b) = x0a == x0b
   eq (ACL_Deny) (ACL_Deny) = true
-  eq (ACL_NotFound) (ACL_NotFound) = true
   eq _ _ = false
 
 newtype ApiRequest = ApiRequest {
