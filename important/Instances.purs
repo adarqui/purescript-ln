@@ -59,6 +59,11 @@ instance paramQueryParam :: QueryParam Param where
   qp (CreatedAtUnixTimestamp created_at) = Tuple "created_at_unix_ts" (show created_at)
   qp (RealIP real_ip)                    = Tuple "real_ip" (real_ip)
   qp (IP ip)                             = Tuple "ip" (ip)
+  qp WithOrganization                    = Tuple "with_organization" ""
+  qp WithForum                           = Tuple "with_forum" ""
+  qp WithBoard                           = Tuple "with_board" ""
+  qp WithThread                          = Tuple "with_thread" ""
+  qp WithResource                        = Tuple "with_resource" ""
 
 
 
@@ -120,6 +125,11 @@ instance paramTagShow :: Show ParamTag where
   show ParamTag_CreatedAtUnixTimestamp = "created_at_unix_ts"
   show ParamTag_RealIP                 = "real_ip"
   show ParamTag_IP                     = "ip"
+  show ParamTag_WithOrganization       = "with_organization"
+  show ParamTag_WithForum              = "with_forum"
+  show ParamTag_WithBoard              = "with_board"
+  show ParamTag_WithThread             = "with_thread"
+  show ParamTag_WithResource           = "with_resource"
 
 
 
