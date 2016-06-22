@@ -16682,7 +16682,7 @@ newtype OrganizationPackResponse = OrganizationPackResponse {
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
   permissions :: Permissions,
-  isMember :: Boolean
+  teams :: (Array SystemTeam)
 }
 
 
@@ -16695,7 +16695,7 @@ type OrganizationPackResponseR = {
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
   permissions :: Permissions,
-  isMember :: Boolean
+  teams :: (Array SystemTeam)
 }
 
 
@@ -16708,14 +16708,14 @@ _OrganizationPackResponse :: LensP OrganizationPackResponse {
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
   permissions :: Permissions,
-  isMember :: Boolean
+  teams :: (Array SystemTeam)
 }
 _OrganizationPackResponse f (OrganizationPackResponse o) = OrganizationPackResponse <$> f o
 
 
-mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> Boolean -> OrganizationPackResponse
-mkOrganizationPackResponse user userId organization organizationId stat like star permissions isMember =
-  OrganizationPackResponse{user, userId, organization, organizationId, stat, like, star, permissions, isMember}
+mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> (Array SystemTeam) -> OrganizationPackResponse
+mkOrganizationPackResponse user userId organization organizationId stat like star permissions teams =
+  OrganizationPackResponse{user, userId, organization, organizationId, stat, like, star, permissions, teams}
 
 
 unwrapOrganizationPackResponse (OrganizationPackResponse r) = r
@@ -16731,7 +16731,7 @@ instance organizationPackResponseEncodeJson :: EncodeJson OrganizationPackRespon
     ~> "like" := o.like
     ~> "star" := o.star
     ~> "permissions" := o.permissions
-    ~> "is_member" := o.isMember
+    ~> "teams" := o.teams
     ~> jsonEmptyObject
 
 
@@ -16746,7 +16746,7 @@ instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackRespon
     like <- obj .? "like"
     star <- obj .? "star"
     permissions <- obj .? "permissions"
-    isMember <- obj .? "is_member"
+    teams <- obj .? "teams"
     pure $ OrganizationPackResponse {
       user,
       userId,
@@ -16756,7 +16756,7 @@ instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackRespon
       like,
       star,
       permissions,
-      isMember
+      teams
     }
 
 
@@ -16779,7 +16779,7 @@ instance organizationPackResponseRespondable :: Respondable OrganizationPackResp
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
-      <*> readProp "is_member" json
+      <*> readProp "teams" json
 
 
 instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse where
@@ -16793,11 +16793,11 @@ instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
-      <*> readProp "is_member" json
+      <*> readProp "teams" json
 
 
 instance organizationPackResponseShow :: Show OrganizationPackResponse where
-    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "permissions: " ++ show o.permissions ++ ", " ++ show "isMember: " ++ show o.isMember
+    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "permissions: " ++ show o.permissions ++ ", " ++ show "teams: " ++ show o.teams
 
 newtype OrganizationPackResponses = OrganizationPackResponses {
   organizationPackResponses :: (Array OrganizationPackResponse)
@@ -19519,10 +19519,6 @@ isAnonymous_ f o = o { isAnonymous = _ } <$> f o.isAnonymous
 
 isBlocked_ :: forall b a r. Lens { isBlocked :: a | r } { isBlocked :: b | r } a b
 isBlocked_ f o = o { isBlocked = _ } <$> f o.isBlocked
-
-
-isMember_ :: forall b a r. Lens { isMember :: a | r } { isMember :: b | r } a b
-isMember_ f o = o { isMember = _ } <$> f o.isMember
 
 
 isNew_ :: forall b a r. Lens { isNew :: a | r } { isNew :: b | r } a b
