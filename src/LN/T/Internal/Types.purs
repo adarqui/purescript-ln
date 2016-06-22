@@ -13642,13 +13642,13 @@ instance starStatResponsesIsForeign :: IsForeign StarStatResponses where
 instance starStatResponsesShow :: Show StarStatResponses where
     show (StarStatResponses o) = show "starStatResponses: " ++ show o.starStatResponses
 
-data SystemTeams
+data SystemTeam
   = Team_Owners 
   | Team_Members 
 
 
 
-instance systemTeamsEncodeJson :: EncodeJson SystemTeams where
+instance systemTeamEncodeJson :: EncodeJson SystemTeam where
   encodeJson (Team_Owners ) =
        "tag" := "Team_Owners"
     ~> "contents" := ([] :: Array String)
@@ -13659,7 +13659,7 @@ instance systemTeamsEncodeJson :: EncodeJson SystemTeams where
     ~> jsonEmptyObject
 
 
-instance systemTeamsDecodeJson :: DecodeJson SystemTeams where
+instance systemTeamDecodeJson :: DecodeJson SystemTeam where
   decodeJson json = do
     obj <- decodeJson json
     tag <- obj .? "tag"
@@ -13673,13 +13673,13 @@ instance systemTeamsDecodeJson :: DecodeJson SystemTeams where
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
 
-instance systemTeamsRequestable :: Requestable SystemTeams where
+instance systemTeamRequestable :: Requestable SystemTeam where
   toRequest s =
     let str = printJson (encodeJson s) :: String
     in toRequest str
 
 
-instance systemTeamsRespondable :: Respondable SystemTeams where
+instance systemTeamRespondable :: Respondable SystemTeam where
   responseType =
     Tuple Nothing JSONResponse
   fromResponse json = do
@@ -13693,7 +13693,7 @@ instance systemTeamsRespondable :: Respondable SystemTeams where
 
 
 
-instance systemTeamsIsForeign :: IsForeign SystemTeams where
+instance systemTeamIsForeign :: IsForeign SystemTeam where
   read json = do
     tag <- readProp "tag" json
     case tag of
@@ -13705,7 +13705,7 @@ instance systemTeamsIsForeign :: IsForeign SystemTeams where
 
 
 
-instance systemTeamsShow :: Show SystemTeams where
+instance systemTeamShow :: Show SystemTeam where
   show (Team_Owners) = "Team_Owners"
   show (Team_Members) = "Team_Members"
 
