@@ -13643,8 +13643,6 @@ instance starStatResponsesShow :: Show StarStatResponses where
     show (StarStatResponses o) = show "starStatResponses: " ++ show o.starStatResponses
 
 newtype TeamRequest = TeamRequest {
-  displayName :: String,
-  description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
   tags :: (Array String),
@@ -13654,8 +13652,6 @@ newtype TeamRequest = TeamRequest {
 
 
 type TeamRequestR = {
-  displayName :: String,
-  description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
   tags :: (Array String),
@@ -13665,8 +13661,6 @@ type TeamRequestR = {
 
 
 _TeamRequest :: LensP TeamRequest {
-  displayName :: String,
-  description :: (Maybe String),
   membership :: Membership,
   icon :: (Maybe String),
   tags :: (Array String),
@@ -13676,9 +13670,9 @@ _TeamRequest :: LensP TeamRequest {
 _TeamRequest f (TeamRequest o) = TeamRequest <$> f o
 
 
-mkTeamRequest :: String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Int -> TeamRequest
-mkTeamRequest displayName description membership icon tags visibility guard =
-  TeamRequest{displayName, description, membership, icon, tags, visibility, guard}
+mkTeamRequest :: Membership -> (Maybe String) -> (Array String) -> Visibility -> Int -> TeamRequest
+mkTeamRequest membership icon tags visibility guard =
+  TeamRequest{membership, icon, tags, visibility, guard}
 
 
 unwrapTeamRequest (TeamRequest r) = r
@@ -13686,8 +13680,6 @@ unwrapTeamRequest (TeamRequest r) = r
 instance teamRequestEncodeJson :: EncodeJson TeamRequest where
   encodeJson (TeamRequest o) =
        "tag" := "TeamRequest"
-    ~> "display_name" := o.displayName
-    ~> "description" := o.description
     ~> "membership" := o.membership
     ~> "icon" := o.icon
     ~> "tags" := o.tags
@@ -13699,16 +13691,12 @@ instance teamRequestEncodeJson :: EncodeJson TeamRequest where
 instance teamRequestDecodeJson :: DecodeJson TeamRequest where
   decodeJson o = do
     obj <- decodeJson o
-    displayName <- obj .? "display_name"
-    description <- obj .? "description"
     membership <- obj .? "membership"
     icon <- obj .? "icon"
     tags <- obj .? "tags"
     visibility <- obj .? "visibility"
     guard <- obj .? "guard"
     pure $ TeamRequest {
-      displayName,
-      description,
       membership,
       icon,
       tags,
@@ -13728,9 +13716,7 @@ instance teamRequestRespondable :: Respondable TeamRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkTeamRequest
-      <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> readProp "membership" json
+      <$> readProp "membership" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -13740,9 +13726,7 @@ instance teamRequestRespondable :: Respondable TeamRequest where
 instance teamRequestIsForeign :: IsForeign TeamRequest where
   read json =
       mkTeamRequest
-      <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> readProp "membership" json
+      <$> readProp "membership" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -13750,7 +13734,7 @@ instance teamRequestIsForeign :: IsForeign TeamRequest where
 
 
 instance teamRequestShow :: Show TeamRequest where
-    show (TeamRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
+    show (TeamRequest o) = show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
 
 newtype TeamResponse = TeamResponse {
   id :: Int,
@@ -16645,7 +16629,8 @@ newtype OrganizationPackResponse = OrganizationPackResponse {
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
-  permissions :: Permissions
+  permissions :: Permissions,
+  isMember :: Boolean
 }
 
 
@@ -16657,7 +16642,8 @@ type OrganizationPackResponseR = {
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
-  permissions :: Permissions
+  permissions :: Permissions,
+  isMember :: Boolean
 }
 
 
@@ -16669,14 +16655,15 @@ _OrganizationPackResponse :: LensP OrganizationPackResponse {
   stat :: OrganizationStatResponse,
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse),
-  permissions :: Permissions
+  permissions :: Permissions,
+  isMember :: Boolean
 }
 _OrganizationPackResponse f (OrganizationPackResponse o) = OrganizationPackResponse <$> f o
 
 
-mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> OrganizationPackResponse
-mkOrganizationPackResponse user userId organization organizationId stat like star permissions =
-  OrganizationPackResponse{user, userId, organization, organizationId, stat, like, star, permissions}
+mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> Boolean -> OrganizationPackResponse
+mkOrganizationPackResponse user userId organization organizationId stat like star permissions isMember =
+  OrganizationPackResponse{user, userId, organization, organizationId, stat, like, star, permissions, isMember}
 
 
 unwrapOrganizationPackResponse (OrganizationPackResponse r) = r
@@ -16692,6 +16679,7 @@ instance organizationPackResponseEncodeJson :: EncodeJson OrganizationPackRespon
     ~> "like" := o.like
     ~> "star" := o.star
     ~> "permissions" := o.permissions
+    ~> "is_member" := o.isMember
     ~> jsonEmptyObject
 
 
@@ -16706,6 +16694,7 @@ instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackRespon
     like <- obj .? "like"
     star <- obj .? "star"
     permissions <- obj .? "permissions"
+    isMember <- obj .? "is_member"
     pure $ OrganizationPackResponse {
       user,
       userId,
@@ -16714,7 +16703,8 @@ instance organizationPackResponseDecodeJson :: DecodeJson OrganizationPackRespon
       stat,
       like,
       star,
-      permissions
+      permissions,
+      isMember
     }
 
 
@@ -16737,6 +16727,7 @@ instance organizationPackResponseRespondable :: Respondable OrganizationPackResp
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
+      <*> readProp "is_member" json
 
 
 instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse where
@@ -16750,10 +16741,11 @@ instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse
       <*> (runNullOrUndefined <$> readProp "like" json)
       <*> (runNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
+      <*> readProp "is_member" json
 
 
 instance organizationPackResponseShow :: Show OrganizationPackResponse where
-    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "permissions: " ++ show o.permissions ++ ", " ++ show "isMember: " ++ show o.isMember
 
 newtype OrganizationPackResponses = OrganizationPackResponses {
   organizationPackResponses :: (Array OrganizationPackResponse)
@@ -19475,6 +19467,10 @@ isAnonymous_ f o = o { isAnonymous = _ } <$> f o.isAnonymous
 
 isBlocked_ :: forall b a r. Lens { isBlocked :: a | r } { isBlocked :: b | r } a b
 isBlocked_ f o = o { isBlocked = _ } <$> f o.isBlocked
+
+
+isMember_ :: forall b a r. Lens { isMember :: a | r } { isMember :: b | r } a b
+isMember_ f o = o { isMember = _ } <$> f o.isMember
 
 
 isNew_ :: forall b a r. Lens { isNew :: a | r } { isNew :: b | r } a b
