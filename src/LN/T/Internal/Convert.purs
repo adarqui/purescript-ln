@@ -537,15 +537,13 @@ starResponseToStarRequest  (StarResponse o) =
   }
 
 
-teamRequestToTeamResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamRequest -> TeamResponse
-teamRequestToTeamResponse id userId orgId name displayName description active createdAt modifiedBy modifiedAt activityAt (TeamRequest o) =
+teamRequestToTeamResponse :: Int -> Int -> Int -> SystemTeam -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamRequest -> TeamResponse
+teamRequestToTeamResponse id userId orgId system active createdAt modifiedBy modifiedAt activityAt (TeamRequest o) =
   TeamResponse {
     id: id,
     userId: userId,
     orgId: orgId,
-    name: name,
-    displayName: displayName,
-    description: description,
+    system: system,
     membership: o.membership,
     icon: o.icon,
     tags: o.tags,

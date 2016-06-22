@@ -13808,9 +13808,7 @@ newtype TeamResponse = TeamResponse {
   id :: Int,
   userId :: Int,
   orgId :: Int,
-  name :: String,
-  displayName :: String,
-  description :: (Maybe String),
+  system :: SystemTeam,
   membership :: Membership,
   icon :: (Maybe String),
   tags :: (Array String),
@@ -13828,9 +13826,7 @@ type TeamResponseR = {
   id :: Int,
   userId :: Int,
   orgId :: Int,
-  name :: String,
-  displayName :: String,
-  description :: (Maybe String),
+  system :: SystemTeam,
   membership :: Membership,
   icon :: (Maybe String),
   tags :: (Array String),
@@ -13848,9 +13844,7 @@ _TeamResponse :: LensP TeamResponse {
   id :: Int,
   userId :: Int,
   orgId :: Int,
-  name :: String,
-  displayName :: String,
-  description :: (Maybe String),
+  system :: SystemTeam,
   membership :: Membership,
   icon :: (Maybe String),
   tags :: (Array String),
@@ -13865,9 +13859,9 @@ _TeamResponse :: LensP TeamResponse {
 _TeamResponse f (TeamResponse o) = TeamResponse <$> f o
 
 
-mkTeamResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamResponse
-mkTeamResponse id userId orgId name displayName description membership icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
-  TeamResponse{id, userId, orgId, name, displayName, description, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkTeamResponse :: Int -> Int -> Int -> SystemTeam -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamResponse
+mkTeamResponse id userId orgId system membership icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
+  TeamResponse{id, userId, orgId, system, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapTeamResponse (TeamResponse r) = r
@@ -13878,9 +13872,7 @@ instance teamResponseEncodeJson :: EncodeJson TeamResponse where
     ~> "id" := o.id
     ~> "user_id" := o.userId
     ~> "org_id" := o.orgId
-    ~> "name" := o.name
-    ~> "display_name" := o.displayName
-    ~> "description" := o.description
+    ~> "system" := o.system
     ~> "membership" := o.membership
     ~> "icon" := o.icon
     ~> "tags" := o.tags
@@ -13900,9 +13892,7 @@ instance teamResponseDecodeJson :: DecodeJson TeamResponse where
     id <- obj .? "id"
     userId <- obj .? "user_id"
     orgId <- obj .? "org_id"
-    name <- obj .? "name"
-    displayName <- obj .? "display_name"
-    description <- obj .? "description"
+    system <- obj .? "system"
     membership <- obj .? "membership"
     icon <- obj .? "icon"
     tags <- obj .? "tags"
@@ -13917,9 +13907,7 @@ instance teamResponseDecodeJson :: DecodeJson TeamResponse where
       id,
       userId,
       orgId,
-      name,
-      displayName,
-      description,
+      system,
       membership,
       icon,
       tags,
@@ -13947,9 +13935,7 @@ instance teamResponseRespondable :: Respondable TeamResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "org_id" json
-      <*> readProp "name" json
-      <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "system" json
       <*> readProp "membership" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
@@ -13968,9 +13954,7 @@ instance teamResponseIsForeign :: IsForeign TeamResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "org_id" json
-      <*> readProp "name" json
-      <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> readProp "system" json
       <*> readProp "membership" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
@@ -13984,7 +13968,7 @@ instance teamResponseIsForeign :: IsForeign TeamResponse where
 
 
 instance teamResponseShow :: Show TeamResponse where
-    show (TeamResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (TeamResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "system: " ++ show o.system ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype TeamResponses = TeamResponses {
   teamResponses :: (Array TeamResponse)
@@ -19915,6 +19899,10 @@ suggestedTags_ f o = o { suggestedTags = _ } <$> f o.suggestedTags
 
 summary_ :: forall b a r. Lens { summary :: a | r } { summary :: b | r } a b
 summary_ f o = o { summary = _ } <$> f o.summary
+
+
+system_ :: forall b a r. Lens { system :: a | r } { system :: b | r } a b
+system_ f o = o { system = _ } <$> f o.system
 
 
 tags_ :: forall b a r. Lens { tags :: a | r } { tags :: b | r } a b
