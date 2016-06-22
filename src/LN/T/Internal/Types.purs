@@ -13642,6 +13642,74 @@ instance starStatResponsesIsForeign :: IsForeign StarStatResponses where
 instance starStatResponsesShow :: Show StarStatResponses where
     show (StarStatResponses o) = show "starStatResponses: " ++ show o.starStatResponses
 
+data SystemTeams
+  = Team_Owners 
+  | Team_Members 
+
+
+
+instance systemTeamsEncodeJson :: EncodeJson SystemTeams where
+  encodeJson (Team_Owners ) =
+       "tag" := "Team_Owners"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Team_Members ) =
+       "tag" := "Team_Members"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance systemTeamsDecodeJson :: DecodeJson SystemTeams where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "Team_Owners" -> do
+          return Team_Owners
+
+        "Team_Members" -> do
+          return Team_Members
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance systemTeamsRequestable :: Requestable SystemTeams where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance systemTeamsRespondable :: Respondable SystemTeams where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Team_Owners" -> do
+          return Team_Owners
+
+        "Team_Members" -> do
+          return Team_Members
+
+
+
+instance systemTeamsIsForeign :: IsForeign SystemTeams where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Team_Owners" -> do
+          return Team_Owners
+
+        "Team_Members" -> do
+          return Team_Members
+
+
+
+instance systemTeamsShow :: Show SystemTeams where
+  show (Team_Owners) = "Team_Owners"
+  show (Team_Members) = "Team_Members"
+
+
 newtype TeamRequest = TeamRequest {
   membership :: Membership,
   icon :: (Maybe String),
