@@ -13710,6 +13710,11 @@ instance systemTeamShow :: Show SystemTeam where
   show (Team_Members) = "Team_Members"
 
 
+instance systemTeamEq :: Eq SystemTeam where
+  eq (Team_Owners) (Team_Owners) = true
+  eq (Team_Members) (Team_Members) = true
+  eq _ _ = false
+
 newtype TeamRequest = TeamRequest {
   membership :: Membership,
   icon :: (Maybe String),
