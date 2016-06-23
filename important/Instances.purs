@@ -53,17 +53,18 @@ instance paramQueryParam :: QueryParam Param where
   qp (ByParentId parent_id)              = Tuple "parent_id" (show parent_id)
   qp (ByParentsIds parents_ids)          = Tuple "parents_ids" (show parents_ids)
   qp (ByParentName parent_name)          = Tuple "parent_name" (parent_name)
+  qp (BySelf b)                          = Tuple "self" (show b)
   qp (Timestamp ts)                      = Tuple "ts" (show ts)
   qp (UnixTimestamp unix_ts)             = Tuple "unix_ts" (show unix_ts)
   qp (CreatedAtTimestamp created_at)     = Tuple "created_at_ts" (show created_at)
   qp (CreatedAtUnixTimestamp created_at) = Tuple "created_at_unix_ts" (show created_at)
   qp (RealIP real_ip)                    = Tuple "real_ip" (real_ip)
   qp (IP ip)                             = Tuple "ip" (ip)
-  qp WithOrganization                    = Tuple "with_organization" ""
-  qp WithForum                           = Tuple "with_forum" ""
-  qp WithBoard                           = Tuple "with_board" ""
-  qp WithThread                          = Tuple "with_thread" ""
-  qp WithResource                        = Tuple "with_resource" ""
+  qp (WithOrganization b)                = Tuple "with_organization" (show b)
+  qp (WithForum b)                       = Tuple "with_forum" (show b)
+  qp (WithBoard b)                       = Tuple "with_board" (show b)
+  qp (WithThread b)                      = Tuple "with_thread" (show b)
+  qp (WithResource b)                    = Tuple "with_resource" (show b)
 
 
 
@@ -119,6 +120,7 @@ instance paramTagShow :: Show ParamTag where
   show ParamTag_ByParentId             = "parent_id"
   show ParamTag_ByParentsIds           = "parents_ids"
   show ParamTag_ByParentName           = "parent_name"
+  show ParamTag_BySelf                 = "self"
   show ParamTag_Timestamp              = "ts"
   show ParamTag_UnixTimestamp          = "unix_ts"
   show ParamTag_CreatedAtTimestamp     = "created_at_ts"

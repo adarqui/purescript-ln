@@ -7694,17 +7694,18 @@ data Param
   | ByParentId Int
   | ByParentsIds (Array Int)
   | ByParentName String
+  | BySelf Boolean
   | Timestamp Date
   | UnixTimestamp Int
   | CreatedAtTimestamp Date
   | CreatedAtUnixTimestamp Int
   | RealIP String
   | IP String
-  | WithOrganization 
-  | WithForum 
-  | WithBoard 
-  | WithThread 
-  | WithResource 
+  | WithOrganization Boolean
+  | WithForum Boolean
+  | WithBoard Boolean
+  | WithThread Boolean
+  | WithResource Boolean
 
 
 
@@ -7913,6 +7914,10 @@ instance paramEncodeJson :: EncodeJson Param where
        "tag" := "ByParentName"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
+  encodeJson (BySelf x0) =
+       "tag" := "BySelf"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
   encodeJson (Timestamp x0) =
        "tag" := "Timestamp"
     ~> "contents" := encodeJson x0
@@ -7937,25 +7942,25 @@ instance paramEncodeJson :: EncodeJson Param where
        "tag" := "IP"
     ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-  encodeJson (WithOrganization ) =
+  encodeJson (WithOrganization x0) =
        "tag" := "WithOrganization"
-    ~> "contents" := ([] :: Array String)
+    ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-  encodeJson (WithForum ) =
+  encodeJson (WithForum x0) =
        "tag" := "WithForum"
-    ~> "contents" := ([] :: Array String)
+    ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-  encodeJson (WithBoard ) =
+  encodeJson (WithBoard x0) =
        "tag" := "WithBoard"
-    ~> "contents" := ([] :: Array String)
+    ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-  encodeJson (WithThread ) =
+  encodeJson (WithThread x0) =
        "tag" := "WithThread"
-    ~> "contents" := ([] :: Array String)
+    ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
-  encodeJson (WithResource ) =
+  encodeJson (WithResource x0) =
        "tag" := "WithResource"
-    ~> "contents" := ([] :: Array String)
+    ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
 
 
@@ -8168,6 +8173,10 @@ instance paramDecodeJson :: DecodeJson Param where
           x0 <- obj .? "contents"
           ByParentName <$> decodeJson x0
 
+        "BySelf" -> do
+          x0 <- obj .? "contents"
+          BySelf <$> decodeJson x0
+
         "Timestamp" -> do
           x0 <- obj .? "contents"
           Timestamp <$> decodeJson x0
@@ -8193,19 +8202,24 @@ instance paramDecodeJson :: DecodeJson Param where
           IP <$> decodeJson x0
 
         "WithOrganization" -> do
-          return WithOrganization
+          x0 <- obj .? "contents"
+          WithOrganization <$> decodeJson x0
 
         "WithForum" -> do
-          return WithForum
+          x0 <- obj .? "contents"
+          WithForum <$> decodeJson x0
 
         "WithBoard" -> do
-          return WithBoard
+          x0 <- obj .? "contents"
+          WithBoard <$> decodeJson x0
 
         "WithThread" -> do
-          return WithThread
+          x0 <- obj .? "contents"
+          WithThread <$> decodeJson x0
 
         "WithResource" -> do
-          return WithResource
+          x0 <- obj .? "contents"
+          WithResource <$> decodeJson x0
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -8426,6 +8440,10 @@ instance paramRespondable :: Respondable Param where
           x0 <- readProp "contents" json
           ByParentName <$> read x0
 
+        "BySelf" -> do
+          x0 <- readProp "contents" json
+          BySelf <$> read x0
+
         "Timestamp" -> do
           x0 <- readProp "contents" json
           Timestamp <$> read x0
@@ -8451,19 +8469,24 @@ instance paramRespondable :: Respondable Param where
           IP <$> read x0
 
         "WithOrganization" -> do
-          return WithOrganization
+          x0 <- readProp "contents" json
+          WithOrganization <$> read x0
 
         "WithForum" -> do
-          return WithForum
+          x0 <- readProp "contents" json
+          WithForum <$> read x0
 
         "WithBoard" -> do
-          return WithBoard
+          x0 <- readProp "contents" json
+          WithBoard <$> read x0
 
         "WithThread" -> do
-          return WithThread
+          x0 <- readProp "contents" json
+          WithThread <$> read x0
 
         "WithResource" -> do
-          return WithResource
+          x0 <- readProp "contents" json
+          WithResource <$> read x0
 
 
 
@@ -8675,6 +8698,10 @@ instance paramIsForeign :: IsForeign Param where
           x0 <- readProp "contents" json
           ByParentName <$> read x0
 
+        "BySelf" -> do
+          x0 <- readProp "contents" json
+          BySelf <$> read x0
+
         "Timestamp" -> do
           x0 <- readProp "contents" json
           Timestamp <$> read x0
@@ -8700,19 +8727,24 @@ instance paramIsForeign :: IsForeign Param where
           IP <$> read x0
 
         "WithOrganization" -> do
-          return WithOrganization
+          x0 <- readProp "contents" json
+          WithOrganization <$> read x0
 
         "WithForum" -> do
-          return WithForum
+          x0 <- readProp "contents" json
+          WithForum <$> read x0
 
         "WithBoard" -> do
-          return WithBoard
+          x0 <- readProp "contents" json
+          WithBoard <$> read x0
 
         "WithThread" -> do
-          return WithThread
+          x0 <- readProp "contents" json
+          WithThread <$> read x0
 
         "WithResource" -> do
-          return WithResource
+          x0 <- readProp "contents" json
+          WithResource <$> read x0
 
 
 
@@ -8768,6 +8800,7 @@ data ParamTag
   | ParamTag_ByParentId 
   | ParamTag_ByParentsIds 
   | ParamTag_ByParentName 
+  | ParamTag_BySelf 
   | ParamTag_Timestamp 
   | ParamTag_UnixTimestamp 
   | ParamTag_CreatedAtTimestamp 
@@ -8987,6 +9020,10 @@ instance paramTagEncodeJson :: EncodeJson ParamTag where
        "tag" := "ParamTag_ByParentName"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
+  encodeJson (ParamTag_BySelf ) =
+       "tag" := "ParamTag_BySelf"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
   encodeJson (ParamTag_Timestamp ) =
        "tag" := "ParamTag_Timestamp"
     ~> "contents" := ([] :: Array String)
@@ -9191,6 +9228,9 @@ instance paramTagDecodeJson :: DecodeJson ParamTag where
         "ParamTag_ByParentName" -> do
           return ParamTag_ByParentName
 
+        "ParamTag_BySelf" -> do
+          return ParamTag_BySelf
+
         "ParamTag_Timestamp" -> do
           return ParamTag_Timestamp
 
@@ -9392,6 +9432,9 @@ instance paramTagRespondable :: Respondable ParamTag where
         "ParamTag_ByParentName" -> do
           return ParamTag_ByParentName
 
+        "ParamTag_BySelf" -> do
+          return ParamTag_BySelf
+
         "ParamTag_Timestamp" -> do
           return ParamTag_Timestamp
 
@@ -9583,6 +9626,9 @@ instance paramTagIsForeign :: IsForeign ParamTag where
 
         "ParamTag_ByParentName" -> do
           return ParamTag_ByParentName
+
+        "ParamTag_BySelf" -> do
+          return ParamTag_BySelf
 
         "ParamTag_Timestamp" -> do
           return ParamTag_Timestamp
@@ -20168,17 +20214,18 @@ instance paramQueryParam :: QueryParam Param where
   qp (ByParentId parent_id)              = Tuple "parent_id" (show parent_id)
   qp (ByParentsIds parents_ids)          = Tuple "parents_ids" (show parents_ids)
   qp (ByParentName parent_name)          = Tuple "parent_name" (parent_name)
+  qp (BySelf b)                          = Tuple "self" (show b)
   qp (Timestamp ts)                      = Tuple "ts" (show ts)
   qp (UnixTimestamp unix_ts)             = Tuple "unix_ts" (show unix_ts)
   qp (CreatedAtTimestamp created_at)     = Tuple "created_at_ts" (show created_at)
   qp (CreatedAtUnixTimestamp created_at) = Tuple "created_at_unix_ts" (show created_at)
   qp (RealIP real_ip)                    = Tuple "real_ip" (real_ip)
   qp (IP ip)                             = Tuple "ip" (ip)
-  qp WithOrganization                    = Tuple "with_organization" ""
-  qp WithForum                           = Tuple "with_forum" ""
-  qp WithBoard                           = Tuple "with_board" ""
-  qp WithThread                          = Tuple "with_thread" ""
-  qp WithResource                        = Tuple "with_resource" ""
+  qp (WithOrganization b)                = Tuple "with_organization" (show b)
+  qp (WithForum b)                       = Tuple "with_forum" (show b)
+  qp (WithBoard b)                       = Tuple "with_board" (show b)
+  qp (WithThread b)                      = Tuple "with_thread" (show b)
+  qp (WithResource b)                    = Tuple "with_resource" (show b)
 
 
 
@@ -20234,6 +20281,7 @@ instance paramTagShow :: Show ParamTag where
   show ParamTag_ByParentId             = "parent_id"
   show ParamTag_ByParentsIds           = "parents_ids"
   show ParamTag_ByParentName           = "parent_name"
+  show ParamTag_BySelf                 = "self"
   show ParamTag_Timestamp              = "ts"
   show ParamTag_UnixTimestamp          = "unix_ts"
   show ParamTag_CreatedAtTimestamp     = "created_at_ts"

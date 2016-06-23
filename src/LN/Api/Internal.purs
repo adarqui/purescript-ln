@@ -10,36 +10,6 @@ import Prelude
 import Data.Either
 import LN.T.Internal.Types
 
-getEmptys :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError EmptyResponses)
-getEmptys params = handleError <$> getAt params ["emptys"]
-
-getEmptys' :: ApiEff (Either ApiError EmptyResponses)
-getEmptys'  = handleError <$> getAt ([] :: Array Boolean) ["emptys"]
-
-postEmpty :: forall qp. QueryParam qp => Array qp -> EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
-postEmpty params empty_request = handleError <$> postAt params ["empty"] empty_request
-
-postEmpty' :: EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
-postEmpty' empty_request = handleError <$> postAt ([] :: Array Boolean) ["empty"] empty_request
-
-getEmpty :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError EmptyResponse)
-getEmpty params empty_id = handleError <$> getAt params ["empty", show empty_id]
-
-getEmpty' :: Int -> ApiEff (Either ApiError EmptyResponse)
-getEmpty' empty_id = handleError <$> getAt ([] :: Array Boolean) ["empty", show empty_id]
-
-putEmpty :: forall qp. QueryParam qp => Array qp -> Int -> EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
-putEmpty params empty_id empty_request = handleError <$> putAt params ["empty", show empty_id] empty_request
-
-putEmpty' :: Int -> EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
-putEmpty' empty_id empty_request = handleError <$> putAt ([] :: Array Boolean) ["empty", show empty_id] empty_request
-
-deleteEmpty :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError Unit)
-deleteEmpty params empty_id = handleError <$> deleteAt params ["empty", show empty_id]
-
-deleteEmpty' :: Int -> ApiEff (Either ApiError Unit)
-deleteEmpty' empty_id = handleError <$> deleteAt ([] :: Array Boolean) ["empty", show empty_id]
-
 getApis :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ApiResponses)
 getApis params = handleError <$> getAt params ["apis"]
 
@@ -958,23 +928,29 @@ postTeamMember_ByTeamId params _ByTeamId team_member_request = handleError <$> p
 postTeamMember_ByTeamId' :: Int -> TeamMemberRequest -> ApiEff (Either ApiError TeamMemberResponse)
 postTeamMember_ByTeamId' _ByTeamId team_member_request = handleError <$> postAt [ByTeamId _ByTeamId] ["team_member"] team_member_request
 
+postTeamMember_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> Int -> TeamMemberRequest -> ApiEff (Either ApiError TeamMemberResponse)
+postTeamMember_ByOrganizationId params _ByOrganizationId team_member_request = handleError <$> postAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["team_member"] team_member_request
+
+postTeamMember_ByOrganizationId' :: Int -> TeamMemberRequest -> ApiEff (Either ApiError TeamMemberResponse)
+postTeamMember_ByOrganizationId' _ByOrganizationId team_member_request = handleError <$> postAt [ByOrganizationId _ByOrganizationId] ["team_member"] team_member_request
+
 getTeamMember :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError TeamMemberResponse)
-getTeamMember params team_id = handleError <$> getAt params ["team_member", show team_id]
+getTeamMember params team_member_id = handleError <$> getAt params ["team_member", show team_member_id]
 
 getTeamMember' :: Int -> ApiEff (Either ApiError TeamMemberResponse)
-getTeamMember' team_id = handleError <$> getAt ([] :: Array Boolean) ["team_member", show team_id]
+getTeamMember' team_member_id = handleError <$> getAt ([] :: Array Boolean) ["team_member", show team_member_id]
 
 putTeamMember :: forall qp. QueryParam qp => Array qp -> Int -> TeamMemberRequest -> ApiEff (Either ApiError TeamMemberResponse)
-putTeamMember params team_id team_member_request = handleError <$> putAt params ["team_member", show team_id] team_member_request
+putTeamMember params team_member_id team_member_request = handleError <$> putAt params ["team_member", show team_member_id] team_member_request
 
 putTeamMember' :: Int -> TeamMemberRequest -> ApiEff (Either ApiError TeamMemberResponse)
-putTeamMember' team_id team_member_request = handleError <$> putAt ([] :: Array Boolean) ["team_member", show team_id] team_member_request
+putTeamMember' team_member_id team_member_request = handleError <$> putAt ([] :: Array Boolean) ["team_member", show team_member_id] team_member_request
 
 deleteTeamMember :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError Unit)
-deleteTeamMember params team_id = handleError <$> deleteAt params ["team_member", show team_id]
+deleteTeamMember params team_member_id = handleError <$> deleteAt params ["team_member", show team_member_id]
 
 deleteTeamMember' :: Int -> ApiEff (Either ApiError Unit)
-deleteTeamMember' team_id = handleError <$> deleteAt ([] :: Array Boolean) ["team_member", show team_id]
+deleteTeamMember' team_member_id = handleError <$> deleteAt ([] :: Array Boolean) ["team_member", show team_member_id]
 
 getThreads :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ThreadResponses)
 getThreads params = handleError <$> getAt params ["threads"]
