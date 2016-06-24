@@ -16918,8 +16918,6 @@ newtype TeamPackResponse = TeamPackResponse {
   team :: TeamResponse,
   teamId :: Int,
   stat :: TeamStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
   permissions :: Permissions
 }
 
@@ -16930,8 +16928,6 @@ type TeamPackResponseR = {
   team :: TeamResponse,
   teamId :: Int,
   stat :: TeamStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
   permissions :: Permissions
 }
 
@@ -16942,16 +16938,14 @@ _TeamPackResponse :: LensP TeamPackResponse {
   team :: TeamResponse,
   teamId :: Int,
   stat :: TeamStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
   permissions :: Permissions
 }
 _TeamPackResponse f (TeamPackResponse o) = TeamPackResponse <$> f o
 
 
-mkTeamPackResponse :: UserSanitizedResponse -> Int -> TeamResponse -> Int -> TeamStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> TeamPackResponse
-mkTeamPackResponse user userId team teamId stat like star permissions =
-  TeamPackResponse{user, userId, team, teamId, stat, like, star, permissions}
+mkTeamPackResponse :: UserSanitizedResponse -> Int -> TeamResponse -> Int -> TeamStatResponse -> Permissions -> TeamPackResponse
+mkTeamPackResponse user userId team teamId stat permissions =
+  TeamPackResponse{user, userId, team, teamId, stat, permissions}
 
 
 unwrapTeamPackResponse (TeamPackResponse r) = r
@@ -16964,8 +16958,6 @@ instance teamPackResponseEncodeJson :: EncodeJson TeamPackResponse where
     ~> "team" := o.team
     ~> "team_id" := o.teamId
     ~> "stat" := o.stat
-    ~> "like" := o.like
-    ~> "star" := o.star
     ~> "permissions" := o.permissions
     ~> jsonEmptyObject
 
@@ -16978,8 +16970,6 @@ instance teamPackResponseDecodeJson :: DecodeJson TeamPackResponse where
     team <- obj .? "team"
     teamId <- obj .? "team_id"
     stat <- obj .? "stat"
-    like <- obj .? "like"
-    star <- obj .? "star"
     permissions <- obj .? "permissions"
     pure $ TeamPackResponse {
       user,
@@ -16987,8 +16977,6 @@ instance teamPackResponseDecodeJson :: DecodeJson TeamPackResponse where
       team,
       teamId,
       stat,
-      like,
-      star,
       permissions
     }
 
@@ -17009,8 +16997,6 @@ instance teamPackResponseRespondable :: Respondable TeamPackResponse where
       <*> readProp "team" json
       <*> readProp "team_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
 
 
@@ -17022,13 +17008,11 @@ instance teamPackResponseIsForeign :: IsForeign TeamPackResponse where
       <*> readProp "team" json
       <*> readProp "team_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
 
 
 instance teamPackResponseShow :: Show TeamPackResponse where
-    show (TeamPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "team: " ++ show o.team ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (TeamPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "team: " ++ show o.team ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "permissions: " ++ show o.permissions
 
 newtype TeamPackResponses = TeamPackResponses {
   teamPackResponses :: (Array TeamPackResponse)
