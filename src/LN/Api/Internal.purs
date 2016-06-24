@@ -1204,6 +1204,12 @@ getTeamMemberPacks_ByOrganizationId params _ByOrganizationId = handleError <$> g
 getTeamMemberPacks_ByOrganizationId' :: Int -> ApiEff (Either ApiError TeamMemberPackResponses)
 getTeamMemberPacks_ByOrganizationId' _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["team_member_packs"]
 
+getTeamMemberPacks_ByTeamId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError TeamMemberPackResponses)
+getTeamMemberPacks_ByTeamId params _ByTeamId = handleError <$> getAt (map qp params ++ map qp [ByTeamId _ByTeamId]) ["team_member_packs"]
+
+getTeamMemberPacks_ByTeamId' :: Int -> ApiEff (Either ApiError TeamMemberPackResponses)
+getTeamMemberPacks_ByTeamId' _ByTeamId = handleError <$> getAt [ByTeamId _ByTeamId] ["team_member_packs"]
+
 getTeamMemberPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError TeamMemberPackResponse)
 getTeamMemberPack params team_member_id = handleError <$> getAt params ["team_member_pack", show team_member_id]
 
