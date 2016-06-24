@@ -472,6 +472,7 @@ instance boardRequestShow :: Show BoardRequest where
 newtype BoardResponse = BoardResponse {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
   forumId :: Int,
   parentId :: (Maybe Int),
   name :: String,
@@ -495,6 +496,7 @@ newtype BoardResponse = BoardResponse {
 type BoardResponseR = {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
   forumId :: Int,
   parentId :: (Maybe Int),
   name :: String,
@@ -518,6 +520,7 @@ type BoardResponseR = {
 _BoardResponse :: LensP BoardResponse {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
   forumId :: Int,
   parentId :: (Maybe Int),
   name :: String,
@@ -539,9 +542,9 @@ _BoardResponse :: LensP BoardResponse {
 _BoardResponse f (BoardResponse o) = BoardResponse <$> f o
 
 
-mkBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> String -> (Maybe String) -> Boolean -> Boolean -> Boolean -> (Array String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardResponse
-mkBoardResponse id userId forumId parentId name displayName description isAnonymous canCreateSubBoards canCreateThreads suggestedTags icon tags active guard createdAt modifiedBy modifiedAt activityAt =
-  BoardResponse{id, userId, forumId, parentId, name, displayName, description, isAnonymous, canCreateSubBoards, canCreateThreads, suggestedTags, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkBoardResponse :: Int -> Int -> Int -> Int -> (Maybe Int) -> String -> String -> (Maybe String) -> Boolean -> Boolean -> Boolean -> (Array String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardResponse
+mkBoardResponse id userId orgId forumId parentId name displayName description isAnonymous canCreateSubBoards canCreateThreads suggestedTags icon tags active guard createdAt modifiedBy modifiedAt activityAt =
+  BoardResponse{id, userId, orgId, forumId, parentId, name, displayName, description, isAnonymous, canCreateSubBoards, canCreateThreads, suggestedTags, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapBoardResponse (BoardResponse r) = r
@@ -551,6 +554,7 @@ instance boardResponseEncodeJson :: EncodeJson BoardResponse where
        "tag" := "BoardResponse"
     ~> "id" := o.id
     ~> "user_id" := o.userId
+    ~> "org_id" := o.orgId
     ~> "forum_id" := o.forumId
     ~> "parent_id" := o.parentId
     ~> "name" := o.name
@@ -576,6 +580,7 @@ instance boardResponseDecodeJson :: DecodeJson BoardResponse where
     obj <- decodeJson o
     id <- obj .? "id"
     userId <- obj .? "user_id"
+    orgId <- obj .? "org_id"
     forumId <- obj .? "forum_id"
     parentId <- obj .? "parent_id"
     name <- obj .? "name"
@@ -596,6 +601,7 @@ instance boardResponseDecodeJson :: DecodeJson BoardResponse where
     pure $ BoardResponse {
       id,
       userId,
+      orgId,
       forumId,
       parentId,
       name,
@@ -629,6 +635,7 @@ instance boardResponseRespondable :: Respondable BoardResponse where
       mkBoardResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
+      <*> readProp "org_id" json
       <*> readProp "forum_id" json
       <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
@@ -653,6 +660,7 @@ instance boardResponseIsForeign :: IsForeign BoardResponse where
       mkBoardResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
+      <*> readProp "org_id" json
       <*> readProp "forum_id" json
       <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
@@ -673,7 +681,7 @@ instance boardResponseIsForeign :: IsForeign BoardResponse where
 
 
 instance boardResponseShow :: Show BoardResponse where
-    show (BoardResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "isAnonymous: " ++ show o.isAnonymous ++ ", " ++ show "canCreateSubBoards: " ++ show o.canCreateSubBoards ++ ", " ++ show "canCreateThreads: " ++ show o.canCreateThreads ++ ", " ++ show "suggestedTags: " ++ show o.suggestedTags ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (BoardResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "isAnonymous: " ++ show o.isAnonymous ++ ", " ++ show "canCreateSubBoards: " ++ show o.canCreateSubBoards ++ ", " ++ show "canCreateThreads: " ++ show o.canCreateThreads ++ ", " ++ show "suggestedTags: " ++ show o.suggestedTags ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype BoardResponses = BoardResponses {
   boardResponses :: (Array BoardResponse)
@@ -14272,6 +14280,7 @@ instance teamMemberRequestShow :: Show TeamMemberRequest where
 newtype TeamMemberResponse = TeamMemberResponse {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
   teamId :: Int,
   isAccepted :: Boolean,
   acceptedAt :: (Maybe Date),
@@ -14289,6 +14298,7 @@ newtype TeamMemberResponse = TeamMemberResponse {
 type TeamMemberResponseR = {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
   teamId :: Int,
   isAccepted :: Boolean,
   acceptedAt :: (Maybe Date),
@@ -14306,6 +14316,7 @@ type TeamMemberResponseR = {
 _TeamMemberResponse :: LensP TeamMemberResponse {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
   teamId :: Int,
   isAccepted :: Boolean,
   acceptedAt :: (Maybe Date),
@@ -14321,9 +14332,9 @@ _TeamMemberResponse :: LensP TeamMemberResponse {
 _TeamMemberResponse f (TeamMemberResponse o) = TeamMemberResponse <$> f o
 
 
-mkTeamMemberResponse :: Int -> Int -> Int -> Boolean -> (Maybe Date) -> Boolean -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamMemberResponse
-mkTeamMemberResponse id userId teamId isAccepted acceptedAt isBlocked blockedAt active guard createdAt modifiedBy modifiedAt activityAt =
-  TeamMemberResponse{id, userId, teamId, isAccepted, acceptedAt, isBlocked, blockedAt, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkTeamMemberResponse :: Int -> Int -> Int -> Int -> Boolean -> (Maybe Date) -> Boolean -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamMemberResponse
+mkTeamMemberResponse id userId orgId teamId isAccepted acceptedAt isBlocked blockedAt active guard createdAt modifiedBy modifiedAt activityAt =
+  TeamMemberResponse{id, userId, orgId, teamId, isAccepted, acceptedAt, isBlocked, blockedAt, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapTeamMemberResponse (TeamMemberResponse r) = r
@@ -14333,6 +14344,7 @@ instance teamMemberResponseEncodeJson :: EncodeJson TeamMemberResponse where
        "tag" := "TeamMemberResponse"
     ~> "id" := o.id
     ~> "user_id" := o.userId
+    ~> "org_id" := o.orgId
     ~> "team_id" := o.teamId
     ~> "is_accepted" := o.isAccepted
     ~> "accepted_at" := o.acceptedAt
@@ -14352,6 +14364,7 @@ instance teamMemberResponseDecodeJson :: DecodeJson TeamMemberResponse where
     obj <- decodeJson o
     id <- obj .? "id"
     userId <- obj .? "user_id"
+    orgId <- obj .? "org_id"
     teamId <- obj .? "team_id"
     isAccepted <- obj .? "is_accepted"
     acceptedAt <- obj .? "accepted_at"
@@ -14366,6 +14379,7 @@ instance teamMemberResponseDecodeJson :: DecodeJson TeamMemberResponse where
     pure $ TeamMemberResponse {
       id,
       userId,
+      orgId,
       teamId,
       isAccepted,
       acceptedAt,
@@ -14393,6 +14407,7 @@ instance teamMemberResponseRespondable :: Respondable TeamMemberResponse where
       mkTeamMemberResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
+      <*> readProp "org_id" json
       <*> readProp "team_id" json
       <*> readProp "is_accepted" json
       <*> (runNullOrUndefined <$> readProp "accepted_at" json)
@@ -14411,6 +14426,7 @@ instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
       mkTeamMemberResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
+      <*> readProp "org_id" json
       <*> readProp "team_id" json
       <*> readProp "is_accepted" json
       <*> (runNullOrUndefined <$> readProp "accepted_at" json)
@@ -14425,7 +14441,7 @@ instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
 
 
 instance teamMemberResponseShow :: Show TeamMemberResponse where
-    show (TeamMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "isAccepted: " ++ show o.isAccepted ++ ", " ++ show "acceptedAt: " ++ show o.acceptedAt ++ ", " ++ show "isBlocked: " ++ show o.isBlocked ++ ", " ++ show "blockedAt: " ++ show o.blockedAt ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (TeamMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "isAccepted: " ++ show o.isAccepted ++ ", " ++ show "acceptedAt: " ++ show o.acceptedAt ++ ", " ++ show "isBlocked: " ++ show o.isBlocked ++ ", " ++ show "blockedAt: " ++ show o.blockedAt ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype TeamMemberResponses = TeamMemberResponses {
   teamMemberResponses :: (Array TeamMemberResponse)
@@ -14943,6 +14959,8 @@ instance threadRequestShow :: Show ThreadRequest where
 newtype ThreadResponse = ThreadResponse {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
+  forumId :: Int,
   boardId :: Int,
   name :: String,
   displayName :: String,
@@ -14964,6 +14982,8 @@ newtype ThreadResponse = ThreadResponse {
 type ThreadResponseR = {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
+  forumId :: Int,
   boardId :: Int,
   name :: String,
   displayName :: String,
@@ -14985,6 +15005,8 @@ type ThreadResponseR = {
 _ThreadResponse :: LensP ThreadResponse {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
+  forumId :: Int,
   boardId :: Int,
   name :: String,
   displayName :: String,
@@ -15004,9 +15026,9 @@ _ThreadResponse :: LensP ThreadResponse {
 _ThreadResponse f (ThreadResponse o) = ThreadResponse <$> f o
 
 
-mkThreadResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadResponse
-mkThreadResponse id userId boardId name displayName description sticky locked poll icon tags active guard createdAt modifiedBy modifiedAt activityAt =
-  ThreadResponse{id, userId, boardId, name, displayName, description, sticky, locked, poll, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkThreadResponse :: Int -> Int -> Int -> Int -> Int -> String -> String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadResponse
+mkThreadResponse id userId orgId forumId boardId name displayName description sticky locked poll icon tags active guard createdAt modifiedBy modifiedAt activityAt =
+  ThreadResponse{id, userId, orgId, forumId, boardId, name, displayName, description, sticky, locked, poll, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapThreadResponse (ThreadResponse r) = r
@@ -15016,6 +15038,8 @@ instance threadResponseEncodeJson :: EncodeJson ThreadResponse where
        "tag" := "ThreadResponse"
     ~> "id" := o.id
     ~> "user_id" := o.userId
+    ~> "org_id" := o.orgId
+    ~> "forum_id" := o.forumId
     ~> "board_id" := o.boardId
     ~> "name" := o.name
     ~> "display_name" := o.displayName
@@ -15039,6 +15063,8 @@ instance threadResponseDecodeJson :: DecodeJson ThreadResponse where
     obj <- decodeJson o
     id <- obj .? "id"
     userId <- obj .? "user_id"
+    orgId <- obj .? "org_id"
+    forumId <- obj .? "forum_id"
     boardId <- obj .? "board_id"
     name <- obj .? "name"
     displayName <- obj .? "display_name"
@@ -15057,6 +15083,8 @@ instance threadResponseDecodeJson :: DecodeJson ThreadResponse where
     pure $ ThreadResponse {
       id,
       userId,
+      orgId,
+      forumId,
       boardId,
       name,
       displayName,
@@ -15088,6 +15116,8 @@ instance threadResponseRespondable :: Respondable ThreadResponse where
       mkThreadResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
+      <*> readProp "org_id" json
+      <*> readProp "forum_id" json
       <*> readProp "board_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
@@ -15110,6 +15140,8 @@ instance threadResponseIsForeign :: IsForeign ThreadResponse where
       mkThreadResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
+      <*> readProp "org_id" json
+      <*> readProp "forum_id" json
       <*> readProp "board_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
@@ -15128,7 +15160,7 @@ instance threadResponseIsForeign :: IsForeign ThreadResponse where
 
 
 instance threadResponseShow :: Show ThreadResponse where
-    show (ThreadResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "sticky: " ++ show o.sticky ++ ", " ++ show "locked: " ++ show o.locked ++ ", " ++ show "poll: " ++ show o.poll ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ThreadResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "sticky: " ++ show o.sticky ++ ", " ++ show "locked: " ++ show o.locked ++ ", " ++ show "poll: " ++ show o.poll ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ThreadResponses = ThreadResponses {
   threadResponses :: (Array ThreadResponse)
@@ -15572,6 +15604,9 @@ instance threadPostRequestShow :: Show ThreadPostRequest where
 newtype ThreadPostResponse = ThreadPostResponse {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
+  forumId :: Int,
+  boardId :: Int,
   threadId :: Int,
   parentId :: (Maybe Int),
   title :: (Maybe String),
@@ -15590,6 +15625,9 @@ newtype ThreadPostResponse = ThreadPostResponse {
 type ThreadPostResponseR = {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
+  forumId :: Int,
+  boardId :: Int,
   threadId :: Int,
   parentId :: (Maybe Int),
   title :: (Maybe String),
@@ -15608,6 +15646,9 @@ type ThreadPostResponseR = {
 _ThreadPostResponse :: LensP ThreadPostResponse {
   id :: Int,
   userId :: Int,
+  orgId :: Int,
+  forumId :: Int,
+  boardId :: Int,
   threadId :: Int,
   parentId :: (Maybe Int),
   title :: (Maybe String),
@@ -15624,9 +15665,9 @@ _ThreadPostResponse :: LensP ThreadPostResponse {
 _ThreadPostResponse f (ThreadPostResponse o) = ThreadPostResponse <$> f o
 
 
-mkThreadPostResponse :: Int -> Int -> Int -> (Maybe Int) -> (Maybe String) -> PostData -> (Array String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostResponse
-mkThreadPostResponse id userId threadId parentId title body tags privateTags active guard createdAt modifiedBy modifiedAt activityAt =
-  ThreadPostResponse{id, userId, threadId, parentId, title, body, tags, privateTags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkThreadPostResponse :: Int -> Int -> Int -> Int -> Int -> Int -> (Maybe Int) -> (Maybe String) -> PostData -> (Array String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostResponse
+mkThreadPostResponse id userId orgId forumId boardId threadId parentId title body tags privateTags active guard createdAt modifiedBy modifiedAt activityAt =
+  ThreadPostResponse{id, userId, orgId, forumId, boardId, threadId, parentId, title, body, tags, privateTags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapThreadPostResponse (ThreadPostResponse r) = r
@@ -15636,6 +15677,9 @@ instance threadPostResponseEncodeJson :: EncodeJson ThreadPostResponse where
        "tag" := "ThreadPostResponse"
     ~> "id" := o.id
     ~> "user_id" := o.userId
+    ~> "org_id" := o.orgId
+    ~> "forum_id" := o.forumId
+    ~> "board_id" := o.boardId
     ~> "thread_id" := o.threadId
     ~> "parent_id" := o.parentId
     ~> "title" := o.title
@@ -15656,6 +15700,9 @@ instance threadPostResponseDecodeJson :: DecodeJson ThreadPostResponse where
     obj <- decodeJson o
     id <- obj .? "id"
     userId <- obj .? "user_id"
+    orgId <- obj .? "org_id"
+    forumId <- obj .? "forum_id"
+    boardId <- obj .? "board_id"
     threadId <- obj .? "thread_id"
     parentId <- obj .? "parent_id"
     title <- obj .? "title"
@@ -15671,6 +15718,9 @@ instance threadPostResponseDecodeJson :: DecodeJson ThreadPostResponse where
     pure $ ThreadPostResponse {
       id,
       userId,
+      orgId,
+      forumId,
+      boardId,
       threadId,
       parentId,
       title,
@@ -15699,6 +15749,9 @@ instance threadPostResponseRespondable :: Respondable ThreadPostResponse where
       mkThreadPostResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
+      <*> readProp "org_id" json
+      <*> readProp "forum_id" json
+      <*> readProp "board_id" json
       <*> readProp "thread_id" json
       <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> (runNullOrUndefined <$> readProp "title" json)
@@ -15718,6 +15771,9 @@ instance threadPostResponseIsForeign :: IsForeign ThreadPostResponse where
       mkThreadPostResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
+      <*> readProp "org_id" json
+      <*> readProp "forum_id" json
+      <*> readProp "board_id" json
       <*> readProp "thread_id" json
       <*> (runNullOrUndefined <$> readProp "parent_id" json)
       <*> (runNullOrUndefined <$> readProp "title" json)
@@ -15733,7 +15789,7 @@ instance threadPostResponseIsForeign :: IsForeign ThreadPostResponse where
 
 
 instance threadPostResponseShow :: Show ThreadPostResponse where
-    show (ThreadPostResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "threadId: " ++ show o.threadId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "body: " ++ show o.body ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "privateTags: " ++ show o.privateTags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ThreadPostResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "threadId: " ++ show o.threadId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "body: " ++ show o.body ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "privateTags: " ++ show o.privateTags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ThreadPostResponses = ThreadPostResponses {
   threadPostResponses :: (Array ThreadPostResponse)

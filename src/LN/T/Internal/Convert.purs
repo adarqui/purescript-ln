@@ -46,11 +46,12 @@ apiResponseToApiRequest  (ApiResponse o) =
   }
 
 
-boardRequestToBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardRequest -> BoardResponse
-boardRequestToBoardResponse id userId forumId parentId name active createdAt modifiedBy modifiedAt activityAt (BoardRequest o) =
+boardRequestToBoardResponse :: Int -> Int -> Int -> Int -> (Maybe Int) -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardRequest -> BoardResponse
+boardRequestToBoardResponse id userId orgId forumId parentId name active createdAt modifiedBy modifiedAt activityAt (BoardRequest o) =
   BoardResponse {
     id: id,
     userId: userId,
+    orgId: orgId,
     forumId: forumId,
     parentId: parentId,
     name: name,
@@ -568,11 +569,13 @@ teamResponseToTeamRequest  (TeamResponse o) =
   }
 
 
-threadRequestToThreadResponse :: Int -> Int -> Int -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadRequest -> ThreadResponse
-threadRequestToThreadResponse id userId boardId name active createdAt modifiedBy modifiedAt activityAt (ThreadRequest o) =
+threadRequestToThreadResponse :: Int -> Int -> Int -> Int -> Int -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadRequest -> ThreadResponse
+threadRequestToThreadResponse id userId orgId forumId boardId name active createdAt modifiedBy modifiedAt activityAt (ThreadRequest o) =
   ThreadResponse {
     id: id,
     userId: userId,
+    orgId: orgId,
+    forumId: forumId,
     boardId: boardId,
     name: name,
     displayName: o.displayName,
@@ -605,11 +608,14 @@ threadResponseToThreadRequest  (ThreadResponse o) =
   }
 
 
-threadPostRequestToThreadPostResponse :: Int -> Int -> Int -> (Maybe Int) -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostRequest -> ThreadPostResponse
-threadPostRequestToThreadPostResponse id userId threadId parentId active createdAt modifiedBy modifiedAt activityAt (ThreadPostRequest o) =
+threadPostRequestToThreadPostResponse :: Int -> Int -> Int -> Int -> Int -> Int -> (Maybe Int) -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostRequest -> ThreadPostResponse
+threadPostRequestToThreadPostResponse id userId orgId forumId boardId threadId parentId active createdAt modifiedBy modifiedAt activityAt (ThreadPostRequest o) =
   ThreadPostResponse {
     id: id,
     userId: userId,
+    orgId: orgId,
+    forumId: forumId,
+    boardId: boardId,
     threadId: threadId,
     parentId: parentId,
     title: o.title,
