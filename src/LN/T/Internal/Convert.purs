@@ -413,14 +413,15 @@ profileRequestToProfileResponse id ent entId karmaGood karmaBad createdAt modifi
   }
 
 
-profileResponseToProfileRequest :: ProfileResponse -> ProfileRequest
-profileResponseToProfileRequest  (ProfileResponse o) =
+profileResponseToProfileRequest :: Boolean -> ProfileResponse -> ProfileRequest
+profileResponseToProfileRequest debug (ProfileResponse o) =
   ProfileRequest {
     gender: o.gender,
     birthdate: o.birthdate,
     website: o.website,
     location: o.location,
     signature: o.signature,
+    debug: debug,
     guard: o.guard
   }
 

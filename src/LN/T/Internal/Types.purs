@@ -11142,6 +11142,7 @@ newtype ProfileRequest = ProfileRequest {
   website :: (Maybe String),
   location :: (Maybe String),
   signature :: (Maybe String),
+  debug :: Boolean,
   guard :: Int
 }
 
@@ -11152,6 +11153,7 @@ type ProfileRequestR = {
   website :: (Maybe String),
   location :: (Maybe String),
   signature :: (Maybe String),
+  debug :: Boolean,
   guard :: Int
 }
 
@@ -11162,14 +11164,15 @@ _ProfileRequest :: LensP ProfileRequest {
   website :: (Maybe String),
   location :: (Maybe String),
   signature :: (Maybe String),
+  debug :: Boolean,
   guard :: Int
 }
 _ProfileRequest f (ProfileRequest o) = ProfileRequest <$> f o
 
 
-mkProfileRequest :: ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Int -> ProfileRequest
-mkProfileRequest gender birthdate website location signature guard =
-  ProfileRequest{gender, birthdate, website, location, signature, guard}
+mkProfileRequest :: ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Boolean -> Int -> ProfileRequest
+mkProfileRequest gender birthdate website location signature debug guard =
+  ProfileRequest{gender, birthdate, website, location, signature, debug, guard}
 
 
 unwrapProfileRequest (ProfileRequest r) = r
@@ -11182,6 +11185,7 @@ instance profileRequestEncodeJson :: EncodeJson ProfileRequest where
     ~> "website" := o.website
     ~> "location" := o.location
     ~> "signature" := o.signature
+    ~> "debug" := o.debug
     ~> "guard" := o.guard
     ~> jsonEmptyObject
 
@@ -11194,6 +11198,7 @@ instance profileRequestDecodeJson :: DecodeJson ProfileRequest where
     website <- obj .? "website"
     location <- obj .? "location"
     signature <- obj .? "signature"
+    debug <- obj .? "debug"
     guard <- obj .? "guard"
     pure $ ProfileRequest {
       gender,
@@ -11201,6 +11206,7 @@ instance profileRequestDecodeJson :: DecodeJson ProfileRequest where
       website,
       location,
       signature,
+      debug,
       guard
     }
 
@@ -11221,6 +11227,7 @@ instance profileRequestRespondable :: Respondable ProfileRequest where
       <*> (runNullOrUndefined <$> readProp "website" json)
       <*> (runNullOrUndefined <$> readProp "location" json)
       <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> readProp "debug" json
       <*> readProp "guard" json
 
 
@@ -11232,11 +11239,12 @@ instance profileRequestIsForeign :: IsForeign ProfileRequest where
       <*> (runNullOrUndefined <$> readProp "website" json)
       <*> (runNullOrUndefined <$> readProp "location" json)
       <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> readProp "debug" json
       <*> readProp "guard" json
 
 
 instance profileRequestShow :: Show ProfileRequest where
-    show (ProfileRequest o) = show "gender: " ++ show o.gender ++ ", " ++ show "birthdate: " ++ show o.birthdate ++ ", " ++ show "website: " ++ show o.website ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "signature: " ++ show o.signature ++ ", " ++ show "guard: " ++ show o.guard
+    show (ProfileRequest o) = show "gender: " ++ show o.gender ++ ", " ++ show "birthdate: " ++ show o.birthdate ++ ", " ++ show "website: " ++ show o.website ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "signature: " ++ show o.signature ++ ", " ++ show "debug: " ++ show o.debug ++ ", " ++ show "guard: " ++ show o.guard
 
 newtype ProfileResponse = ProfileResponse {
   id :: Int,
@@ -19478,6 +19486,10 @@ dataP_ f o = o { dataP = _ } <$> f o.dataP
 
 deactivatedAt_ :: forall b a r. Lens { deactivatedAt :: a | r } { deactivatedAt :: b | r } a b
 deactivatedAt_ f o = o { deactivatedAt = _ } <$> f o.deactivatedAt
+
+
+debug_ :: forall b a r. Lens { debug :: a | r } { debug :: b | r } a b
+debug_ f o = o { debug = _ } <$> f o.debug
 
 
 desc_ :: forall b a r. Lens { desc :: a | r } { desc :: b | r } a b
