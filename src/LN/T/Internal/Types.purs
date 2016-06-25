@@ -1989,6 +1989,9 @@ newtype ForumRequest = ForumRequest {
   description :: (Maybe String),
   threadsPerBoard :: Int,
   threadPostsPerThread :: Int,
+  recentThreadsLimit :: Int,
+  recentPostsLimit :: Int,
+  motwLimit :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -2001,6 +2004,9 @@ type ForumRequestR = {
   description :: (Maybe String),
   threadsPerBoard :: Int,
   threadPostsPerThread :: Int,
+  recentThreadsLimit :: Int,
+  recentPostsLimit :: Int,
+  motwLimit :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -2013,6 +2019,9 @@ _ForumRequest :: LensP ForumRequest {
   description :: (Maybe String),
   threadsPerBoard :: Int,
   threadPostsPerThread :: Int,
+  recentThreadsLimit :: Int,
+  recentPostsLimit :: Int,
+  motwLimit :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -2021,9 +2030,9 @@ _ForumRequest :: LensP ForumRequest {
 _ForumRequest f (ForumRequest o) = ForumRequest <$> f o
 
 
-mkForumRequest :: String -> (Maybe String) -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Int -> ForumRequest
-mkForumRequest displayName description threadsPerBoard threadPostsPerThread icon tags visibility guard =
-  ForumRequest{displayName, description, threadsPerBoard, threadPostsPerThread, icon, tags, visibility, guard}
+mkForumRequest :: String -> (Maybe String) -> Int -> Int -> Int -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Int -> ForumRequest
+mkForumRequest displayName description threadsPerBoard threadPostsPerThread recentThreadsLimit recentPostsLimit motwLimit icon tags visibility guard =
+  ForumRequest{displayName, description, threadsPerBoard, threadPostsPerThread, recentThreadsLimit, recentPostsLimit, motwLimit, icon, tags, visibility, guard}
 
 
 unwrapForumRequest (ForumRequest r) = r
@@ -2035,6 +2044,9 @@ instance forumRequestEncodeJson :: EncodeJson ForumRequest where
     ~> "description" := o.description
     ~> "threads_per_board" := o.threadsPerBoard
     ~> "thread_posts_per_thread" := o.threadPostsPerThread
+    ~> "recent_threads_limit" := o.recentThreadsLimit
+    ~> "recent_posts_limit" := o.recentPostsLimit
+    ~> "motw_limit" := o.motwLimit
     ~> "icon" := o.icon
     ~> "tags" := o.tags
     ~> "visibility" := o.visibility
@@ -2049,6 +2061,9 @@ instance forumRequestDecodeJson :: DecodeJson ForumRequest where
     description <- obj .? "description"
     threadsPerBoard <- obj .? "threads_per_board"
     threadPostsPerThread <- obj .? "thread_posts_per_thread"
+    recentThreadsLimit <- obj .? "recent_threads_limit"
+    recentPostsLimit <- obj .? "recent_posts_limit"
+    motwLimit <- obj .? "motw_limit"
     icon <- obj .? "icon"
     tags <- obj .? "tags"
     visibility <- obj .? "visibility"
@@ -2058,6 +2073,9 @@ instance forumRequestDecodeJson :: DecodeJson ForumRequest where
       description,
       threadsPerBoard,
       threadPostsPerThread,
+      recentThreadsLimit,
+      recentPostsLimit,
+      motwLimit,
       icon,
       tags,
       visibility,
@@ -2080,6 +2098,9 @@ instance forumRequestRespondable :: Respondable ForumRequest where
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "threads_per_board" json
       <*> readProp "thread_posts_per_thread" json
+      <*> readProp "recent_threads_limit" json
+      <*> readProp "recent_posts_limit" json
+      <*> readProp "motw_limit" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -2093,6 +2114,9 @@ instance forumRequestIsForeign :: IsForeign ForumRequest where
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "threads_per_board" json
       <*> readProp "thread_posts_per_thread" json
+      <*> readProp "recent_threads_limit" json
+      <*> readProp "recent_posts_limit" json
+      <*> readProp "motw_limit" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -2100,7 +2124,7 @@ instance forumRequestIsForeign :: IsForeign ForumRequest where
 
 
 instance forumRequestShow :: Show ForumRequest where
-    show (ForumRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "threadsPerBoard: " ++ show o.threadsPerBoard ++ ", " ++ show "threadPostsPerThread: " ++ show o.threadPostsPerThread ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
+    show (ForumRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "threadsPerBoard: " ++ show o.threadsPerBoard ++ ", " ++ show "threadPostsPerThread: " ++ show o.threadPostsPerThread ++ ", " ++ show "recentThreadsLimit: " ++ show o.recentThreadsLimit ++ ", " ++ show "recentPostsLimit: " ++ show o.recentPostsLimit ++ ", " ++ show "motwLimit: " ++ show o.motwLimit ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
 
 newtype ForumResponse = ForumResponse {
   id :: Int,
@@ -2111,6 +2135,9 @@ newtype ForumResponse = ForumResponse {
   description :: (Maybe String),
   threadsPerBoard :: Int,
   threadPostsPerThread :: Int,
+  recentThreadsLimit :: Int,
+  recentPostsLimit :: Int,
+  motwLimit :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -2132,6 +2159,9 @@ type ForumResponseR = {
   description :: (Maybe String),
   threadsPerBoard :: Int,
   threadPostsPerThread :: Int,
+  recentThreadsLimit :: Int,
+  recentPostsLimit :: Int,
+  motwLimit :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -2153,6 +2183,9 @@ _ForumResponse :: LensP ForumResponse {
   description :: (Maybe String),
   threadsPerBoard :: Int,
   threadPostsPerThread :: Int,
+  recentThreadsLimit :: Int,
+  recentPostsLimit :: Int,
+  motwLimit :: Int,
   icon :: (Maybe String),
   tags :: (Array String),
   visibility :: Visibility,
@@ -2166,9 +2199,9 @@ _ForumResponse :: LensP ForumResponse {
 _ForumResponse f (ForumResponse o) = ForumResponse <$> f o
 
 
-mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
-mkForumResponse id userId orgId name displayName description threadsPerBoard threadPostsPerThread icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
-  ForumResponse{id, userId, orgId, name, displayName, description, threadsPerBoard, threadPostsPerThread, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
+mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Int -> Int -> Int -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
+mkForumResponse id userId orgId name displayName description threadsPerBoard threadPostsPerThread recentThreadsLimit recentPostsLimit motwLimit icon tags visibility active guard createdAt modifiedBy modifiedAt activityAt =
+  ForumResponse{id, userId, orgId, name, displayName, description, threadsPerBoard, threadPostsPerThread, recentThreadsLimit, recentPostsLimit, motwLimit, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
 unwrapForumResponse (ForumResponse r) = r
@@ -2184,6 +2217,9 @@ instance forumResponseEncodeJson :: EncodeJson ForumResponse where
     ~> "description" := o.description
     ~> "threads_per_board" := o.threadsPerBoard
     ~> "thread_posts_per_thread" := o.threadPostsPerThread
+    ~> "recent_threads_limit" := o.recentThreadsLimit
+    ~> "recent_posts_limit" := o.recentPostsLimit
+    ~> "motw_limit" := o.motwLimit
     ~> "icon" := o.icon
     ~> "tags" := o.tags
     ~> "visibility" := o.visibility
@@ -2207,6 +2243,9 @@ instance forumResponseDecodeJson :: DecodeJson ForumResponse where
     description <- obj .? "description"
     threadsPerBoard <- obj .? "threads_per_board"
     threadPostsPerThread <- obj .? "thread_posts_per_thread"
+    recentThreadsLimit <- obj .? "recent_threads_limit"
+    recentPostsLimit <- obj .? "recent_posts_limit"
+    motwLimit <- obj .? "motw_limit"
     icon <- obj .? "icon"
     tags <- obj .? "tags"
     visibility <- obj .? "visibility"
@@ -2225,6 +2264,9 @@ instance forumResponseDecodeJson :: DecodeJson ForumResponse where
       description,
       threadsPerBoard,
       threadPostsPerThread,
+      recentThreadsLimit,
+      recentPostsLimit,
+      motwLimit,
       icon,
       tags,
       visibility,
@@ -2256,6 +2298,9 @@ instance forumResponseRespondable :: Respondable ForumResponse where
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "threads_per_board" json
       <*> readProp "thread_posts_per_thread" json
+      <*> readProp "recent_threads_limit" json
+      <*> readProp "recent_posts_limit" json
+      <*> readProp "motw_limit" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -2278,6 +2323,9 @@ instance forumResponseIsForeign :: IsForeign ForumResponse where
       <*> (runNullOrUndefined <$> readProp "description" json)
       <*> readProp "threads_per_board" json
       <*> readProp "thread_posts_per_thread" json
+      <*> readProp "recent_threads_limit" json
+      <*> readProp "recent_posts_limit" json
+      <*> readProp "motw_limit" json
       <*> (runNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
@@ -2290,7 +2338,7 @@ instance forumResponseIsForeign :: IsForeign ForumResponse where
 
 
 instance forumResponseShow :: Show ForumResponse where
-    show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "threadsPerBoard: " ++ show o.threadsPerBoard ++ ", " ++ show "threadPostsPerThread: " ++ show o.threadPostsPerThread ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "threadsPerBoard: " ++ show o.threadsPerBoard ++ ", " ++ show "threadPostsPerThread: " ++ show o.threadPostsPerThread ++ ", " ++ show "recentThreadsLimit: " ++ show o.recentThreadsLimit ++ ", " ++ show "recentPostsLimit: " ++ show o.recentPostsLimit ++ ", " ++ show "motwLimit: " ++ show o.motwLimit ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
 
 newtype ForumResponses = ForumResponses {
   forumResponses :: (Array ForumResponse)
@@ -19744,6 +19792,10 @@ modifiedBy_ :: forall b a r. Lens { modifiedBy :: a | r } { modifiedBy :: b | r 
 modifiedBy_ f o = o { modifiedBy = _ } <$> f o.modifiedBy
 
 
+motwLimit_ :: forall b a r. Lens { motwLimit :: a | r } { motwLimit :: b | r } a b
+motwLimit_ f o = o { motwLimit = _ } <$> f o.motwLimit
+
+
 msg_ :: forall b a r. Lens { msg :: a | r } { msg :: b | r } a b
 msg_ f o = o { msg = _ } <$> f o.msg
 
@@ -19870,6 +19922,14 @@ question_ f o = o { question = _ } <$> f o.question
 
 reason_ :: forall b a r. Lens { reason :: a | r } { reason :: b | r } a b
 reason_ f o = o { reason = _ } <$> f o.reason
+
+
+recentPostsLimit_ :: forall b a r. Lens { recentPostsLimit :: a | r } { recentPostsLimit :: b | r } a b
+recentPostsLimit_ f o = o { recentPostsLimit = _ } <$> f o.recentPostsLimit
+
+
+recentThreadsLimit_ :: forall b a r. Lens { recentThreadsLimit :: a | r } { recentThreadsLimit :: b | r } a b
+recentThreadsLimit_ f o = o { recentThreadsLimit = _ } <$> f o.recentThreadsLimit
 
 
 reminderFolderResponses_ :: forall b a r. Lens { reminderFolderResponses :: a | r } { reminderFolderResponses :: b | r } a b
