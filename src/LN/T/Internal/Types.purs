@@ -19356,6 +19356,178 @@ instance leuronPackResponsesIsForeign :: IsForeign LeuronPackResponses where
 instance leuronPackResponsesShow :: Show LeuronPackResponses where
     show (LeuronPackResponses o) = show "leuronPackResponses: " ++ show o.leuronPackResponses
 
+newtype PmInPackResponse = PmInPackResponse {
+  pmIn :: PmInResponse,
+  pmInId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int
+}
+
+
+type PmInPackResponseR = {
+  pmIn :: PmInResponse,
+  pmInId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int
+}
+
+
+_PmInPackResponse :: LensP PmInPackResponse {
+  pmIn :: PmInResponse,
+  pmInId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int
+}
+_PmInPackResponse f (PmInPackResponse o) = PmInPackResponse <$> f o
+
+
+mkPmInPackResponse :: PmInResponse -> Int -> UserSanitizedResponse -> Int -> PmInPackResponse
+mkPmInPackResponse pmIn pmInId user userId =
+  PmInPackResponse{pmIn, pmInId, user, userId}
+
+
+unwrapPmInPackResponse (PmInPackResponse r) = r
+
+instance pmInPackResponseEncodeJson :: EncodeJson PmInPackResponse where
+  encodeJson (PmInPackResponse o) =
+       "tag" := "PmInPackResponse"
+    ~> "pm_in" := o.pmIn
+    ~> "pm_in_id" := o.pmInId
+    ~> "user" := o.user
+    ~> "user_id" := o.userId
+    ~> jsonEmptyObject
+
+
+instance pmInPackResponseDecodeJson :: DecodeJson PmInPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    pmIn <- obj .? "pm_in"
+    pmInId <- obj .? "pm_in_id"
+    user <- obj .? "user"
+    userId <- obj .? "user_id"
+    pure $ PmInPackResponse {
+      pmIn,
+      pmInId,
+      user,
+      userId
+    }
+
+
+instance pmInPackResponseRequestable :: Requestable PmInPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance pmInPackResponseRespondable :: Respondable PmInPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkPmInPackResponse
+      <$> readProp "pm_in" json
+      <*> readProp "pm_in_id" json
+      <*> readProp "user" json
+      <*> readProp "user_id" json
+
+
+instance pmInPackResponseIsForeign :: IsForeign PmInPackResponse where
+  read json =
+      mkPmInPackResponse
+      <$> readProp "pm_in" json
+      <*> readProp "pm_in_id" json
+      <*> readProp "user" json
+      <*> readProp "user_id" json
+
+
+instance pmInPackResponseShow :: Show PmInPackResponse where
+    show (PmInPackResponse o) = show "pmIn: " ++ show o.pmIn ++ ", " ++ show "pmInId: " ++ show o.pmInId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId
+
+newtype PmOutPackResponse = PmOutPackResponse {
+  pmOut :: PmOutResponse,
+  pmOutId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int
+}
+
+
+type PmOutPackResponseR = {
+  pmOut :: PmOutResponse,
+  pmOutId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int
+}
+
+
+_PmOutPackResponse :: LensP PmOutPackResponse {
+  pmOut :: PmOutResponse,
+  pmOutId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int
+}
+_PmOutPackResponse f (PmOutPackResponse o) = PmOutPackResponse <$> f o
+
+
+mkPmOutPackResponse :: PmOutResponse -> Int -> UserSanitizedResponse -> Int -> PmOutPackResponse
+mkPmOutPackResponse pmOut pmOutId user userId =
+  PmOutPackResponse{pmOut, pmOutId, user, userId}
+
+
+unwrapPmOutPackResponse (PmOutPackResponse r) = r
+
+instance pmOutPackResponseEncodeJson :: EncodeJson PmOutPackResponse where
+  encodeJson (PmOutPackResponse o) =
+       "tag" := "PmOutPackResponse"
+    ~> "pm_out" := o.pmOut
+    ~> "pm_out_id" := o.pmOutId
+    ~> "user" := o.user
+    ~> "user_id" := o.userId
+    ~> jsonEmptyObject
+
+
+instance pmOutPackResponseDecodeJson :: DecodeJson PmOutPackResponse where
+  decodeJson o = do
+    obj <- decodeJson o
+    pmOut <- obj .? "pm_out"
+    pmOutId <- obj .? "pm_out_id"
+    user <- obj .? "user"
+    userId <- obj .? "user_id"
+    pure $ PmOutPackResponse {
+      pmOut,
+      pmOutId,
+      user,
+      userId
+    }
+
+
+instance pmOutPackResponseRequestable :: Requestable PmOutPackResponse where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance pmOutPackResponseRespondable :: Respondable PmOutPackResponse where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json =
+      mkPmOutPackResponse
+      <$> readProp "pm_out" json
+      <*> readProp "pm_out_id" json
+      <*> readProp "user" json
+      <*> readProp "user_id" json
+
+
+instance pmOutPackResponseIsForeign :: IsForeign PmOutPackResponse where
+  read json =
+      mkPmOutPackResponse
+      <$> readProp "pm_out" json
+      <*> readProp "pm_out_id" json
+      <*> readProp "user" json
+      <*> readProp "user_id" json
+
+
+instance pmOutPackResponseShow :: Show PmOutPackResponse where
+    show (PmOutPackResponse o) = show "pmOut: " ++ show o.pmOut ++ ", " ++ show "pmOutId: " ++ show o.pmOutId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId
+
 a_ :: forall b a r. Lens { a :: a | r } { a :: b | r } a b
 a_ f o = o { a = _ } <$> f o.a
 
@@ -19888,8 +20060,24 @@ pmId_ :: forall b a r. Lens { pmId :: a | r } { pmId :: b | r } a b
 pmId_ f o = o { pmId = _ } <$> f o.pmId
 
 
+pmIn_ :: forall b a r. Lens { pmIn :: a | r } { pmIn :: b | r } a b
+pmIn_ f o = o { pmIn = _ } <$> f o.pmIn
+
+
+pmInId_ :: forall b a r. Lens { pmInId :: a | r } { pmInId :: b | r } a b
+pmInId_ f o = o { pmInId = _ } <$> f o.pmInId
+
+
 pmInResponses_ :: forall b a r. Lens { pmInResponses :: a | r } { pmInResponses :: b | r } a b
 pmInResponses_ f o = o { pmInResponses = _ } <$> f o.pmInResponses
+
+
+pmOut_ :: forall b a r. Lens { pmOut :: a | r } { pmOut :: b | r } a b
+pmOut_ f o = o { pmOut = _ } <$> f o.pmOut
+
+
+pmOutId_ :: forall b a r. Lens { pmOutId :: a | r } { pmOutId :: b | r } a b
+pmOutId_ f o = o { pmOutId = _ } <$> f o.pmOutId
 
 
 pmOutResponses_ :: forall b a r. Lens { pmOutResponses :: a | r } { pmOutResponses :: b | r } a b

@@ -772,11 +772,11 @@ getPmIns params = handleError <$> getAt params ["pm_ins"]
 getPmIns' :: ApiEff (Either ApiError PmInResponses)
 getPmIns'  = handleError <$> getAt ([] :: Array Boolean) ["pm_ins"]
 
-postPmIn :: forall qp. QueryParam qp => Array qp -> PmInRequest -> ApiEff (Either ApiError PmInResponse)
-postPmIn params pm_in_request = handleError <$> postAt params ["pm_in"] pm_in_request
+getPmIns_ByUserId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmInResponses)
+getPmIns_ByUserId params _ByUserId = handleError <$> getAt (map qp params ++ map qp [ByUserId _ByUserId]) ["pm_ins"]
 
-postPmIn' :: PmInRequest -> ApiEff (Either ApiError PmInResponse)
-postPmIn' pm_in_request = handleError <$> postAt ([] :: Array Boolean) ["pm_in"] pm_in_request
+getPmIns_ByUserId' :: Int -> ApiEff (Either ApiError PmInResponses)
+getPmIns_ByUserId' _ByUserId = handleError <$> getAt [ByUserId _ByUserId] ["pm_ins"]
 
 getPmIn :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmInResponse)
 getPmIn params pm_in_id = handleError <$> getAt params ["pm_in", show pm_in_id]
@@ -802,11 +802,11 @@ getPmOuts params = handleError <$> getAt params ["pm_outs"]
 getPmOuts' :: ApiEff (Either ApiError PmOutResponses)
 getPmOuts'  = handleError <$> getAt ([] :: Array Boolean) ["pm_outs"]
 
-postPmOut :: forall qp. QueryParam qp => Array qp -> PmOutRequest -> ApiEff (Either ApiError PmOutResponse)
-postPmOut params pm_out_request = handleError <$> postAt params ["pm_out"] pm_out_request
+getPmOuts_ByUserId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmOutResponses)
+getPmOuts_ByUserId params _ByUserId = handleError <$> getAt (map qp params ++ map qp [ByUserId _ByUserId]) ["pm_outs"]
 
-postPmOut' :: PmOutRequest -> ApiEff (Either ApiError PmOutResponse)
-postPmOut' pm_out_request = handleError <$> postAt ([] :: Array Boolean) ["pm_out"] pm_out_request
+getPmOuts_ByUserId' :: Int -> ApiEff (Either ApiError PmOutResponses)
+getPmOuts_ByUserId' _ByUserId = handleError <$> getAt [ByUserId _ByUserId] ["pm_outs"]
 
 getPmOut :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmOutResponse)
 getPmOut params pm_out_id = handleError <$> getAt params ["pm_out", show pm_out_id]
@@ -1491,5 +1491,29 @@ getLeuronPack params leuron_id = handleError <$> getAt params ["leuron_pack", sh
 
 getLeuronPack' :: Int -> ApiEff (Either ApiError LeuronPackResponse)
 getLeuronPack' leuron_id = handleError <$> getAt ([] :: Array Boolean) ["leuron_pack", show leuron_id]
+
+getPmInPacks :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError LeuronPackResponses)
+getPmInPacks params = handleError <$> getAt params ["pm_in_packs"]
+
+getPmInPacks' :: ApiEff (Either ApiError LeuronPackResponses)
+getPmInPacks'  = handleError <$> getAt ([] :: Array Boolean) ["pm_in_packs"]
+
+getPmInPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmInPackResponse)
+getPmInPack params pm_in_id = handleError <$> getAt params ["pm_in_pack", show pm_in_id]
+
+getPmInPack' :: Int -> ApiEff (Either ApiError PmInPackResponse)
+getPmInPack' pm_in_id = handleError <$> getAt ([] :: Array Boolean) ["pm_in_pack", show pm_in_id]
+
+getPmOutPacks :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError LeuronPackResponses)
+getPmOutPacks params = handleError <$> getAt params ["pm_out_packs"]
+
+getPmOutPacks' :: ApiEff (Either ApiError LeuronPackResponses)
+getPmOutPacks'  = handleError <$> getAt ([] :: Array Boolean) ["pm_out_packs"]
+
+getPmOutPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmOutPackResponse)
+getPmOutPack params pm_out_id = handleError <$> getAt params ["pm_out_pack", show pm_out_id]
+
+getPmOutPack' :: Int -> ApiEff (Either ApiError PmOutPackResponse)
+getPmOutPack' pm_out_id = handleError <$> getAt ([] :: Array Boolean) ["pm_out_pack", show pm_out_id]
 
 -- footer
