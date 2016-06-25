@@ -11255,6 +11255,7 @@ newtype ProfileResponse = ProfileResponse {
   website :: (Maybe String),
   location :: (Maybe String),
   signature :: (Maybe String),
+  debug :: Boolean,
   karmaGood :: Int,
   karmaBad :: Int,
   guard :: Int,
@@ -11272,6 +11273,7 @@ type ProfileResponseR = {
   website :: (Maybe String),
   location :: (Maybe String),
   signature :: (Maybe String),
+  debug :: Boolean,
   karmaGood :: Int,
   karmaBad :: Int,
   guard :: Int,
@@ -11289,6 +11291,7 @@ _ProfileResponse :: LensP ProfileResponse {
   website :: (Maybe String),
   location :: (Maybe String),
   signature :: (Maybe String),
+  debug :: Boolean,
   karmaGood :: Int,
   karmaBad :: Int,
   guard :: Int,
@@ -11298,9 +11301,9 @@ _ProfileResponse :: LensP ProfileResponse {
 _ProfileResponse f (ProfileResponse o) = ProfileResponse <$> f o
 
 
-mkProfileResponse :: Int -> Ent -> Int -> ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ProfileResponse
-mkProfileResponse id ent entId gender birthdate website location signature karmaGood karmaBad guard createdAt modifiedAt =
-  ProfileResponse{id, ent, entId, gender, birthdate, website, location, signature, karmaGood, karmaBad, guard, createdAt, modifiedAt}
+mkProfileResponse :: Int -> Ent -> Int -> ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Boolean -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ProfileResponse
+mkProfileResponse id ent entId gender birthdate website location signature debug karmaGood karmaBad guard createdAt modifiedAt =
+  ProfileResponse{id, ent, entId, gender, birthdate, website, location, signature, debug, karmaGood, karmaBad, guard, createdAt, modifiedAt}
 
 
 unwrapProfileResponse (ProfileResponse r) = r
@@ -11316,6 +11319,7 @@ instance profileResponseEncodeJson :: EncodeJson ProfileResponse where
     ~> "website" := o.website
     ~> "location" := o.location
     ~> "signature" := o.signature
+    ~> "debug" := o.debug
     ~> "karma_good" := o.karmaGood
     ~> "karma_bad" := o.karmaBad
     ~> "guard" := o.guard
@@ -11335,6 +11339,7 @@ instance profileResponseDecodeJson :: DecodeJson ProfileResponse where
     website <- obj .? "website"
     location <- obj .? "location"
     signature <- obj .? "signature"
+    debug <- obj .? "debug"
     karmaGood <- obj .? "karma_good"
     karmaBad <- obj .? "karma_bad"
     guard <- obj .? "guard"
@@ -11349,6 +11354,7 @@ instance profileResponseDecodeJson :: DecodeJson ProfileResponse where
       website,
       location,
       signature,
+      debug,
       karmaGood,
       karmaBad,
       guard,
@@ -11376,6 +11382,7 @@ instance profileResponseRespondable :: Respondable ProfileResponse where
       <*> (runNullOrUndefined <$> readProp "website" json)
       <*> (runNullOrUndefined <$> readProp "location" json)
       <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> readProp "debug" json
       <*> readProp "karma_good" json
       <*> readProp "karma_bad" json
       <*> readProp "guard" json
@@ -11394,6 +11401,7 @@ instance profileResponseIsForeign :: IsForeign ProfileResponse where
       <*> (runNullOrUndefined <$> readProp "website" json)
       <*> (runNullOrUndefined <$> readProp "location" json)
       <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> readProp "debug" json
       <*> readProp "karma_good" json
       <*> readProp "karma_bad" json
       <*> readProp "guard" json
@@ -11402,7 +11410,7 @@ instance profileResponseIsForeign :: IsForeign ProfileResponse where
 
 
 instance profileResponseShow :: Show ProfileResponse where
-    show (ProfileResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "gender: " ++ show o.gender ++ ", " ++ show "birthdate: " ++ show o.birthdate ++ ", " ++ show "website: " ++ show o.website ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "signature: " ++ show o.signature ++ ", " ++ show "karmaGood: " ++ show o.karmaGood ++ ", " ++ show "karmaBad: " ++ show o.karmaBad ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (ProfileResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "gender: " ++ show o.gender ++ ", " ++ show "birthdate: " ++ show o.birthdate ++ ", " ++ show "website: " ++ show o.website ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "signature: " ++ show o.signature ++ ", " ++ show "debug: " ++ show o.debug ++ ", " ++ show "karmaGood: " ++ show o.karmaGood ++ ", " ++ show "karmaBad: " ++ show o.karmaBad ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
 
 newtype ProfileResponses = ProfileResponses {
   profileResponses :: (Array ProfileResponse)
