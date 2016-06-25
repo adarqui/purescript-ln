@@ -5,7 +5,7 @@ instance paramQueryParam :: QueryParam Param where
   qp (Limit limit)                       = Tuple "limit" (show limit)
   qp (Offset offset)                     = Tuple "offset" (show offset)
   qp (SortOrder sort_order_by)           = Tuple "sort_order" (show sort_order_by)
-  qp (Order order_by)                    = Tuple "order_by" (show order_by)
+  qp (Order order_by)                    = Tuple "order" (show order_by)
   qp (ByOrganizationId org_id)           = Tuple "organization_id" (show org_id)
   qp (ByOrganizationsIds orgs_ids)       = Tuple "organizations_ids" (show orgs_ids)
   qp (ByOrganizationName org_name)       = Tuple "organization_name" (org_name)
