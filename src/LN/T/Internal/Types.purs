@@ -1990,6 +1990,7 @@ data ApplicationError
   | Error_PermissionDenied 
   | Error_Visibility 
   | Error_Membership 
+  | Error_NotImplemented 
   | Error_Unexpected 
 
 
@@ -2013,6 +2014,10 @@ instance applicationErrorEncodeJson :: EncodeJson ApplicationError where
     ~> jsonEmptyObject
   encodeJson (Error_Membership ) =
        "tag" := "Error_Membership"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Error_NotImplemented ) =
+       "tag" := "Error_NotImplemented"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (Error_Unexpected ) =
@@ -2040,6 +2045,9 @@ instance applicationErrorDecodeJson :: DecodeJson ApplicationError where
 
         "Error_Membership" -> do
           return Error_Membership
+
+        "Error_NotImplemented" -> do
+          return Error_NotImplemented
 
         "Error_Unexpected" -> do
           return Error_Unexpected
@@ -2074,6 +2082,9 @@ instance applicationErrorRespondable :: Respondable ApplicationError where
         "Error_Membership" -> do
           return Error_Membership
 
+        "Error_NotImplemented" -> do
+          return Error_NotImplemented
+
         "Error_Unexpected" -> do
           return Error_Unexpected
 
@@ -2098,6 +2109,9 @@ instance applicationErrorIsForeign :: IsForeign ApplicationError where
         "Error_Membership" -> do
           return Error_Membership
 
+        "Error_NotImplemented" -> do
+          return Error_NotImplemented
+
         "Error_Unexpected" -> do
           return Error_Unexpected
 
@@ -2109,6 +2123,7 @@ instance applicationErrorShow :: Show ApplicationError where
   show (Error_PermissionDenied) = "Error_PermissionDenied"
   show (Error_Visibility) = "Error_Visibility"
   show (Error_Membership) = "Error_Membership"
+  show (Error_NotImplemented) = "Error_NotImplemented"
   show (Error_Unexpected) = "Error_Unexpected"
 
 
@@ -2118,6 +2133,7 @@ instance applicationErrorEq :: Eq ApplicationError where
   eq (Error_PermissionDenied) (Error_PermissionDenied) = true
   eq (Error_Visibility) (Error_Visibility) = true
   eq (Error_Membership) (Error_Membership) = true
+  eq (Error_NotImplemented) (Error_NotImplemented) = true
   eq (Error_Unexpected) (Error_Unexpected) = true
   eq _ _ = false
 
