@@ -1984,6 +1984,143 @@ instance entShow :: Show Ent where
   show (Ent_None) = "Ent_None"
 
 
+data ApplicationError
+  = Error_Empty 
+  | Error_NotFound 
+  | Error_PermissionDenied 
+  | Error_Visibility 
+  | Error_Membership 
+  | Error_Unexpected 
+
+
+
+instance applicationErrorEncodeJson :: EncodeJson ApplicationError where
+  encodeJson (Error_Empty ) =
+       "tag" := "Error_Empty"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Error_NotFound ) =
+       "tag" := "Error_NotFound"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Error_PermissionDenied ) =
+       "tag" := "Error_PermissionDenied"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Error_Visibility ) =
+       "tag" := "Error_Visibility"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Error_Membership ) =
+       "tag" := "Error_Membership"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Error_Unexpected ) =
+       "tag" := "Error_Unexpected"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+
+
+instance applicationErrorDecodeJson :: DecodeJson ApplicationError where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+        "Error_Empty" -> do
+          return Error_Empty
+
+        "Error_NotFound" -> do
+          return Error_NotFound
+
+        "Error_PermissionDenied" -> do
+          return Error_PermissionDenied
+
+        "Error_Visibility" -> do
+          return Error_Visibility
+
+        "Error_Membership" -> do
+          return Error_Membership
+
+        "Error_Unexpected" -> do
+          return Error_Unexpected
+
+  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+
+instance applicationErrorRequestable :: Requestable ApplicationError where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance applicationErrorRespondable :: Respondable ApplicationError where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Error_Empty" -> do
+          return Error_Empty
+
+        "Error_NotFound" -> do
+          return Error_NotFound
+
+        "Error_PermissionDenied" -> do
+          return Error_PermissionDenied
+
+        "Error_Visibility" -> do
+          return Error_Visibility
+
+        "Error_Membership" -> do
+          return Error_Membership
+
+        "Error_Unexpected" -> do
+          return Error_Unexpected
+
+
+
+instance applicationErrorIsForeign :: IsForeign ApplicationError where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+        "Error_Empty" -> do
+          return Error_Empty
+
+        "Error_NotFound" -> do
+          return Error_NotFound
+
+        "Error_PermissionDenied" -> do
+          return Error_PermissionDenied
+
+        "Error_Visibility" -> do
+          return Error_Visibility
+
+        "Error_Membership" -> do
+          return Error_Membership
+
+        "Error_Unexpected" -> do
+          return Error_Unexpected
+
+
+
+instance applicationErrorShow :: Show ApplicationError where
+  show (Error_Empty) = "Error_Empty"
+  show (Error_NotFound) = "Error_NotFound"
+  show (Error_PermissionDenied) = "Error_PermissionDenied"
+  show (Error_Visibility) = "Error_Visibility"
+  show (Error_Membership) = "Error_Membership"
+  show (Error_Unexpected) = "Error_Unexpected"
+
+
+instance applicationErrorEq :: Eq ApplicationError where
+  eq (Error_Empty) (Error_Empty) = true
+  eq (Error_NotFound) (Error_NotFound) = true
+  eq (Error_PermissionDenied) (Error_PermissionDenied) = true
+  eq (Error_Visibility) (Error_Visibility) = true
+  eq (Error_Membership) (Error_Membership) = true
+  eq (Error_Unexpected) (Error_Unexpected) = true
+  eq _ _ = false
+
 newtype ForumRequest = ForumRequest {
   displayName :: String,
   description :: (Maybe String),
