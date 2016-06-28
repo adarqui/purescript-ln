@@ -1990,9 +1990,11 @@ data ApplicationError
   | Error_PermissionDenied 
   | Error_Visibility 
   | Error_Membership 
-  | Error_Validation 
+  | Error_Validation String
   | Error_NotImplemented 
+  | Error_InvalidArguments String
   | Error_Unexpected 
+  | Error_Unknown 
 
 
 
@@ -2017,16 +2019,24 @@ instance applicationErrorEncodeJson :: EncodeJson ApplicationError where
        "tag" := "Error_Membership"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
-  encodeJson (Error_Validation ) =
+  encodeJson (Error_Validation x0) =
        "tag" := "Error_Validation"
-    ~> "contents" := ([] :: Array String)
+    ~> "contents" := encodeJson x0
     ~> jsonEmptyObject
   encodeJson (Error_NotImplemented ) =
        "tag" := "Error_NotImplemented"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
+  encodeJson (Error_InvalidArguments x0) =
+       "tag" := "Error_InvalidArguments"
+    ~> "contents" := encodeJson x0
+    ~> jsonEmptyObject
   encodeJson (Error_Unexpected ) =
        "tag" := "Error_Unexpected"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Error_Unknown ) =
+       "tag" := "Error_Unknown"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
 
@@ -2052,13 +2062,21 @@ instance applicationErrorDecodeJson :: DecodeJson ApplicationError where
           return Error_Membership
 
         "Error_Validation" -> do
-          return Error_Validation
+          x0 <- obj .? "contents"
+          Error_Validation <$> decodeJson x0
 
         "Error_NotImplemented" -> do
           return Error_NotImplemented
 
+        "Error_InvalidArguments" -> do
+          x0 <- obj .? "contents"
+          Error_InvalidArguments <$> decodeJson x0
+
         "Error_Unexpected" -> do
           return Error_Unexpected
+
+        "Error_Unknown" -> do
+          return Error_Unknown
 
   decodeJson x = fail $ "Could not parse object: " ++ show x
 
@@ -2091,13 +2109,21 @@ instance applicationErrorRespondable :: Respondable ApplicationError where
           return Error_Membership
 
         "Error_Validation" -> do
-          return Error_Validation
+          x0 <- readProp "contents" json
+          Error_Validation <$> read x0
 
         "Error_NotImplemented" -> do
           return Error_NotImplemented
 
+        "Error_InvalidArguments" -> do
+          x0 <- readProp "contents" json
+          Error_InvalidArguments <$> read x0
+
         "Error_Unexpected" -> do
           return Error_Unexpected
+
+        "Error_Unknown" -> do
+          return Error_Unknown
 
 
 
@@ -2121,13 +2147,21 @@ instance applicationErrorIsForeign :: IsForeign ApplicationError where
           return Error_Membership
 
         "Error_Validation" -> do
-          return Error_Validation
+          x0 <- readProp "contents" json
+          Error_Validation <$> read x0
 
         "Error_NotImplemented" -> do
           return Error_NotImplemented
 
+        "Error_InvalidArguments" -> do
+          x0 <- readProp "contents" json
+          Error_InvalidArguments <$> read x0
+
         "Error_Unexpected" -> do
           return Error_Unexpected
+
+        "Error_Unknown" -> do
+          return Error_Unknown
 
 
 
@@ -2137,9 +2171,11 @@ instance applicationErrorShow :: Show ApplicationError where
   show (Error_PermissionDenied) = "Error_PermissionDenied"
   show (Error_Visibility) = "Error_Visibility"
   show (Error_Membership) = "Error_Membership"
-  show (Error_Validation) = "Error_Validation"
+  show (Error_Validation x0) = "Error_Validation: " ++ show x0
   show (Error_NotImplemented) = "Error_NotImplemented"
+  show (Error_InvalidArguments x0) = "Error_InvalidArguments: " ++ show x0
   show (Error_Unexpected) = "Error_Unexpected"
+  show (Error_Unknown) = "Error_Unknown"
 
 
 instance applicationErrorEq :: Eq ApplicationError where
@@ -2148,9 +2184,11 @@ instance applicationErrorEq :: Eq ApplicationError where
   eq (Error_PermissionDenied) (Error_PermissionDenied) = true
   eq (Error_Visibility) (Error_Visibility) = true
   eq (Error_Membership) (Error_Membership) = true
-  eq (Error_Validation) (Error_Validation) = true
+  eq (Error_Validation x0a) (Error_Validation x0b) = x0a == x0b
   eq (Error_NotImplemented) (Error_NotImplemented) = true
+  eq (Error_InvalidArguments x0a) (Error_InvalidArguments x0b) = x0a == x0b
   eq (Error_Unexpected) (Error_Unexpected) = true
+  eq (Error_Unknown) (Error_Unknown) = true
   eq _ _ = false
 
 newtype ForumRequest = ForumRequest {
