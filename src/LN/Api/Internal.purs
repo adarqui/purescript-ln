@@ -1,13 +1,10 @@
 module LN.Api.Internal where
 
 
-import Purescript.Api.Helpers
-import Prelude
-import Data.Either
-import Data.Tuple
+import Purescript.Api.Helpers (class QueryParam, ApiError, ApiEff, getAt, handleError, qp, deleteAt, putAt, postAt)
+import Prelude                (Unit, show, map, (<$>), (<>))
+import Data.Either            (Either)
 
-import Prelude
-import Data.Either
 import LN.T.Internal.Types
 
 getApis :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError ApiResponses)
