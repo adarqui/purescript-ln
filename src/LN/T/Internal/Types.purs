@@ -1,27 +1,27 @@
 module LN.T.Internal.Types where
 
 
-import Control.Monad.Aff
-import Data.Argonaut.Combinators
-import Data.Argonaut.Core
-import Data.Argonaut.Decode
-import Data.Argonaut.Encode
-import Data.Argonaut.Printer
-import Data.Date.Helpers
-import Data.Either
-import Data.Foreign
-import Data.Foreign.NullOrUndefined
-import Data.Foreign.Class
-import Data.JSON
-import Data.List (List ())
-import Data.Maybe
-import Data.Set (Set ())
-import Data.Tuple
-import Network.HTTP.Affjax.Request
-import Network.HTTP.Affjax.Response
-import Optic.Lens
-import Optic.Core
-import Prelude
+import Control.Monad.Aff                ()
+import Data.Argonaut.Core               (jsonEmptyObject)
+import Data.Argonaut.Decode             (class DecodeJson, decodeJson)
+import Data.Argonaut.Decode.Combinators ((.?))
+import Data.Argonaut.Encode             (class EncodeJson, encodeJson)
+import Data.Argonaut.Encode.Combinators ((~>), (:=))
+import Data.Argonaut.Printer            (printJson)
+import Data.Date.Helpers                (Date(..))
+import Data.Either                      (Either(..))
+import Data.Foreign                     (ForeignError(..))
+import Data.Foreign.NullOrUndefined     (unNullOrUndefined)
+import Data.Foreign.Class               (class IsForeign, read, readProp)
+import Data.List                        (List ())
+import Data.Maybe                       (Maybe(..))
+import Data.Set                         (Set ())
+import Data.Tuple                       (Tuple(..))
+import Network.HTTP.Affjax.Request      (class Requestable, toRequest)
+import Network.HTTP.Affjax.Response     (class Respondable, ResponseType(..))
+import Optic.Core                       ((^.), (..))
+import Optic.Types                      (Lens, Lens')
+import Prelude                          (class Show, show, class Eq, eq, pure, bind, ($), (<>), (<$>), (<*>), (==))
 
 import Purescript.Api.Helpers
 
@@ -34,7 +34,7 @@ data ACL
 instance aCLEncodeJson :: EncodeJson ACL where
   encodeJson (ACL_Grant x0) =
        "tag" := "ACL_Grant"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ACL_Deny ) =
        "tag" := "ACL_Deny"
@@ -47,14 +47,18 @@ instance aCLDecodeJson :: DecodeJson ACL where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "ACL_Grant" -> do
-          x0 <- obj .? "contents"
-          ACL_Grant <$> decodeJson x0
+      "ACL_Grant" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ACL_Grant <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ACL_Grant"
 
-        "ACL_Deny" -> do
-          return ACL_Deny
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      "ACL_Deny" -> do
+        pure ACL_Deny
+
+      _ -> Left $ "DecodeJson TypeMismatch for ACL"
+
 
 
 instance aCLRequestable :: Requestable ACL where
@@ -69,12 +73,17 @@ instance aCLRespondable :: Respondable ACL where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "ACL_Grant" -> do
-          x0 <- readProp "contents" json
-          ACL_Grant <$> read x0
+      "ACL_Grant" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ACL_Grant <$> read x0
+          _ -> Left $ TypeMismatch "ACL_Grant" "Respondable"
 
-        "ACL_Deny" -> do
-          return ACL_Deny
+
+      "ACL_Deny" -> do
+        pure ACL_Deny
+
+      _ -> Left $ TypeMismatch "ACL" "Respondable"
 
 
 
@@ -82,17 +91,22 @@ instance aCLIsForeign :: IsForeign ACL where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "ACL_Grant" -> do
-          x0 <- readProp "contents" json
-          ACL_Grant <$> read x0
+      "ACL_Grant" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ACL_Grant <$> read x0
+          _ -> Left $ TypeMismatch "ACL_Grant" "IsForeign"
 
-        "ACL_Deny" -> do
-          return ACL_Deny
+
+      "ACL_Deny" -> do
+        pure ACL_Deny
+
+      _ -> Left $ TypeMismatch "ACL" "IsForeign"
 
 
 
 instance aCLShow :: Show ACL where
-  show (ACL_Grant x0) = "ACL_Grant: " ++ show x0
+  show (ACL_Grant x0) = "ACL_Grant: " <> show x0
   show (ACL_Deny) = "ACL_Deny"
 
 
@@ -113,7 +127,7 @@ type ApiRequestR = {
 }
 
 
-_ApiRequest :: LensP ApiRequest {
+_ApiRequest :: Lens' ApiRequest {
   comment :: (Maybe String),
   guard :: Int
 }
@@ -125,6 +139,10 @@ mkApiRequest comment guard =
   ApiRequest{comment, guard}
 
 
+unwrapApiRequest :: ApiRequest -> {
+  comment :: (Maybe String),
+  guard :: Int
+}
 unwrapApiRequest (ApiRequest r) = r
 
 instance apiRequestEncodeJson :: EncodeJson ApiRequest where
@@ -157,19 +175,19 @@ instance apiRequestRespondable :: Respondable ApiRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkApiRequest
-      <$> (runNullOrUndefined <$> readProp "comment" json)
+      <$> (unNullOrUndefined <$> readProp "comment" json)
       <*> readProp "guard" json
 
 
 instance apiRequestIsForeign :: IsForeign ApiRequest where
   read json =
       mkApiRequest
-      <$> (runNullOrUndefined <$> readProp "comment" json)
+      <$> (unNullOrUndefined <$> readProp "comment" json)
       <*> readProp "guard" json
 
 
 instance apiRequestShow :: Show ApiRequest where
-    show (ApiRequest o) = show "comment: " ++ show o.comment ++ ", " ++ show "guard: " ++ show o.guard
+    show (ApiRequest o) = show "comment: " <> show o.comment <> ", " <> show "guard: " <> show o.guard
 
 newtype ApiResponse = ApiResponse {
   id :: Int,
@@ -193,7 +211,7 @@ type ApiResponseR = {
 }
 
 
-_ApiResponse :: LensP ApiResponse {
+_ApiResponse :: Lens' ApiResponse {
   id :: Int,
   userId :: Int,
   key :: String,
@@ -210,6 +228,15 @@ mkApiResponse id userId key comment guard createdAt modifiedAt =
   ApiResponse{id, userId, key, comment, guard, createdAt, modifiedAt}
 
 
+unwrapApiResponse :: ApiResponse -> {
+  id :: Int,
+  userId :: Int,
+  key :: String,
+  comment :: (Maybe String),
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
 unwrapApiResponse (ApiResponse r) = r
 
 instance apiResponseEncodeJson :: EncodeJson ApiResponse where
@@ -260,10 +287,10 @@ instance apiResponseRespondable :: Respondable ApiResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "key" json
-      <*> (runNullOrUndefined <$> readProp "comment" json)
+      <*> (unNullOrUndefined <$> readProp "comment" json)
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance apiResponseIsForeign :: IsForeign ApiResponse where
@@ -272,14 +299,14 @@ instance apiResponseIsForeign :: IsForeign ApiResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "key" json
-      <*> (runNullOrUndefined <$> readProp "comment" json)
+      <*> (unNullOrUndefined <$> readProp "comment" json)
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance apiResponseShow :: Show ApiResponse where
-    show (ApiResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "key: " ++ show o.key ++ ", " ++ show "comment: " ++ show o.comment ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (ApiResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "key: " <> show o.key <> ", " <> show "comment: " <> show o.comment <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
 
 newtype ApiResponses = ApiResponses {
   apiResponses :: (Array ApiResponse)
@@ -291,7 +318,7 @@ type ApiResponsesR = {
 }
 
 
-_ApiResponses :: LensP ApiResponses {
+_ApiResponses :: Lens' ApiResponses {
   apiResponses :: (Array ApiResponse)
 }
 _ApiResponses f (ApiResponses o) = ApiResponses <$> f o
@@ -302,6 +329,9 @@ mkApiResponses apiResponses =
   ApiResponses{apiResponses}
 
 
+unwrapApiResponses :: ApiResponses -> {
+  apiResponses :: (Array ApiResponse)
+}
 unwrapApiResponses (ApiResponses r) = r
 
 instance apiResponsesEncodeJson :: EncodeJson ApiResponses where
@@ -341,7 +371,7 @@ instance apiResponsesIsForeign :: IsForeign ApiResponses where
 
 
 instance apiResponsesShow :: Show ApiResponses where
-    show (ApiResponses o) = show "apiResponses: " ++ show o.apiResponses
+    show (ApiResponses o) = show "apiResponses: " <> show o.apiResponses
 
 newtype BoardRequest = BoardRequest {
   displayName :: String,
@@ -369,7 +399,7 @@ type BoardRequestR = {
 }
 
 
-_BoardRequest :: LensP BoardRequest {
+_BoardRequest :: Lens' BoardRequest {
   displayName :: String,
   description :: (Maybe String),
   isAnonymous :: Boolean,
@@ -388,6 +418,17 @@ mkBoardRequest displayName description isAnonymous canCreateSubBoards canCreateT
   BoardRequest{displayName, description, isAnonymous, canCreateSubBoards, canCreateThreads, suggestedTags, icon, tags, guard}
 
 
+unwrapBoardRequest :: BoardRequest -> {
+  displayName :: String,
+  description :: (Maybe String),
+  isAnonymous :: Boolean,
+  canCreateSubBoards :: Boolean,
+  canCreateThreads :: Boolean,
+  suggestedTags :: (Array String),
+  icon :: (Maybe String),
+  tags :: (Array String),
+  guard :: Int
+}
 unwrapBoardRequest (BoardRequest r) = r
 
 instance boardRequestEncodeJson :: EncodeJson BoardRequest where
@@ -442,12 +483,12 @@ instance boardRequestRespondable :: Respondable BoardRequest where
   fromResponse json =
       mkBoardRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "is_anonymous" json
       <*> readProp "can_create_sub_boards" json
       <*> readProp "can_create_threads" json
       <*> readProp "suggested_tags" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "guard" json
 
@@ -456,18 +497,18 @@ instance boardRequestIsForeign :: IsForeign BoardRequest where
   read json =
       mkBoardRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "is_anonymous" json
       <*> readProp "can_create_sub_boards" json
       <*> readProp "can_create_threads" json
       <*> readProp "suggested_tags" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "guard" json
 
 
 instance boardRequestShow :: Show BoardRequest where
-    show (BoardRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "isAnonymous: " ++ show o.isAnonymous ++ ", " ++ show "canCreateSubBoards: " ++ show o.canCreateSubBoards ++ ", " ++ show "canCreateThreads: " ++ show o.canCreateThreads ++ ", " ++ show "suggestedTags: " ++ show o.suggestedTags ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "guard: " ++ show o.guard
+    show (BoardRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "isAnonymous: " <> show o.isAnonymous <> ", " <> show "canCreateSubBoards: " <> show o.canCreateSubBoards <> ", " <> show "canCreateThreads: " <> show o.canCreateThreads <> ", " <> show "suggestedTags: " <> show o.suggestedTags <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "guard: " <> show o.guard
 
 newtype BoardResponse = BoardResponse {
   id :: Int,
@@ -517,7 +558,7 @@ type BoardResponseR = {
 }
 
 
-_BoardResponse :: LensP BoardResponse {
+_BoardResponse :: Lens' BoardResponse {
   id :: Int,
   userId :: Int,
   orgId :: Int,
@@ -547,6 +588,28 @@ mkBoardResponse id userId orgId forumId parentId name displayName description is
   BoardResponse{id, userId, orgId, forumId, parentId, name, displayName, description, isAnonymous, canCreateSubBoards, canCreateThreads, suggestedTags, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapBoardResponse :: BoardResponse -> {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  forumId :: Int,
+  parentId :: (Maybe Int),
+  name :: String,
+  displayName :: String,
+  description :: (Maybe String),
+  isAnonymous :: Boolean,
+  canCreateSubBoards :: Boolean,
+  canCreateThreads :: Boolean,
+  suggestedTags :: (Array String),
+  icon :: (Maybe String),
+  tags :: (Array String),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapBoardResponse (BoardResponse r) = r
 
 instance boardResponseEncodeJson :: EncodeJson BoardResponse where
@@ -637,22 +700,22 @@ instance boardResponseRespondable :: Respondable BoardResponse where
       <*> readProp "user_id" json
       <*> readProp "org_id" json
       <*> readProp "forum_id" json
-      <*> (runNullOrUndefined <$> readProp "parent_id" json)
+      <*> (unNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "is_anonymous" json
       <*> readProp "can_create_sub_boards" json
       <*> readProp "can_create_threads" json
       <*> readProp "suggested_tags" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance boardResponseIsForeign :: IsForeign BoardResponse where
@@ -662,26 +725,26 @@ instance boardResponseIsForeign :: IsForeign BoardResponse where
       <*> readProp "user_id" json
       <*> readProp "org_id" json
       <*> readProp "forum_id" json
-      <*> (runNullOrUndefined <$> readProp "parent_id" json)
+      <*> (unNullOrUndefined <$> readProp "parent_id" json)
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "is_anonymous" json
       <*> readProp "can_create_sub_boards" json
       <*> readProp "can_create_threads" json
       <*> readProp "suggested_tags" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance boardResponseShow :: Show BoardResponse where
-    show (BoardResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "isAnonymous: " ++ show o.isAnonymous ++ ", " ++ show "canCreateSubBoards: " ++ show o.canCreateSubBoards ++ ", " ++ show "canCreateThreads: " ++ show o.canCreateThreads ++ ", " ++ show "suggestedTags: " ++ show o.suggestedTags ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (BoardResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "forumId: " <> show o.forumId <> ", " <> show "parentId: " <> show o.parentId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "isAnonymous: " <> show o.isAnonymous <> ", " <> show "canCreateSubBoards: " <> show o.canCreateSubBoards <> ", " <> show "canCreateThreads: " <> show o.canCreateThreads <> ", " <> show "suggestedTags: " <> show o.suggestedTags <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype BoardResponses = BoardResponses {
   boardResponses :: (Array BoardResponse)
@@ -693,7 +756,7 @@ type BoardResponsesR = {
 }
 
 
-_BoardResponses :: LensP BoardResponses {
+_BoardResponses :: Lens' BoardResponses {
   boardResponses :: (Array BoardResponse)
 }
 _BoardResponses f (BoardResponses o) = BoardResponses <$> f o
@@ -704,6 +767,9 @@ mkBoardResponses boardResponses =
   BoardResponses{boardResponses}
 
 
+unwrapBoardResponses :: BoardResponses -> {
+  boardResponses :: (Array BoardResponse)
+}
 unwrapBoardResponses (BoardResponses r) = r
 
 instance boardResponsesEncodeJson :: EncodeJson BoardResponses where
@@ -743,7 +809,7 @@ instance boardResponsesIsForeign :: IsForeign BoardResponses where
 
 
 instance boardResponsesShow :: Show BoardResponses where
-    show (BoardResponses o) = show "boardResponses: " ++ show o.boardResponses
+    show (BoardResponses o) = show "boardResponses: " <> show o.boardResponses
 
 newtype BoardStatResponse = BoardStatResponse {
   boardId :: Int,
@@ -761,7 +827,7 @@ type BoardStatResponseR = {
 }
 
 
-_BoardStatResponse :: LensP BoardStatResponse {
+_BoardStatResponse :: Lens' BoardStatResponse {
   boardId :: Int,
   threads :: Int,
   threadPosts :: Int,
@@ -775,6 +841,12 @@ mkBoardStatResponse boardId threads threadPosts views =
   BoardStatResponse{boardId, threads, threadPosts, views}
 
 
+unwrapBoardStatResponse :: BoardStatResponse -> {
+  boardId :: Int,
+  threads :: Int,
+  threadPosts :: Int,
+  views :: Int
+}
 unwrapBoardStatResponse (BoardStatResponse r) = r
 
 instance boardStatResponseEncodeJson :: EncodeJson BoardStatResponse where
@@ -829,7 +901,7 @@ instance boardStatResponseIsForeign :: IsForeign BoardStatResponse where
 
 
 instance boardStatResponseShow :: Show BoardStatResponse where
-    show (BoardStatResponse o) = show "boardId: " ++ show o.boardId ++ ", " ++ show "threads: " ++ show o.threads ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "views: " ++ show o.views
+    show (BoardStatResponse o) = show "boardId: " <> show o.boardId <> ", " <> show "threads: " <> show o.threads <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "views: " <> show o.views
 
 newtype BoardStatResponses = BoardStatResponses {
   boardStatResponses :: (Array BoardStatResponse)
@@ -841,7 +913,7 @@ type BoardStatResponsesR = {
 }
 
 
-_BoardStatResponses :: LensP BoardStatResponses {
+_BoardStatResponses :: Lens' BoardStatResponses {
   boardStatResponses :: (Array BoardStatResponse)
 }
 _BoardStatResponses f (BoardStatResponses o) = BoardStatResponses <$> f o
@@ -852,6 +924,9 @@ mkBoardStatResponses boardStatResponses =
   BoardStatResponses{boardStatResponses}
 
 
+unwrapBoardStatResponses :: BoardStatResponses -> {
+  boardStatResponses :: (Array BoardStatResponse)
+}
 unwrapBoardStatResponses (BoardStatResponses r) = r
 
 instance boardStatResponsesEncodeJson :: EncodeJson BoardStatResponses where
@@ -891,7 +966,7 @@ instance boardStatResponsesIsForeign :: IsForeign BoardStatResponses where
 
 
 instance boardStatResponsesShow :: Show BoardStatResponses where
-    show (BoardStatResponses o) = show "boardStatResponses: " ++ show o.boardStatResponses
+    show (BoardStatResponses o) = show "boardStatResponses: " <> show o.boardStatResponses
 
 newtype BucketRequest = BucketRequest {
   displayName :: String,
@@ -919,7 +994,7 @@ type BucketRequestR = {
 }
 
 
-_BucketRequest :: LensP BucketRequest {
+_BucketRequest :: Lens' BucketRequest {
   displayName :: String,
   description :: (Maybe String),
   scoreLo :: Int,
@@ -938,6 +1013,17 @@ mkBucketRequest displayName description scoreLo scoreHi leurons resources catego
   BucketRequest{displayName, description, scoreLo, scoreHi, leurons, resources, categories, filters, guard}
 
 
+unwrapBucketRequest :: BucketRequest -> {
+  displayName :: String,
+  description :: (Maybe String),
+  scoreLo :: Int,
+  scoreHi :: Int,
+  leurons :: (Array Int),
+  resources :: (Array Int),
+  categories :: (Array String),
+  filters :: (Array Int),
+  guard :: Int
+}
 unwrapBucketRequest (BucketRequest r) = r
 
 instance bucketRequestEncodeJson :: EncodeJson BucketRequest where
@@ -992,7 +1078,7 @@ instance bucketRequestRespondable :: Respondable BucketRequest where
   fromResponse json =
       mkBucketRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "score_lo" json
       <*> readProp "score_hi" json
       <*> readProp "leurons" json
@@ -1006,7 +1092,7 @@ instance bucketRequestIsForeign :: IsForeign BucketRequest where
   read json =
       mkBucketRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "score_lo" json
       <*> readProp "score_hi" json
       <*> readProp "leurons" json
@@ -1017,7 +1103,7 @@ instance bucketRequestIsForeign :: IsForeign BucketRequest where
 
 
 instance bucketRequestShow :: Show BucketRequest where
-    show (BucketRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "scoreLo: " ++ show o.scoreLo ++ ", " ++ show "scoreHi: " ++ show o.scoreHi ++ ", " ++ show "leurons: " ++ show o.leurons ++ ", " ++ show "resources: " ++ show o.resources ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "filters: " ++ show o.filters ++ ", " ++ show "guard: " ++ show o.guard
+    show (BucketRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "scoreLo: " <> show o.scoreLo <> ", " <> show "scoreHi: " <> show o.scoreHi <> ", " <> show "leurons: " <> show o.leurons <> ", " <> show "resources: " <> show o.resources <> ", " <> show "categories: " <> show o.categories <> ", " <> show "filters: " <> show o.filters <> ", " <> show "guard: " <> show o.guard
 
 newtype BucketResponse = BucketResponse {
   id :: Int,
@@ -1059,7 +1145,7 @@ type BucketResponseR = {
 }
 
 
-_BucketResponse :: LensP BucketResponse {
+_BucketResponse :: Lens' BucketResponse {
   id :: Int,
   userId :: Int,
   name :: String,
@@ -1085,6 +1171,24 @@ mkBucketResponse id userId name displayName description scoreLo scoreHi leurons 
   BucketResponse{id, userId, name, displayName, description, scoreLo, scoreHi, leurons, resources, categories, filters, active, guard, createdAt, modifiedAt, activityAt}
 
 
+unwrapBucketResponse :: BucketResponse -> {
+  id :: Int,
+  userId :: Int,
+  name :: String,
+  displayName :: String,
+  description :: (Maybe String),
+  scoreLo :: Int,
+  scoreHi :: Int,
+  leurons :: (Array Int),
+  resources :: (Array Int),
+  categories :: (Array String),
+  filters :: (Array Int),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapBucketResponse (BucketResponse r) = r
 
 instance bucketResponseEncodeJson :: EncodeJson BucketResponse where
@@ -1163,7 +1267,7 @@ instance bucketResponseRespondable :: Respondable BucketResponse where
       <*> readProp "user_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "score_lo" json
       <*> readProp "score_hi" json
       <*> readProp "leurons" json
@@ -1172,9 +1276,9 @@ instance bucketResponseRespondable :: Respondable BucketResponse where
       <*> readProp "filters" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance bucketResponseIsForeign :: IsForeign BucketResponse where
@@ -1184,7 +1288,7 @@ instance bucketResponseIsForeign :: IsForeign BucketResponse where
       <*> readProp "user_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "score_lo" json
       <*> readProp "score_hi" json
       <*> readProp "leurons" json
@@ -1193,13 +1297,13 @@ instance bucketResponseIsForeign :: IsForeign BucketResponse where
       <*> readProp "filters" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance bucketResponseShow :: Show BucketResponse where
-    show (BucketResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "scoreLo: " ++ show o.scoreLo ++ ", " ++ show "scoreHi: " ++ show o.scoreHi ++ ", " ++ show "leurons: " ++ show o.leurons ++ ", " ++ show "resources: " ++ show o.resources ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "filters: " ++ show o.filters ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (BucketResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "scoreLo: " <> show o.scoreLo <> ", " <> show "scoreHi: " <> show o.scoreHi <> ", " <> show "leurons: " <> show o.leurons <> ", " <> show "resources: " <> show o.resources <> ", " <> show "categories: " <> show o.categories <> ", " <> show "filters: " <> show o.filters <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype BucketResponses = BucketResponses {
   bucketResponses :: (Array BucketResponse)
@@ -1211,7 +1315,7 @@ type BucketResponsesR = {
 }
 
 
-_BucketResponses :: LensP BucketResponses {
+_BucketResponses :: Lens' BucketResponses {
   bucketResponses :: (Array BucketResponse)
 }
 _BucketResponses f (BucketResponses o) = BucketResponses <$> f o
@@ -1222,6 +1326,9 @@ mkBucketResponses bucketResponses =
   BucketResponses{bucketResponses}
 
 
+unwrapBucketResponses :: BucketResponses -> {
+  bucketResponses :: (Array BucketResponse)
+}
 unwrapBucketResponses (BucketResponses r) = r
 
 instance bucketResponsesEncodeJson :: EncodeJson BucketResponses where
@@ -1261,7 +1368,7 @@ instance bucketResponsesIsForeign :: IsForeign BucketResponses where
 
 
 instance bucketResponsesShow :: Show BucketResponses where
-    show (BucketResponses o) = show "bucketResponses: " ++ show o.bucketResponses
+    show (BucketResponses o) = show "bucketResponses: " <> show o.bucketResponses
 
 newtype CountResponse = CountResponse {
   id :: Int,
@@ -1275,7 +1382,7 @@ type CountResponseR = {
 }
 
 
-_CountResponse :: LensP CountResponse {
+_CountResponse :: Lens' CountResponse {
   id :: Int,
   n :: Int
 }
@@ -1287,6 +1394,10 @@ mkCountResponse id n =
   CountResponse{id, n}
 
 
+unwrapCountResponse :: CountResponse -> {
+  id :: Int,
+  n :: Int
+}
 unwrapCountResponse (CountResponse r) = r
 
 instance countResponseEncodeJson :: EncodeJson CountResponse where
@@ -1331,7 +1442,7 @@ instance countResponseIsForeign :: IsForeign CountResponse where
 
 
 instance countResponseShow :: Show CountResponse where
-    show (CountResponse o) = show "id: " ++ show o.id ++ ", " ++ show "n: " ++ show o.n
+    show (CountResponse o) = show "id: " <> show o.id <> ", " <> show "n: " <> show o.n
 
 newtype CountResponses = CountResponses {
   countResponses :: (Array CountResponse)
@@ -1343,7 +1454,7 @@ type CountResponsesR = {
 }
 
 
-_CountResponses :: LensP CountResponses {
+_CountResponses :: Lens' CountResponses {
   countResponses :: (Array CountResponse)
 }
 _CountResponses f (CountResponses o) = CountResponses <$> f o
@@ -1354,6 +1465,9 @@ mkCountResponses countResponses =
   CountResponses{countResponses}
 
 
+unwrapCountResponses :: CountResponses -> {
+  countResponses :: (Array CountResponse)
+}
 unwrapCountResponses (CountResponses r) = r
 
 instance countResponsesEncodeJson :: EncodeJson CountResponses where
@@ -1393,7 +1507,7 @@ instance countResponsesIsForeign :: IsForeign CountResponses where
 
 
 instance countResponsesShow :: Show CountResponses where
-    show (CountResponses o) = show "countResponses: " ++ show o.countResponses
+    show (CountResponses o) = show "countResponses: " <> show o.countResponses
 
 type DepList a = (Array (Array a))
 
@@ -1408,7 +1522,7 @@ type EmptyRequestR = {
 }
 
 
-_EmptyRequest :: LensP EmptyRequest {
+_EmptyRequest :: Lens' EmptyRequest {
   value :: Boolean
 }
 _EmptyRequest f (EmptyRequest o) = EmptyRequest <$> f o
@@ -1419,6 +1533,9 @@ mkEmptyRequest value =
   EmptyRequest{value}
 
 
+unwrapEmptyRequest :: EmptyRequest -> {
+  value :: Boolean
+}
 unwrapEmptyRequest (EmptyRequest r) = r
 
 instance emptyRequestEncodeJson :: EncodeJson EmptyRequest where
@@ -1458,7 +1575,7 @@ instance emptyRequestIsForeign :: IsForeign EmptyRequest where
 
 
 instance emptyRequestShow :: Show EmptyRequest where
-    show (EmptyRequest o) = show "value: " ++ show o.value
+    show (EmptyRequest o) = show "value: " <> show o.value
 
 newtype EmptyResponse = EmptyResponse {
   id :: Int,
@@ -1478,7 +1595,7 @@ type EmptyResponseR = {
 }
 
 
-_EmptyResponse :: LensP EmptyResponse {
+_EmptyResponse :: Lens' EmptyResponse {
   id :: Int,
   userId :: Int,
   value :: Boolean,
@@ -1493,6 +1610,13 @@ mkEmptyResponse id userId value createdAt modifiedAt =
   EmptyResponse{id, userId, value, createdAt, modifiedAt}
 
 
+unwrapEmptyResponse :: EmptyResponse -> {
+  id :: Int,
+  userId :: Int,
+  value :: Boolean,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
 unwrapEmptyResponse (EmptyResponse r) = r
 
 instance emptyResponseEncodeJson :: EncodeJson EmptyResponse where
@@ -1537,8 +1661,8 @@ instance emptyResponseRespondable :: Respondable EmptyResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "value" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance emptyResponseIsForeign :: IsForeign EmptyResponse where
@@ -1547,12 +1671,12 @@ instance emptyResponseIsForeign :: IsForeign EmptyResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "value" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance emptyResponseShow :: Show EmptyResponse where
-    show (EmptyResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "value: " ++ show o.value ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (EmptyResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "value: " <> show o.value <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
 
 newtype EmptyResponses = EmptyResponses {
   emptyResponses :: (Array EmptyResponse)
@@ -1564,7 +1688,7 @@ type EmptyResponsesR = {
 }
 
 
-_EmptyResponses :: LensP EmptyResponses {
+_EmptyResponses :: Lens' EmptyResponses {
   emptyResponses :: (Array EmptyResponse)
 }
 _EmptyResponses f (EmptyResponses o) = EmptyResponses <$> f o
@@ -1575,6 +1699,9 @@ mkEmptyResponses emptyResponses =
   EmptyResponses{emptyResponses}
 
 
+unwrapEmptyResponses :: EmptyResponses -> {
+  emptyResponses :: (Array EmptyResponse)
+}
 unwrapEmptyResponses (EmptyResponses r) = r
 
 instance emptyResponsesEncodeJson :: EncodeJson EmptyResponses where
@@ -1614,7 +1741,7 @@ instance emptyResponsesIsForeign :: IsForeign EmptyResponses where
 
 
 instance emptyResponsesShow :: Show EmptyResponses where
-    show (EmptyResponses o) = show "emptyResponses: " ++ show o.emptyResponses
+    show (EmptyResponses o) = show "emptyResponses: " <> show o.emptyResponses
 
 data Ent
   = Ent_Organization 
@@ -1738,73 +1865,74 @@ instance entDecodeJson :: DecodeJson Ent where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "Ent_Organization" -> do
-          return Ent_Organization
+      "Ent_Organization" -> do
+        pure Ent_Organization
 
-        "Ent_Team" -> do
-          return Ent_Team
+      "Ent_Team" -> do
+        pure Ent_Team
 
-        "Ent_TeamMember" -> do
-          return Ent_TeamMember
+      "Ent_TeamMember" -> do
+        pure Ent_TeamMember
 
-        "Ent_GlobalGroup" -> do
-          return Ent_GlobalGroup
+      "Ent_GlobalGroup" -> do
+        pure Ent_GlobalGroup
 
-        "Ent_Group" -> do
-          return Ent_Group
+      "Ent_Group" -> do
+        pure Ent_Group
 
-        "Ent_GroupMember" -> do
-          return Ent_GroupMember
+      "Ent_GroupMember" -> do
+        pure Ent_GroupMember
 
-        "Ent_User" -> do
-          return Ent_User
+      "Ent_User" -> do
+        pure Ent_User
 
-        "Ent_UserSanitized" -> do
-          return Ent_UserSanitized
+      "Ent_UserSanitized" -> do
+        pure Ent_UserSanitized
 
-        "Ent_Forum" -> do
-          return Ent_Forum
+      "Ent_Forum" -> do
+        pure Ent_Forum
 
-        "Ent_Board" -> do
-          return Ent_Board
+      "Ent_Board" -> do
+        pure Ent_Board
 
-        "Ent_Thread" -> do
-          return Ent_Thread
+      "Ent_Thread" -> do
+        pure Ent_Thread
 
-        "Ent_ThreadPost" -> do
-          return Ent_ThreadPost
+      "Ent_ThreadPost" -> do
+        pure Ent_ThreadPost
 
-        "Ent_Blog" -> do
-          return Ent_Blog
+      "Ent_Blog" -> do
+        pure Ent_Blog
 
-        "Ent_BlogPost" -> do
-          return Ent_BlogPost
+      "Ent_BlogPost" -> do
+        pure Ent_BlogPost
 
-        "Ent_BlogComment" -> do
-          return Ent_BlogComment
+      "Ent_BlogComment" -> do
+        pure Ent_BlogComment
 
-        "Ent_Resource" -> do
-          return Ent_Resource
+      "Ent_Resource" -> do
+        pure Ent_Resource
 
-        "Ent_Leuron" -> do
-          return Ent_Leuron
+      "Ent_Leuron" -> do
+        pure Ent_Leuron
 
-        "Ent_Comment" -> do
-          return Ent_Comment
+      "Ent_Comment" -> do
+        pure Ent_Comment
 
-        "Ent_Api" -> do
-          return Ent_Api
+      "Ent_Api" -> do
+        pure Ent_Api
 
-        "Ent_Like" -> do
-          return Ent_Like
+      "Ent_Like" -> do
+        pure Ent_Like
 
-        "Ent_Star" -> do
-          return Ent_Star
+      "Ent_Star" -> do
+        pure Ent_Star
 
-        "Ent_None" -> do
-          return Ent_None
+      "Ent_None" -> do
+        pure Ent_None
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for Ent"
+
 
 
 instance entRequestable :: Requestable Ent where
@@ -1819,71 +1947,73 @@ instance entRespondable :: Respondable Ent where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "Ent_Organization" -> do
-          return Ent_Organization
+      "Ent_Organization" -> do
+        pure Ent_Organization
 
-        "Ent_Team" -> do
-          return Ent_Team
+      "Ent_Team" -> do
+        pure Ent_Team
 
-        "Ent_TeamMember" -> do
-          return Ent_TeamMember
+      "Ent_TeamMember" -> do
+        pure Ent_TeamMember
 
-        "Ent_GlobalGroup" -> do
-          return Ent_GlobalGroup
+      "Ent_GlobalGroup" -> do
+        pure Ent_GlobalGroup
 
-        "Ent_Group" -> do
-          return Ent_Group
+      "Ent_Group" -> do
+        pure Ent_Group
 
-        "Ent_GroupMember" -> do
-          return Ent_GroupMember
+      "Ent_GroupMember" -> do
+        pure Ent_GroupMember
 
-        "Ent_User" -> do
-          return Ent_User
+      "Ent_User" -> do
+        pure Ent_User
 
-        "Ent_UserSanitized" -> do
-          return Ent_UserSanitized
+      "Ent_UserSanitized" -> do
+        pure Ent_UserSanitized
 
-        "Ent_Forum" -> do
-          return Ent_Forum
+      "Ent_Forum" -> do
+        pure Ent_Forum
 
-        "Ent_Board" -> do
-          return Ent_Board
+      "Ent_Board" -> do
+        pure Ent_Board
 
-        "Ent_Thread" -> do
-          return Ent_Thread
+      "Ent_Thread" -> do
+        pure Ent_Thread
 
-        "Ent_ThreadPost" -> do
-          return Ent_ThreadPost
+      "Ent_ThreadPost" -> do
+        pure Ent_ThreadPost
 
-        "Ent_Blog" -> do
-          return Ent_Blog
+      "Ent_Blog" -> do
+        pure Ent_Blog
 
-        "Ent_BlogPost" -> do
-          return Ent_BlogPost
+      "Ent_BlogPost" -> do
+        pure Ent_BlogPost
 
-        "Ent_BlogComment" -> do
-          return Ent_BlogComment
+      "Ent_BlogComment" -> do
+        pure Ent_BlogComment
 
-        "Ent_Resource" -> do
-          return Ent_Resource
+      "Ent_Resource" -> do
+        pure Ent_Resource
 
-        "Ent_Leuron" -> do
-          return Ent_Leuron
+      "Ent_Leuron" -> do
+        pure Ent_Leuron
 
-        "Ent_Comment" -> do
-          return Ent_Comment
+      "Ent_Comment" -> do
+        pure Ent_Comment
 
-        "Ent_Api" -> do
-          return Ent_Api
+      "Ent_Api" -> do
+        pure Ent_Api
 
-        "Ent_Like" -> do
-          return Ent_Like
+      "Ent_Like" -> do
+        pure Ent_Like
 
-        "Ent_Star" -> do
-          return Ent_Star
+      "Ent_Star" -> do
+        pure Ent_Star
 
-        "Ent_None" -> do
-          return Ent_None
+      "Ent_None" -> do
+        pure Ent_None
+
+      _ -> Left $ TypeMismatch "Ent" "Respondable"
 
 
 
@@ -1891,71 +2021,73 @@ instance entIsForeign :: IsForeign Ent where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "Ent_Organization" -> do
-          return Ent_Organization
+      "Ent_Organization" -> do
+        pure Ent_Organization
 
-        "Ent_Team" -> do
-          return Ent_Team
+      "Ent_Team" -> do
+        pure Ent_Team
 
-        "Ent_TeamMember" -> do
-          return Ent_TeamMember
+      "Ent_TeamMember" -> do
+        pure Ent_TeamMember
 
-        "Ent_GlobalGroup" -> do
-          return Ent_GlobalGroup
+      "Ent_GlobalGroup" -> do
+        pure Ent_GlobalGroup
 
-        "Ent_Group" -> do
-          return Ent_Group
+      "Ent_Group" -> do
+        pure Ent_Group
 
-        "Ent_GroupMember" -> do
-          return Ent_GroupMember
+      "Ent_GroupMember" -> do
+        pure Ent_GroupMember
 
-        "Ent_User" -> do
-          return Ent_User
+      "Ent_User" -> do
+        pure Ent_User
 
-        "Ent_UserSanitized" -> do
-          return Ent_UserSanitized
+      "Ent_UserSanitized" -> do
+        pure Ent_UserSanitized
 
-        "Ent_Forum" -> do
-          return Ent_Forum
+      "Ent_Forum" -> do
+        pure Ent_Forum
 
-        "Ent_Board" -> do
-          return Ent_Board
+      "Ent_Board" -> do
+        pure Ent_Board
 
-        "Ent_Thread" -> do
-          return Ent_Thread
+      "Ent_Thread" -> do
+        pure Ent_Thread
 
-        "Ent_ThreadPost" -> do
-          return Ent_ThreadPost
+      "Ent_ThreadPost" -> do
+        pure Ent_ThreadPost
 
-        "Ent_Blog" -> do
-          return Ent_Blog
+      "Ent_Blog" -> do
+        pure Ent_Blog
 
-        "Ent_BlogPost" -> do
-          return Ent_BlogPost
+      "Ent_BlogPost" -> do
+        pure Ent_BlogPost
 
-        "Ent_BlogComment" -> do
-          return Ent_BlogComment
+      "Ent_BlogComment" -> do
+        pure Ent_BlogComment
 
-        "Ent_Resource" -> do
-          return Ent_Resource
+      "Ent_Resource" -> do
+        pure Ent_Resource
 
-        "Ent_Leuron" -> do
-          return Ent_Leuron
+      "Ent_Leuron" -> do
+        pure Ent_Leuron
 
-        "Ent_Comment" -> do
-          return Ent_Comment
+      "Ent_Comment" -> do
+        pure Ent_Comment
 
-        "Ent_Api" -> do
-          return Ent_Api
+      "Ent_Api" -> do
+        pure Ent_Api
 
-        "Ent_Like" -> do
-          return Ent_Like
+      "Ent_Like" -> do
+        pure Ent_Like
 
-        "Ent_Star" -> do
-          return Ent_Star
+      "Ent_Star" -> do
+        pure Ent_Star
 
-        "Ent_None" -> do
-          return Ent_None
+      "Ent_None" -> do
+        pure Ent_None
+
+      _ -> Left $ TypeMismatch "Ent" "IsForeign"
 
 
 
@@ -2021,7 +2153,7 @@ instance applicationErrorEncodeJson :: EncodeJson ApplicationError where
     ~> jsonEmptyObject
   encodeJson (Error_Validation x0) =
        "tag" := "Error_Validation"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (Error_NotImplemented ) =
        "tag" := "Error_NotImplemented"
@@ -2029,7 +2161,7 @@ instance applicationErrorEncodeJson :: EncodeJson ApplicationError where
     ~> jsonEmptyObject
   encodeJson (Error_InvalidArguments x0) =
        "tag" := "Error_InvalidArguments"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (Error_Unexpected ) =
        "tag" := "Error_Unexpected"
@@ -2046,39 +2178,46 @@ instance applicationErrorDecodeJson :: DecodeJson ApplicationError where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "Error_Empty" -> do
-          return Error_Empty
+      "Error_Empty" -> do
+        pure Error_Empty
 
-        "Error_NotFound" -> do
-          return Error_NotFound
+      "Error_NotFound" -> do
+        pure Error_NotFound
 
-        "Error_PermissionDenied" -> do
-          return Error_PermissionDenied
+      "Error_PermissionDenied" -> do
+        pure Error_PermissionDenied
 
-        "Error_Visibility" -> do
-          return Error_Visibility
+      "Error_Visibility" -> do
+        pure Error_Visibility
 
-        "Error_Membership" -> do
-          return Error_Membership
+      "Error_Membership" -> do
+        pure Error_Membership
 
-        "Error_Validation" -> do
-          x0 <- obj .? "contents"
-          Error_Validation <$> decodeJson x0
+      "Error_Validation" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> Error_Validation <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for Error_Validation"
 
-        "Error_NotImplemented" -> do
-          return Error_NotImplemented
 
-        "Error_InvalidArguments" -> do
-          x0 <- obj .? "contents"
-          Error_InvalidArguments <$> decodeJson x0
+      "Error_NotImplemented" -> do
+        pure Error_NotImplemented
 
-        "Error_Unexpected" -> do
-          return Error_Unexpected
+      "Error_InvalidArguments" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> Error_InvalidArguments <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for Error_InvalidArguments"
 
-        "Error_Unknown" -> do
-          return Error_Unknown
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      "Error_Unexpected" -> do
+        pure Error_Unexpected
+
+      "Error_Unknown" -> do
+        pure Error_Unknown
+
+      _ -> Left $ "DecodeJson TypeMismatch for ApplicationError"
+
 
 
 instance applicationErrorRequestable :: Requestable ApplicationError where
@@ -2093,37 +2232,45 @@ instance applicationErrorRespondable :: Respondable ApplicationError where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "Error_Empty" -> do
-          return Error_Empty
+      "Error_Empty" -> do
+        pure Error_Empty
 
-        "Error_NotFound" -> do
-          return Error_NotFound
+      "Error_NotFound" -> do
+        pure Error_NotFound
 
-        "Error_PermissionDenied" -> do
-          return Error_PermissionDenied
+      "Error_PermissionDenied" -> do
+        pure Error_PermissionDenied
 
-        "Error_Visibility" -> do
-          return Error_Visibility
+      "Error_Visibility" -> do
+        pure Error_Visibility
 
-        "Error_Membership" -> do
-          return Error_Membership
+      "Error_Membership" -> do
+        pure Error_Membership
 
-        "Error_Validation" -> do
-          x0 <- readProp "contents" json
-          Error_Validation <$> read x0
+      "Error_Validation" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Error_Validation <$> read x0
+          _ -> Left $ TypeMismatch "Error_Validation" "Respondable"
 
-        "Error_NotImplemented" -> do
-          return Error_NotImplemented
 
-        "Error_InvalidArguments" -> do
-          x0 <- readProp "contents" json
-          Error_InvalidArguments <$> read x0
+      "Error_NotImplemented" -> do
+        pure Error_NotImplemented
 
-        "Error_Unexpected" -> do
-          return Error_Unexpected
+      "Error_InvalidArguments" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Error_InvalidArguments <$> read x0
+          _ -> Left $ TypeMismatch "Error_InvalidArguments" "Respondable"
 
-        "Error_Unknown" -> do
-          return Error_Unknown
+
+      "Error_Unexpected" -> do
+        pure Error_Unexpected
+
+      "Error_Unknown" -> do
+        pure Error_Unknown
+
+      _ -> Left $ TypeMismatch "ApplicationError" "Respondable"
 
 
 
@@ -2131,37 +2278,45 @@ instance applicationErrorIsForeign :: IsForeign ApplicationError where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "Error_Empty" -> do
-          return Error_Empty
+      "Error_Empty" -> do
+        pure Error_Empty
 
-        "Error_NotFound" -> do
-          return Error_NotFound
+      "Error_NotFound" -> do
+        pure Error_NotFound
 
-        "Error_PermissionDenied" -> do
-          return Error_PermissionDenied
+      "Error_PermissionDenied" -> do
+        pure Error_PermissionDenied
 
-        "Error_Visibility" -> do
-          return Error_Visibility
+      "Error_Visibility" -> do
+        pure Error_Visibility
 
-        "Error_Membership" -> do
-          return Error_Membership
+      "Error_Membership" -> do
+        pure Error_Membership
 
-        "Error_Validation" -> do
-          x0 <- readProp "contents" json
-          Error_Validation <$> read x0
+      "Error_Validation" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Error_Validation <$> read x0
+          _ -> Left $ TypeMismatch "Error_Validation" "IsForeign"
 
-        "Error_NotImplemented" -> do
-          return Error_NotImplemented
 
-        "Error_InvalidArguments" -> do
-          x0 <- readProp "contents" json
-          Error_InvalidArguments <$> read x0
+      "Error_NotImplemented" -> do
+        pure Error_NotImplemented
 
-        "Error_Unexpected" -> do
-          return Error_Unexpected
+      "Error_InvalidArguments" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Error_InvalidArguments <$> read x0
+          _ -> Left $ TypeMismatch "Error_InvalidArguments" "IsForeign"
 
-        "Error_Unknown" -> do
-          return Error_Unknown
+
+      "Error_Unexpected" -> do
+        pure Error_Unexpected
+
+      "Error_Unknown" -> do
+        pure Error_Unknown
+
+      _ -> Left $ TypeMismatch "ApplicationError" "IsForeign"
 
 
 
@@ -2171,9 +2326,9 @@ instance applicationErrorShow :: Show ApplicationError where
   show (Error_PermissionDenied) = "Error_PermissionDenied"
   show (Error_Visibility) = "Error_Visibility"
   show (Error_Membership) = "Error_Membership"
-  show (Error_Validation x0) = "Error_Validation: " ++ show x0
+  show (Error_Validation x0) = "Error_Validation: " <> show x0
   show (Error_NotImplemented) = "Error_NotImplemented"
-  show (Error_InvalidArguments x0) = "Error_InvalidArguments: " ++ show x0
+  show (Error_InvalidArguments x0) = "Error_InvalidArguments: " <> show x0
   show (Error_Unexpected) = "Error_Unexpected"
   show (Error_Unknown) = "Error_Unknown"
 
@@ -2221,7 +2376,7 @@ type ForumRequestR = {
 }
 
 
-_ForumRequest :: LensP ForumRequest {
+_ForumRequest :: Lens' ForumRequest {
   displayName :: String,
   description :: (Maybe String),
   threadsPerBoard :: Int,
@@ -2242,6 +2397,19 @@ mkForumRequest displayName description threadsPerBoard threadPostsPerThread rece
   ForumRequest{displayName, description, threadsPerBoard, threadPostsPerThread, recentThreadsLimit, recentPostsLimit, motwLimit, icon, tags, visibility, guard}
 
 
+unwrapForumRequest :: ForumRequest -> {
+  displayName :: String,
+  description :: (Maybe String),
+  threadsPerBoard :: Int,
+  threadPostsPerThread :: Int,
+  recentThreadsLimit :: Int,
+  recentPostsLimit :: Int,
+  motwLimit :: Int,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  guard :: Int
+}
 unwrapForumRequest (ForumRequest r) = r
 
 instance forumRequestEncodeJson :: EncodeJson ForumRequest where
@@ -2302,13 +2470,13 @@ instance forumRequestRespondable :: Respondable ForumRequest where
   fromResponse json =
       mkForumRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "threads_per_board" json
       <*> readProp "thread_posts_per_thread" json
       <*> readProp "recent_threads_limit" json
       <*> readProp "recent_posts_limit" json
       <*> readProp "motw_limit" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "guard" json
@@ -2318,20 +2486,20 @@ instance forumRequestIsForeign :: IsForeign ForumRequest where
   read json =
       mkForumRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "threads_per_board" json
       <*> readProp "thread_posts_per_thread" json
       <*> readProp "recent_threads_limit" json
       <*> readProp "recent_posts_limit" json
       <*> readProp "motw_limit" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
 
 instance forumRequestShow :: Show ForumRequest where
-    show (ForumRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "threadsPerBoard: " ++ show o.threadsPerBoard ++ ", " ++ show "threadPostsPerThread: " ++ show o.threadPostsPerThread ++ ", " ++ show "recentThreadsLimit: " ++ show o.recentThreadsLimit ++ ", " ++ show "recentPostsLimit: " ++ show o.recentPostsLimit ++ ", " ++ show "motwLimit: " ++ show o.motwLimit ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
+    show (ForumRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "threadsPerBoard: " <> show o.threadsPerBoard <> ", " <> show "threadPostsPerThread: " <> show o.threadPostsPerThread <> ", " <> show "recentThreadsLimit: " <> show o.recentThreadsLimit <> ", " <> show "recentPostsLimit: " <> show o.recentPostsLimit <> ", " <> show "motwLimit: " <> show o.motwLimit <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype ForumResponse = ForumResponse {
   id :: Int,
@@ -2381,7 +2549,7 @@ type ForumResponseR = {
 }
 
 
-_ForumResponse :: LensP ForumResponse {
+_ForumResponse :: Lens' ForumResponse {
   id :: Int,
   userId :: Int,
   orgId :: Int,
@@ -2411,6 +2579,28 @@ mkForumResponse id userId orgId name displayName description threadsPerBoard thr
   ForumResponse{id, userId, orgId, name, displayName, description, threadsPerBoard, threadPostsPerThread, recentThreadsLimit, recentPostsLimit, motwLimit, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapForumResponse :: ForumResponse -> {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  name :: String,
+  displayName :: String,
+  description :: (Maybe String),
+  threadsPerBoard :: Int,
+  threadPostsPerThread :: Int,
+  recentThreadsLimit :: Int,
+  recentPostsLimit :: Int,
+  motwLimit :: Int,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapForumResponse (ForumResponse r) = r
 
 instance forumResponseEncodeJson :: EncodeJson ForumResponse where
@@ -2502,21 +2692,21 @@ instance forumResponseRespondable :: Respondable ForumResponse where
       <*> readProp "org_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "threads_per_board" json
       <*> readProp "thread_posts_per_thread" json
       <*> readProp "recent_threads_limit" json
       <*> readProp "recent_posts_limit" json
       <*> readProp "motw_limit" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance forumResponseIsForeign :: IsForeign ForumResponse where
@@ -2527,25 +2717,25 @@ instance forumResponseIsForeign :: IsForeign ForumResponse where
       <*> readProp "org_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "threads_per_board" json
       <*> readProp "thread_posts_per_thread" json
       <*> readProp "recent_threads_limit" json
       <*> readProp "recent_posts_limit" json
       <*> readProp "motw_limit" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance forumResponseShow :: Show ForumResponse where
-    show (ForumResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "threadsPerBoard: " ++ show o.threadsPerBoard ++ ", " ++ show "threadPostsPerThread: " ++ show o.threadPostsPerThread ++ ", " ++ show "recentThreadsLimit: " ++ show o.recentThreadsLimit ++ ", " ++ show "recentPostsLimit: " ++ show o.recentPostsLimit ++ ", " ++ show "motwLimit: " ++ show o.motwLimit ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ForumResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "threadsPerBoard: " <> show o.threadsPerBoard <> ", " <> show "threadPostsPerThread: " <> show o.threadPostsPerThread <> ", " <> show "recentThreadsLimit: " <> show o.recentThreadsLimit <> ", " <> show "recentPostsLimit: " <> show o.recentPostsLimit <> ", " <> show "motwLimit: " <> show o.motwLimit <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype ForumResponses = ForumResponses {
   forumResponses :: (Array ForumResponse)
@@ -2557,7 +2747,7 @@ type ForumResponsesR = {
 }
 
 
-_ForumResponses :: LensP ForumResponses {
+_ForumResponses :: Lens' ForumResponses {
   forumResponses :: (Array ForumResponse)
 }
 _ForumResponses f (ForumResponses o) = ForumResponses <$> f o
@@ -2568,6 +2758,9 @@ mkForumResponses forumResponses =
   ForumResponses{forumResponses}
 
 
+unwrapForumResponses :: ForumResponses -> {
+  forumResponses :: (Array ForumResponse)
+}
 unwrapForumResponses (ForumResponses r) = r
 
 instance forumResponsesEncodeJson :: EncodeJson ForumResponses where
@@ -2607,7 +2800,7 @@ instance forumResponsesIsForeign :: IsForeign ForumResponses where
 
 
 instance forumResponsesShow :: Show ForumResponses where
-    show (ForumResponses o) = show "forumResponses: " ++ show o.forumResponses
+    show (ForumResponses o) = show "forumResponses: " <> show o.forumResponses
 
 newtype ForumStatResponse = ForumStatResponse {
   forumId :: Int,
@@ -2627,7 +2820,7 @@ type ForumStatResponseR = {
 }
 
 
-_ForumStatResponse :: LensP ForumStatResponse {
+_ForumStatResponse :: Lens' ForumStatResponse {
   forumId :: Int,
   boards :: Int,
   threads :: Int,
@@ -2642,6 +2835,13 @@ mkForumStatResponse forumId boards threads threadPosts views =
   ForumStatResponse{forumId, boards, threads, threadPosts, views}
 
 
+unwrapForumStatResponse :: ForumStatResponse -> {
+  forumId :: Int,
+  boards :: Int,
+  threads :: Int,
+  threadPosts :: Int,
+  views :: Int
+}
 unwrapForumStatResponse (ForumStatResponse r) = r
 
 instance forumStatResponseEncodeJson :: EncodeJson ForumStatResponse where
@@ -2701,7 +2901,7 @@ instance forumStatResponseIsForeign :: IsForeign ForumStatResponse where
 
 
 instance forumStatResponseShow :: Show ForumStatResponse where
-    show (ForumStatResponse o) = show "forumId: " ++ show o.forumId ++ ", " ++ show "boards: " ++ show o.boards ++ ", " ++ show "threads: " ++ show o.threads ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "views: " ++ show o.views
+    show (ForumStatResponse o) = show "forumId: " <> show o.forumId <> ", " <> show "boards: " <> show o.boards <> ", " <> show "threads: " <> show o.threads <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "views: " <> show o.views
 
 newtype ForumStatResponses = ForumStatResponses {
   forumStatResponses :: (Array ForumStatResponse)
@@ -2713,7 +2913,7 @@ type ForumStatResponsesR = {
 }
 
 
-_ForumStatResponses :: LensP ForumStatResponses {
+_ForumStatResponses :: Lens' ForumStatResponses {
   forumStatResponses :: (Array ForumStatResponse)
 }
 _ForumStatResponses f (ForumStatResponses o) = ForumStatResponses <$> f o
@@ -2724,6 +2924,9 @@ mkForumStatResponses forumStatResponses =
   ForumStatResponses{forumStatResponses}
 
 
+unwrapForumStatResponses :: ForumStatResponses -> {
+  forumStatResponses :: (Array ForumStatResponse)
+}
 unwrapForumStatResponses (ForumStatResponses r) = r
 
 instance forumStatResponsesEncodeJson :: EncodeJson ForumStatResponses where
@@ -2763,7 +2966,7 @@ instance forumStatResponsesIsForeign :: IsForeign ForumStatResponses where
 
 
 instance forumStatResponsesShow :: Show ForumStatResponses where
-    show (ForumStatResponses o) = show "forumStatResponses: " ++ show o.forumStatResponses
+    show (ForumStatResponses o) = show "forumStatResponses: " <> show o.forumStatResponses
 
 newtype GlobalGroupRequest = GlobalGroupRequest {
   displayName :: String,
@@ -2787,7 +2990,7 @@ type GlobalGroupRequestR = {
 }
 
 
-_GlobalGroupRequest :: LensP GlobalGroupRequest {
+_GlobalGroupRequest :: Lens' GlobalGroupRequest {
   displayName :: String,
   description :: (Maybe String),
   membership :: Membership,
@@ -2804,6 +3007,15 @@ mkGlobalGroupRequest displayName description membership icon tags visibility gua
   GlobalGroupRequest{displayName, description, membership, icon, tags, visibility, guard}
 
 
+unwrapGlobalGroupRequest :: GlobalGroupRequest -> {
+  displayName :: String,
+  description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  guard :: Int
+}
 unwrapGlobalGroupRequest (GlobalGroupRequest r) = r
 
 instance globalGroupRequestEncodeJson :: EncodeJson GlobalGroupRequest where
@@ -2852,9 +3064,9 @@ instance globalGroupRequestRespondable :: Respondable GlobalGroupRequest where
   fromResponse json =
       mkGlobalGroupRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "guard" json
@@ -2864,16 +3076,16 @@ instance globalGroupRequestIsForeign :: IsForeign GlobalGroupRequest where
   read json =
       mkGlobalGroupRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
 
 instance globalGroupRequestShow :: Show GlobalGroupRequest where
-    show (GlobalGroupRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
+    show (GlobalGroupRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype GlobalGroupResponse = GlobalGroupResponse {
   id :: Int,
@@ -2913,7 +3125,7 @@ type GlobalGroupResponseR = {
 }
 
 
-_GlobalGroupResponse :: LensP GlobalGroupResponse {
+_GlobalGroupResponse :: Lens' GlobalGroupResponse {
   id :: Int,
   userId :: Int,
   name :: String,
@@ -2938,6 +3150,23 @@ mkGlobalGroupResponse id userId name displayName description membership icon tag
   GlobalGroupResponse{id, userId, name, displayName, description, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapGlobalGroupResponse :: GlobalGroupResponse -> {
+  id :: Int,
+  userId :: Int,
+  name :: String,
+  displayName :: String,
+  description :: (Maybe String),
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapGlobalGroupResponse (GlobalGroupResponse r) = r
 
 instance globalGroupResponseEncodeJson :: EncodeJson GlobalGroupResponse where
@@ -3013,17 +3242,17 @@ instance globalGroupResponseRespondable :: Respondable GlobalGroupResponse where
       <*> readProp "user_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance globalGroupResponseIsForeign :: IsForeign GlobalGroupResponse where
@@ -3033,21 +3262,21 @@ instance globalGroupResponseIsForeign :: IsForeign GlobalGroupResponse where
       <*> readProp "user_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance globalGroupResponseShow :: Show GlobalGroupResponse where
-    show (GlobalGroupResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (GlobalGroupResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype GlobalGroupResponses = GlobalGroupResponses {
   globalGroupResponses :: (Array GlobalGroupResponse)
@@ -3059,7 +3288,7 @@ type GlobalGroupResponsesR = {
 }
 
 
-_GlobalGroupResponses :: LensP GlobalGroupResponses {
+_GlobalGroupResponses :: Lens' GlobalGroupResponses {
   globalGroupResponses :: (Array GlobalGroupResponse)
 }
 _GlobalGroupResponses f (GlobalGroupResponses o) = GlobalGroupResponses <$> f o
@@ -3070,6 +3299,9 @@ mkGlobalGroupResponses globalGroupResponses =
   GlobalGroupResponses{globalGroupResponses}
 
 
+unwrapGlobalGroupResponses :: GlobalGroupResponses -> {
+  globalGroupResponses :: (Array GlobalGroupResponse)
+}
 unwrapGlobalGroupResponses (GlobalGroupResponses r) = r
 
 instance globalGroupResponsesEncodeJson :: EncodeJson GlobalGroupResponses where
@@ -3109,7 +3341,7 @@ instance globalGroupResponsesIsForeign :: IsForeign GlobalGroupResponses where
 
 
 instance globalGroupResponsesShow :: Show GlobalGroupResponses where
-    show (GlobalGroupResponses o) = show "globalGroupResponses: " ++ show o.globalGroupResponses
+    show (GlobalGroupResponses o) = show "globalGroupResponses: " <> show o.globalGroupResponses
 
 newtype GlobalGroupStatResponse = GlobalGroupStatResponse {
   groups :: Int
@@ -3121,7 +3353,7 @@ type GlobalGroupStatResponseR = {
 }
 
 
-_GlobalGroupStatResponse :: LensP GlobalGroupStatResponse {
+_GlobalGroupStatResponse :: Lens' GlobalGroupStatResponse {
   groups :: Int
 }
 _GlobalGroupStatResponse f (GlobalGroupStatResponse o) = GlobalGroupStatResponse <$> f o
@@ -3132,6 +3364,9 @@ mkGlobalGroupStatResponse groups =
   GlobalGroupStatResponse{groups}
 
 
+unwrapGlobalGroupStatResponse :: GlobalGroupStatResponse -> {
+  groups :: Int
+}
 unwrapGlobalGroupStatResponse (GlobalGroupStatResponse r) = r
 
 instance globalGroupStatResponseEncodeJson :: EncodeJson GlobalGroupStatResponse where
@@ -3171,7 +3406,7 @@ instance globalGroupStatResponseIsForeign :: IsForeign GlobalGroupStatResponse w
 
 
 instance globalGroupStatResponseShow :: Show GlobalGroupStatResponse where
-    show (GlobalGroupStatResponse o) = show "groups: " ++ show o.groups
+    show (GlobalGroupStatResponse o) = show "groups: " <> show o.groups
 
 newtype GlobalGroupStatResponses = GlobalGroupStatResponses {
   globalGroupStatResponses :: (Array GlobalGroupStatResponse)
@@ -3183,7 +3418,7 @@ type GlobalGroupStatResponsesR = {
 }
 
 
-_GlobalGroupStatResponses :: LensP GlobalGroupStatResponses {
+_GlobalGroupStatResponses :: Lens' GlobalGroupStatResponses {
   globalGroupStatResponses :: (Array GlobalGroupStatResponse)
 }
 _GlobalGroupStatResponses f (GlobalGroupStatResponses o) = GlobalGroupStatResponses <$> f o
@@ -3194,6 +3429,9 @@ mkGlobalGroupStatResponses globalGroupStatResponses =
   GlobalGroupStatResponses{globalGroupStatResponses}
 
 
+unwrapGlobalGroupStatResponses :: GlobalGroupStatResponses -> {
+  globalGroupStatResponses :: (Array GlobalGroupStatResponse)
+}
 unwrapGlobalGroupStatResponses (GlobalGroupStatResponses r) = r
 
 instance globalGroupStatResponsesEncodeJson :: EncodeJson GlobalGroupStatResponses where
@@ -3233,7 +3471,7 @@ instance globalGroupStatResponsesIsForeign :: IsForeign GlobalGroupStatResponses
 
 
 instance globalGroupStatResponsesShow :: Show GlobalGroupStatResponses where
-    show (GlobalGroupStatResponses o) = show "globalGroupStatResponses: " ++ show o.globalGroupStatResponses
+    show (GlobalGroupStatResponses o) = show "globalGroupStatResponses: " <> show o.globalGroupStatResponses
 
 newtype GroupRequest = GroupRequest {
   guard :: Int
@@ -3245,7 +3483,7 @@ type GroupRequestR = {
 }
 
 
-_GroupRequest :: LensP GroupRequest {
+_GroupRequest :: Lens' GroupRequest {
   guard :: Int
 }
 _GroupRequest f (GroupRequest o) = GroupRequest <$> f o
@@ -3256,6 +3494,9 @@ mkGroupRequest guard =
   GroupRequest{guard}
 
 
+unwrapGroupRequest :: GroupRequest -> {
+  guard :: Int
+}
 unwrapGroupRequest (GroupRequest r) = r
 
 instance groupRequestEncodeJson :: EncodeJson GroupRequest where
@@ -3295,7 +3536,7 @@ instance groupRequestIsForeign :: IsForeign GroupRequest where
 
 
 instance groupRequestShow :: Show GroupRequest where
-    show (GroupRequest o) = show "guard: " ++ show o.guard
+    show (GroupRequest o) = show "guard: " <> show o.guard
 
 newtype GroupResponse = GroupResponse {
   id :: Int,
@@ -3325,7 +3566,7 @@ type GroupResponseR = {
 }
 
 
-_GroupResponse :: LensP GroupResponse {
+_GroupResponse :: Lens' GroupResponse {
   id :: Int,
   userId :: Int,
   globalGroupId :: Int,
@@ -3345,6 +3586,18 @@ mkGroupResponse id userId globalGroupId organizationId active guard createdAt mo
   GroupResponse{id, userId, globalGroupId, organizationId, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapGroupResponse :: GroupResponse -> {
+  id :: Int,
+  userId :: Int,
+  globalGroupId :: Int,
+  organizationId :: Int,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapGroupResponse (GroupResponse r) = r
 
 instance groupResponseEncodeJson :: EncodeJson GroupResponse where
@@ -3407,10 +3660,10 @@ instance groupResponseRespondable :: Respondable GroupResponse where
       <*> readProp "organization_id" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance groupResponseIsForeign :: IsForeign GroupResponse where
@@ -3422,14 +3675,14 @@ instance groupResponseIsForeign :: IsForeign GroupResponse where
       <*> readProp "organization_id" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance groupResponseShow :: Show GroupResponse where
-    show (GroupResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "globalGroupId: " ++ show o.globalGroupId ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (GroupResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "globalGroupId: " <> show o.globalGroupId <> ", " <> show "organizationId: " <> show o.organizationId <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype GroupResponses = GroupResponses {
   groupResponses :: (Array GroupResponse)
@@ -3441,7 +3694,7 @@ type GroupResponsesR = {
 }
 
 
-_GroupResponses :: LensP GroupResponses {
+_GroupResponses :: Lens' GroupResponses {
   groupResponses :: (Array GroupResponse)
 }
 _GroupResponses f (GroupResponses o) = GroupResponses <$> f o
@@ -3452,6 +3705,9 @@ mkGroupResponses groupResponses =
   GroupResponses{groupResponses}
 
 
+unwrapGroupResponses :: GroupResponses -> {
+  groupResponses :: (Array GroupResponse)
+}
 unwrapGroupResponses (GroupResponses r) = r
 
 instance groupResponsesEncodeJson :: EncodeJson GroupResponses where
@@ -3491,7 +3747,7 @@ instance groupResponsesIsForeign :: IsForeign GroupResponses where
 
 
 instance groupResponsesShow :: Show GroupResponses where
-    show (GroupResponses o) = show "groupResponses: " ++ show o.groupResponses
+    show (GroupResponses o) = show "groupResponses: " <> show o.groupResponses
 
 newtype GroupStatResponse = GroupStatResponse {
   members :: Int
@@ -3503,7 +3759,7 @@ type GroupStatResponseR = {
 }
 
 
-_GroupStatResponse :: LensP GroupStatResponse {
+_GroupStatResponse :: Lens' GroupStatResponse {
   members :: Int
 }
 _GroupStatResponse f (GroupStatResponse o) = GroupStatResponse <$> f o
@@ -3514,6 +3770,9 @@ mkGroupStatResponse members =
   GroupStatResponse{members}
 
 
+unwrapGroupStatResponse :: GroupStatResponse -> {
+  members :: Int
+}
 unwrapGroupStatResponse (GroupStatResponse r) = r
 
 instance groupStatResponseEncodeJson :: EncodeJson GroupStatResponse where
@@ -3553,7 +3812,7 @@ instance groupStatResponseIsForeign :: IsForeign GroupStatResponse where
 
 
 instance groupStatResponseShow :: Show GroupStatResponse where
-    show (GroupStatResponse o) = show "members: " ++ show o.members
+    show (GroupStatResponse o) = show "members: " <> show o.members
 
 newtype GroupStatResponses = GroupStatResponses {
   groupStatResponses :: (Array GroupStatResponse)
@@ -3565,7 +3824,7 @@ type GroupStatResponsesR = {
 }
 
 
-_GroupStatResponses :: LensP GroupStatResponses {
+_GroupStatResponses :: Lens' GroupStatResponses {
   groupStatResponses :: (Array GroupStatResponse)
 }
 _GroupStatResponses f (GroupStatResponses o) = GroupStatResponses <$> f o
@@ -3576,6 +3835,9 @@ mkGroupStatResponses groupStatResponses =
   GroupStatResponses{groupStatResponses}
 
 
+unwrapGroupStatResponses :: GroupStatResponses -> {
+  groupStatResponses :: (Array GroupStatResponse)
+}
 unwrapGroupStatResponses (GroupStatResponses r) = r
 
 instance groupStatResponsesEncodeJson :: EncodeJson GroupStatResponses where
@@ -3615,7 +3877,7 @@ instance groupStatResponsesIsForeign :: IsForeign GroupStatResponses where
 
 
 instance groupStatResponsesShow :: Show GroupStatResponses where
-    show (GroupStatResponses o) = show "groupStatResponses: " ++ show o.groupStatResponses
+    show (GroupStatResponses o) = show "groupStatResponses: " <> show o.groupStatResponses
 
 newtype GroupMemberRequest = GroupMemberRequest {
   guard :: Int
@@ -3627,7 +3889,7 @@ type GroupMemberRequestR = {
 }
 
 
-_GroupMemberRequest :: LensP GroupMemberRequest {
+_GroupMemberRequest :: Lens' GroupMemberRequest {
   guard :: Int
 }
 _GroupMemberRequest f (GroupMemberRequest o) = GroupMemberRequest <$> f o
@@ -3638,6 +3900,9 @@ mkGroupMemberRequest guard =
   GroupMemberRequest{guard}
 
 
+unwrapGroupMemberRequest :: GroupMemberRequest -> {
+  guard :: Int
+}
 unwrapGroupMemberRequest (GroupMemberRequest r) = r
 
 instance groupMemberRequestEncodeJson :: EncodeJson GroupMemberRequest where
@@ -3677,7 +3942,7 @@ instance groupMemberRequestIsForeign :: IsForeign GroupMemberRequest where
 
 
 instance groupMemberRequestShow :: Show GroupMemberRequest where
-    show (GroupMemberRequest o) = show "guard: " ++ show o.guard
+    show (GroupMemberRequest o) = show "guard: " <> show o.guard
 
 newtype GroupMemberResponse = GroupMemberResponse {
   id :: Int,
@@ -3701,7 +3966,7 @@ type GroupMemberResponseR = {
 }
 
 
-_GroupMemberResponse :: LensP GroupMemberResponse {
+_GroupMemberResponse :: Lens' GroupMemberResponse {
   id :: Int,
   userId :: Int,
   globalGroupId :: Int,
@@ -3718,6 +3983,15 @@ mkGroupMemberResponse id userId globalGroupId createdAt modifiedBy modifiedAt ac
   GroupMemberResponse{id, userId, globalGroupId, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapGroupMemberResponse :: GroupMemberResponse -> {
+  id :: Int,
+  userId :: Int,
+  globalGroupId :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapGroupMemberResponse (GroupMemberResponse r) = r
 
 instance groupMemberResponseEncodeJson :: EncodeJson GroupMemberResponse where
@@ -3768,10 +4042,10 @@ instance groupMemberResponseRespondable :: Respondable GroupMemberResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "global_group_id" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance groupMemberResponseIsForeign :: IsForeign GroupMemberResponse where
@@ -3780,14 +4054,14 @@ instance groupMemberResponseIsForeign :: IsForeign GroupMemberResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "global_group_id" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance groupMemberResponseShow :: Show GroupMemberResponse where
-    show (GroupMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "globalGroupId: " ++ show o.globalGroupId ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (GroupMemberResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "globalGroupId: " <> show o.globalGroupId <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype GroupMemberResponses = GroupMemberResponses {
   groupMemberResponses :: (Array GroupMemberResponse)
@@ -3799,7 +4073,7 @@ type GroupMemberResponsesR = {
 }
 
 
-_GroupMemberResponses :: LensP GroupMemberResponses {
+_GroupMemberResponses :: Lens' GroupMemberResponses {
   groupMemberResponses :: (Array GroupMemberResponse)
 }
 _GroupMemberResponses f (GroupMemberResponses o) = GroupMemberResponses <$> f o
@@ -3810,6 +4084,9 @@ mkGroupMemberResponses groupMemberResponses =
   GroupMemberResponses{groupMemberResponses}
 
 
+unwrapGroupMemberResponses :: GroupMemberResponses -> {
+  groupMemberResponses :: (Array GroupMemberResponse)
+}
 unwrapGroupMemberResponses (GroupMemberResponses r) = r
 
 instance groupMemberResponsesEncodeJson :: EncodeJson GroupMemberResponses where
@@ -3849,7 +4126,7 @@ instance groupMemberResponsesIsForeign :: IsForeign GroupMemberResponses where
 
 
 instance groupMemberResponsesShow :: Show GroupMemberResponses where
-    show (GroupMemberResponses o) = show "groupMemberResponses: " ++ show o.groupMemberResponses
+    show (GroupMemberResponses o) = show "groupMemberResponses: " <> show o.groupMemberResponses
 
 data GroupMemberStatResponse
   = GroupMemberStatResponse 
@@ -3868,10 +4145,11 @@ instance groupMemberStatResponseDecodeJson :: DecodeJson GroupMemberStatResponse
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "GroupMemberStatResponse" -> do
-          return GroupMemberStatResponse
+      "GroupMemberStatResponse" -> do
+        pure GroupMemberStatResponse
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for GroupMemberStatResponse"
+
 
 
 instance groupMemberStatResponseRequestable :: Requestable GroupMemberStatResponse where
@@ -3886,8 +4164,10 @@ instance groupMemberStatResponseRespondable :: Respondable GroupMemberStatRespon
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "GroupMemberStatResponse" -> do
-          return GroupMemberStatResponse
+      "GroupMemberStatResponse" -> do
+        pure GroupMemberStatResponse
+
+      _ -> Left $ TypeMismatch "GroupMemberStatResponse" "Respondable"
 
 
 
@@ -3895,8 +4175,10 @@ instance groupMemberStatResponseIsForeign :: IsForeign GroupMemberStatResponse w
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "GroupMemberStatResponse" -> do
-          return GroupMemberStatResponse
+      "GroupMemberStatResponse" -> do
+        pure GroupMemberStatResponse
+
+      _ -> Left $ TypeMismatch "GroupMemberStatResponse" "IsForeign"
 
 
 
@@ -3921,10 +4203,11 @@ instance groupMemberStatResponsesDecodeJson :: DecodeJson GroupMemberStatRespons
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "GroupMemberStatResponses" -> do
-          return GroupMemberStatResponses
+      "GroupMemberStatResponses" -> do
+        pure GroupMemberStatResponses
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for GroupMemberStatResponses"
+
 
 
 instance groupMemberStatResponsesRequestable :: Requestable GroupMemberStatResponses where
@@ -3939,8 +4222,10 @@ instance groupMemberStatResponsesRespondable :: Respondable GroupMemberStatRespo
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "GroupMemberStatResponses" -> do
-          return GroupMemberStatResponses
+      "GroupMemberStatResponses" -> do
+        pure GroupMemberStatResponses
+
+      _ -> Left $ TypeMismatch "GroupMemberStatResponses" "Respondable"
 
 
 
@@ -3948,8 +4233,10 @@ instance groupMemberStatResponsesIsForeign :: IsForeign GroupMemberStatResponses
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "GroupMemberStatResponses" -> do
-          return GroupMemberStatResponses
+      "GroupMemberStatResponses" -> do
+        pure GroupMemberStatResponses
+
+      _ -> Left $ TypeMismatch "GroupMemberStatResponses" "IsForeign"
 
 
 
@@ -3991,7 +4278,7 @@ type LeuronRequestR = {
 }
 
 
-_LeuronRequest :: LensP LeuronRequest {
+_LeuronRequest :: Lens' LeuronRequest {
   dataP :: LeuronData,
   title :: (Maybe String),
   description :: (Maybe String),
@@ -4014,6 +4301,21 @@ mkLeuronRequest dataP title description section page examples strengths categori
   LeuronRequest{dataP, title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style, guard}
 
 
+unwrapLeuronRequest :: LeuronRequest -> {
+  dataP :: LeuronData,
+  title :: (Maybe String),
+  description :: (Maybe String),
+  section :: (Maybe String),
+  page :: (Maybe String),
+  examples :: (Maybe (Array String)),
+  strengths :: (Maybe (Array String)),
+  categories :: (DepList String),
+  splits :: (Maybe (Array Splits)),
+  substitutions :: (Maybe (Array Substitutions)),
+  tags :: (Array String),
+  style :: (Maybe (Array String)),
+  guard :: Int
+}
 unwrapLeuronRequest (LeuronRequest r) = r
 
 instance leuronRequestEncodeJson :: EncodeJson LeuronRequest where
@@ -4080,17 +4382,17 @@ instance leuronRequestRespondable :: Respondable LeuronRequest where
   fromResponse json =
       mkLeuronRequest
       <$> readProp "data" json
-      <*> (runNullOrUndefined <$> readProp "title" json)
-      <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "section" json)
-      <*> (runNullOrUndefined <$> readProp "page" json)
-      <*> (runNullOrUndefined <$> readProp "examples" json)
-      <*> (runNullOrUndefined <$> readProp "strengths" json)
+      <*> (unNullOrUndefined <$> readProp "title" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "section" json)
+      <*> (unNullOrUndefined <$> readProp "page" json)
+      <*> (unNullOrUndefined <$> readProp "examples" json)
+      <*> (unNullOrUndefined <$> readProp "strengths" json)
       <*> readProp "categories" json
-      <*> (runNullOrUndefined <$> readProp "splits" json)
-      <*> (runNullOrUndefined <$> readProp "substitutions" json)
+      <*> (unNullOrUndefined <$> readProp "splits" json)
+      <*> (unNullOrUndefined <$> readProp "substitutions" json)
       <*> readProp "tags" json
-      <*> (runNullOrUndefined <$> readProp "style" json)
+      <*> (unNullOrUndefined <$> readProp "style" json)
       <*> readProp "guard" json
 
 
@@ -4098,22 +4400,22 @@ instance leuronRequestIsForeign :: IsForeign LeuronRequest where
   read json =
       mkLeuronRequest
       <$> readProp "data" json
-      <*> (runNullOrUndefined <$> readProp "title" json)
-      <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "section" json)
-      <*> (runNullOrUndefined <$> readProp "page" json)
-      <*> (runNullOrUndefined <$> readProp "examples" json)
-      <*> (runNullOrUndefined <$> readProp "strengths" json)
+      <*> (unNullOrUndefined <$> readProp "title" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "section" json)
+      <*> (unNullOrUndefined <$> readProp "page" json)
+      <*> (unNullOrUndefined <$> readProp "examples" json)
+      <*> (unNullOrUndefined <$> readProp "strengths" json)
       <*> readProp "categories" json
-      <*> (runNullOrUndefined <$> readProp "splits" json)
-      <*> (runNullOrUndefined <$> readProp "substitutions" json)
+      <*> (unNullOrUndefined <$> readProp "splits" json)
+      <*> (unNullOrUndefined <$> readProp "substitutions" json)
       <*> readProp "tags" json
-      <*> (runNullOrUndefined <$> readProp "style" json)
+      <*> (unNullOrUndefined <$> readProp "style" json)
       <*> readProp "guard" json
 
 
 instance leuronRequestShow :: Show LeuronRequest where
-    show (LeuronRequest o) = show "dataP: " ++ show o.dataP ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "section: " ++ show o.section ++ ", " ++ show "page: " ++ show o.page ++ ", " ++ show "examples: " ++ show o.examples ++ ", " ++ show "strengths: " ++ show o.strengths ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "splits: " ++ show o.splits ++ ", " ++ show "substitutions: " ++ show o.substitutions ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "style: " ++ show o.style ++ ", " ++ show "guard: " ++ show o.guard
+    show (LeuronRequest o) = show "dataP: " <> show o.dataP <> ", " <> show "title: " <> show o.title <> ", " <> show "description: " <> show o.description <> ", " <> show "section: " <> show o.section <> ", " <> show "page: " <> show o.page <> ", " <> show "examples: " <> show o.examples <> ", " <> show "strengths: " <> show o.strengths <> ", " <> show "categories: " <> show o.categories <> ", " <> show "splits: " <> show o.splits <> ", " <> show "substitutions: " <> show o.substitutions <> ", " <> show "tags: " <> show o.tags <> ", " <> show "style: " <> show o.style <> ", " <> show "guard: " <> show o.guard
 
 newtype LeuronResponse = LeuronResponse {
   id :: Int,
@@ -4163,7 +4465,7 @@ type LeuronResponseR = {
 }
 
 
-_LeuronResponse :: LensP LeuronResponse {
+_LeuronResponse :: Lens' LeuronResponse {
   id :: Int,
   userId :: Int,
   resourceId :: Int,
@@ -4193,6 +4495,28 @@ mkLeuronResponse id userId resourceId dataP title description section page examp
   LeuronResponse{id, userId, resourceId, dataP, title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style, active, guard, createdAt, modifiedAt, activityAt}
 
 
+unwrapLeuronResponse :: LeuronResponse -> {
+  id :: Int,
+  userId :: Int,
+  resourceId :: Int,
+  dataP :: LeuronData,
+  title :: (Maybe String),
+  description :: (Maybe String),
+  section :: (Maybe String),
+  page :: (Maybe String),
+  examples :: (Maybe (Array String)),
+  strengths :: (Maybe (Array String)),
+  categories :: (DepList String),
+  splits :: (Maybe (Array Splits)),
+  substitutions :: (Maybe (Array Substitutions)),
+  tags :: (Array String),
+  style :: (Maybe (Array String)),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapLeuronResponse (LeuronResponse r) = r
 
 instance leuronResponseEncodeJson :: EncodeJson LeuronResponse where
@@ -4283,22 +4607,22 @@ instance leuronResponseRespondable :: Respondable LeuronResponse where
       <*> readProp "user_id" json
       <*> readProp "resource_id" json
       <*> readProp "data" json
-      <*> (runNullOrUndefined <$> readProp "title" json)
-      <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "section" json)
-      <*> (runNullOrUndefined <$> readProp "page" json)
-      <*> (runNullOrUndefined <$> readProp "examples" json)
-      <*> (runNullOrUndefined <$> readProp "strengths" json)
+      <*> (unNullOrUndefined <$> readProp "title" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "section" json)
+      <*> (unNullOrUndefined <$> readProp "page" json)
+      <*> (unNullOrUndefined <$> readProp "examples" json)
+      <*> (unNullOrUndefined <$> readProp "strengths" json)
       <*> readProp "categories" json
-      <*> (runNullOrUndefined <$> readProp "splits" json)
-      <*> (runNullOrUndefined <$> readProp "substitutions" json)
+      <*> (unNullOrUndefined <$> readProp "splits" json)
+      <*> (unNullOrUndefined <$> readProp "substitutions" json)
       <*> readProp "tags" json
-      <*> (runNullOrUndefined <$> readProp "style" json)
+      <*> (unNullOrUndefined <$> readProp "style" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance leuronResponseIsForeign :: IsForeign LeuronResponse where
@@ -4308,26 +4632,26 @@ instance leuronResponseIsForeign :: IsForeign LeuronResponse where
       <*> readProp "user_id" json
       <*> readProp "resource_id" json
       <*> readProp "data" json
-      <*> (runNullOrUndefined <$> readProp "title" json)
-      <*> (runNullOrUndefined <$> readProp "description" json)
-      <*> (runNullOrUndefined <$> readProp "section" json)
-      <*> (runNullOrUndefined <$> readProp "page" json)
-      <*> (runNullOrUndefined <$> readProp "examples" json)
-      <*> (runNullOrUndefined <$> readProp "strengths" json)
+      <*> (unNullOrUndefined <$> readProp "title" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "section" json)
+      <*> (unNullOrUndefined <$> readProp "page" json)
+      <*> (unNullOrUndefined <$> readProp "examples" json)
+      <*> (unNullOrUndefined <$> readProp "strengths" json)
       <*> readProp "categories" json
-      <*> (runNullOrUndefined <$> readProp "splits" json)
-      <*> (runNullOrUndefined <$> readProp "substitutions" json)
+      <*> (unNullOrUndefined <$> readProp "splits" json)
+      <*> (unNullOrUndefined <$> readProp "substitutions" json)
       <*> readProp "tags" json
-      <*> (runNullOrUndefined <$> readProp "style" json)
+      <*> (unNullOrUndefined <$> readProp "style" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance leuronResponseShow :: Show LeuronResponse where
-    show (LeuronResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "resourceId: " ++ show o.resourceId ++ ", " ++ show "dataP: " ++ show o.dataP ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "section: " ++ show o.section ++ ", " ++ show "page: " ++ show o.page ++ ", " ++ show "examples: " ++ show o.examples ++ ", " ++ show "strengths: " ++ show o.strengths ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "splits: " ++ show o.splits ++ ", " ++ show "substitutions: " ++ show o.substitutions ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "style: " ++ show o.style ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (LeuronResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "resourceId: " <> show o.resourceId <> ", " <> show "dataP: " <> show o.dataP <> ", " <> show "title: " <> show o.title <> ", " <> show "description: " <> show o.description <> ", " <> show "section: " <> show o.section <> ", " <> show "page: " <> show o.page <> ", " <> show "examples: " <> show o.examples <> ", " <> show "strengths: " <> show o.strengths <> ", " <> show "categories: " <> show o.categories <> ", " <> show "splits: " <> show o.splits <> ", " <> show "substitutions: " <> show o.substitutions <> ", " <> show "tags: " <> show o.tags <> ", " <> show "style: " <> show o.style <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype LeuronResponses = LeuronResponses {
   leuronResponses :: (Array LeuronResponse)
@@ -4339,7 +4663,7 @@ type LeuronResponsesR = {
 }
 
 
-_LeuronResponses :: LensP LeuronResponses {
+_LeuronResponses :: Lens' LeuronResponses {
   leuronResponses :: (Array LeuronResponse)
 }
 _LeuronResponses f (LeuronResponses o) = LeuronResponses <$> f o
@@ -4350,6 +4674,9 @@ mkLeuronResponses leuronResponses =
   LeuronResponses{leuronResponses}
 
 
+unwrapLeuronResponses :: LeuronResponses -> {
+  leuronResponses :: (Array LeuronResponse)
+}
 unwrapLeuronResponses (LeuronResponses r) = r
 
 instance leuronResponsesEncodeJson :: EncodeJson LeuronResponses where
@@ -4389,7 +4716,7 @@ instance leuronResponsesIsForeign :: IsForeign LeuronResponses where
 
 
 instance leuronResponsesShow :: Show LeuronResponses where
-    show (LeuronResponses o) = show "leuronResponses: " ++ show o.leuronResponses
+    show (LeuronResponses o) = show "leuronResponses: " <> show o.leuronResponses
 
 newtype LeuronStatResponse = LeuronStatResponse {
   leuronId :: Int,
@@ -4411,7 +4738,7 @@ type LeuronStatResponseR = {
 }
 
 
-_LeuronStatResponse :: LensP LeuronStatResponse {
+_LeuronStatResponse :: Lens' LeuronStatResponse {
   leuronId :: Int,
   likes :: Int,
   neutral :: Int,
@@ -4427,6 +4754,14 @@ mkLeuronStatResponse leuronId likes neutral dislikes stars views =
   LeuronStatResponse{leuronId, likes, neutral, dislikes, stars, views}
 
 
+unwrapLeuronStatResponse :: LeuronStatResponse -> {
+  leuronId :: Int,
+  likes :: Int,
+  neutral :: Int,
+  dislikes :: Int,
+  stars :: Int,
+  views :: Int
+}
 unwrapLeuronStatResponse (LeuronStatResponse r) = r
 
 instance leuronStatResponseEncodeJson :: EncodeJson LeuronStatResponse where
@@ -4491,7 +4826,7 @@ instance leuronStatResponseIsForeign :: IsForeign LeuronStatResponse where
 
 
 instance leuronStatResponseShow :: Show LeuronStatResponse where
-    show (LeuronStatResponse o) = show "leuronId: " ++ show o.leuronId ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "stars: " ++ show o.stars ++ ", " ++ show "views: " ++ show o.views
+    show (LeuronStatResponse o) = show "leuronId: " <> show o.leuronId <> ", " <> show "likes: " <> show o.likes <> ", " <> show "neutral: " <> show o.neutral <> ", " <> show "dislikes: " <> show o.dislikes <> ", " <> show "stars: " <> show o.stars <> ", " <> show "views: " <> show o.views
 
 newtype LeuronStatResponses = LeuronStatResponses {
   leuronStatResponses :: (Array LeuronStatResponse)
@@ -4503,7 +4838,7 @@ type LeuronStatResponsesR = {
 }
 
 
-_LeuronStatResponses :: LensP LeuronStatResponses {
+_LeuronStatResponses :: Lens' LeuronStatResponses {
   leuronStatResponses :: (Array LeuronStatResponse)
 }
 _LeuronStatResponses f (LeuronStatResponses o) = LeuronStatResponses <$> f o
@@ -4514,6 +4849,9 @@ mkLeuronStatResponses leuronStatResponses =
   LeuronStatResponses{leuronStatResponses}
 
 
+unwrapLeuronStatResponses :: LeuronStatResponses -> {
+  leuronStatResponses :: (Array LeuronStatResponse)
+}
 unwrapLeuronStatResponses (LeuronStatResponses r) = r
 
 instance leuronStatResponsesEncodeJson :: EncodeJson LeuronStatResponses where
@@ -4553,7 +4891,7 @@ instance leuronStatResponsesIsForeign :: IsForeign LeuronStatResponses where
 
 
 instance leuronStatResponsesShow :: Show LeuronStatResponses where
-    show (LeuronStatResponses o) = show "leuronStatResponses: " ++ show o.leuronStatResponses
+    show (LeuronStatResponses o) = show "leuronStatResponses: " <> show o.leuronStatResponses
 
 data LeuronTrainingSummary
   = LTS_View 
@@ -4602,28 +4940,29 @@ instance leuronTrainingSummaryDecodeJson :: DecodeJson LeuronTrainingSummary whe
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "LTS_View" -> do
-          return LTS_View
+      "LTS_View" -> do
+        pure LTS_View
 
-        "LTS_Skip" -> do
-          return LTS_Skip
+      "LTS_Skip" -> do
+        pure LTS_Skip
 
-        "LTS_Know" -> do
-          return LTS_Know
+      "LTS_Know" -> do
+        pure LTS_Know
 
-        "LTS_DontKnow" -> do
-          return LTS_DontKnow
+      "LTS_DontKnow" -> do
+        pure LTS_DontKnow
 
-        "LTS_DontUnderstand" -> do
-          return LTS_DontUnderstand
+      "LTS_DontUnderstand" -> do
+        pure LTS_DontUnderstand
 
-        "LTS_DontCare" -> do
-          return LTS_DontCare
+      "LTS_DontCare" -> do
+        pure LTS_DontCare
 
-        "LTS_Protest" -> do
-          return LTS_Protest
+      "LTS_Protest" -> do
+        pure LTS_Protest
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for LeuronTrainingSummary"
+
 
 
 instance leuronTrainingSummaryRequestable :: Requestable LeuronTrainingSummary where
@@ -4638,26 +4977,28 @@ instance leuronTrainingSummaryRespondable :: Respondable LeuronTrainingSummary w
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "LTS_View" -> do
-          return LTS_View
+      "LTS_View" -> do
+        pure LTS_View
 
-        "LTS_Skip" -> do
-          return LTS_Skip
+      "LTS_Skip" -> do
+        pure LTS_Skip
 
-        "LTS_Know" -> do
-          return LTS_Know
+      "LTS_Know" -> do
+        pure LTS_Know
 
-        "LTS_DontKnow" -> do
-          return LTS_DontKnow
+      "LTS_DontKnow" -> do
+        pure LTS_DontKnow
 
-        "LTS_DontUnderstand" -> do
-          return LTS_DontUnderstand
+      "LTS_DontUnderstand" -> do
+        pure LTS_DontUnderstand
 
-        "LTS_DontCare" -> do
-          return LTS_DontCare
+      "LTS_DontCare" -> do
+        pure LTS_DontCare
 
-        "LTS_Protest" -> do
-          return LTS_Protest
+      "LTS_Protest" -> do
+        pure LTS_Protest
+
+      _ -> Left $ TypeMismatch "LeuronTrainingSummary" "Respondable"
 
 
 
@@ -4665,26 +5006,28 @@ instance leuronTrainingSummaryIsForeign :: IsForeign LeuronTrainingSummary where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "LTS_View" -> do
-          return LTS_View
+      "LTS_View" -> do
+        pure LTS_View
 
-        "LTS_Skip" -> do
-          return LTS_Skip
+      "LTS_Skip" -> do
+        pure LTS_Skip
 
-        "LTS_Know" -> do
-          return LTS_Know
+      "LTS_Know" -> do
+        pure LTS_Know
 
-        "LTS_DontKnow" -> do
-          return LTS_DontKnow
+      "LTS_DontKnow" -> do
+        pure LTS_DontKnow
 
-        "LTS_DontUnderstand" -> do
-          return LTS_DontUnderstand
+      "LTS_DontUnderstand" -> do
+        pure LTS_DontUnderstand
 
-        "LTS_DontCare" -> do
-          return LTS_DontCare
+      "LTS_DontCare" -> do
+        pure LTS_DontCare
 
-        "LTS_Protest" -> do
-          return LTS_Protest
+      "LTS_Protest" -> do
+        pure LTS_Protest
+
+      _ -> Left $ TypeMismatch "LeuronTrainingSummary" "IsForeign"
 
 
 
@@ -4710,7 +5053,7 @@ type LeuronTrainingRequestR = {
 }
 
 
-_LeuronTrainingRequest :: LensP LeuronTrainingRequest {
+_LeuronTrainingRequest :: Lens' LeuronTrainingRequest {
   summary :: LeuronTrainingSummary,
   guard :: Int
 }
@@ -4722,6 +5065,10 @@ mkLeuronTrainingRequest summary guard =
   LeuronTrainingRequest{summary, guard}
 
 
+unwrapLeuronTrainingRequest :: LeuronTrainingRequest -> {
+  summary :: LeuronTrainingSummary,
+  guard :: Int
+}
 unwrapLeuronTrainingRequest (LeuronTrainingRequest r) = r
 
 instance leuronTrainingRequestEncodeJson :: EncodeJson LeuronTrainingRequest where
@@ -4766,7 +5113,7 @@ instance leuronTrainingRequestIsForeign :: IsForeign LeuronTrainingRequest where
 
 
 instance leuronTrainingRequestShow :: Show LeuronTrainingRequest where
-    show (LeuronTrainingRequest o) = show "summary: " ++ show o.summary ++ ", " ++ show "guard: " ++ show o.guard
+    show (LeuronTrainingRequest o) = show "summary: " <> show o.summary <> ", " <> show "guard: " <> show o.guard
 
 newtype LeuronTrainingResponse = LeuronTrainingResponse {
   id :: Int,
@@ -4790,7 +5137,7 @@ type LeuronTrainingResponseR = {
 }
 
 
-_LeuronTrainingResponse :: LensP LeuronTrainingResponse {
+_LeuronTrainingResponse :: Lens' LeuronTrainingResponse {
   id :: Int,
   userId :: Int,
   leuronId :: Int,
@@ -4807,6 +5154,15 @@ mkLeuronTrainingResponse id userId leuronId summary guard createdAt modifiedAt =
   LeuronTrainingResponse{id, userId, leuronId, summary, guard, createdAt, modifiedAt}
 
 
+unwrapLeuronTrainingResponse :: LeuronTrainingResponse -> {
+  id :: Int,
+  userId :: Int,
+  leuronId :: Int,
+  summary :: LeuronTrainingSummary,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
 unwrapLeuronTrainingResponse (LeuronTrainingResponse r) = r
 
 instance leuronTrainingResponseEncodeJson :: EncodeJson LeuronTrainingResponse where
@@ -4859,8 +5215,8 @@ instance leuronTrainingResponseRespondable :: Respondable LeuronTrainingResponse
       <*> readProp "leuron_id" json
       <*> readProp "summary" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance leuronTrainingResponseIsForeign :: IsForeign LeuronTrainingResponse where
@@ -4871,12 +5227,12 @@ instance leuronTrainingResponseIsForeign :: IsForeign LeuronTrainingResponse whe
       <*> readProp "leuron_id" json
       <*> readProp "summary" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance leuronTrainingResponseShow :: Show LeuronTrainingResponse where
-    show (LeuronTrainingResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "summary: " ++ show o.summary ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (LeuronTrainingResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "leuronId: " <> show o.leuronId <> ", " <> show "summary: " <> show o.summary <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
 
 newtype LeuronTrainingResponses = LeuronTrainingResponses {
   leuronTrainingResponses :: (Array LeuronTrainingResponse)
@@ -4888,7 +5244,7 @@ type LeuronTrainingResponsesR = {
 }
 
 
-_LeuronTrainingResponses :: LensP LeuronTrainingResponses {
+_LeuronTrainingResponses :: Lens' LeuronTrainingResponses {
   leuronTrainingResponses :: (Array LeuronTrainingResponse)
 }
 _LeuronTrainingResponses f (LeuronTrainingResponses o) = LeuronTrainingResponses <$> f o
@@ -4899,6 +5255,9 @@ mkLeuronTrainingResponses leuronTrainingResponses =
   LeuronTrainingResponses{leuronTrainingResponses}
 
 
+unwrapLeuronTrainingResponses :: LeuronTrainingResponses -> {
+  leuronTrainingResponses :: (Array LeuronTrainingResponse)
+}
 unwrapLeuronTrainingResponses (LeuronTrainingResponses r) = r
 
 instance leuronTrainingResponsesEncodeJson :: EncodeJson LeuronTrainingResponses where
@@ -4938,7 +5297,7 @@ instance leuronTrainingResponsesIsForeign :: IsForeign LeuronTrainingResponses w
 
 
 instance leuronTrainingResponsesShow :: Show LeuronTrainingResponses where
-    show (LeuronTrainingResponses o) = show "leuronTrainingResponses: " ++ show o.leuronTrainingResponses
+    show (LeuronTrainingResponses o) = show "leuronTrainingResponses: " <> show o.leuronTrainingResponses
 
 newtype LeuronTrainingStatResponse = LeuronTrainingStatResponse {
   leuronTrainingId :: Int
@@ -4950,7 +5309,7 @@ type LeuronTrainingStatResponseR = {
 }
 
 
-_LeuronTrainingStatResponse :: LensP LeuronTrainingStatResponse {
+_LeuronTrainingStatResponse :: Lens' LeuronTrainingStatResponse {
   leuronTrainingId :: Int
 }
 _LeuronTrainingStatResponse f (LeuronTrainingStatResponse o) = LeuronTrainingStatResponse <$> f o
@@ -4961,6 +5320,9 @@ mkLeuronTrainingStatResponse leuronTrainingId =
   LeuronTrainingStatResponse{leuronTrainingId}
 
 
+unwrapLeuronTrainingStatResponse :: LeuronTrainingStatResponse -> {
+  leuronTrainingId :: Int
+}
 unwrapLeuronTrainingStatResponse (LeuronTrainingStatResponse r) = r
 
 instance leuronTrainingStatResponseEncodeJson :: EncodeJson LeuronTrainingStatResponse where
@@ -5000,7 +5362,7 @@ instance leuronTrainingStatResponseIsForeign :: IsForeign LeuronTrainingStatResp
 
 
 instance leuronTrainingStatResponseShow :: Show LeuronTrainingStatResponse where
-    show (LeuronTrainingStatResponse o) = show "leuronTrainingId: " ++ show o.leuronTrainingId
+    show (LeuronTrainingStatResponse o) = show "leuronTrainingId: " <> show o.leuronTrainingId
 
 newtype LeuronTrainingStatResponses = LeuronTrainingStatResponses {
   leuronTrainingStatResponses :: (Array LeuronTrainingStatResponse)
@@ -5012,7 +5374,7 @@ type LeuronTrainingStatResponsesR = {
 }
 
 
-_LeuronTrainingStatResponses :: LensP LeuronTrainingStatResponses {
+_LeuronTrainingStatResponses :: Lens' LeuronTrainingStatResponses {
   leuronTrainingStatResponses :: (Array LeuronTrainingStatResponse)
 }
 _LeuronTrainingStatResponses f (LeuronTrainingStatResponses o) = LeuronTrainingStatResponses <$> f o
@@ -5023,6 +5385,9 @@ mkLeuronTrainingStatResponses leuronTrainingStatResponses =
   LeuronTrainingStatResponses{leuronTrainingStatResponses}
 
 
+unwrapLeuronTrainingStatResponses :: LeuronTrainingStatResponses -> {
+  leuronTrainingStatResponses :: (Array LeuronTrainingStatResponse)
+}
 unwrapLeuronTrainingStatResponses (LeuronTrainingStatResponses r) = r
 
 instance leuronTrainingStatResponsesEncodeJson :: EncodeJson LeuronTrainingStatResponses where
@@ -5062,7 +5427,7 @@ instance leuronTrainingStatResponsesIsForeign :: IsForeign LeuronTrainingStatRes
 
 
 instance leuronTrainingStatResponsesShow :: Show LeuronTrainingStatResponses where
-    show (LeuronTrainingStatResponses o) = show "leuronTrainingStatResponses: " ++ show o.leuronTrainingStatResponses
+    show (LeuronTrainingStatResponses o) = show "leuronTrainingStatResponses: " <> show o.leuronTrainingStatResponses
 
 data LikeOpt
   = Like 
@@ -5091,16 +5456,17 @@ instance likeOptDecodeJson :: DecodeJson LikeOpt where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "Like" -> do
-          return Like
+      "Like" -> do
+        pure Like
 
-        "Neutral" -> do
-          return Neutral
+      "Neutral" -> do
+        pure Neutral
 
-        "Dislike" -> do
-          return Dislike
+      "Dislike" -> do
+        pure Dislike
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for LikeOpt"
+
 
 
 instance likeOptRequestable :: Requestable LikeOpt where
@@ -5115,14 +5481,16 @@ instance likeOptRespondable :: Respondable LikeOpt where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "Like" -> do
-          return Like
+      "Like" -> do
+        pure Like
 
-        "Neutral" -> do
-          return Neutral
+      "Neutral" -> do
+        pure Neutral
 
-        "Dislike" -> do
-          return Dislike
+      "Dislike" -> do
+        pure Dislike
+
+      _ -> Left $ TypeMismatch "LikeOpt" "Respondable"
 
 
 
@@ -5130,14 +5498,16 @@ instance likeOptIsForeign :: IsForeign LikeOpt where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "Like" -> do
-          return Like
+      "Like" -> do
+        pure Like
 
-        "Neutral" -> do
-          return Neutral
+      "Neutral" -> do
+        pure Neutral
 
-        "Dislike" -> do
-          return Dislike
+      "Dislike" -> do
+        pure Dislike
+
+      _ -> Left $ TypeMismatch "LikeOpt" "IsForeign"
 
 
 
@@ -5161,7 +5531,7 @@ type LikeRequestR = {
 }
 
 
-_LikeRequest :: LensP LikeRequest {
+_LikeRequest :: Lens' LikeRequest {
   opt :: LikeOpt,
   reason :: (Maybe String),
   guard :: Int
@@ -5174,6 +5544,11 @@ mkLikeRequest opt reason guard =
   LikeRequest{opt, reason, guard}
 
 
+unwrapLikeRequest :: LikeRequest -> {
+  opt :: LikeOpt,
+  reason :: (Maybe String),
+  guard :: Int
+}
 unwrapLikeRequest (LikeRequest r) = r
 
 instance likeRequestEncodeJson :: EncodeJson LikeRequest where
@@ -5210,7 +5585,7 @@ instance likeRequestRespondable :: Respondable LikeRequest where
   fromResponse json =
       mkLikeRequest
       <$> readProp "opt" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "guard" json
 
 
@@ -5218,12 +5593,12 @@ instance likeRequestIsForeign :: IsForeign LikeRequest where
   read json =
       mkLikeRequest
       <$> readProp "opt" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "guard" json
 
 
 instance likeRequestShow :: Show LikeRequest where
-    show (LikeRequest o) = show "opt: " ++ show o.opt ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "guard: " ++ show o.guard
+    show (LikeRequest o) = show "opt: " <> show o.opt <> ", " <> show "reason: " <> show o.reason <> ", " <> show "guard: " <> show o.guard
 
 newtype LikeResponse = LikeResponse {
   id :: Int,
@@ -5255,7 +5630,7 @@ type LikeResponseR = {
 }
 
 
-_LikeResponse :: LensP LikeResponse {
+_LikeResponse :: Lens' LikeResponse {
   id :: Int,
   ent :: Ent,
   entId :: Int,
@@ -5276,6 +5651,19 @@ mkLikeResponse id ent entId userId opt score reason active guard createdAt modif
   LikeResponse{id, ent, entId, userId, opt, score, reason, active, guard, createdAt, modifiedAt}
 
 
+unwrapLikeResponse :: LikeResponse -> {
+  id :: Int,
+  ent :: Ent,
+  entId :: Int,
+  userId :: Int,
+  opt :: LikeOpt,
+  score :: Int,
+  reason :: (Maybe String),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
 unwrapLikeResponse (LikeResponse r) = r
 
 instance likeResponseEncodeJson :: EncodeJson LikeResponse where
@@ -5341,11 +5729,11 @@ instance likeResponseRespondable :: Respondable LikeResponse where
       <*> readProp "user_id" json
       <*> readProp "opt" json
       <*> readProp "score" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance likeResponseIsForeign :: IsForeign LikeResponse where
@@ -5357,15 +5745,15 @@ instance likeResponseIsForeign :: IsForeign LikeResponse where
       <*> readProp "user_id" json
       <*> readProp "opt" json
       <*> readProp "score" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance likeResponseShow :: Show LikeResponse where
-    show (LikeResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "opt: " ++ show o.opt ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (LikeResponse o) = show "id: " <> show o.id <> ", " <> show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "userId: " <> show o.userId <> ", " <> show "opt: " <> show o.opt <> ", " <> show "score: " <> show o.score <> ", " <> show "reason: " <> show o.reason <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
 
 newtype LikeResponses = LikeResponses {
   likeResponses :: (Array LikeResponse)
@@ -5377,7 +5765,7 @@ type LikeResponsesR = {
 }
 
 
-_LikeResponses :: LensP LikeResponses {
+_LikeResponses :: Lens' LikeResponses {
   likeResponses :: (Array LikeResponse)
 }
 _LikeResponses f (LikeResponses o) = LikeResponses <$> f o
@@ -5388,6 +5776,9 @@ mkLikeResponses likeResponses =
   LikeResponses{likeResponses}
 
 
+unwrapLikeResponses :: LikeResponses -> {
+  likeResponses :: (Array LikeResponse)
+}
 unwrapLikeResponses (LikeResponses r) = r
 
 instance likeResponsesEncodeJson :: EncodeJson LikeResponses where
@@ -5427,7 +5818,7 @@ instance likeResponsesIsForeign :: IsForeign LikeResponses where
 
 
 instance likeResponsesShow :: Show LikeResponses where
-    show (LikeResponses o) = show "likeResponses: " ++ show o.likeResponses
+    show (LikeResponses o) = show "likeResponses: " <> show o.likeResponses
 
 newtype LikeStatResponse = LikeStatResponse {
   ent :: Ent,
@@ -5449,7 +5840,7 @@ type LikeStatResponseR = {
 }
 
 
-_LikeStatResponse :: LensP LikeStatResponse {
+_LikeStatResponse :: Lens' LikeStatResponse {
   ent :: Ent,
   entId :: Int,
   score :: Int,
@@ -5465,6 +5856,14 @@ mkLikeStatResponse ent entId score like neutral dislike =
   LikeStatResponse{ent, entId, score, like, neutral, dislike}
 
 
+unwrapLikeStatResponse :: LikeStatResponse -> {
+  ent :: Ent,
+  entId :: Int,
+  score :: Int,
+  like :: Int,
+  neutral :: Int,
+  dislike :: Int
+}
 unwrapLikeStatResponse (LikeStatResponse r) = r
 
 instance likeStatResponseEncodeJson :: EncodeJson LikeStatResponse where
@@ -5529,7 +5928,7 @@ instance likeStatResponseIsForeign :: IsForeign LikeStatResponse where
 
 
 instance likeStatResponseShow :: Show LikeStatResponse where
-    show (LikeStatResponse o) = show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "score: " ++ show o.score ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislike: " ++ show o.dislike
+    show (LikeStatResponse o) = show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "score: " <> show o.score <> ", " <> show "like: " <> show o.like <> ", " <> show "neutral: " <> show o.neutral <> ", " <> show "dislike: " <> show o.dislike
 
 newtype LikeStatResponses = LikeStatResponses {
   likeStatResponses :: (Array LikeStatResponse)
@@ -5541,7 +5940,7 @@ type LikeStatResponsesR = {
 }
 
 
-_LikeStatResponses :: LensP LikeStatResponses {
+_LikeStatResponses :: Lens' LikeStatResponses {
   likeStatResponses :: (Array LikeStatResponse)
 }
 _LikeStatResponses f (LikeStatResponses o) = LikeStatResponses <$> f o
@@ -5552,6 +5951,9 @@ mkLikeStatResponses likeStatResponses =
   LikeStatResponses{likeStatResponses}
 
 
+unwrapLikeStatResponses :: LikeStatResponses -> {
+  likeStatResponses :: (Array LikeStatResponse)
+}
 unwrapLikeStatResponses (LikeStatResponses r) = r
 
 instance likeStatResponsesEncodeJson :: EncodeJson LikeStatResponses where
@@ -5591,7 +5993,7 @@ instance likeStatResponsesIsForeign :: IsForeign LikeStatResponses where
 
 
 instance likeStatResponsesShow :: Show LikeStatResponses where
-    show (LikeStatResponses o) = show "likeStatResponses: " ++ show o.likeStatResponses
+    show (LikeStatResponses o) = show "likeStatResponses: " <> show o.likeStatResponses
 
 data LeuronData
   = LnFact Fact
@@ -5616,59 +6018,59 @@ data LeuronData
 instance leuronDataEncodeJson :: EncodeJson LeuronData where
   encodeJson (LnFact x0) =
        "tag" := "LnFact"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnFactList x0) =
        "tag" := "LnFactList"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnCard x0) =
        "tag" := "LnCard"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnDCard x0) =
        "tag" := "LnDCard"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnDCardX x0) =
        "tag" := "LnDCardX"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnAcronym x0) =
        "tag" := "LnAcronym"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnSynonym x0) =
        "tag" := "LnSynonym"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnAntonym x0) =
        "tag" := "LnAntonym"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnTemplate x0) =
        "tag" := "LnTemplate"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnImageAssociation x0) =
        "tag" := "LnImageAssociation"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnLinearDemo x0) =
        "tag" := "LnLinearDemo"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnTable x0) =
        "tag" := "LnTable"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnScript x0) =
        "tag" := "LnScript"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnQA x0) =
        "tag" := "LnQA"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (LnExamples ) =
        "tag" := "LnExamples"
@@ -5685,69 +6087,112 @@ instance leuronDataDecodeJson :: DecodeJson LeuronData where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "LnFact" -> do
-          x0 <- obj .? "contents"
-          LnFact <$> decodeJson x0
+      "LnFact" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnFact <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnFact"
 
-        "LnFactList" -> do
-          x0 <- obj .? "contents"
-          LnFactList <$> decodeJson x0
 
-        "LnCard" -> do
-          x0 <- obj .? "contents"
-          LnCard <$> decodeJson x0
+      "LnFactList" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnFactList <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnFactList"
 
-        "LnDCard" -> do
-          x0 <- obj .? "contents"
-          LnDCard <$> decodeJson x0
 
-        "LnDCardX" -> do
-          x0 <- obj .? "contents"
-          LnDCardX <$> decodeJson x0
+      "LnCard" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnCard <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnCard"
 
-        "LnAcronym" -> do
-          x0 <- obj .? "contents"
-          LnAcronym <$> decodeJson x0
 
-        "LnSynonym" -> do
-          x0 <- obj .? "contents"
-          LnSynonym <$> decodeJson x0
+      "LnDCard" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnDCard <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnDCard"
 
-        "LnAntonym" -> do
-          x0 <- obj .? "contents"
-          LnAntonym <$> decodeJson x0
 
-        "LnTemplate" -> do
-          x0 <- obj .? "contents"
-          LnTemplate <$> decodeJson x0
+      "LnDCardX" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnDCardX <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnDCardX"
 
-        "LnImageAssociation" -> do
-          x0 <- obj .? "contents"
-          LnImageAssociation <$> decodeJson x0
 
-        "LnLinearDemo" -> do
-          x0 <- obj .? "contents"
-          LnLinearDemo <$> decodeJson x0
+      "LnAcronym" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnAcronym <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnAcronym"
 
-        "LnTable" -> do
-          x0 <- obj .? "contents"
-          LnTable <$> decodeJson x0
 
-        "LnScript" -> do
-          x0 <- obj .? "contents"
-          LnScript <$> decodeJson x0
+      "LnSynonym" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnSynonym <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnSynonym"
 
-        "LnQA" -> do
-          x0 <- obj .? "contents"
-          LnQA <$> decodeJson x0
 
-        "LnExamples" -> do
-          return LnExamples
+      "LnAntonym" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnAntonym <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnAntonym"
 
-        "LnEmpty" -> do
-          return LnEmpty
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      "LnTemplate" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnTemplate <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnTemplate"
+
+
+      "LnImageAssociation" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnImageAssociation <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnImageAssociation"
+
+
+      "LnLinearDemo" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnLinearDemo <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnLinearDemo"
+
+
+      "LnTable" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnTable <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnTable"
+
+
+      "LnScript" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnScript <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnScript"
+
+
+      "LnQA" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> LnQA <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for LnQA"
+
+
+      "LnExamples" -> do
+        pure LnExamples
+
+      "LnEmpty" -> do
+        pure LnEmpty
+
+      _ -> Left $ "DecodeJson TypeMismatch for LeuronData"
+
 
 
 instance leuronDataRequestable :: Requestable LeuronData where
@@ -5762,67 +6207,111 @@ instance leuronDataRespondable :: Respondable LeuronData where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "LnFact" -> do
-          x0 <- readProp "contents" json
-          LnFact <$> read x0
+      "LnFact" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnFact <$> read x0
+          _ -> Left $ TypeMismatch "LnFact" "Respondable"
 
-        "LnFactList" -> do
-          x0 <- readProp "contents" json
-          LnFactList <$> read x0
 
-        "LnCard" -> do
-          x0 <- readProp "contents" json
-          LnCard <$> read x0
+      "LnFactList" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnFactList <$> read x0
+          _ -> Left $ TypeMismatch "LnFactList" "Respondable"
 
-        "LnDCard" -> do
-          x0 <- readProp "contents" json
-          LnDCard <$> read x0
 
-        "LnDCardX" -> do
-          x0 <- readProp "contents" json
-          LnDCardX <$> read x0
+      "LnCard" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnCard <$> read x0
+          _ -> Left $ TypeMismatch "LnCard" "Respondable"
 
-        "LnAcronym" -> do
-          x0 <- readProp "contents" json
-          LnAcronym <$> read x0
 
-        "LnSynonym" -> do
-          x0 <- readProp "contents" json
-          LnSynonym <$> read x0
+      "LnDCard" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnDCard <$> read x0
+          _ -> Left $ TypeMismatch "LnDCard" "Respondable"
 
-        "LnAntonym" -> do
-          x0 <- readProp "contents" json
-          LnAntonym <$> read x0
 
-        "LnTemplate" -> do
-          x0 <- readProp "contents" json
-          LnTemplate <$> read x0
+      "LnDCardX" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnDCardX <$> read x0
+          _ -> Left $ TypeMismatch "LnDCardX" "Respondable"
 
-        "LnImageAssociation" -> do
-          x0 <- readProp "contents" json
-          LnImageAssociation <$> read x0
 
-        "LnLinearDemo" -> do
-          x0 <- readProp "contents" json
-          LnLinearDemo <$> read x0
+      "LnAcronym" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnAcronym <$> read x0
+          _ -> Left $ TypeMismatch "LnAcronym" "Respondable"
 
-        "LnTable" -> do
-          x0 <- readProp "contents" json
-          LnTable <$> read x0
 
-        "LnScript" -> do
-          x0 <- readProp "contents" json
-          LnScript <$> read x0
+      "LnSynonym" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnSynonym <$> read x0
+          _ -> Left $ TypeMismatch "LnSynonym" "Respondable"
 
-        "LnQA" -> do
-          x0 <- readProp "contents" json
-          LnQA <$> read x0
 
-        "LnExamples" -> do
-          return LnExamples
+      "LnAntonym" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnAntonym <$> read x0
+          _ -> Left $ TypeMismatch "LnAntonym" "Respondable"
 
-        "LnEmpty" -> do
-          return LnEmpty
+
+      "LnTemplate" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnTemplate <$> read x0
+          _ -> Left $ TypeMismatch "LnTemplate" "Respondable"
+
+
+      "LnImageAssociation" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnImageAssociation <$> read x0
+          _ -> Left $ TypeMismatch "LnImageAssociation" "Respondable"
+
+
+      "LnLinearDemo" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnLinearDemo <$> read x0
+          _ -> Left $ TypeMismatch "LnLinearDemo" "Respondable"
+
+
+      "LnTable" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnTable <$> read x0
+          _ -> Left $ TypeMismatch "LnTable" "Respondable"
+
+
+      "LnScript" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnScript <$> read x0
+          _ -> Left $ TypeMismatch "LnScript" "Respondable"
+
+
+      "LnQA" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnQA <$> read x0
+          _ -> Left $ TypeMismatch "LnQA" "Respondable"
+
+
+      "LnExamples" -> do
+        pure LnExamples
+
+      "LnEmpty" -> do
+        pure LnEmpty
+
+      _ -> Left $ TypeMismatch "LeuronData" "Respondable"
 
 
 
@@ -5830,85 +6319,129 @@ instance leuronDataIsForeign :: IsForeign LeuronData where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "LnFact" -> do
-          x0 <- readProp "contents" json
-          LnFact <$> read x0
+      "LnFact" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnFact <$> read x0
+          _ -> Left $ TypeMismatch "LnFact" "IsForeign"
 
-        "LnFactList" -> do
-          x0 <- readProp "contents" json
-          LnFactList <$> read x0
 
-        "LnCard" -> do
-          x0 <- readProp "contents" json
-          LnCard <$> read x0
+      "LnFactList" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnFactList <$> read x0
+          _ -> Left $ TypeMismatch "LnFactList" "IsForeign"
 
-        "LnDCard" -> do
-          x0 <- readProp "contents" json
-          LnDCard <$> read x0
 
-        "LnDCardX" -> do
-          x0 <- readProp "contents" json
-          LnDCardX <$> read x0
+      "LnCard" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnCard <$> read x0
+          _ -> Left $ TypeMismatch "LnCard" "IsForeign"
 
-        "LnAcronym" -> do
-          x0 <- readProp "contents" json
-          LnAcronym <$> read x0
 
-        "LnSynonym" -> do
-          x0 <- readProp "contents" json
-          LnSynonym <$> read x0
+      "LnDCard" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnDCard <$> read x0
+          _ -> Left $ TypeMismatch "LnDCard" "IsForeign"
 
-        "LnAntonym" -> do
-          x0 <- readProp "contents" json
-          LnAntonym <$> read x0
 
-        "LnTemplate" -> do
-          x0 <- readProp "contents" json
-          LnTemplate <$> read x0
+      "LnDCardX" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnDCardX <$> read x0
+          _ -> Left $ TypeMismatch "LnDCardX" "IsForeign"
 
-        "LnImageAssociation" -> do
-          x0 <- readProp "contents" json
-          LnImageAssociation <$> read x0
 
-        "LnLinearDemo" -> do
-          x0 <- readProp "contents" json
-          LnLinearDemo <$> read x0
+      "LnAcronym" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnAcronym <$> read x0
+          _ -> Left $ TypeMismatch "LnAcronym" "IsForeign"
 
-        "LnTable" -> do
-          x0 <- readProp "contents" json
-          LnTable <$> read x0
 
-        "LnScript" -> do
-          x0 <- readProp "contents" json
-          LnScript <$> read x0
+      "LnSynonym" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnSynonym <$> read x0
+          _ -> Left $ TypeMismatch "LnSynonym" "IsForeign"
 
-        "LnQA" -> do
-          x0 <- readProp "contents" json
-          LnQA <$> read x0
 
-        "LnExamples" -> do
-          return LnExamples
+      "LnAntonym" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnAntonym <$> read x0
+          _ -> Left $ TypeMismatch "LnAntonym" "IsForeign"
 
-        "LnEmpty" -> do
-          return LnEmpty
+
+      "LnTemplate" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnTemplate <$> read x0
+          _ -> Left $ TypeMismatch "LnTemplate" "IsForeign"
+
+
+      "LnImageAssociation" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnImageAssociation <$> read x0
+          _ -> Left $ TypeMismatch "LnImageAssociation" "IsForeign"
+
+
+      "LnLinearDemo" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnLinearDemo <$> read x0
+          _ -> Left $ TypeMismatch "LnLinearDemo" "IsForeign"
+
+
+      "LnTable" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnTable <$> read x0
+          _ -> Left $ TypeMismatch "LnTable" "IsForeign"
+
+
+      "LnScript" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnScript <$> read x0
+          _ -> Left $ TypeMismatch "LnScript" "IsForeign"
+
+
+      "LnQA" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> LnQA <$> read x0
+          _ -> Left $ TypeMismatch "LnQA" "IsForeign"
+
+
+      "LnExamples" -> do
+        pure LnExamples
+
+      "LnEmpty" -> do
+        pure LnEmpty
+
+      _ -> Left $ TypeMismatch "LeuronData" "IsForeign"
 
 
 
 instance leuronDataShow :: Show LeuronData where
-  show (LnFact x0) = "LnFact: " ++ show x0
-  show (LnFactList x0) = "LnFactList: " ++ show x0
-  show (LnCard x0) = "LnCard: " ++ show x0
-  show (LnDCard x0) = "LnDCard: " ++ show x0
-  show (LnDCardX x0) = "LnDCardX: " ++ show x0
-  show (LnAcronym x0) = "LnAcronym: " ++ show x0
-  show (LnSynonym x0) = "LnSynonym: " ++ show x0
-  show (LnAntonym x0) = "LnAntonym: " ++ show x0
-  show (LnTemplate x0) = "LnTemplate: " ++ show x0
-  show (LnImageAssociation x0) = "LnImageAssociation: " ++ show x0
-  show (LnLinearDemo x0) = "LnLinearDemo: " ++ show x0
-  show (LnTable x0) = "LnTable: " ++ show x0
-  show (LnScript x0) = "LnScript: " ++ show x0
-  show (LnQA x0) = "LnQA: " ++ show x0
+  show (LnFact x0) = "LnFact: " <> show x0
+  show (LnFactList x0) = "LnFactList: " <> show x0
+  show (LnCard x0) = "LnCard: " <> show x0
+  show (LnDCard x0) = "LnDCard: " <> show x0
+  show (LnDCardX x0) = "LnDCardX: " <> show x0
+  show (LnAcronym x0) = "LnAcronym: " <> show x0
+  show (LnSynonym x0) = "LnSynonym: " <> show x0
+  show (LnAntonym x0) = "LnAntonym: " <> show x0
+  show (LnTemplate x0) = "LnTemplate: " <> show x0
+  show (LnImageAssociation x0) = "LnImageAssociation: " <> show x0
+  show (LnLinearDemo x0) = "LnLinearDemo: " <> show x0
+  show (LnTable x0) = "LnTable: " <> show x0
+  show (LnScript x0) = "LnScript: " <> show x0
+  show (LnQA x0) = "LnQA: " <> show x0
   show (LnExamples) = "LnExamples"
   show (LnEmpty) = "LnEmpty"
 
@@ -6005,55 +6538,56 @@ instance tyLeuronDecodeJson :: DecodeJson TyLeuron where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "TyLnFact" -> do
-          return TyLnFact
+      "TyLnFact" -> do
+        pure TyLnFact
 
-        "TyLnFactList" -> do
-          return TyLnFactList
+      "TyLnFactList" -> do
+        pure TyLnFactList
 
-        "TyLnCard" -> do
-          return TyLnCard
+      "TyLnCard" -> do
+        pure TyLnCard
 
-        "TyLnDCard" -> do
-          return TyLnDCard
+      "TyLnDCard" -> do
+        pure TyLnDCard
 
-        "TyLnDCardX" -> do
-          return TyLnDCardX
+      "TyLnDCardX" -> do
+        pure TyLnDCardX
 
-        "TyLnAcronym" -> do
-          return TyLnAcronym
+      "TyLnAcronym" -> do
+        pure TyLnAcronym
 
-        "TyLnSynonym" -> do
-          return TyLnSynonym
+      "TyLnSynonym" -> do
+        pure TyLnSynonym
 
-        "TyLnAntonym" -> do
-          return TyLnAntonym
+      "TyLnAntonym" -> do
+        pure TyLnAntonym
 
-        "TyLnTemplate" -> do
-          return TyLnTemplate
+      "TyLnTemplate" -> do
+        pure TyLnTemplate
 
-        "TyLnImageAssociation" -> do
-          return TyLnImageAssociation
+      "TyLnImageAssociation" -> do
+        pure TyLnImageAssociation
 
-        "TyLnLinearDemo" -> do
-          return TyLnLinearDemo
+      "TyLnLinearDemo" -> do
+        pure TyLnLinearDemo
 
-        "TyLnTable" -> do
-          return TyLnTable
+      "TyLnTable" -> do
+        pure TyLnTable
 
-        "TyLnScript" -> do
-          return TyLnScript
+      "TyLnScript" -> do
+        pure TyLnScript
 
-        "TyLnQA" -> do
-          return TyLnQA
+      "TyLnQA" -> do
+        pure TyLnQA
 
-        "TyLnExamples" -> do
-          return TyLnExamples
+      "TyLnExamples" -> do
+        pure TyLnExamples
 
-        "TyLnEmpty" -> do
-          return TyLnEmpty
+      "TyLnEmpty" -> do
+        pure TyLnEmpty
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for TyLeuron"
+
 
 
 instance tyLeuronRequestable :: Requestable TyLeuron where
@@ -6068,53 +6602,55 @@ instance tyLeuronRespondable :: Respondable TyLeuron where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "TyLnFact" -> do
-          return TyLnFact
+      "TyLnFact" -> do
+        pure TyLnFact
 
-        "TyLnFactList" -> do
-          return TyLnFactList
+      "TyLnFactList" -> do
+        pure TyLnFactList
 
-        "TyLnCard" -> do
-          return TyLnCard
+      "TyLnCard" -> do
+        pure TyLnCard
 
-        "TyLnDCard" -> do
-          return TyLnDCard
+      "TyLnDCard" -> do
+        pure TyLnDCard
 
-        "TyLnDCardX" -> do
-          return TyLnDCardX
+      "TyLnDCardX" -> do
+        pure TyLnDCardX
 
-        "TyLnAcronym" -> do
-          return TyLnAcronym
+      "TyLnAcronym" -> do
+        pure TyLnAcronym
 
-        "TyLnSynonym" -> do
-          return TyLnSynonym
+      "TyLnSynonym" -> do
+        pure TyLnSynonym
 
-        "TyLnAntonym" -> do
-          return TyLnAntonym
+      "TyLnAntonym" -> do
+        pure TyLnAntonym
 
-        "TyLnTemplate" -> do
-          return TyLnTemplate
+      "TyLnTemplate" -> do
+        pure TyLnTemplate
 
-        "TyLnImageAssociation" -> do
-          return TyLnImageAssociation
+      "TyLnImageAssociation" -> do
+        pure TyLnImageAssociation
 
-        "TyLnLinearDemo" -> do
-          return TyLnLinearDemo
+      "TyLnLinearDemo" -> do
+        pure TyLnLinearDemo
 
-        "TyLnTable" -> do
-          return TyLnTable
+      "TyLnTable" -> do
+        pure TyLnTable
 
-        "TyLnScript" -> do
-          return TyLnScript
+      "TyLnScript" -> do
+        pure TyLnScript
 
-        "TyLnQA" -> do
-          return TyLnQA
+      "TyLnQA" -> do
+        pure TyLnQA
 
-        "TyLnExamples" -> do
-          return TyLnExamples
+      "TyLnExamples" -> do
+        pure TyLnExamples
 
-        "TyLnEmpty" -> do
-          return TyLnEmpty
+      "TyLnEmpty" -> do
+        pure TyLnEmpty
+
+      _ -> Left $ TypeMismatch "TyLeuron" "Respondable"
 
 
 
@@ -6122,53 +6658,55 @@ instance tyLeuronIsForeign :: IsForeign TyLeuron where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "TyLnFact" -> do
-          return TyLnFact
+      "TyLnFact" -> do
+        pure TyLnFact
 
-        "TyLnFactList" -> do
-          return TyLnFactList
+      "TyLnFactList" -> do
+        pure TyLnFactList
 
-        "TyLnCard" -> do
-          return TyLnCard
+      "TyLnCard" -> do
+        pure TyLnCard
 
-        "TyLnDCard" -> do
-          return TyLnDCard
+      "TyLnDCard" -> do
+        pure TyLnDCard
 
-        "TyLnDCardX" -> do
-          return TyLnDCardX
+      "TyLnDCardX" -> do
+        pure TyLnDCardX
 
-        "TyLnAcronym" -> do
-          return TyLnAcronym
+      "TyLnAcronym" -> do
+        pure TyLnAcronym
 
-        "TyLnSynonym" -> do
-          return TyLnSynonym
+      "TyLnSynonym" -> do
+        pure TyLnSynonym
 
-        "TyLnAntonym" -> do
-          return TyLnAntonym
+      "TyLnAntonym" -> do
+        pure TyLnAntonym
 
-        "TyLnTemplate" -> do
-          return TyLnTemplate
+      "TyLnTemplate" -> do
+        pure TyLnTemplate
 
-        "TyLnImageAssociation" -> do
-          return TyLnImageAssociation
+      "TyLnImageAssociation" -> do
+        pure TyLnImageAssociation
 
-        "TyLnLinearDemo" -> do
-          return TyLnLinearDemo
+      "TyLnLinearDemo" -> do
+        pure TyLnLinearDemo
 
-        "TyLnTable" -> do
-          return TyLnTable
+      "TyLnTable" -> do
+        pure TyLnTable
 
-        "TyLnScript" -> do
-          return TyLnScript
+      "TyLnScript" -> do
+        pure TyLnScript
 
-        "TyLnQA" -> do
-          return TyLnQA
+      "TyLnQA" -> do
+        pure TyLnQA
 
-        "TyLnExamples" -> do
-          return TyLnExamples
+      "TyLnExamples" -> do
+        pure TyLnExamples
 
-        "TyLnEmpty" -> do
-          return TyLnEmpty
+      "TyLnEmpty" -> do
+        pure TyLnEmpty
+
+      _ -> Left $ TypeMismatch "TyLeuron" "IsForeign"
 
 
 
@@ -6220,7 +6758,7 @@ type FactR = {
 }
 
 
-_Fact :: LensP Fact {
+_Fact :: Lens' Fact {
   text :: String
 }
 _Fact f (Fact o) = Fact <$> f o
@@ -6231,6 +6769,9 @@ mkFact text =
   Fact{text}
 
 
+unwrapFact :: Fact -> {
+  text :: String
+}
 unwrapFact (Fact r) = r
 
 instance factEncodeJson :: EncodeJson Fact where
@@ -6270,7 +6811,7 @@ instance factIsForeign :: IsForeign Fact where
 
 
 instance factShow :: Show Fact where
-    show (Fact o) = show "text: " ++ show o.text
+    show (Fact o) = show "text: " <> show o.text
 
 newtype FactList = FactList {
   fact :: String,
@@ -6284,7 +6825,7 @@ type FactListR = {
 }
 
 
-_FactList :: LensP FactList {
+_FactList :: Lens' FactList {
   fact :: String,
   list :: (Array String)
 }
@@ -6296,6 +6837,10 @@ mkFactList fact list =
   FactList{fact, list}
 
 
+unwrapFactList :: FactList -> {
+  fact :: String,
+  list :: (Array String)
+}
 unwrapFactList (FactList r) = r
 
 instance factListEncodeJson :: EncodeJson FactList where
@@ -6340,7 +6885,7 @@ instance factListIsForeign :: IsForeign FactList where
 
 
 instance factListShow :: Show FactList where
-    show (FactList o) = show "fact: " ++ show o.fact ++ ", " ++ show "list: " ++ show o.list
+    show (FactList o) = show "fact: " <> show o.fact <> ", " <> show "list: " <> show o.list
 
 newtype Card = Card {
   front :: String,
@@ -6354,7 +6899,7 @@ type CardR = {
 }
 
 
-_Card :: LensP Card {
+_Card :: Lens' Card {
   front :: String,
   back :: String
 }
@@ -6366,6 +6911,10 @@ mkCard front back =
   Card{front, back}
 
 
+unwrapCard :: Card -> {
+  front :: String,
+  back :: String
+}
 unwrapCard (Card r) = r
 
 instance cardEncodeJson :: EncodeJson Card where
@@ -6410,7 +6959,7 @@ instance cardIsForeign :: IsForeign Card where
 
 
 instance cardShow :: Show Card where
-    show (Card o) = show "front: " ++ show o.front ++ ", " ++ show "back: " ++ show o.back
+    show (Card o) = show "front: " <> show o.front <> ", " <> show "back: " <> show o.back
 
 newtype DCard = DCard {
   front :: String,
@@ -6424,7 +6973,7 @@ type DCardR = {
 }
 
 
-_DCard :: LensP DCard {
+_DCard :: Lens' DCard {
   front :: String,
   back :: String
 }
@@ -6436,6 +6985,10 @@ mkDCard front back =
   DCard{front, back}
 
 
+unwrapDCard :: DCard -> {
+  front :: String,
+  back :: String
+}
 unwrapDCard (DCard r) = r
 
 instance dCardEncodeJson :: EncodeJson DCard where
@@ -6480,7 +7033,7 @@ instance dCardIsForeign :: IsForeign DCard where
 
 
 instance dCardShow :: Show DCard where
-    show (DCard o) = show "front: " ++ show o.front ++ ", " ++ show "back: " ++ show o.back
+    show (DCard o) = show "front: " <> show o.front <> ", " <> show "back: " <> show o.back
 
 newtype DCardX = DCardX {
   front :: (Array String),
@@ -6494,7 +7047,7 @@ type DCardXR = {
 }
 
 
-_DCardX :: LensP DCardX {
+_DCardX :: Lens' DCardX {
   front :: (Array String),
   back :: (Array String)
 }
@@ -6506,6 +7059,10 @@ mkDCardX front back =
   DCardX{front, back}
 
 
+unwrapDCardX :: DCardX -> {
+  front :: (Array String),
+  back :: (Array String)
+}
 unwrapDCardX (DCardX r) = r
 
 instance dCardXEncodeJson :: EncodeJson DCardX where
@@ -6550,7 +7107,7 @@ instance dCardXIsForeign :: IsForeign DCardX where
 
 
 instance dCardXShow :: Show DCardX where
-    show (DCardX o) = show "front: " ++ show o.front ++ ", " ++ show "back: " ++ show o.back
+    show (DCardX o) = show "front: " <> show o.front <> ", " <> show "back: " <> show o.back
 
 newtype Acronym = Acronym {
   abbreviation :: String,
@@ -6564,7 +7121,7 @@ type AcronymR = {
 }
 
 
-_Acronym :: LensP Acronym {
+_Acronym :: Lens' Acronym {
   abbreviation :: String,
   meaning :: String
 }
@@ -6576,6 +7133,10 @@ mkAcronym abbreviation meaning =
   Acronym{abbreviation, meaning}
 
 
+unwrapAcronym :: Acronym -> {
+  abbreviation :: String,
+  meaning :: String
+}
 unwrapAcronym (Acronym r) = r
 
 instance acronymEncodeJson :: EncodeJson Acronym where
@@ -6620,7 +7181,7 @@ instance acronymIsForeign :: IsForeign Acronym where
 
 
 instance acronymShow :: Show Acronym where
-    show (Acronym o) = show "abbreviation: " ++ show o.abbreviation ++ ", " ++ show "meaning: " ++ show o.meaning
+    show (Acronym o) = show "abbreviation: " <> show o.abbreviation <> ", " <> show "meaning: " <> show o.meaning
 
 newtype Synonym = Synonym {
   a :: String,
@@ -6634,7 +7195,7 @@ type SynonymR = {
 }
 
 
-_Synonym :: LensP Synonym {
+_Synonym :: Lens' Synonym {
   a :: String,
   b :: String
 }
@@ -6646,6 +7207,10 @@ mkSynonym a b =
   Synonym{a, b}
 
 
+unwrapSynonym :: Synonym -> {
+  a :: String,
+  b :: String
+}
 unwrapSynonym (Synonym r) = r
 
 instance synonymEncodeJson :: EncodeJson Synonym where
@@ -6690,7 +7255,7 @@ instance synonymIsForeign :: IsForeign Synonym where
 
 
 instance synonymShow :: Show Synonym where
-    show (Synonym o) = show "a: " ++ show o.a ++ ", " ++ show "b: " ++ show o.b
+    show (Synonym o) = show "a: " <> show o.a <> ", " <> show "b: " <> show o.b
 
 newtype Antonym = Antonym {
   a :: String,
@@ -6704,7 +7269,7 @@ type AntonymR = {
 }
 
 
-_Antonym :: LensP Antonym {
+_Antonym :: Lens' Antonym {
   a :: String,
   b :: String
 }
@@ -6716,6 +7281,10 @@ mkAntonym a b =
   Antonym{a, b}
 
 
+unwrapAntonym :: Antonym -> {
+  a :: String,
+  b :: String
+}
 unwrapAntonym (Antonym r) = r
 
 instance antonymEncodeJson :: EncodeJson Antonym where
@@ -6760,7 +7329,7 @@ instance antonymIsForeign :: IsForeign Antonym where
 
 
 instance antonymShow :: Show Antonym where
-    show (Antonym o) = show "a: " ++ show o.a ++ ", " ++ show "b: " ++ show o.b
+    show (Antonym o) = show "a: " <> show o.a <> ", " <> show "b: " <> show o.b
 
 newtype Template = Template {
   template :: String,
@@ -6774,7 +7343,7 @@ type TemplateR = {
 }
 
 
-_Template :: LensP Template {
+_Template :: Lens' Template {
   template :: String,
   values :: (Array TemplateValue)
 }
@@ -6786,6 +7355,10 @@ mkTemplate template values =
   Template{template, values}
 
 
+unwrapTemplate :: Template -> {
+  template :: String,
+  values :: (Array TemplateValue)
+}
 unwrapTemplate (Template r) = r
 
 instance templateEncodeJson :: EncodeJson Template where
@@ -6830,7 +7403,7 @@ instance templateIsForeign :: IsForeign Template where
 
 
 instance templateShow :: Show Template where
-    show (Template o) = show "template: " ++ show o.template ++ ", " ++ show "values: " ++ show o.values
+    show (Template o) = show "template: " <> show o.template <> ", " <> show "values: " <> show o.values
 
 type TemplateValue  = ((Tuple String) (Array String))
 
@@ -6849,7 +7422,7 @@ type ImageAssociationR = {
 }
 
 
-_ImageAssociation :: LensP ImageAssociation {
+_ImageAssociation :: Lens' ImageAssociation {
   imageUrl :: (Array String),
   assocBy :: (Array String),
   assocResult :: (Array String)
@@ -6862,6 +7435,11 @@ mkImageAssociation imageUrl assocBy assocResult =
   ImageAssociation{imageUrl, assocBy, assocResult}
 
 
+unwrapImageAssociation :: ImageAssociation -> {
+  imageUrl :: (Array String),
+  assocBy :: (Array String),
+  assocResult :: (Array String)
+}
 unwrapImageAssociation (ImageAssociation r) = r
 
 instance imageAssociationEncodeJson :: EncodeJson ImageAssociation where
@@ -6911,7 +7489,7 @@ instance imageAssociationIsForeign :: IsForeign ImageAssociation where
 
 
 instance imageAssociationShow :: Show ImageAssociation where
-    show (ImageAssociation o) = show "imageUrl: " ++ show o.imageUrl ++ ", " ++ show "assocBy: " ++ show o.assocBy ++ ", " ++ show "assocResult: " ++ show o.assocResult
+    show (ImageAssociation o) = show "imageUrl: " <> show o.imageUrl <> ", " <> show "assocBy: " <> show o.assocBy <> ", " <> show "assocResult: " <> show o.assocResult
 
 newtype Script = Script {
   title :: String,
@@ -6927,7 +7505,7 @@ type ScriptR = {
 }
 
 
-_Script :: LensP Script {
+_Script :: Lens' Script {
   title :: String,
   desc :: String,
   url :: String
@@ -6940,6 +7518,11 @@ mkScript title desc url =
   Script{title, desc, url}
 
 
+unwrapScript :: Script -> {
+  title :: String,
+  desc :: String,
+  url :: String
+}
 unwrapScript (Script r) = r
 
 instance scriptEncodeJson :: EncodeJson Script where
@@ -6989,7 +7572,7 @@ instance scriptIsForeign :: IsForeign Script where
 
 
 instance scriptShow :: Show Script where
-    show (Script o) = show "title: " ++ show o.title ++ ", " ++ show "desc: " ++ show o.desc ++ ", " ++ show "url: " ++ show o.url
+    show (Script o) = show "title: " <> show o.title <> ", " <> show "desc: " <> show o.desc <> ", " <> show "url: " <> show o.url
 
 type LDContent  = String
 
@@ -7012,7 +7595,7 @@ type LinearDemoR = {
 }
 
 
-_LinearDemo :: LensP LinearDemo {
+_LinearDemo :: Lens' LinearDemo {
   label :: String,
   content :: (Array LinearDemoNode)
 }
@@ -7024,6 +7607,10 @@ mkLinearDemo label content =
   LinearDemo{label, content}
 
 
+unwrapLinearDemo :: LinearDemo -> {
+  label :: String,
+  content :: (Array LinearDemoNode)
+}
 unwrapLinearDemo (LinearDemo r) = r
 
 instance linearDemoEncodeJson :: EncodeJson LinearDemo where
@@ -7068,7 +7655,7 @@ instance linearDemoIsForeign :: IsForeign LinearDemo where
 
 
 instance linearDemoShow :: Show LinearDemo where
-    show (LinearDemo o) = show "label: " ++ show o.label ++ ", " ++ show "content: " ++ show o.content
+    show (LinearDemo o) = show "label: " <> show o.label <> ", " <> show "content: " <> show o.content
 
 newtype QA = QA {
   question :: String,
@@ -7082,7 +7669,7 @@ type QAR = {
 }
 
 
-_QA :: LensP QA {
+_QA :: Lens' QA {
   question :: String,
   answer :: String
 }
@@ -7094,6 +7681,10 @@ mkQA question answer =
   QA{question, answer}
 
 
+unwrapQA :: QA -> {
+  question :: String,
+  answer :: String
+}
 unwrapQA (QA r) = r
 
 instance qAEncodeJson :: EncodeJson QA where
@@ -7138,7 +7729,7 @@ instance qAIsForeign :: IsForeign QA where
 
 
 instance qAShow :: Show QA where
-    show (QA o) = show "question: " ++ show o.question ++ ", " ++ show "answer: " ++ show o.answer
+    show (QA o) = show "question: " <> show o.question <> ", " <> show "answer: " <> show o.answer
 
 newtype Table = Table {
   title :: String,
@@ -7154,7 +7745,7 @@ type TableR = {
 }
 
 
-_Table :: LensP Table {
+_Table :: Lens' Table {
   title :: String,
   columns :: (Array String),
   rows :: (Array (Array (Maybe String)))
@@ -7167,6 +7758,11 @@ mkTable title columns rows =
   Table{title, columns, rows}
 
 
+unwrapTable :: Table -> {
+  title :: String,
+  columns :: (Array String),
+  rows :: (Array (Array (Maybe String)))
+}
 unwrapTable (Table r) = r
 
 instance tableEncodeJson :: EncodeJson Table where
@@ -7216,7 +7812,7 @@ instance tableIsForeign :: IsForeign Table where
 
 
 instance tableShow :: Show Table where
-    show (Table o) = show "title: " ++ show o.title ++ ", " ++ show "columns: " ++ show o.columns ++ ", " ++ show "rows: " ++ show o.rows
+    show (Table o) = show "title: " <> show o.title <> ", " <> show "columns: " <> show o.columns <> ", " <> show "rows: " <> show o.rows
 
 data Membership
   = Membership_InviteOnly 
@@ -7250,19 +7846,20 @@ instance membershipDecodeJson :: DecodeJson Membership where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "Membership_InviteOnly" -> do
-          return Membership_InviteOnly
+      "Membership_InviteOnly" -> do
+        pure Membership_InviteOnly
 
-        "Membership_RequestInvite" -> do
-          return Membership_RequestInvite
+      "Membership_RequestInvite" -> do
+        pure Membership_RequestInvite
 
-        "Membership_Join" -> do
-          return Membership_Join
+      "Membership_Join" -> do
+        pure Membership_Join
 
-        "Membership_Locked" -> do
-          return Membership_Locked
+      "Membership_Locked" -> do
+        pure Membership_Locked
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for Membership"
+
 
 
 instance membershipRequestable :: Requestable Membership where
@@ -7277,17 +7874,19 @@ instance membershipRespondable :: Respondable Membership where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "Membership_InviteOnly" -> do
-          return Membership_InviteOnly
+      "Membership_InviteOnly" -> do
+        pure Membership_InviteOnly
 
-        "Membership_RequestInvite" -> do
-          return Membership_RequestInvite
+      "Membership_RequestInvite" -> do
+        pure Membership_RequestInvite
 
-        "Membership_Join" -> do
-          return Membership_Join
+      "Membership_Join" -> do
+        pure Membership_Join
 
-        "Membership_Locked" -> do
-          return Membership_Locked
+      "Membership_Locked" -> do
+        pure Membership_Locked
+
+      _ -> Left $ TypeMismatch "Membership" "Respondable"
 
 
 
@@ -7295,17 +7894,19 @@ instance membershipIsForeign :: IsForeign Membership where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "Membership_InviteOnly" -> do
-          return Membership_InviteOnly
+      "Membership_InviteOnly" -> do
+        pure Membership_InviteOnly
 
-        "Membership_RequestInvite" -> do
-          return Membership_RequestInvite
+      "Membership_RequestInvite" -> do
+        pure Membership_RequestInvite
 
-        "Membership_Join" -> do
-          return Membership_Join
+      "Membership_Join" -> do
+        pure Membership_Join
 
-        "Membership_Locked" -> do
-          return Membership_Locked
+      "Membership_Locked" -> do
+        pure Membership_Locked
+
+      _ -> Left $ TypeMismatch "Membership" "IsForeign"
 
 
 
@@ -7351,7 +7952,7 @@ type OrganizationRequestR = {
 }
 
 
-_OrganizationRequest :: LensP OrganizationRequest {
+_OrganizationRequest :: Lens' OrganizationRequest {
   displayName :: String,
   description :: (Maybe String),
   company :: String,
@@ -7371,6 +7972,18 @@ mkOrganizationRequest displayName description company location email membership 
   OrganizationRequest{displayName, description, company, location, email, membership, tags, icon, visibility, guard}
 
 
+unwrapOrganizationRequest :: OrganizationRequest -> {
+  displayName :: String,
+  description :: (Maybe String),
+  company :: String,
+  location :: String,
+  email :: String,
+  membership :: Membership,
+  tags :: (Array String),
+  icon :: (Maybe String),
+  visibility :: Visibility,
+  guard :: Int
+}
 unwrapOrganizationRequest (OrganizationRequest r) = r
 
 instance organizationRequestEncodeJson :: EncodeJson OrganizationRequest where
@@ -7428,13 +8041,13 @@ instance organizationRequestRespondable :: Respondable OrganizationRequest where
   fromResponse json =
       mkOrganizationRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "company" json
       <*> readProp "location" json
       <*> readProp "email" json
       <*> readProp "membership" json
       <*> readProp "tags" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
@@ -7443,19 +8056,19 @@ instance organizationRequestIsForeign :: IsForeign OrganizationRequest where
   read json =
       mkOrganizationRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "company" json
       <*> readProp "location" json
       <*> readProp "email" json
       <*> readProp "membership" json
       <*> readProp "tags" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
 
 instance organizationRequestShow :: Show OrganizationRequest where
-    show (OrganizationRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "company: " ++ show o.company ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
+    show (OrganizationRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "company: " <> show o.company <> ", " <> show "location: " <> show o.location <> ", " <> show "email: " <> show o.email <> ", " <> show "membership: " <> show o.membership <> ", " <> show "tags: " <> show o.tags <> ", " <> show "icon: " <> show o.icon <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype OrganizationResponse = OrganizationResponse {
   id :: Int,
@@ -7503,7 +8116,7 @@ type OrganizationResponseR = {
 }
 
 
-_OrganizationResponse :: LensP OrganizationResponse {
+_OrganizationResponse :: Lens' OrganizationResponse {
   id :: Int,
   userId :: Int,
   name :: String,
@@ -7532,6 +8145,27 @@ mkOrganizationResponse id userId name displayName description company location e
   OrganizationResponse{id, userId, name, displayName, description, company, location, email, emailMD5, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapOrganizationResponse :: OrganizationResponse -> {
+  id :: Int,
+  userId :: Int,
+  name :: String,
+  displayName :: String,
+  description :: (Maybe String),
+  company :: String,
+  location :: String,
+  email :: String,
+  emailMD5 :: String,
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapOrganizationResponse (OrganizationResponse r) = r
 
 instance organizationResponseEncodeJson :: EncodeJson OrganizationResponse where
@@ -7619,21 +8253,21 @@ instance organizationResponseRespondable :: Respondable OrganizationResponse whe
       <*> readProp "user_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "company" json
       <*> readProp "location" json
       <*> readProp "email" json
       <*> readProp "email_md5" json
       <*> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance organizationResponseIsForeign :: IsForeign OrganizationResponse where
@@ -7643,25 +8277,25 @@ instance organizationResponseIsForeign :: IsForeign OrganizationResponse where
       <*> readProp "user_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "company" json
       <*> readProp "location" json
       <*> readProp "email" json
       <*> readProp "email_md5" json
       <*> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance organizationResponseShow :: Show OrganizationResponse where
-    show (OrganizationResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "company: " ++ show o.company ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (OrganizationResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "company: " <> show o.company <> ", " <> show "location: " <> show o.location <> ", " <> show "email: " <> show o.email <> ", " <> show "emailMD5: " <> show o.emailMD5 <> ", " <> show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype OrganizationResponses = OrganizationResponses {
   organizationResponses :: (Array OrganizationResponse)
@@ -7673,7 +8307,7 @@ type OrganizationResponsesR = {
 }
 
 
-_OrganizationResponses :: LensP OrganizationResponses {
+_OrganizationResponses :: Lens' OrganizationResponses {
   organizationResponses :: (Array OrganizationResponse)
 }
 _OrganizationResponses f (OrganizationResponses o) = OrganizationResponses <$> f o
@@ -7684,6 +8318,9 @@ mkOrganizationResponses organizationResponses =
   OrganizationResponses{organizationResponses}
 
 
+unwrapOrganizationResponses :: OrganizationResponses -> {
+  organizationResponses :: (Array OrganizationResponse)
+}
 unwrapOrganizationResponses (OrganizationResponses r) = r
 
 instance organizationResponsesEncodeJson :: EncodeJson OrganizationResponses where
@@ -7723,7 +8360,7 @@ instance organizationResponsesIsForeign :: IsForeign OrganizationResponses where
 
 
 instance organizationResponsesShow :: Show OrganizationResponses where
-    show (OrganizationResponses o) = show "organizationResponses: " ++ show o.organizationResponses
+    show (OrganizationResponses o) = show "organizationResponses: " <> show o.organizationResponses
 
 newtype OrganizationStatResponse = OrganizationStatResponse {
   organizationId :: Int,
@@ -7749,7 +8386,7 @@ type OrganizationStatResponseR = {
 }
 
 
-_OrganizationStatResponse :: LensP OrganizationStatResponse {
+_OrganizationStatResponse :: Lens' OrganizationStatResponse {
   organizationId :: Int,
   teams :: Int,
   members :: Int,
@@ -7767,6 +8404,16 @@ mkOrganizationStatResponse organizationId teams members forums boards threads th
   OrganizationStatResponse{organizationId, teams, members, forums, boards, threads, threadPosts, views}
 
 
+unwrapOrganizationStatResponse :: OrganizationStatResponse -> {
+  organizationId :: Int,
+  teams :: Int,
+  members :: Int,
+  forums :: Int,
+  boards :: Int,
+  threads :: Int,
+  threadPosts :: Int,
+  views :: Int
+}
 unwrapOrganizationStatResponse (OrganizationStatResponse r) = r
 
 instance organizationStatResponseEncodeJson :: EncodeJson OrganizationStatResponse where
@@ -7841,7 +8488,7 @@ instance organizationStatResponseIsForeign :: IsForeign OrganizationStatResponse
 
 
 instance organizationStatResponseShow :: Show OrganizationStatResponse where
-    show (OrganizationStatResponse o) = show "organizationId: " ++ show o.organizationId ++ ", " ++ show "teams: " ++ show o.teams ++ ", " ++ show "members: " ++ show o.members ++ ", " ++ show "forums: " ++ show o.forums ++ ", " ++ show "boards: " ++ show o.boards ++ ", " ++ show "threads: " ++ show o.threads ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "views: " ++ show o.views
+    show (OrganizationStatResponse o) = show "organizationId: " <> show o.organizationId <> ", " <> show "teams: " <> show o.teams <> ", " <> show "members: " <> show o.members <> ", " <> show "forums: " <> show o.forums <> ", " <> show "boards: " <> show o.boards <> ", " <> show "threads: " <> show o.threads <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "views: " <> show o.views
 
 newtype OrganizationStatResponses = OrganizationStatResponses {
   organizationStatResponses :: (Array OrganizationStatResponse)
@@ -7853,7 +8500,7 @@ type OrganizationStatResponsesR = {
 }
 
 
-_OrganizationStatResponses :: LensP OrganizationStatResponses {
+_OrganizationStatResponses :: Lens' OrganizationStatResponses {
   organizationStatResponses :: (Array OrganizationStatResponse)
 }
 _OrganizationStatResponses f (OrganizationStatResponses o) = OrganizationStatResponses <$> f o
@@ -7864,6 +8511,9 @@ mkOrganizationStatResponses organizationStatResponses =
   OrganizationStatResponses{organizationStatResponses}
 
 
+unwrapOrganizationStatResponses :: OrganizationStatResponses -> {
+  organizationStatResponses :: (Array OrganizationStatResponse)
+}
 unwrapOrganizationStatResponses (OrganizationStatResponses r) = r
 
 instance organizationStatResponsesEncodeJson :: EncodeJson OrganizationStatResponses where
@@ -7903,7 +8553,7 @@ instance organizationStatResponsesIsForeign :: IsForeign OrganizationStatRespons
 
 
 instance organizationStatResponsesShow :: Show OrganizationStatResponses where
-    show (OrganizationStatResponses o) = show "organizationStatResponses: " ++ show o.organizationStatResponses
+    show (OrganizationStatResponses o) = show "organizationStatResponses: " <> show o.organizationStatResponses
 
 data Param
   = Limit Int
@@ -7975,255 +8625,255 @@ data Param
 instance paramEncodeJson :: EncodeJson Param where
   encodeJson (Limit x0) =
        "tag" := "Limit"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (Offset x0) =
        "tag" := "Offset"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (SortOrder x0) =
        "tag" := "SortOrder"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (Order x0) =
        "tag" := "Order"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByOrganizationId x0) =
        "tag" := "ByOrganizationId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByOrganizationsIds x0) =
        "tag" := "ByOrganizationsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByOrganizationName x0) =
        "tag" := "ByOrganizationName"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByTeamId x0) =
        "tag" := "ByTeamId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByTeamsIds x0) =
        "tag" := "ByTeamsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByTeamName x0) =
        "tag" := "ByTeamName"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByTeamMemberId x0) =
        "tag" := "ByTeamMemberId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByTeamMembersIds x0) =
        "tag" := "ByTeamMembersIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByUserId x0) =
        "tag" := "ByUserId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByUsersIds x0) =
        "tag" := "ByUsersIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByUserNick x0) =
        "tag" := "ByUserNick"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByUsersNicks x0) =
        "tag" := "ByUsersNicks"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByGlobalGroupId x0) =
        "tag" := "ByGlobalGroupId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByGlobalGroupsIds x0) =
        "tag" := "ByGlobalGroupsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByGroupId x0) =
        "tag" := "ByGroupId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByGroupsIds x0) =
        "tag" := "ByGroupsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByGroupMemberId x0) =
        "tag" := "ByGroupMemberId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByGroupMembersIds x0) =
        "tag" := "ByGroupMembersIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByForumId x0) =
        "tag" := "ByForumId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByForumsIds x0) =
        "tag" := "ByForumsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByForumName x0) =
        "tag" := "ByForumName"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByBoardId x0) =
        "tag" := "ByBoardId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByBoardsIds x0) =
        "tag" := "ByBoardsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByBoardName x0) =
        "tag" := "ByBoardName"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadId x0) =
        "tag" := "ByThreadId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadsIds x0) =
        "tag" := "ByThreadsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadName x0) =
        "tag" := "ByThreadName"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadPostId x0) =
        "tag" := "ByThreadPostId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadPostsIds x0) =
        "tag" := "ByThreadPostsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadPostName x0) =
        "tag" := "ByThreadPostName"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadPostLikeId x0) =
        "tag" := "ByThreadPostLikeId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadPostLikesIds x0) =
        "tag" := "ByThreadPostLikesIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadPostStarId x0) =
        "tag" := "ByThreadPostStarId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByThreadPostStarsIds x0) =
        "tag" := "ByThreadPostStarsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByBucketId x0) =
        "tag" := "ByBucketId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByResourceId x0) =
        "tag" := "ByResourceId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByResourcesIds x0) =
        "tag" := "ByResourcesIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByResourceName x0) =
        "tag" := "ByResourceName"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByLeuronId x0) =
        "tag" := "ByLeuronId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByLeuronsIds x0) =
        "tag" := "ByLeuronsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByPmId x0) =
        "tag" := "ByPmId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByPmsIds x0) =
        "tag" := "ByPmsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByReminderId x0) =
        "tag" := "ByReminderId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByReminderFolderId x0) =
        "tag" := "ByReminderFolderId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByParentId x0) =
        "tag" := "ByParentId"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByParentsIds x0) =
        "tag" := "ByParentsIds"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByParentName x0) =
        "tag" := "ByParentName"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (BySelf x0) =
        "tag" := "BySelf"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (Timestamp x0) =
        "tag" := "Timestamp"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (UnixTimestamp x0) =
        "tag" := "UnixTimestamp"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (CreatedAtTimestamp x0) =
        "tag" := "CreatedAtTimestamp"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (CreatedAtUnixTimestamp x0) =
        "tag" := "CreatedAtUnixTimestamp"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (RealIP x0) =
        "tag" := "RealIP"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (IP x0) =
        "tag" := "IP"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (WithOrganization x0) =
        "tag" := "WithOrganization"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (WithForum x0) =
        "tag" := "WithForum"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (WithBoard x0) =
        "tag" := "WithBoard"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (WithThread x0) =
        "tag" := "WithThread"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (WithResource x0) =
        "tag" := "WithResource"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
 
 
@@ -8232,259 +8882,449 @@ instance paramDecodeJson :: DecodeJson Param where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "Limit" -> do
-          x0 <- obj .? "contents"
-          Limit <$> decodeJson x0
+      "Limit" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> Limit <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for Limit"
 
-        "Offset" -> do
-          x0 <- obj .? "contents"
-          Offset <$> decodeJson x0
 
-        "SortOrder" -> do
-          x0 <- obj .? "contents"
-          SortOrder <$> decodeJson x0
+      "Offset" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> Offset <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for Offset"
 
-        "Order" -> do
-          x0 <- obj .? "contents"
-          Order <$> decodeJson x0
 
-        "ByOrganizationId" -> do
-          x0 <- obj .? "contents"
-          ByOrganizationId <$> decodeJson x0
+      "SortOrder" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> SortOrder <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for SortOrder"
 
-        "ByOrganizationsIds" -> do
-          x0 <- obj .? "contents"
-          ByOrganizationsIds <$> decodeJson x0
 
-        "ByOrganizationName" -> do
-          x0 <- obj .? "contents"
-          ByOrganizationName <$> decodeJson x0
+      "Order" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> Order <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for Order"
 
-        "ByTeamId" -> do
-          x0 <- obj .? "contents"
-          ByTeamId <$> decodeJson x0
 
-        "ByTeamsIds" -> do
-          x0 <- obj .? "contents"
-          ByTeamsIds <$> decodeJson x0
+      "ByOrganizationId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByOrganizationId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByOrganizationId"
 
-        "ByTeamName" -> do
-          x0 <- obj .? "contents"
-          ByTeamName <$> decodeJson x0
 
-        "ByTeamMemberId" -> do
-          x0 <- obj .? "contents"
-          ByTeamMemberId <$> decodeJson x0
+      "ByOrganizationsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByOrganizationsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByOrganizationsIds"
 
-        "ByTeamMembersIds" -> do
-          x0 <- obj .? "contents"
-          ByTeamMembersIds <$> decodeJson x0
 
-        "ByUserId" -> do
-          x0 <- obj .? "contents"
-          ByUserId <$> decodeJson x0
+      "ByOrganizationName" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByOrganizationName <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByOrganizationName"
 
-        "ByUsersIds" -> do
-          x0 <- obj .? "contents"
-          ByUsersIds <$> decodeJson x0
 
-        "ByUserNick" -> do
-          x0 <- obj .? "contents"
-          ByUserNick <$> decodeJson x0
+      "ByTeamId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByTeamId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByTeamId"
 
-        "ByUsersNicks" -> do
-          x0 <- obj .? "contents"
-          ByUsersNicks <$> decodeJson x0
 
-        "ByGlobalGroupId" -> do
-          x0 <- obj .? "contents"
-          ByGlobalGroupId <$> decodeJson x0
+      "ByTeamsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByTeamsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByTeamsIds"
 
-        "ByGlobalGroupsIds" -> do
-          x0 <- obj .? "contents"
-          ByGlobalGroupsIds <$> decodeJson x0
 
-        "ByGroupId" -> do
-          x0 <- obj .? "contents"
-          ByGroupId <$> decodeJson x0
+      "ByTeamName" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByTeamName <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByTeamName"
 
-        "ByGroupsIds" -> do
-          x0 <- obj .? "contents"
-          ByGroupsIds <$> decodeJson x0
 
-        "ByGroupMemberId" -> do
-          x0 <- obj .? "contents"
-          ByGroupMemberId <$> decodeJson x0
+      "ByTeamMemberId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByTeamMemberId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByTeamMemberId"
 
-        "ByGroupMembersIds" -> do
-          x0 <- obj .? "contents"
-          ByGroupMembersIds <$> decodeJson x0
 
-        "ByForumId" -> do
-          x0 <- obj .? "contents"
-          ByForumId <$> decodeJson x0
+      "ByTeamMembersIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByTeamMembersIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByTeamMembersIds"
 
-        "ByForumsIds" -> do
-          x0 <- obj .? "contents"
-          ByForumsIds <$> decodeJson x0
 
-        "ByForumName" -> do
-          x0 <- obj .? "contents"
-          ByForumName <$> decodeJson x0
+      "ByUserId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByUserId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByUserId"
 
-        "ByBoardId" -> do
-          x0 <- obj .? "contents"
-          ByBoardId <$> decodeJson x0
 
-        "ByBoardsIds" -> do
-          x0 <- obj .? "contents"
-          ByBoardsIds <$> decodeJson x0
+      "ByUsersIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByUsersIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByUsersIds"
 
-        "ByBoardName" -> do
-          x0 <- obj .? "contents"
-          ByBoardName <$> decodeJson x0
 
-        "ByThreadId" -> do
-          x0 <- obj .? "contents"
-          ByThreadId <$> decodeJson x0
+      "ByUserNick" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByUserNick <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByUserNick"
 
-        "ByThreadsIds" -> do
-          x0 <- obj .? "contents"
-          ByThreadsIds <$> decodeJson x0
 
-        "ByThreadName" -> do
-          x0 <- obj .? "contents"
-          ByThreadName <$> decodeJson x0
+      "ByUsersNicks" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByUsersNicks <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByUsersNicks"
 
-        "ByThreadPostId" -> do
-          x0 <- obj .? "contents"
-          ByThreadPostId <$> decodeJson x0
 
-        "ByThreadPostsIds" -> do
-          x0 <- obj .? "contents"
-          ByThreadPostsIds <$> decodeJson x0
+      "ByGlobalGroupId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByGlobalGroupId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByGlobalGroupId"
 
-        "ByThreadPostName" -> do
-          x0 <- obj .? "contents"
-          ByThreadPostName <$> decodeJson x0
 
-        "ByThreadPostLikeId" -> do
-          x0 <- obj .? "contents"
-          ByThreadPostLikeId <$> decodeJson x0
+      "ByGlobalGroupsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByGlobalGroupsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByGlobalGroupsIds"
 
-        "ByThreadPostLikesIds" -> do
-          x0 <- obj .? "contents"
-          ByThreadPostLikesIds <$> decodeJson x0
 
-        "ByThreadPostStarId" -> do
-          x0 <- obj .? "contents"
-          ByThreadPostStarId <$> decodeJson x0
+      "ByGroupId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByGroupId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByGroupId"
 
-        "ByThreadPostStarsIds" -> do
-          x0 <- obj .? "contents"
-          ByThreadPostStarsIds <$> decodeJson x0
 
-        "ByBucketId" -> do
-          x0 <- obj .? "contents"
-          ByBucketId <$> decodeJson x0
+      "ByGroupsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByGroupsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByGroupsIds"
 
-        "ByResourceId" -> do
-          x0 <- obj .? "contents"
-          ByResourceId <$> decodeJson x0
 
-        "ByResourcesIds" -> do
-          x0 <- obj .? "contents"
-          ByResourcesIds <$> decodeJson x0
+      "ByGroupMemberId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByGroupMemberId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByGroupMemberId"
 
-        "ByResourceName" -> do
-          x0 <- obj .? "contents"
-          ByResourceName <$> decodeJson x0
 
-        "ByLeuronId" -> do
-          x0 <- obj .? "contents"
-          ByLeuronId <$> decodeJson x0
+      "ByGroupMembersIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByGroupMembersIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByGroupMembersIds"
 
-        "ByLeuronsIds" -> do
-          x0 <- obj .? "contents"
-          ByLeuronsIds <$> decodeJson x0
 
-        "ByPmId" -> do
-          x0 <- obj .? "contents"
-          ByPmId <$> decodeJson x0
+      "ByForumId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByForumId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByForumId"
 
-        "ByPmsIds" -> do
-          x0 <- obj .? "contents"
-          ByPmsIds <$> decodeJson x0
 
-        "ByReminderId" -> do
-          x0 <- obj .? "contents"
-          ByReminderId <$> decodeJson x0
+      "ByForumsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByForumsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByForumsIds"
 
-        "ByReminderFolderId" -> do
-          x0 <- obj .? "contents"
-          ByReminderFolderId <$> decodeJson x0
 
-        "ByParentId" -> do
-          x0 <- obj .? "contents"
-          ByParentId <$> decodeJson x0
+      "ByForumName" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByForumName <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByForumName"
 
-        "ByParentsIds" -> do
-          x0 <- obj .? "contents"
-          ByParentsIds <$> decodeJson x0
 
-        "ByParentName" -> do
-          x0 <- obj .? "contents"
-          ByParentName <$> decodeJson x0
+      "ByBoardId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByBoardId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByBoardId"
 
-        "BySelf" -> do
-          x0 <- obj .? "contents"
-          BySelf <$> decodeJson x0
 
-        "Timestamp" -> do
-          x0 <- obj .? "contents"
-          Timestamp <$> decodeJson x0
+      "ByBoardsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByBoardsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByBoardsIds"
 
-        "UnixTimestamp" -> do
-          x0 <- obj .? "contents"
-          UnixTimestamp <$> decodeJson x0
 
-        "CreatedAtTimestamp" -> do
-          x0 <- obj .? "contents"
-          CreatedAtTimestamp <$> decodeJson x0
+      "ByBoardName" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByBoardName <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByBoardName"
 
-        "CreatedAtUnixTimestamp" -> do
-          x0 <- obj .? "contents"
-          CreatedAtUnixTimestamp <$> decodeJson x0
 
-        "RealIP" -> do
-          x0 <- obj .? "contents"
-          RealIP <$> decodeJson x0
+      "ByThreadId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadId"
 
-        "IP" -> do
-          x0 <- obj .? "contents"
-          IP <$> decodeJson x0
 
-        "WithOrganization" -> do
-          x0 <- obj .? "contents"
-          WithOrganization <$> decodeJson x0
+      "ByThreadsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadsIds"
 
-        "WithForum" -> do
-          x0 <- obj .? "contents"
-          WithForum <$> decodeJson x0
 
-        "WithBoard" -> do
-          x0 <- obj .? "contents"
-          WithBoard <$> decodeJson x0
+      "ByThreadName" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadName <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadName"
 
-        "WithThread" -> do
-          x0 <- obj .? "contents"
-          WithThread <$> decodeJson x0
 
-        "WithResource" -> do
-          x0 <- obj .? "contents"
-          WithResource <$> decodeJson x0
+      "ByThreadPostId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadPostId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadPostId"
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+      "ByThreadPostsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadPostsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadPostsIds"
+
+
+      "ByThreadPostName" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadPostName <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadPostName"
+
+
+      "ByThreadPostLikeId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadPostLikeId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadPostLikeId"
+
+
+      "ByThreadPostLikesIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadPostLikesIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadPostLikesIds"
+
+
+      "ByThreadPostStarId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadPostStarId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadPostStarId"
+
+
+      "ByThreadPostStarsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByThreadPostStarsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByThreadPostStarsIds"
+
+
+      "ByBucketId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByBucketId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByBucketId"
+
+
+      "ByResourceId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByResourceId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByResourceId"
+
+
+      "ByResourcesIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByResourcesIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByResourcesIds"
+
+
+      "ByResourceName" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByResourceName <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByResourceName"
+
+
+      "ByLeuronId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByLeuronId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByLeuronId"
+
+
+      "ByLeuronsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByLeuronsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByLeuronsIds"
+
+
+      "ByPmId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByPmId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByPmId"
+
+
+      "ByPmsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByPmsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByPmsIds"
+
+
+      "ByReminderId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByReminderId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByReminderId"
+
+
+      "ByReminderFolderId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByReminderFolderId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByReminderFolderId"
+
+
+      "ByParentId" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByParentId <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByParentId"
+
+
+      "ByParentsIds" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByParentsIds <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByParentsIds"
+
+
+      "ByParentName" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ByParentName <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByParentName"
+
+
+      "BySelf" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> BySelf <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for BySelf"
+
+
+      "Timestamp" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> Timestamp <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for Timestamp"
+
+
+      "UnixTimestamp" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> UnixTimestamp <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for UnixTimestamp"
+
+
+      "CreatedAtTimestamp" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> CreatedAtTimestamp <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for CreatedAtTimestamp"
+
+
+      "CreatedAtUnixTimestamp" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> CreatedAtUnixTimestamp <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for CreatedAtUnixTimestamp"
+
+
+      "RealIP" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> RealIP <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for RealIP"
+
+
+      "IP" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> IP <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for IP"
+
+
+      "WithOrganization" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> WithOrganization <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for WithOrganization"
+
+
+      "WithForum" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> WithForum <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for WithForum"
+
+
+      "WithBoard" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> WithBoard <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for WithBoard"
+
+
+      "WithThread" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> WithThread <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for WithThread"
+
+
+      "WithResource" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> WithResource <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for WithResource"
+
+
+      _ -> Left $ "DecodeJson TypeMismatch for Param"
+
 
 
 instance paramRequestable :: Requestable Param where
@@ -8499,257 +9339,448 @@ instance paramRespondable :: Respondable Param where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "Limit" -> do
-          x0 <- readProp "contents" json
-          Limit <$> read x0
+      "Limit" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Limit <$> read x0
+          _ -> Left $ TypeMismatch "Limit" "Respondable"
 
-        "Offset" -> do
-          x0 <- readProp "contents" json
-          Offset <$> read x0
 
-        "SortOrder" -> do
-          x0 <- readProp "contents" json
-          SortOrder <$> read x0
+      "Offset" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Offset <$> read x0
+          _ -> Left $ TypeMismatch "Offset" "Respondable"
 
-        "Order" -> do
-          x0 <- readProp "contents" json
-          Order <$> read x0
 
-        "ByOrganizationId" -> do
-          x0 <- readProp "contents" json
-          ByOrganizationId <$> read x0
+      "SortOrder" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> SortOrder <$> read x0
+          _ -> Left $ TypeMismatch "SortOrder" "Respondable"
 
-        "ByOrganizationsIds" -> do
-          x0 <- readProp "contents" json
-          ByOrganizationsIds <$> read x0
 
-        "ByOrganizationName" -> do
-          x0 <- readProp "contents" json
-          ByOrganizationName <$> read x0
+      "Order" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Order <$> read x0
+          _ -> Left $ TypeMismatch "Order" "Respondable"
 
-        "ByTeamId" -> do
-          x0 <- readProp "contents" json
-          ByTeamId <$> read x0
 
-        "ByTeamsIds" -> do
-          x0 <- readProp "contents" json
-          ByTeamsIds <$> read x0
+      "ByOrganizationId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByOrganizationId <$> read x0
+          _ -> Left $ TypeMismatch "ByOrganizationId" "Respondable"
 
-        "ByTeamName" -> do
-          x0 <- readProp "contents" json
-          ByTeamName <$> read x0
 
-        "ByTeamMemberId" -> do
-          x0 <- readProp "contents" json
-          ByTeamMemberId <$> read x0
+      "ByOrganizationsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByOrganizationsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByOrganizationsIds" "Respondable"
 
-        "ByTeamMembersIds" -> do
-          x0 <- readProp "contents" json
-          ByTeamMembersIds <$> read x0
 
-        "ByUserId" -> do
-          x0 <- readProp "contents" json
-          ByUserId <$> read x0
+      "ByOrganizationName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByOrganizationName <$> read x0
+          _ -> Left $ TypeMismatch "ByOrganizationName" "Respondable"
 
-        "ByUsersIds" -> do
-          x0 <- readProp "contents" json
-          ByUsersIds <$> read x0
 
-        "ByUserNick" -> do
-          x0 <- readProp "contents" json
-          ByUserNick <$> read x0
+      "ByTeamId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamId <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamId" "Respondable"
 
-        "ByUsersNicks" -> do
-          x0 <- readProp "contents" json
-          ByUsersNicks <$> read x0
 
-        "ByGlobalGroupId" -> do
-          x0 <- readProp "contents" json
-          ByGlobalGroupId <$> read x0
+      "ByTeamsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamsIds" "Respondable"
 
-        "ByGlobalGroupsIds" -> do
-          x0 <- readProp "contents" json
-          ByGlobalGroupsIds <$> read x0
 
-        "ByGroupId" -> do
-          x0 <- readProp "contents" json
-          ByGroupId <$> read x0
+      "ByTeamName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamName <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamName" "Respondable"
 
-        "ByGroupsIds" -> do
-          x0 <- readProp "contents" json
-          ByGroupsIds <$> read x0
 
-        "ByGroupMemberId" -> do
-          x0 <- readProp "contents" json
-          ByGroupMemberId <$> read x0
+      "ByTeamMemberId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamMemberId <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamMemberId" "Respondable"
 
-        "ByGroupMembersIds" -> do
-          x0 <- readProp "contents" json
-          ByGroupMembersIds <$> read x0
 
-        "ByForumId" -> do
-          x0 <- readProp "contents" json
-          ByForumId <$> read x0
+      "ByTeamMembersIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamMembersIds <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamMembersIds" "Respondable"
 
-        "ByForumsIds" -> do
-          x0 <- readProp "contents" json
-          ByForumsIds <$> read x0
 
-        "ByForumName" -> do
-          x0 <- readProp "contents" json
-          ByForumName <$> read x0
+      "ByUserId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByUserId <$> read x0
+          _ -> Left $ TypeMismatch "ByUserId" "Respondable"
 
-        "ByBoardId" -> do
-          x0 <- readProp "contents" json
-          ByBoardId <$> read x0
 
-        "ByBoardsIds" -> do
-          x0 <- readProp "contents" json
-          ByBoardsIds <$> read x0
+      "ByUsersIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByUsersIds <$> read x0
+          _ -> Left $ TypeMismatch "ByUsersIds" "Respondable"
 
-        "ByBoardName" -> do
-          x0 <- readProp "contents" json
-          ByBoardName <$> read x0
 
-        "ByThreadId" -> do
-          x0 <- readProp "contents" json
-          ByThreadId <$> read x0
+      "ByUserNick" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByUserNick <$> read x0
+          _ -> Left $ TypeMismatch "ByUserNick" "Respondable"
 
-        "ByThreadsIds" -> do
-          x0 <- readProp "contents" json
-          ByThreadsIds <$> read x0
 
-        "ByThreadName" -> do
-          x0 <- readProp "contents" json
-          ByThreadName <$> read x0
+      "ByUsersNicks" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByUsersNicks <$> read x0
+          _ -> Left $ TypeMismatch "ByUsersNicks" "Respondable"
 
-        "ByThreadPostId" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostId <$> read x0
 
-        "ByThreadPostsIds" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostsIds <$> read x0
+      "ByGlobalGroupId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGlobalGroupId <$> read x0
+          _ -> Left $ TypeMismatch "ByGlobalGroupId" "Respondable"
 
-        "ByThreadPostName" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostName <$> read x0
 
-        "ByThreadPostLikeId" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostLikeId <$> read x0
+      "ByGlobalGroupsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGlobalGroupsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByGlobalGroupsIds" "Respondable"
 
-        "ByThreadPostLikesIds" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostLikesIds <$> read x0
 
-        "ByThreadPostStarId" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostStarId <$> read x0
+      "ByGroupId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGroupId <$> read x0
+          _ -> Left $ TypeMismatch "ByGroupId" "Respondable"
 
-        "ByThreadPostStarsIds" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostStarsIds <$> read x0
 
-        "ByBucketId" -> do
-          x0 <- readProp "contents" json
-          ByBucketId <$> read x0
+      "ByGroupsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGroupsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByGroupsIds" "Respondable"
 
-        "ByResourceId" -> do
-          x0 <- readProp "contents" json
-          ByResourceId <$> read x0
 
-        "ByResourcesIds" -> do
-          x0 <- readProp "contents" json
-          ByResourcesIds <$> read x0
+      "ByGroupMemberId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGroupMemberId <$> read x0
+          _ -> Left $ TypeMismatch "ByGroupMemberId" "Respondable"
 
-        "ByResourceName" -> do
-          x0 <- readProp "contents" json
-          ByResourceName <$> read x0
 
-        "ByLeuronId" -> do
-          x0 <- readProp "contents" json
-          ByLeuronId <$> read x0
+      "ByGroupMembersIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGroupMembersIds <$> read x0
+          _ -> Left $ TypeMismatch "ByGroupMembersIds" "Respondable"
 
-        "ByLeuronsIds" -> do
-          x0 <- readProp "contents" json
-          ByLeuronsIds <$> read x0
 
-        "ByPmId" -> do
-          x0 <- readProp "contents" json
-          ByPmId <$> read x0
+      "ByForumId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByForumId <$> read x0
+          _ -> Left $ TypeMismatch "ByForumId" "Respondable"
 
-        "ByPmsIds" -> do
-          x0 <- readProp "contents" json
-          ByPmsIds <$> read x0
 
-        "ByReminderId" -> do
-          x0 <- readProp "contents" json
-          ByReminderId <$> read x0
+      "ByForumsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByForumsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByForumsIds" "Respondable"
 
-        "ByReminderFolderId" -> do
-          x0 <- readProp "contents" json
-          ByReminderFolderId <$> read x0
 
-        "ByParentId" -> do
-          x0 <- readProp "contents" json
-          ByParentId <$> read x0
+      "ByForumName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByForumName <$> read x0
+          _ -> Left $ TypeMismatch "ByForumName" "Respondable"
 
-        "ByParentsIds" -> do
-          x0 <- readProp "contents" json
-          ByParentsIds <$> read x0
 
-        "ByParentName" -> do
-          x0 <- readProp "contents" json
-          ByParentName <$> read x0
+      "ByBoardId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByBoardId <$> read x0
+          _ -> Left $ TypeMismatch "ByBoardId" "Respondable"
 
-        "BySelf" -> do
-          x0 <- readProp "contents" json
-          BySelf <$> read x0
 
-        "Timestamp" -> do
-          x0 <- readProp "contents" json
-          Timestamp <$> read x0
+      "ByBoardsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByBoardsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByBoardsIds" "Respondable"
 
-        "UnixTimestamp" -> do
-          x0 <- readProp "contents" json
-          UnixTimestamp <$> read x0
 
-        "CreatedAtTimestamp" -> do
-          x0 <- readProp "contents" json
-          CreatedAtTimestamp <$> read x0
+      "ByBoardName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByBoardName <$> read x0
+          _ -> Left $ TypeMismatch "ByBoardName" "Respondable"
 
-        "CreatedAtUnixTimestamp" -> do
-          x0 <- readProp "contents" json
-          CreatedAtUnixTimestamp <$> read x0
 
-        "RealIP" -> do
-          x0 <- readProp "contents" json
-          RealIP <$> read x0
+      "ByThreadId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadId <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadId" "Respondable"
 
-        "IP" -> do
-          x0 <- readProp "contents" json
-          IP <$> read x0
 
-        "WithOrganization" -> do
-          x0 <- readProp "contents" json
-          WithOrganization <$> read x0
+      "ByThreadsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadsIds" "Respondable"
 
-        "WithForum" -> do
-          x0 <- readProp "contents" json
-          WithForum <$> read x0
 
-        "WithBoard" -> do
-          x0 <- readProp "contents" json
-          WithBoard <$> read x0
+      "ByThreadName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadName <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadName" "Respondable"
 
-        "WithThread" -> do
-          x0 <- readProp "contents" json
-          WithThread <$> read x0
 
-        "WithResource" -> do
-          x0 <- readProp "contents" json
-          WithResource <$> read x0
+      "ByThreadPostId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostId <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostId" "Respondable"
+
+
+      "ByThreadPostsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostsIds" "Respondable"
+
+
+      "ByThreadPostName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostName <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostName" "Respondable"
+
+
+      "ByThreadPostLikeId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostLikeId <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostLikeId" "Respondable"
+
+
+      "ByThreadPostLikesIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostLikesIds <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostLikesIds" "Respondable"
+
+
+      "ByThreadPostStarId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostStarId <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostStarId" "Respondable"
+
+
+      "ByThreadPostStarsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostStarsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostStarsIds" "Respondable"
+
+
+      "ByBucketId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByBucketId <$> read x0
+          _ -> Left $ TypeMismatch "ByBucketId" "Respondable"
+
+
+      "ByResourceId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByResourceId <$> read x0
+          _ -> Left $ TypeMismatch "ByResourceId" "Respondable"
+
+
+      "ByResourcesIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByResourcesIds <$> read x0
+          _ -> Left $ TypeMismatch "ByResourcesIds" "Respondable"
+
+
+      "ByResourceName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByResourceName <$> read x0
+          _ -> Left $ TypeMismatch "ByResourceName" "Respondable"
+
+
+      "ByLeuronId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByLeuronId <$> read x0
+          _ -> Left $ TypeMismatch "ByLeuronId" "Respondable"
+
+
+      "ByLeuronsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByLeuronsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByLeuronsIds" "Respondable"
+
+
+      "ByPmId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByPmId <$> read x0
+          _ -> Left $ TypeMismatch "ByPmId" "Respondable"
+
+
+      "ByPmsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByPmsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByPmsIds" "Respondable"
+
+
+      "ByReminderId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByReminderId <$> read x0
+          _ -> Left $ TypeMismatch "ByReminderId" "Respondable"
+
+
+      "ByReminderFolderId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByReminderFolderId <$> read x0
+          _ -> Left $ TypeMismatch "ByReminderFolderId" "Respondable"
+
+
+      "ByParentId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByParentId <$> read x0
+          _ -> Left $ TypeMismatch "ByParentId" "Respondable"
+
+
+      "ByParentsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByParentsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByParentsIds" "Respondable"
+
+
+      "ByParentName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByParentName <$> read x0
+          _ -> Left $ TypeMismatch "ByParentName" "Respondable"
+
+
+      "BySelf" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> BySelf <$> read x0
+          _ -> Left $ TypeMismatch "BySelf" "Respondable"
+
+
+      "Timestamp" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Timestamp <$> read x0
+          _ -> Left $ TypeMismatch "Timestamp" "Respondable"
+
+
+      "UnixTimestamp" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> UnixTimestamp <$> read x0
+          _ -> Left $ TypeMismatch "UnixTimestamp" "Respondable"
+
+
+      "CreatedAtTimestamp" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> CreatedAtTimestamp <$> read x0
+          _ -> Left $ TypeMismatch "CreatedAtTimestamp" "Respondable"
+
+
+      "CreatedAtUnixTimestamp" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> CreatedAtUnixTimestamp <$> read x0
+          _ -> Left $ TypeMismatch "CreatedAtUnixTimestamp" "Respondable"
+
+
+      "RealIP" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> RealIP <$> read x0
+          _ -> Left $ TypeMismatch "RealIP" "Respondable"
+
+
+      "IP" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> IP <$> read x0
+          _ -> Left $ TypeMismatch "IP" "Respondable"
+
+
+      "WithOrganization" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithOrganization <$> read x0
+          _ -> Left $ TypeMismatch "WithOrganization" "Respondable"
+
+
+      "WithForum" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithForum <$> read x0
+          _ -> Left $ TypeMismatch "WithForum" "Respondable"
+
+
+      "WithBoard" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithBoard <$> read x0
+          _ -> Left $ TypeMismatch "WithBoard" "Respondable"
+
+
+      "WithThread" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithThread <$> read x0
+          _ -> Left $ TypeMismatch "WithThread" "Respondable"
+
+
+      "WithResource" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithResource <$> read x0
+          _ -> Left $ TypeMismatch "WithResource" "Respondable"
+
+
+      _ -> Left $ TypeMismatch "Param" "Respondable"
 
 
 
@@ -8757,257 +9788,448 @@ instance paramIsForeign :: IsForeign Param where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "Limit" -> do
-          x0 <- readProp "contents" json
-          Limit <$> read x0
+      "Limit" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Limit <$> read x0
+          _ -> Left $ TypeMismatch "Limit" "IsForeign"
 
-        "Offset" -> do
-          x0 <- readProp "contents" json
-          Offset <$> read x0
 
-        "SortOrder" -> do
-          x0 <- readProp "contents" json
-          SortOrder <$> read x0
+      "Offset" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Offset <$> read x0
+          _ -> Left $ TypeMismatch "Offset" "IsForeign"
 
-        "Order" -> do
-          x0 <- readProp "contents" json
-          Order <$> read x0
 
-        "ByOrganizationId" -> do
-          x0 <- readProp "contents" json
-          ByOrganizationId <$> read x0
+      "SortOrder" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> SortOrder <$> read x0
+          _ -> Left $ TypeMismatch "SortOrder" "IsForeign"
 
-        "ByOrganizationsIds" -> do
-          x0 <- readProp "contents" json
-          ByOrganizationsIds <$> read x0
 
-        "ByOrganizationName" -> do
-          x0 <- readProp "contents" json
-          ByOrganizationName <$> read x0
+      "Order" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Order <$> read x0
+          _ -> Left $ TypeMismatch "Order" "IsForeign"
 
-        "ByTeamId" -> do
-          x0 <- readProp "contents" json
-          ByTeamId <$> read x0
 
-        "ByTeamsIds" -> do
-          x0 <- readProp "contents" json
-          ByTeamsIds <$> read x0
+      "ByOrganizationId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByOrganizationId <$> read x0
+          _ -> Left $ TypeMismatch "ByOrganizationId" "IsForeign"
 
-        "ByTeamName" -> do
-          x0 <- readProp "contents" json
-          ByTeamName <$> read x0
 
-        "ByTeamMemberId" -> do
-          x0 <- readProp "contents" json
-          ByTeamMemberId <$> read x0
+      "ByOrganizationsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByOrganizationsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByOrganizationsIds" "IsForeign"
 
-        "ByTeamMembersIds" -> do
-          x0 <- readProp "contents" json
-          ByTeamMembersIds <$> read x0
 
-        "ByUserId" -> do
-          x0 <- readProp "contents" json
-          ByUserId <$> read x0
+      "ByOrganizationName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByOrganizationName <$> read x0
+          _ -> Left $ TypeMismatch "ByOrganizationName" "IsForeign"
 
-        "ByUsersIds" -> do
-          x0 <- readProp "contents" json
-          ByUsersIds <$> read x0
 
-        "ByUserNick" -> do
-          x0 <- readProp "contents" json
-          ByUserNick <$> read x0
+      "ByTeamId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamId <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamId" "IsForeign"
 
-        "ByUsersNicks" -> do
-          x0 <- readProp "contents" json
-          ByUsersNicks <$> read x0
 
-        "ByGlobalGroupId" -> do
-          x0 <- readProp "contents" json
-          ByGlobalGroupId <$> read x0
+      "ByTeamsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamsIds" "IsForeign"
 
-        "ByGlobalGroupsIds" -> do
-          x0 <- readProp "contents" json
-          ByGlobalGroupsIds <$> read x0
 
-        "ByGroupId" -> do
-          x0 <- readProp "contents" json
-          ByGroupId <$> read x0
+      "ByTeamName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamName <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamName" "IsForeign"
 
-        "ByGroupsIds" -> do
-          x0 <- readProp "contents" json
-          ByGroupsIds <$> read x0
 
-        "ByGroupMemberId" -> do
-          x0 <- readProp "contents" json
-          ByGroupMemberId <$> read x0
+      "ByTeamMemberId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamMemberId <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamMemberId" "IsForeign"
 
-        "ByGroupMembersIds" -> do
-          x0 <- readProp "contents" json
-          ByGroupMembersIds <$> read x0
 
-        "ByForumId" -> do
-          x0 <- readProp "contents" json
-          ByForumId <$> read x0
+      "ByTeamMembersIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByTeamMembersIds <$> read x0
+          _ -> Left $ TypeMismatch "ByTeamMembersIds" "IsForeign"
 
-        "ByForumsIds" -> do
-          x0 <- readProp "contents" json
-          ByForumsIds <$> read x0
 
-        "ByForumName" -> do
-          x0 <- readProp "contents" json
-          ByForumName <$> read x0
+      "ByUserId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByUserId <$> read x0
+          _ -> Left $ TypeMismatch "ByUserId" "IsForeign"
 
-        "ByBoardId" -> do
-          x0 <- readProp "contents" json
-          ByBoardId <$> read x0
 
-        "ByBoardsIds" -> do
-          x0 <- readProp "contents" json
-          ByBoardsIds <$> read x0
+      "ByUsersIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByUsersIds <$> read x0
+          _ -> Left $ TypeMismatch "ByUsersIds" "IsForeign"
 
-        "ByBoardName" -> do
-          x0 <- readProp "contents" json
-          ByBoardName <$> read x0
 
-        "ByThreadId" -> do
-          x0 <- readProp "contents" json
-          ByThreadId <$> read x0
+      "ByUserNick" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByUserNick <$> read x0
+          _ -> Left $ TypeMismatch "ByUserNick" "IsForeign"
 
-        "ByThreadsIds" -> do
-          x0 <- readProp "contents" json
-          ByThreadsIds <$> read x0
 
-        "ByThreadName" -> do
-          x0 <- readProp "contents" json
-          ByThreadName <$> read x0
+      "ByUsersNicks" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByUsersNicks <$> read x0
+          _ -> Left $ TypeMismatch "ByUsersNicks" "IsForeign"
 
-        "ByThreadPostId" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostId <$> read x0
 
-        "ByThreadPostsIds" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostsIds <$> read x0
+      "ByGlobalGroupId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGlobalGroupId <$> read x0
+          _ -> Left $ TypeMismatch "ByGlobalGroupId" "IsForeign"
 
-        "ByThreadPostName" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostName <$> read x0
 
-        "ByThreadPostLikeId" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostLikeId <$> read x0
+      "ByGlobalGroupsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGlobalGroupsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByGlobalGroupsIds" "IsForeign"
 
-        "ByThreadPostLikesIds" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostLikesIds <$> read x0
 
-        "ByThreadPostStarId" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostStarId <$> read x0
+      "ByGroupId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGroupId <$> read x0
+          _ -> Left $ TypeMismatch "ByGroupId" "IsForeign"
 
-        "ByThreadPostStarsIds" -> do
-          x0 <- readProp "contents" json
-          ByThreadPostStarsIds <$> read x0
 
-        "ByBucketId" -> do
-          x0 <- readProp "contents" json
-          ByBucketId <$> read x0
+      "ByGroupsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGroupsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByGroupsIds" "IsForeign"
 
-        "ByResourceId" -> do
-          x0 <- readProp "contents" json
-          ByResourceId <$> read x0
 
-        "ByResourcesIds" -> do
-          x0 <- readProp "contents" json
-          ByResourcesIds <$> read x0
+      "ByGroupMemberId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGroupMemberId <$> read x0
+          _ -> Left $ TypeMismatch "ByGroupMemberId" "IsForeign"
 
-        "ByResourceName" -> do
-          x0 <- readProp "contents" json
-          ByResourceName <$> read x0
 
-        "ByLeuronId" -> do
-          x0 <- readProp "contents" json
-          ByLeuronId <$> read x0
+      "ByGroupMembersIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByGroupMembersIds <$> read x0
+          _ -> Left $ TypeMismatch "ByGroupMembersIds" "IsForeign"
 
-        "ByLeuronsIds" -> do
-          x0 <- readProp "contents" json
-          ByLeuronsIds <$> read x0
 
-        "ByPmId" -> do
-          x0 <- readProp "contents" json
-          ByPmId <$> read x0
+      "ByForumId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByForumId <$> read x0
+          _ -> Left $ TypeMismatch "ByForumId" "IsForeign"
 
-        "ByPmsIds" -> do
-          x0 <- readProp "contents" json
-          ByPmsIds <$> read x0
 
-        "ByReminderId" -> do
-          x0 <- readProp "contents" json
-          ByReminderId <$> read x0
+      "ByForumsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByForumsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByForumsIds" "IsForeign"
 
-        "ByReminderFolderId" -> do
-          x0 <- readProp "contents" json
-          ByReminderFolderId <$> read x0
 
-        "ByParentId" -> do
-          x0 <- readProp "contents" json
-          ByParentId <$> read x0
+      "ByForumName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByForumName <$> read x0
+          _ -> Left $ TypeMismatch "ByForumName" "IsForeign"
 
-        "ByParentsIds" -> do
-          x0 <- readProp "contents" json
-          ByParentsIds <$> read x0
 
-        "ByParentName" -> do
-          x0 <- readProp "contents" json
-          ByParentName <$> read x0
+      "ByBoardId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByBoardId <$> read x0
+          _ -> Left $ TypeMismatch "ByBoardId" "IsForeign"
 
-        "BySelf" -> do
-          x0 <- readProp "contents" json
-          BySelf <$> read x0
 
-        "Timestamp" -> do
-          x0 <- readProp "contents" json
-          Timestamp <$> read x0
+      "ByBoardsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByBoardsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByBoardsIds" "IsForeign"
 
-        "UnixTimestamp" -> do
-          x0 <- readProp "contents" json
-          UnixTimestamp <$> read x0
 
-        "CreatedAtTimestamp" -> do
-          x0 <- readProp "contents" json
-          CreatedAtTimestamp <$> read x0
+      "ByBoardName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByBoardName <$> read x0
+          _ -> Left $ TypeMismatch "ByBoardName" "IsForeign"
 
-        "CreatedAtUnixTimestamp" -> do
-          x0 <- readProp "contents" json
-          CreatedAtUnixTimestamp <$> read x0
 
-        "RealIP" -> do
-          x0 <- readProp "contents" json
-          RealIP <$> read x0
+      "ByThreadId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadId <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadId" "IsForeign"
 
-        "IP" -> do
-          x0 <- readProp "contents" json
-          IP <$> read x0
 
-        "WithOrganization" -> do
-          x0 <- readProp "contents" json
-          WithOrganization <$> read x0
+      "ByThreadsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadsIds" "IsForeign"
 
-        "WithForum" -> do
-          x0 <- readProp "contents" json
-          WithForum <$> read x0
 
-        "WithBoard" -> do
-          x0 <- readProp "contents" json
-          WithBoard <$> read x0
+      "ByThreadName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadName <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadName" "IsForeign"
 
-        "WithThread" -> do
-          x0 <- readProp "contents" json
-          WithThread <$> read x0
 
-        "WithResource" -> do
-          x0 <- readProp "contents" json
-          WithResource <$> read x0
+      "ByThreadPostId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostId <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostId" "IsForeign"
+
+
+      "ByThreadPostsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostsIds" "IsForeign"
+
+
+      "ByThreadPostName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostName <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostName" "IsForeign"
+
+
+      "ByThreadPostLikeId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostLikeId <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostLikeId" "IsForeign"
+
+
+      "ByThreadPostLikesIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostLikesIds <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostLikesIds" "IsForeign"
+
+
+      "ByThreadPostStarId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostStarId <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostStarId" "IsForeign"
+
+
+      "ByThreadPostStarsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByThreadPostStarsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByThreadPostStarsIds" "IsForeign"
+
+
+      "ByBucketId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByBucketId <$> read x0
+          _ -> Left $ TypeMismatch "ByBucketId" "IsForeign"
+
+
+      "ByResourceId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByResourceId <$> read x0
+          _ -> Left $ TypeMismatch "ByResourceId" "IsForeign"
+
+
+      "ByResourcesIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByResourcesIds <$> read x0
+          _ -> Left $ TypeMismatch "ByResourcesIds" "IsForeign"
+
+
+      "ByResourceName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByResourceName <$> read x0
+          _ -> Left $ TypeMismatch "ByResourceName" "IsForeign"
+
+
+      "ByLeuronId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByLeuronId <$> read x0
+          _ -> Left $ TypeMismatch "ByLeuronId" "IsForeign"
+
+
+      "ByLeuronsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByLeuronsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByLeuronsIds" "IsForeign"
+
+
+      "ByPmId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByPmId <$> read x0
+          _ -> Left $ TypeMismatch "ByPmId" "IsForeign"
+
+
+      "ByPmsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByPmsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByPmsIds" "IsForeign"
+
+
+      "ByReminderId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByReminderId <$> read x0
+          _ -> Left $ TypeMismatch "ByReminderId" "IsForeign"
+
+
+      "ByReminderFolderId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByReminderFolderId <$> read x0
+          _ -> Left $ TypeMismatch "ByReminderFolderId" "IsForeign"
+
+
+      "ByParentId" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByParentId <$> read x0
+          _ -> Left $ TypeMismatch "ByParentId" "IsForeign"
+
+
+      "ByParentsIds" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByParentsIds <$> read x0
+          _ -> Left $ TypeMismatch "ByParentsIds" "IsForeign"
+
+
+      "ByParentName" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ByParentName <$> read x0
+          _ -> Left $ TypeMismatch "ByParentName" "IsForeign"
+
+
+      "BySelf" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> BySelf <$> read x0
+          _ -> Left $ TypeMismatch "BySelf" "IsForeign"
+
+
+      "Timestamp" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Timestamp <$> read x0
+          _ -> Left $ TypeMismatch "Timestamp" "IsForeign"
+
+
+      "UnixTimestamp" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> UnixTimestamp <$> read x0
+          _ -> Left $ TypeMismatch "UnixTimestamp" "IsForeign"
+
+
+      "CreatedAtTimestamp" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> CreatedAtTimestamp <$> read x0
+          _ -> Left $ TypeMismatch "CreatedAtTimestamp" "IsForeign"
+
+
+      "CreatedAtUnixTimestamp" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> CreatedAtUnixTimestamp <$> read x0
+          _ -> Left $ TypeMismatch "CreatedAtUnixTimestamp" "IsForeign"
+
+
+      "RealIP" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> RealIP <$> read x0
+          _ -> Left $ TypeMismatch "RealIP" "IsForeign"
+
+
+      "IP" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> IP <$> read x0
+          _ -> Left $ TypeMismatch "IP" "IsForeign"
+
+
+      "WithOrganization" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithOrganization <$> read x0
+          _ -> Left $ TypeMismatch "WithOrganization" "IsForeign"
+
+
+      "WithForum" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithForum <$> read x0
+          _ -> Left $ TypeMismatch "WithForum" "IsForeign"
+
+
+      "WithBoard" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithBoard <$> read x0
+          _ -> Left $ TypeMismatch "WithBoard" "IsForeign"
+
+
+      "WithThread" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithThread <$> read x0
+          _ -> Left $ TypeMismatch "WithThread" "IsForeign"
+
+
+      "WithResource" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> WithResource <$> read x0
+          _ -> Left $ TypeMismatch "WithResource" "IsForeign"
+
+
+      _ -> Left $ TypeMismatch "Param" "IsForeign"
 
 
 
@@ -9338,196 +10560,197 @@ instance paramTagDecodeJson :: DecodeJson ParamTag where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "ParamTag_Limit" -> do
-          return ParamTag_Limit
+      "ParamTag_Limit" -> do
+        pure ParamTag_Limit
 
-        "ParamTag_Offset" -> do
-          return ParamTag_Offset
+      "ParamTag_Offset" -> do
+        pure ParamTag_Offset
 
-        "ParamTag_SortOrder" -> do
-          return ParamTag_SortOrder
+      "ParamTag_SortOrder" -> do
+        pure ParamTag_SortOrder
 
-        "ParamTag_Order" -> do
-          return ParamTag_Order
+      "ParamTag_Order" -> do
+        pure ParamTag_Order
 
-        "ParamTag_ByOrganizationId" -> do
-          return ParamTag_ByOrganizationId
+      "ParamTag_ByOrganizationId" -> do
+        pure ParamTag_ByOrganizationId
 
-        "ParamTag_ByOrganizationsIds" -> do
-          return ParamTag_ByOrganizationsIds
+      "ParamTag_ByOrganizationsIds" -> do
+        pure ParamTag_ByOrganizationsIds
 
-        "ParamTag_ByOrganizationName" -> do
-          return ParamTag_ByOrganizationName
+      "ParamTag_ByOrganizationName" -> do
+        pure ParamTag_ByOrganizationName
 
-        "ParamTag_ByTeamId" -> do
-          return ParamTag_ByTeamId
+      "ParamTag_ByTeamId" -> do
+        pure ParamTag_ByTeamId
 
-        "ParamTag_ByTeamsIds" -> do
-          return ParamTag_ByTeamsIds
+      "ParamTag_ByTeamsIds" -> do
+        pure ParamTag_ByTeamsIds
 
-        "ParamTag_ByTeamName" -> do
-          return ParamTag_ByTeamName
+      "ParamTag_ByTeamName" -> do
+        pure ParamTag_ByTeamName
 
-        "ParamTag_ByTeamMemberId" -> do
-          return ParamTag_ByTeamMemberId
+      "ParamTag_ByTeamMemberId" -> do
+        pure ParamTag_ByTeamMemberId
 
-        "ParamTag_ByTeamMembersIds" -> do
-          return ParamTag_ByTeamMembersIds
+      "ParamTag_ByTeamMembersIds" -> do
+        pure ParamTag_ByTeamMembersIds
 
-        "ParamTag_ByUserId" -> do
-          return ParamTag_ByUserId
+      "ParamTag_ByUserId" -> do
+        pure ParamTag_ByUserId
 
-        "ParamTag_ByUsersIds" -> do
-          return ParamTag_ByUsersIds
+      "ParamTag_ByUsersIds" -> do
+        pure ParamTag_ByUsersIds
 
-        "ParamTag_ByUserNick" -> do
-          return ParamTag_ByUserNick
+      "ParamTag_ByUserNick" -> do
+        pure ParamTag_ByUserNick
 
-        "ParamTag_ByUsersNicks" -> do
-          return ParamTag_ByUsersNicks
+      "ParamTag_ByUsersNicks" -> do
+        pure ParamTag_ByUsersNicks
 
-        "ParamTag_ByGlobalGroupId" -> do
-          return ParamTag_ByGlobalGroupId
+      "ParamTag_ByGlobalGroupId" -> do
+        pure ParamTag_ByGlobalGroupId
 
-        "ParamTag_ByGlobalGroupsIds" -> do
-          return ParamTag_ByGlobalGroupsIds
+      "ParamTag_ByGlobalGroupsIds" -> do
+        pure ParamTag_ByGlobalGroupsIds
 
-        "ParamTag_ByGroupId" -> do
-          return ParamTag_ByGroupId
+      "ParamTag_ByGroupId" -> do
+        pure ParamTag_ByGroupId
 
-        "ParamTag_ByGroupsIds" -> do
-          return ParamTag_ByGroupsIds
+      "ParamTag_ByGroupsIds" -> do
+        pure ParamTag_ByGroupsIds
 
-        "ParamTag_ByGroupMemberId" -> do
-          return ParamTag_ByGroupMemberId
+      "ParamTag_ByGroupMemberId" -> do
+        pure ParamTag_ByGroupMemberId
 
-        "ParamTag_ByGroupMembersIds" -> do
-          return ParamTag_ByGroupMembersIds
+      "ParamTag_ByGroupMembersIds" -> do
+        pure ParamTag_ByGroupMembersIds
 
-        "ParamTag_ByForumId" -> do
-          return ParamTag_ByForumId
+      "ParamTag_ByForumId" -> do
+        pure ParamTag_ByForumId
 
-        "ParamTag_ByForumsIds" -> do
-          return ParamTag_ByForumsIds
+      "ParamTag_ByForumsIds" -> do
+        pure ParamTag_ByForumsIds
 
-        "ParamTag_ByForumName" -> do
-          return ParamTag_ByForumName
+      "ParamTag_ByForumName" -> do
+        pure ParamTag_ByForumName
 
-        "ParamTag_ByBoardId" -> do
-          return ParamTag_ByBoardId
+      "ParamTag_ByBoardId" -> do
+        pure ParamTag_ByBoardId
 
-        "ParamTag_ByBoardsIds" -> do
-          return ParamTag_ByBoardsIds
+      "ParamTag_ByBoardsIds" -> do
+        pure ParamTag_ByBoardsIds
 
-        "ParamTag_ByBoardName" -> do
-          return ParamTag_ByBoardName
+      "ParamTag_ByBoardName" -> do
+        pure ParamTag_ByBoardName
 
-        "ParamTag_ByThreadId" -> do
-          return ParamTag_ByThreadId
+      "ParamTag_ByThreadId" -> do
+        pure ParamTag_ByThreadId
 
-        "ParamTag_ByThreadsIds" -> do
-          return ParamTag_ByThreadsIds
+      "ParamTag_ByThreadsIds" -> do
+        pure ParamTag_ByThreadsIds
 
-        "ParamTag_ByThreadName" -> do
-          return ParamTag_ByThreadName
+      "ParamTag_ByThreadName" -> do
+        pure ParamTag_ByThreadName
 
-        "ParamTag_ByThreadPostId" -> do
-          return ParamTag_ByThreadPostId
+      "ParamTag_ByThreadPostId" -> do
+        pure ParamTag_ByThreadPostId
 
-        "ParamTag_ByThreadPostsIds" -> do
-          return ParamTag_ByThreadPostsIds
+      "ParamTag_ByThreadPostsIds" -> do
+        pure ParamTag_ByThreadPostsIds
 
-        "ParamTag_ByThreadPostName" -> do
-          return ParamTag_ByThreadPostName
+      "ParamTag_ByThreadPostName" -> do
+        pure ParamTag_ByThreadPostName
 
-        "ParamTag_ByThreadPostLikeId" -> do
-          return ParamTag_ByThreadPostLikeId
+      "ParamTag_ByThreadPostLikeId" -> do
+        pure ParamTag_ByThreadPostLikeId
 
-        "ParamTag_ByThreadPostLikesIds" -> do
-          return ParamTag_ByThreadPostLikesIds
+      "ParamTag_ByThreadPostLikesIds" -> do
+        pure ParamTag_ByThreadPostLikesIds
 
-        "ParamTag_ByThreadPostStarId" -> do
-          return ParamTag_ByThreadPostStarId
+      "ParamTag_ByThreadPostStarId" -> do
+        pure ParamTag_ByThreadPostStarId
 
-        "ParamTag_ByThreadPostStarsIds" -> do
-          return ParamTag_ByThreadPostStarsIds
+      "ParamTag_ByThreadPostStarsIds" -> do
+        pure ParamTag_ByThreadPostStarsIds
 
-        "ParamTag_ByBucketId" -> do
-          return ParamTag_ByBucketId
+      "ParamTag_ByBucketId" -> do
+        pure ParamTag_ByBucketId
 
-        "ParamTag_ByResourceId" -> do
-          return ParamTag_ByResourceId
+      "ParamTag_ByResourceId" -> do
+        pure ParamTag_ByResourceId
 
-        "ParamTag_ByResourcesIds" -> do
-          return ParamTag_ByResourcesIds
+      "ParamTag_ByResourcesIds" -> do
+        pure ParamTag_ByResourcesIds
 
-        "ParamTag_ByResourceName" -> do
-          return ParamTag_ByResourceName
+      "ParamTag_ByResourceName" -> do
+        pure ParamTag_ByResourceName
 
-        "ParamTag_ByLeuronId" -> do
-          return ParamTag_ByLeuronId
+      "ParamTag_ByLeuronId" -> do
+        pure ParamTag_ByLeuronId
 
-        "ParamTag_ByLeuronsIds" -> do
-          return ParamTag_ByLeuronsIds
+      "ParamTag_ByLeuronsIds" -> do
+        pure ParamTag_ByLeuronsIds
 
-        "ParamTag_ByPmId" -> do
-          return ParamTag_ByPmId
+      "ParamTag_ByPmId" -> do
+        pure ParamTag_ByPmId
 
-        "ParamTag_ByPmsIds" -> do
-          return ParamTag_ByPmsIds
+      "ParamTag_ByPmsIds" -> do
+        pure ParamTag_ByPmsIds
 
-        "ParamTag_ByReminderId" -> do
-          return ParamTag_ByReminderId
+      "ParamTag_ByReminderId" -> do
+        pure ParamTag_ByReminderId
 
-        "ParamTag_ByReminderFolderId" -> do
-          return ParamTag_ByReminderFolderId
+      "ParamTag_ByReminderFolderId" -> do
+        pure ParamTag_ByReminderFolderId
 
-        "ParamTag_ByParentId" -> do
-          return ParamTag_ByParentId
+      "ParamTag_ByParentId" -> do
+        pure ParamTag_ByParentId
 
-        "ParamTag_ByParentsIds" -> do
-          return ParamTag_ByParentsIds
+      "ParamTag_ByParentsIds" -> do
+        pure ParamTag_ByParentsIds
 
-        "ParamTag_ByParentName" -> do
-          return ParamTag_ByParentName
+      "ParamTag_ByParentName" -> do
+        pure ParamTag_ByParentName
 
-        "ParamTag_BySelf" -> do
-          return ParamTag_BySelf
+      "ParamTag_BySelf" -> do
+        pure ParamTag_BySelf
 
-        "ParamTag_Timestamp" -> do
-          return ParamTag_Timestamp
+      "ParamTag_Timestamp" -> do
+        pure ParamTag_Timestamp
 
-        "ParamTag_UnixTimestamp" -> do
-          return ParamTag_UnixTimestamp
+      "ParamTag_UnixTimestamp" -> do
+        pure ParamTag_UnixTimestamp
 
-        "ParamTag_CreatedAtTimestamp" -> do
-          return ParamTag_CreatedAtTimestamp
+      "ParamTag_CreatedAtTimestamp" -> do
+        pure ParamTag_CreatedAtTimestamp
 
-        "ParamTag_CreatedAtUnixTimestamp" -> do
-          return ParamTag_CreatedAtUnixTimestamp
+      "ParamTag_CreatedAtUnixTimestamp" -> do
+        pure ParamTag_CreatedAtUnixTimestamp
 
-        "ParamTag_RealIP" -> do
-          return ParamTag_RealIP
+      "ParamTag_RealIP" -> do
+        pure ParamTag_RealIP
 
-        "ParamTag_IP" -> do
-          return ParamTag_IP
+      "ParamTag_IP" -> do
+        pure ParamTag_IP
 
-        "ParamTag_WithOrganization" -> do
-          return ParamTag_WithOrganization
+      "ParamTag_WithOrganization" -> do
+        pure ParamTag_WithOrganization
 
-        "ParamTag_WithForum" -> do
-          return ParamTag_WithForum
+      "ParamTag_WithForum" -> do
+        pure ParamTag_WithForum
 
-        "ParamTag_WithBoard" -> do
-          return ParamTag_WithBoard
+      "ParamTag_WithBoard" -> do
+        pure ParamTag_WithBoard
 
-        "ParamTag_WithThread" -> do
-          return ParamTag_WithThread
+      "ParamTag_WithThread" -> do
+        pure ParamTag_WithThread
 
-        "ParamTag_WithResource" -> do
-          return ParamTag_WithResource
+      "ParamTag_WithResource" -> do
+        pure ParamTag_WithResource
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for ParamTag"
+
 
 
 instance paramTagRequestable :: Requestable ParamTag where
@@ -9542,194 +10765,196 @@ instance paramTagRespondable :: Respondable ParamTag where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "ParamTag_Limit" -> do
-          return ParamTag_Limit
+      "ParamTag_Limit" -> do
+        pure ParamTag_Limit
 
-        "ParamTag_Offset" -> do
-          return ParamTag_Offset
+      "ParamTag_Offset" -> do
+        pure ParamTag_Offset
 
-        "ParamTag_SortOrder" -> do
-          return ParamTag_SortOrder
+      "ParamTag_SortOrder" -> do
+        pure ParamTag_SortOrder
 
-        "ParamTag_Order" -> do
-          return ParamTag_Order
+      "ParamTag_Order" -> do
+        pure ParamTag_Order
 
-        "ParamTag_ByOrganizationId" -> do
-          return ParamTag_ByOrganizationId
+      "ParamTag_ByOrganizationId" -> do
+        pure ParamTag_ByOrganizationId
 
-        "ParamTag_ByOrganizationsIds" -> do
-          return ParamTag_ByOrganizationsIds
+      "ParamTag_ByOrganizationsIds" -> do
+        pure ParamTag_ByOrganizationsIds
 
-        "ParamTag_ByOrganizationName" -> do
-          return ParamTag_ByOrganizationName
+      "ParamTag_ByOrganizationName" -> do
+        pure ParamTag_ByOrganizationName
 
-        "ParamTag_ByTeamId" -> do
-          return ParamTag_ByTeamId
+      "ParamTag_ByTeamId" -> do
+        pure ParamTag_ByTeamId
 
-        "ParamTag_ByTeamsIds" -> do
-          return ParamTag_ByTeamsIds
+      "ParamTag_ByTeamsIds" -> do
+        pure ParamTag_ByTeamsIds
 
-        "ParamTag_ByTeamName" -> do
-          return ParamTag_ByTeamName
+      "ParamTag_ByTeamName" -> do
+        pure ParamTag_ByTeamName
 
-        "ParamTag_ByTeamMemberId" -> do
-          return ParamTag_ByTeamMemberId
+      "ParamTag_ByTeamMemberId" -> do
+        pure ParamTag_ByTeamMemberId
 
-        "ParamTag_ByTeamMembersIds" -> do
-          return ParamTag_ByTeamMembersIds
+      "ParamTag_ByTeamMembersIds" -> do
+        pure ParamTag_ByTeamMembersIds
 
-        "ParamTag_ByUserId" -> do
-          return ParamTag_ByUserId
+      "ParamTag_ByUserId" -> do
+        pure ParamTag_ByUserId
 
-        "ParamTag_ByUsersIds" -> do
-          return ParamTag_ByUsersIds
+      "ParamTag_ByUsersIds" -> do
+        pure ParamTag_ByUsersIds
 
-        "ParamTag_ByUserNick" -> do
-          return ParamTag_ByUserNick
+      "ParamTag_ByUserNick" -> do
+        pure ParamTag_ByUserNick
 
-        "ParamTag_ByUsersNicks" -> do
-          return ParamTag_ByUsersNicks
+      "ParamTag_ByUsersNicks" -> do
+        pure ParamTag_ByUsersNicks
 
-        "ParamTag_ByGlobalGroupId" -> do
-          return ParamTag_ByGlobalGroupId
+      "ParamTag_ByGlobalGroupId" -> do
+        pure ParamTag_ByGlobalGroupId
 
-        "ParamTag_ByGlobalGroupsIds" -> do
-          return ParamTag_ByGlobalGroupsIds
+      "ParamTag_ByGlobalGroupsIds" -> do
+        pure ParamTag_ByGlobalGroupsIds
 
-        "ParamTag_ByGroupId" -> do
-          return ParamTag_ByGroupId
+      "ParamTag_ByGroupId" -> do
+        pure ParamTag_ByGroupId
 
-        "ParamTag_ByGroupsIds" -> do
-          return ParamTag_ByGroupsIds
+      "ParamTag_ByGroupsIds" -> do
+        pure ParamTag_ByGroupsIds
 
-        "ParamTag_ByGroupMemberId" -> do
-          return ParamTag_ByGroupMemberId
+      "ParamTag_ByGroupMemberId" -> do
+        pure ParamTag_ByGroupMemberId
 
-        "ParamTag_ByGroupMembersIds" -> do
-          return ParamTag_ByGroupMembersIds
+      "ParamTag_ByGroupMembersIds" -> do
+        pure ParamTag_ByGroupMembersIds
 
-        "ParamTag_ByForumId" -> do
-          return ParamTag_ByForumId
+      "ParamTag_ByForumId" -> do
+        pure ParamTag_ByForumId
 
-        "ParamTag_ByForumsIds" -> do
-          return ParamTag_ByForumsIds
+      "ParamTag_ByForumsIds" -> do
+        pure ParamTag_ByForumsIds
 
-        "ParamTag_ByForumName" -> do
-          return ParamTag_ByForumName
+      "ParamTag_ByForumName" -> do
+        pure ParamTag_ByForumName
 
-        "ParamTag_ByBoardId" -> do
-          return ParamTag_ByBoardId
+      "ParamTag_ByBoardId" -> do
+        pure ParamTag_ByBoardId
 
-        "ParamTag_ByBoardsIds" -> do
-          return ParamTag_ByBoardsIds
+      "ParamTag_ByBoardsIds" -> do
+        pure ParamTag_ByBoardsIds
 
-        "ParamTag_ByBoardName" -> do
-          return ParamTag_ByBoardName
+      "ParamTag_ByBoardName" -> do
+        pure ParamTag_ByBoardName
 
-        "ParamTag_ByThreadId" -> do
-          return ParamTag_ByThreadId
+      "ParamTag_ByThreadId" -> do
+        pure ParamTag_ByThreadId
 
-        "ParamTag_ByThreadsIds" -> do
-          return ParamTag_ByThreadsIds
+      "ParamTag_ByThreadsIds" -> do
+        pure ParamTag_ByThreadsIds
 
-        "ParamTag_ByThreadName" -> do
-          return ParamTag_ByThreadName
+      "ParamTag_ByThreadName" -> do
+        pure ParamTag_ByThreadName
 
-        "ParamTag_ByThreadPostId" -> do
-          return ParamTag_ByThreadPostId
+      "ParamTag_ByThreadPostId" -> do
+        pure ParamTag_ByThreadPostId
 
-        "ParamTag_ByThreadPostsIds" -> do
-          return ParamTag_ByThreadPostsIds
+      "ParamTag_ByThreadPostsIds" -> do
+        pure ParamTag_ByThreadPostsIds
 
-        "ParamTag_ByThreadPostName" -> do
-          return ParamTag_ByThreadPostName
+      "ParamTag_ByThreadPostName" -> do
+        pure ParamTag_ByThreadPostName
 
-        "ParamTag_ByThreadPostLikeId" -> do
-          return ParamTag_ByThreadPostLikeId
+      "ParamTag_ByThreadPostLikeId" -> do
+        pure ParamTag_ByThreadPostLikeId
 
-        "ParamTag_ByThreadPostLikesIds" -> do
-          return ParamTag_ByThreadPostLikesIds
+      "ParamTag_ByThreadPostLikesIds" -> do
+        pure ParamTag_ByThreadPostLikesIds
 
-        "ParamTag_ByThreadPostStarId" -> do
-          return ParamTag_ByThreadPostStarId
+      "ParamTag_ByThreadPostStarId" -> do
+        pure ParamTag_ByThreadPostStarId
 
-        "ParamTag_ByThreadPostStarsIds" -> do
-          return ParamTag_ByThreadPostStarsIds
+      "ParamTag_ByThreadPostStarsIds" -> do
+        pure ParamTag_ByThreadPostStarsIds
 
-        "ParamTag_ByBucketId" -> do
-          return ParamTag_ByBucketId
+      "ParamTag_ByBucketId" -> do
+        pure ParamTag_ByBucketId
 
-        "ParamTag_ByResourceId" -> do
-          return ParamTag_ByResourceId
+      "ParamTag_ByResourceId" -> do
+        pure ParamTag_ByResourceId
 
-        "ParamTag_ByResourcesIds" -> do
-          return ParamTag_ByResourcesIds
+      "ParamTag_ByResourcesIds" -> do
+        pure ParamTag_ByResourcesIds
 
-        "ParamTag_ByResourceName" -> do
-          return ParamTag_ByResourceName
+      "ParamTag_ByResourceName" -> do
+        pure ParamTag_ByResourceName
 
-        "ParamTag_ByLeuronId" -> do
-          return ParamTag_ByLeuronId
+      "ParamTag_ByLeuronId" -> do
+        pure ParamTag_ByLeuronId
 
-        "ParamTag_ByLeuronsIds" -> do
-          return ParamTag_ByLeuronsIds
+      "ParamTag_ByLeuronsIds" -> do
+        pure ParamTag_ByLeuronsIds
 
-        "ParamTag_ByPmId" -> do
-          return ParamTag_ByPmId
+      "ParamTag_ByPmId" -> do
+        pure ParamTag_ByPmId
 
-        "ParamTag_ByPmsIds" -> do
-          return ParamTag_ByPmsIds
+      "ParamTag_ByPmsIds" -> do
+        pure ParamTag_ByPmsIds
 
-        "ParamTag_ByReminderId" -> do
-          return ParamTag_ByReminderId
+      "ParamTag_ByReminderId" -> do
+        pure ParamTag_ByReminderId
 
-        "ParamTag_ByReminderFolderId" -> do
-          return ParamTag_ByReminderFolderId
+      "ParamTag_ByReminderFolderId" -> do
+        pure ParamTag_ByReminderFolderId
 
-        "ParamTag_ByParentId" -> do
-          return ParamTag_ByParentId
+      "ParamTag_ByParentId" -> do
+        pure ParamTag_ByParentId
 
-        "ParamTag_ByParentsIds" -> do
-          return ParamTag_ByParentsIds
+      "ParamTag_ByParentsIds" -> do
+        pure ParamTag_ByParentsIds
 
-        "ParamTag_ByParentName" -> do
-          return ParamTag_ByParentName
+      "ParamTag_ByParentName" -> do
+        pure ParamTag_ByParentName
 
-        "ParamTag_BySelf" -> do
-          return ParamTag_BySelf
+      "ParamTag_BySelf" -> do
+        pure ParamTag_BySelf
 
-        "ParamTag_Timestamp" -> do
-          return ParamTag_Timestamp
+      "ParamTag_Timestamp" -> do
+        pure ParamTag_Timestamp
 
-        "ParamTag_UnixTimestamp" -> do
-          return ParamTag_UnixTimestamp
+      "ParamTag_UnixTimestamp" -> do
+        pure ParamTag_UnixTimestamp
 
-        "ParamTag_CreatedAtTimestamp" -> do
-          return ParamTag_CreatedAtTimestamp
+      "ParamTag_CreatedAtTimestamp" -> do
+        pure ParamTag_CreatedAtTimestamp
 
-        "ParamTag_CreatedAtUnixTimestamp" -> do
-          return ParamTag_CreatedAtUnixTimestamp
+      "ParamTag_CreatedAtUnixTimestamp" -> do
+        pure ParamTag_CreatedAtUnixTimestamp
 
-        "ParamTag_RealIP" -> do
-          return ParamTag_RealIP
+      "ParamTag_RealIP" -> do
+        pure ParamTag_RealIP
 
-        "ParamTag_IP" -> do
-          return ParamTag_IP
+      "ParamTag_IP" -> do
+        pure ParamTag_IP
 
-        "ParamTag_WithOrganization" -> do
-          return ParamTag_WithOrganization
+      "ParamTag_WithOrganization" -> do
+        pure ParamTag_WithOrganization
 
-        "ParamTag_WithForum" -> do
-          return ParamTag_WithForum
+      "ParamTag_WithForum" -> do
+        pure ParamTag_WithForum
 
-        "ParamTag_WithBoard" -> do
-          return ParamTag_WithBoard
+      "ParamTag_WithBoard" -> do
+        pure ParamTag_WithBoard
 
-        "ParamTag_WithThread" -> do
-          return ParamTag_WithThread
+      "ParamTag_WithThread" -> do
+        pure ParamTag_WithThread
 
-        "ParamTag_WithResource" -> do
-          return ParamTag_WithResource
+      "ParamTag_WithResource" -> do
+        pure ParamTag_WithResource
+
+      _ -> Left $ TypeMismatch "ParamTag" "Respondable"
 
 
 
@@ -9737,194 +10962,196 @@ instance paramTagIsForeign :: IsForeign ParamTag where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "ParamTag_Limit" -> do
-          return ParamTag_Limit
+      "ParamTag_Limit" -> do
+        pure ParamTag_Limit
 
-        "ParamTag_Offset" -> do
-          return ParamTag_Offset
+      "ParamTag_Offset" -> do
+        pure ParamTag_Offset
 
-        "ParamTag_SortOrder" -> do
-          return ParamTag_SortOrder
+      "ParamTag_SortOrder" -> do
+        pure ParamTag_SortOrder
 
-        "ParamTag_Order" -> do
-          return ParamTag_Order
+      "ParamTag_Order" -> do
+        pure ParamTag_Order
 
-        "ParamTag_ByOrganizationId" -> do
-          return ParamTag_ByOrganizationId
+      "ParamTag_ByOrganizationId" -> do
+        pure ParamTag_ByOrganizationId
 
-        "ParamTag_ByOrganizationsIds" -> do
-          return ParamTag_ByOrganizationsIds
+      "ParamTag_ByOrganizationsIds" -> do
+        pure ParamTag_ByOrganizationsIds
 
-        "ParamTag_ByOrganizationName" -> do
-          return ParamTag_ByOrganizationName
+      "ParamTag_ByOrganizationName" -> do
+        pure ParamTag_ByOrganizationName
 
-        "ParamTag_ByTeamId" -> do
-          return ParamTag_ByTeamId
+      "ParamTag_ByTeamId" -> do
+        pure ParamTag_ByTeamId
 
-        "ParamTag_ByTeamsIds" -> do
-          return ParamTag_ByTeamsIds
+      "ParamTag_ByTeamsIds" -> do
+        pure ParamTag_ByTeamsIds
 
-        "ParamTag_ByTeamName" -> do
-          return ParamTag_ByTeamName
+      "ParamTag_ByTeamName" -> do
+        pure ParamTag_ByTeamName
 
-        "ParamTag_ByTeamMemberId" -> do
-          return ParamTag_ByTeamMemberId
+      "ParamTag_ByTeamMemberId" -> do
+        pure ParamTag_ByTeamMemberId
 
-        "ParamTag_ByTeamMembersIds" -> do
-          return ParamTag_ByTeamMembersIds
+      "ParamTag_ByTeamMembersIds" -> do
+        pure ParamTag_ByTeamMembersIds
 
-        "ParamTag_ByUserId" -> do
-          return ParamTag_ByUserId
+      "ParamTag_ByUserId" -> do
+        pure ParamTag_ByUserId
 
-        "ParamTag_ByUsersIds" -> do
-          return ParamTag_ByUsersIds
+      "ParamTag_ByUsersIds" -> do
+        pure ParamTag_ByUsersIds
 
-        "ParamTag_ByUserNick" -> do
-          return ParamTag_ByUserNick
+      "ParamTag_ByUserNick" -> do
+        pure ParamTag_ByUserNick
 
-        "ParamTag_ByUsersNicks" -> do
-          return ParamTag_ByUsersNicks
+      "ParamTag_ByUsersNicks" -> do
+        pure ParamTag_ByUsersNicks
 
-        "ParamTag_ByGlobalGroupId" -> do
-          return ParamTag_ByGlobalGroupId
+      "ParamTag_ByGlobalGroupId" -> do
+        pure ParamTag_ByGlobalGroupId
 
-        "ParamTag_ByGlobalGroupsIds" -> do
-          return ParamTag_ByGlobalGroupsIds
+      "ParamTag_ByGlobalGroupsIds" -> do
+        pure ParamTag_ByGlobalGroupsIds
 
-        "ParamTag_ByGroupId" -> do
-          return ParamTag_ByGroupId
+      "ParamTag_ByGroupId" -> do
+        pure ParamTag_ByGroupId
 
-        "ParamTag_ByGroupsIds" -> do
-          return ParamTag_ByGroupsIds
+      "ParamTag_ByGroupsIds" -> do
+        pure ParamTag_ByGroupsIds
 
-        "ParamTag_ByGroupMemberId" -> do
-          return ParamTag_ByGroupMemberId
+      "ParamTag_ByGroupMemberId" -> do
+        pure ParamTag_ByGroupMemberId
 
-        "ParamTag_ByGroupMembersIds" -> do
-          return ParamTag_ByGroupMembersIds
+      "ParamTag_ByGroupMembersIds" -> do
+        pure ParamTag_ByGroupMembersIds
 
-        "ParamTag_ByForumId" -> do
-          return ParamTag_ByForumId
+      "ParamTag_ByForumId" -> do
+        pure ParamTag_ByForumId
 
-        "ParamTag_ByForumsIds" -> do
-          return ParamTag_ByForumsIds
+      "ParamTag_ByForumsIds" -> do
+        pure ParamTag_ByForumsIds
 
-        "ParamTag_ByForumName" -> do
-          return ParamTag_ByForumName
+      "ParamTag_ByForumName" -> do
+        pure ParamTag_ByForumName
 
-        "ParamTag_ByBoardId" -> do
-          return ParamTag_ByBoardId
+      "ParamTag_ByBoardId" -> do
+        pure ParamTag_ByBoardId
 
-        "ParamTag_ByBoardsIds" -> do
-          return ParamTag_ByBoardsIds
+      "ParamTag_ByBoardsIds" -> do
+        pure ParamTag_ByBoardsIds
 
-        "ParamTag_ByBoardName" -> do
-          return ParamTag_ByBoardName
+      "ParamTag_ByBoardName" -> do
+        pure ParamTag_ByBoardName
 
-        "ParamTag_ByThreadId" -> do
-          return ParamTag_ByThreadId
+      "ParamTag_ByThreadId" -> do
+        pure ParamTag_ByThreadId
 
-        "ParamTag_ByThreadsIds" -> do
-          return ParamTag_ByThreadsIds
+      "ParamTag_ByThreadsIds" -> do
+        pure ParamTag_ByThreadsIds
 
-        "ParamTag_ByThreadName" -> do
-          return ParamTag_ByThreadName
+      "ParamTag_ByThreadName" -> do
+        pure ParamTag_ByThreadName
 
-        "ParamTag_ByThreadPostId" -> do
-          return ParamTag_ByThreadPostId
+      "ParamTag_ByThreadPostId" -> do
+        pure ParamTag_ByThreadPostId
 
-        "ParamTag_ByThreadPostsIds" -> do
-          return ParamTag_ByThreadPostsIds
+      "ParamTag_ByThreadPostsIds" -> do
+        pure ParamTag_ByThreadPostsIds
 
-        "ParamTag_ByThreadPostName" -> do
-          return ParamTag_ByThreadPostName
+      "ParamTag_ByThreadPostName" -> do
+        pure ParamTag_ByThreadPostName
 
-        "ParamTag_ByThreadPostLikeId" -> do
-          return ParamTag_ByThreadPostLikeId
+      "ParamTag_ByThreadPostLikeId" -> do
+        pure ParamTag_ByThreadPostLikeId
 
-        "ParamTag_ByThreadPostLikesIds" -> do
-          return ParamTag_ByThreadPostLikesIds
+      "ParamTag_ByThreadPostLikesIds" -> do
+        pure ParamTag_ByThreadPostLikesIds
 
-        "ParamTag_ByThreadPostStarId" -> do
-          return ParamTag_ByThreadPostStarId
+      "ParamTag_ByThreadPostStarId" -> do
+        pure ParamTag_ByThreadPostStarId
 
-        "ParamTag_ByThreadPostStarsIds" -> do
-          return ParamTag_ByThreadPostStarsIds
+      "ParamTag_ByThreadPostStarsIds" -> do
+        pure ParamTag_ByThreadPostStarsIds
 
-        "ParamTag_ByBucketId" -> do
-          return ParamTag_ByBucketId
+      "ParamTag_ByBucketId" -> do
+        pure ParamTag_ByBucketId
 
-        "ParamTag_ByResourceId" -> do
-          return ParamTag_ByResourceId
+      "ParamTag_ByResourceId" -> do
+        pure ParamTag_ByResourceId
 
-        "ParamTag_ByResourcesIds" -> do
-          return ParamTag_ByResourcesIds
+      "ParamTag_ByResourcesIds" -> do
+        pure ParamTag_ByResourcesIds
 
-        "ParamTag_ByResourceName" -> do
-          return ParamTag_ByResourceName
+      "ParamTag_ByResourceName" -> do
+        pure ParamTag_ByResourceName
 
-        "ParamTag_ByLeuronId" -> do
-          return ParamTag_ByLeuronId
+      "ParamTag_ByLeuronId" -> do
+        pure ParamTag_ByLeuronId
 
-        "ParamTag_ByLeuronsIds" -> do
-          return ParamTag_ByLeuronsIds
+      "ParamTag_ByLeuronsIds" -> do
+        pure ParamTag_ByLeuronsIds
 
-        "ParamTag_ByPmId" -> do
-          return ParamTag_ByPmId
+      "ParamTag_ByPmId" -> do
+        pure ParamTag_ByPmId
 
-        "ParamTag_ByPmsIds" -> do
-          return ParamTag_ByPmsIds
+      "ParamTag_ByPmsIds" -> do
+        pure ParamTag_ByPmsIds
 
-        "ParamTag_ByReminderId" -> do
-          return ParamTag_ByReminderId
+      "ParamTag_ByReminderId" -> do
+        pure ParamTag_ByReminderId
 
-        "ParamTag_ByReminderFolderId" -> do
-          return ParamTag_ByReminderFolderId
+      "ParamTag_ByReminderFolderId" -> do
+        pure ParamTag_ByReminderFolderId
 
-        "ParamTag_ByParentId" -> do
-          return ParamTag_ByParentId
+      "ParamTag_ByParentId" -> do
+        pure ParamTag_ByParentId
 
-        "ParamTag_ByParentsIds" -> do
-          return ParamTag_ByParentsIds
+      "ParamTag_ByParentsIds" -> do
+        pure ParamTag_ByParentsIds
 
-        "ParamTag_ByParentName" -> do
-          return ParamTag_ByParentName
+      "ParamTag_ByParentName" -> do
+        pure ParamTag_ByParentName
 
-        "ParamTag_BySelf" -> do
-          return ParamTag_BySelf
+      "ParamTag_BySelf" -> do
+        pure ParamTag_BySelf
 
-        "ParamTag_Timestamp" -> do
-          return ParamTag_Timestamp
+      "ParamTag_Timestamp" -> do
+        pure ParamTag_Timestamp
 
-        "ParamTag_UnixTimestamp" -> do
-          return ParamTag_UnixTimestamp
+      "ParamTag_UnixTimestamp" -> do
+        pure ParamTag_UnixTimestamp
 
-        "ParamTag_CreatedAtTimestamp" -> do
-          return ParamTag_CreatedAtTimestamp
+      "ParamTag_CreatedAtTimestamp" -> do
+        pure ParamTag_CreatedAtTimestamp
 
-        "ParamTag_CreatedAtUnixTimestamp" -> do
-          return ParamTag_CreatedAtUnixTimestamp
+      "ParamTag_CreatedAtUnixTimestamp" -> do
+        pure ParamTag_CreatedAtUnixTimestamp
 
-        "ParamTag_RealIP" -> do
-          return ParamTag_RealIP
+      "ParamTag_RealIP" -> do
+        pure ParamTag_RealIP
 
-        "ParamTag_IP" -> do
-          return ParamTag_IP
+      "ParamTag_IP" -> do
+        pure ParamTag_IP
 
-        "ParamTag_WithOrganization" -> do
-          return ParamTag_WithOrganization
+      "ParamTag_WithOrganization" -> do
+        pure ParamTag_WithOrganization
 
-        "ParamTag_WithForum" -> do
-          return ParamTag_WithForum
+      "ParamTag_WithForum" -> do
+        pure ParamTag_WithForum
 
-        "ParamTag_WithBoard" -> do
-          return ParamTag_WithBoard
+      "ParamTag_WithBoard" -> do
+        pure ParamTag_WithBoard
 
-        "ParamTag_WithThread" -> do
-          return ParamTag_WithThread
+      "ParamTag_WithThread" -> do
+        pure ParamTag_WithThread
 
-        "ParamTag_WithResource" -> do
-          return ParamTag_WithResource
+      "ParamTag_WithResource" -> do
+        pure ParamTag_WithResource
+
+      _ -> Left $ TypeMismatch "ParamTag" "IsForeign"
 
 
 
@@ -9960,19 +11187,20 @@ instance sortOrderByDecodeJson :: DecodeJson SortOrderBy where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "SortOrderBy_Asc" -> do
-          return SortOrderBy_Asc
+      "SortOrderBy_Asc" -> do
+        pure SortOrderBy_Asc
 
-        "SortOrderBy_Dsc" -> do
-          return SortOrderBy_Dsc
+      "SortOrderBy_Dsc" -> do
+        pure SortOrderBy_Dsc
 
-        "SortOrderBy_Rnd" -> do
-          return SortOrderBy_Rnd
+      "SortOrderBy_Rnd" -> do
+        pure SortOrderBy_Rnd
 
-        "SortOrderBy_None" -> do
-          return SortOrderBy_None
+      "SortOrderBy_None" -> do
+        pure SortOrderBy_None
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for SortOrderBy"
+
 
 
 instance sortOrderByRequestable :: Requestable SortOrderBy where
@@ -9987,17 +11215,19 @@ instance sortOrderByRespondable :: Respondable SortOrderBy where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "SortOrderBy_Asc" -> do
-          return SortOrderBy_Asc
+      "SortOrderBy_Asc" -> do
+        pure SortOrderBy_Asc
 
-        "SortOrderBy_Dsc" -> do
-          return SortOrderBy_Dsc
+      "SortOrderBy_Dsc" -> do
+        pure SortOrderBy_Dsc
 
-        "SortOrderBy_Rnd" -> do
-          return SortOrderBy_Rnd
+      "SortOrderBy_Rnd" -> do
+        pure SortOrderBy_Rnd
 
-        "SortOrderBy_None" -> do
-          return SortOrderBy_None
+      "SortOrderBy_None" -> do
+        pure SortOrderBy_None
+
+      _ -> Left $ TypeMismatch "SortOrderBy" "Respondable"
 
 
 
@@ -10005,17 +11235,19 @@ instance sortOrderByIsForeign :: IsForeign SortOrderBy where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "SortOrderBy_Asc" -> do
-          return SortOrderBy_Asc
+      "SortOrderBy_Asc" -> do
+        pure SortOrderBy_Asc
 
-        "SortOrderBy_Dsc" -> do
-          return SortOrderBy_Dsc
+      "SortOrderBy_Dsc" -> do
+        pure SortOrderBy_Dsc
 
-        "SortOrderBy_Rnd" -> do
-          return SortOrderBy_Rnd
+      "SortOrderBy_Rnd" -> do
+        pure SortOrderBy_Rnd
 
-        "SortOrderBy_None" -> do
-          return SortOrderBy_None
+      "SortOrderBy_None" -> do
+        pure SortOrderBy_None
+
+      _ -> Left $ TypeMismatch "SortOrderBy" "IsForeign"
 
 
 
@@ -10091,43 +11323,44 @@ instance orderByDecodeJson :: DecodeJson OrderBy where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "OrderBy_UserId" -> do
-          return OrderBy_UserId
+      "OrderBy_UserId" -> do
+        pure OrderBy_UserId
 
-        "OrderBy_CreatedAt" -> do
-          return OrderBy_CreatedAt
+      "OrderBy_CreatedAt" -> do
+        pure OrderBy_CreatedAt
 
-        "OrderBy_ModifiedAt" -> do
-          return OrderBy_ModifiedAt
+      "OrderBy_ModifiedAt" -> do
+        pure OrderBy_ModifiedAt
 
-        "OrderBy_ModifiedBy" -> do
-          return OrderBy_ModifiedBy
+      "OrderBy_ModifiedBy" -> do
+        pure OrderBy_ModifiedBy
 
-        "OrderBy_ActivityAt" -> do
-          return OrderBy_ActivityAt
+      "OrderBy_ActivityAt" -> do
+        pure OrderBy_ActivityAt
 
-        "OrderBy_OrganizationId" -> do
-          return OrderBy_OrganizationId
+      "OrderBy_OrganizationId" -> do
+        pure OrderBy_OrganizationId
 
-        "OrderBy_TeamId" -> do
-          return OrderBy_TeamId
+      "OrderBy_TeamId" -> do
+        pure OrderBy_TeamId
 
-        "OrderBy_ForumId" -> do
-          return OrderBy_ForumId
+      "OrderBy_ForumId" -> do
+        pure OrderBy_ForumId
 
-        "OrderBy_BoardId" -> do
-          return OrderBy_BoardId
+      "OrderBy_BoardId" -> do
+        pure OrderBy_BoardId
 
-        "OrderBy_ThreadId" -> do
-          return OrderBy_ThreadId
+      "OrderBy_ThreadId" -> do
+        pure OrderBy_ThreadId
 
-        "OrderBy_Id" -> do
-          return OrderBy_Id
+      "OrderBy_Id" -> do
+        pure OrderBy_Id
 
-        "OrderBy_None" -> do
-          return OrderBy_None
+      "OrderBy_None" -> do
+        pure OrderBy_None
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for OrderBy"
+
 
 
 instance orderByRequestable :: Requestable OrderBy where
@@ -10142,41 +11375,43 @@ instance orderByRespondable :: Respondable OrderBy where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "OrderBy_UserId" -> do
-          return OrderBy_UserId
+      "OrderBy_UserId" -> do
+        pure OrderBy_UserId
 
-        "OrderBy_CreatedAt" -> do
-          return OrderBy_CreatedAt
+      "OrderBy_CreatedAt" -> do
+        pure OrderBy_CreatedAt
 
-        "OrderBy_ModifiedAt" -> do
-          return OrderBy_ModifiedAt
+      "OrderBy_ModifiedAt" -> do
+        pure OrderBy_ModifiedAt
 
-        "OrderBy_ModifiedBy" -> do
-          return OrderBy_ModifiedBy
+      "OrderBy_ModifiedBy" -> do
+        pure OrderBy_ModifiedBy
 
-        "OrderBy_ActivityAt" -> do
-          return OrderBy_ActivityAt
+      "OrderBy_ActivityAt" -> do
+        pure OrderBy_ActivityAt
 
-        "OrderBy_OrganizationId" -> do
-          return OrderBy_OrganizationId
+      "OrderBy_OrganizationId" -> do
+        pure OrderBy_OrganizationId
 
-        "OrderBy_TeamId" -> do
-          return OrderBy_TeamId
+      "OrderBy_TeamId" -> do
+        pure OrderBy_TeamId
 
-        "OrderBy_ForumId" -> do
-          return OrderBy_ForumId
+      "OrderBy_ForumId" -> do
+        pure OrderBy_ForumId
 
-        "OrderBy_BoardId" -> do
-          return OrderBy_BoardId
+      "OrderBy_BoardId" -> do
+        pure OrderBy_BoardId
 
-        "OrderBy_ThreadId" -> do
-          return OrderBy_ThreadId
+      "OrderBy_ThreadId" -> do
+        pure OrderBy_ThreadId
 
-        "OrderBy_Id" -> do
-          return OrderBy_Id
+      "OrderBy_Id" -> do
+        pure OrderBy_Id
 
-        "OrderBy_None" -> do
-          return OrderBy_None
+      "OrderBy_None" -> do
+        pure OrderBy_None
+
+      _ -> Left $ TypeMismatch "OrderBy" "Respondable"
 
 
 
@@ -10184,41 +11419,43 @@ instance orderByIsForeign :: IsForeign OrderBy where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "OrderBy_UserId" -> do
-          return OrderBy_UserId
+      "OrderBy_UserId" -> do
+        pure OrderBy_UserId
 
-        "OrderBy_CreatedAt" -> do
-          return OrderBy_CreatedAt
+      "OrderBy_CreatedAt" -> do
+        pure OrderBy_CreatedAt
 
-        "OrderBy_ModifiedAt" -> do
-          return OrderBy_ModifiedAt
+      "OrderBy_ModifiedAt" -> do
+        pure OrderBy_ModifiedAt
 
-        "OrderBy_ModifiedBy" -> do
-          return OrderBy_ModifiedBy
+      "OrderBy_ModifiedBy" -> do
+        pure OrderBy_ModifiedBy
 
-        "OrderBy_ActivityAt" -> do
-          return OrderBy_ActivityAt
+      "OrderBy_ActivityAt" -> do
+        pure OrderBy_ActivityAt
 
-        "OrderBy_OrganizationId" -> do
-          return OrderBy_OrganizationId
+      "OrderBy_OrganizationId" -> do
+        pure OrderBy_OrganizationId
 
-        "OrderBy_TeamId" -> do
-          return OrderBy_TeamId
+      "OrderBy_TeamId" -> do
+        pure OrderBy_TeamId
 
-        "OrderBy_ForumId" -> do
-          return OrderBy_ForumId
+      "OrderBy_ForumId" -> do
+        pure OrderBy_ForumId
 
-        "OrderBy_BoardId" -> do
-          return OrderBy_BoardId
+      "OrderBy_BoardId" -> do
+        pure OrderBy_BoardId
 
-        "OrderBy_ThreadId" -> do
-          return OrderBy_ThreadId
+      "OrderBy_ThreadId" -> do
+        pure OrderBy_ThreadId
 
-        "OrderBy_Id" -> do
-          return OrderBy_Id
+      "OrderBy_Id" -> do
+        pure OrderBy_Id
 
-        "OrderBy_None" -> do
-          return OrderBy_None
+      "OrderBy_None" -> do
+        pure OrderBy_None
+
+      _ -> Left $ TypeMismatch "OrderBy" "IsForeign"
 
 
 
@@ -10259,22 +11496,23 @@ instance permissionDecodeJson :: DecodeJson Permission where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "Perm_Create" -> do
-          return Perm_Create
+      "Perm_Create" -> do
+        pure Perm_Create
 
-        "Perm_Read" -> do
-          return Perm_Read
+      "Perm_Read" -> do
+        pure Perm_Read
 
-        "Perm_Update" -> do
-          return Perm_Update
+      "Perm_Update" -> do
+        pure Perm_Update
 
-        "Perm_Delete" -> do
-          return Perm_Delete
+      "Perm_Delete" -> do
+        pure Perm_Delete
 
-        "Perm_Execute" -> do
-          return Perm_Execute
+      "Perm_Execute" -> do
+        pure Perm_Execute
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for Permission"
+
 
 
 instance permissionRequestable :: Requestable Permission where
@@ -10289,20 +11527,22 @@ instance permissionRespondable :: Respondable Permission where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "Perm_Create" -> do
-          return Perm_Create
+      "Perm_Create" -> do
+        pure Perm_Create
 
-        "Perm_Read" -> do
-          return Perm_Read
+      "Perm_Read" -> do
+        pure Perm_Read
 
-        "Perm_Update" -> do
-          return Perm_Update
+      "Perm_Update" -> do
+        pure Perm_Update
 
-        "Perm_Delete" -> do
-          return Perm_Delete
+      "Perm_Delete" -> do
+        pure Perm_Delete
 
-        "Perm_Execute" -> do
-          return Perm_Execute
+      "Perm_Execute" -> do
+        pure Perm_Execute
+
+      _ -> Left $ TypeMismatch "Permission" "Respondable"
 
 
 
@@ -10310,20 +11550,22 @@ instance permissionIsForeign :: IsForeign Permission where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "Perm_Create" -> do
-          return Perm_Create
+      "Perm_Create" -> do
+        pure Perm_Create
 
-        "Perm_Read" -> do
-          return Perm_Read
+      "Perm_Read" -> do
+        pure Perm_Read
 
-        "Perm_Update" -> do
-          return Perm_Update
+      "Perm_Update" -> do
+        pure Perm_Update
 
-        "Perm_Delete" -> do
-          return Perm_Delete
+      "Perm_Delete" -> do
+        pure Perm_Delete
 
-        "Perm_Execute" -> do
-          return Perm_Execute
+      "Perm_Execute" -> do
+        pure Perm_Execute
+
+      _ -> Left $ TypeMismatch "Permission" "IsForeign"
 
 
 
@@ -10360,7 +11602,7 @@ type PmRequestR = {
 }
 
 
-_PmRequest :: LensP PmRequest {
+_PmRequest :: Lens' PmRequest {
   subject :: String,
   body :: String,
   guard :: Int
@@ -10373,6 +11615,11 @@ mkPmRequest subject body guard =
   PmRequest{subject, body, guard}
 
 
+unwrapPmRequest :: PmRequest -> {
+  subject :: String,
+  body :: String,
+  guard :: Int
+}
 unwrapPmRequest (PmRequest r) = r
 
 instance pmRequestEncodeJson :: EncodeJson PmRequest where
@@ -10422,7 +11669,7 @@ instance pmRequestIsForeign :: IsForeign PmRequest where
 
 
 instance pmRequestShow :: Show PmRequest where
-    show (PmRequest o) = show "subject: " ++ show o.subject ++ ", " ++ show "body: " ++ show o.body ++ ", " ++ show "guard: " ++ show o.guard
+    show (PmRequest o) = show "subject: " <> show o.subject <> ", " <> show "body: " <> show o.body <> ", " <> show "guard: " <> show o.guard
 
 newtype PmResponse = PmResponse {
   id :: Int,
@@ -10452,7 +11699,7 @@ type PmResponseR = {
 }
 
 
-_PmResponse :: LensP PmResponse {
+_PmResponse :: Lens' PmResponse {
   id :: Int,
   userId :: Int,
   toUserId :: Int,
@@ -10472,6 +11719,18 @@ mkPmResponse id userId toUserId subject body active guard createdAt modifiedAt a
   PmResponse{id, userId, toUserId, subject, body, active, guard, createdAt, modifiedAt, activityAt}
 
 
+unwrapPmResponse :: PmResponse -> {
+  id :: Int,
+  userId :: Int,
+  toUserId :: Int,
+  subject :: String,
+  body :: String,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapPmResponse (PmResponse r) = r
 
 instance pmResponseEncodeJson :: EncodeJson PmResponse where
@@ -10535,9 +11794,9 @@ instance pmResponseRespondable :: Respondable PmResponse where
       <*> readProp "body" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance pmResponseIsForeign :: IsForeign PmResponse where
@@ -10550,13 +11809,13 @@ instance pmResponseIsForeign :: IsForeign PmResponse where
       <*> readProp "body" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance pmResponseShow :: Show PmResponse where
-    show (PmResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "toUserId: " ++ show o.toUserId ++ ", " ++ show "subject: " ++ show o.subject ++ ", " ++ show "body: " ++ show o.body ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (PmResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "toUserId: " <> show o.toUserId <> ", " <> show "subject: " <> show o.subject <> ", " <> show "body: " <> show o.body <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype PmResponses = PmResponses {
   pmResponses :: (Array PmResponse)
@@ -10568,7 +11827,7 @@ type PmResponsesR = {
 }
 
 
-_PmResponses :: LensP PmResponses {
+_PmResponses :: Lens' PmResponses {
   pmResponses :: (Array PmResponse)
 }
 _PmResponses f (PmResponses o) = PmResponses <$> f o
@@ -10579,6 +11838,9 @@ mkPmResponses pmResponses =
   PmResponses{pmResponses}
 
 
+unwrapPmResponses :: PmResponses -> {
+  pmResponses :: (Array PmResponse)
+}
 unwrapPmResponses (PmResponses r) = r
 
 instance pmResponsesEncodeJson :: EncodeJson PmResponses where
@@ -10618,7 +11880,7 @@ instance pmResponsesIsForeign :: IsForeign PmResponses where
 
 
 instance pmResponsesShow :: Show PmResponses where
-    show (PmResponses o) = show "pmResponses: " ++ show o.pmResponses
+    show (PmResponses o) = show "pmResponses: " <> show o.pmResponses
 
 newtype PmInRequest = PmInRequest {
   label :: (Maybe String),
@@ -10636,7 +11898,7 @@ type PmInRequestR = {
 }
 
 
-_PmInRequest :: LensP PmInRequest {
+_PmInRequest :: Lens' PmInRequest {
   label :: (Maybe String),
   isRead :: Boolean,
   isStarred :: Boolean,
@@ -10650,6 +11912,12 @@ mkPmInRequest label isRead isStarred guard =
   PmInRequest{label, isRead, isStarred, guard}
 
 
+unwrapPmInRequest :: PmInRequest -> {
+  label :: (Maybe String),
+  isRead :: Boolean,
+  isStarred :: Boolean,
+  guard :: Int
+}
 unwrapPmInRequest (PmInRequest r) = r
 
 instance pmInRequestEncodeJson :: EncodeJson PmInRequest where
@@ -10688,7 +11956,7 @@ instance pmInRequestRespondable :: Respondable PmInRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkPmInRequest
-      <$> (runNullOrUndefined <$> readProp "label" json)
+      <$> (unNullOrUndefined <$> readProp "label" json)
       <*> readProp "is_read" json
       <*> readProp "is_starred" json
       <*> readProp "guard" json
@@ -10697,14 +11965,14 @@ instance pmInRequestRespondable :: Respondable PmInRequest where
 instance pmInRequestIsForeign :: IsForeign PmInRequest where
   read json =
       mkPmInRequest
-      <$> (runNullOrUndefined <$> readProp "label" json)
+      <$> (unNullOrUndefined <$> readProp "label" json)
       <*> readProp "is_read" json
       <*> readProp "is_starred" json
       <*> readProp "guard" json
 
 
 instance pmInRequestShow :: Show PmInRequest where
-    show (PmInRequest o) = show "label: " ++ show o.label ++ ", " ++ show "isRead: " ++ show o.isRead ++ ", " ++ show "isStarred: " ++ show o.isStarred ++ ", " ++ show "guard: " ++ show o.guard
+    show (PmInRequest o) = show "label: " <> show o.label <> ", " <> show "isRead: " <> show o.isRead <> ", " <> show "isStarred: " <> show o.isStarred <> ", " <> show "guard: " <> show o.guard
 
 newtype PmInResponse = PmInResponse {
   id :: Int,
@@ -10738,7 +12006,7 @@ type PmInResponseR = {
 }
 
 
-_PmInResponse :: LensP PmInResponse {
+_PmInResponse :: Lens' PmInResponse {
   id :: Int,
   pmId :: Int,
   userId :: Int,
@@ -10760,6 +12028,20 @@ mkPmInResponse id pmId userId label isRead isStarred isNew isSaved active guard 
   PmInResponse{id, pmId, userId, label, isRead, isStarred, isNew, isSaved, active, guard, createdAt, modifiedAt}
 
 
+unwrapPmInResponse :: PmInResponse -> {
+  id :: Int,
+  pmId :: Int,
+  userId :: Int,
+  label :: (Maybe String),
+  isRead :: Boolean,
+  isStarred :: Boolean,
+  isNew :: Boolean,
+  isSaved :: Boolean,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
 unwrapPmInResponse (PmInResponse r) = r
 
 instance pmInResponseEncodeJson :: EncodeJson PmInResponse where
@@ -10825,15 +12107,15 @@ instance pmInResponseRespondable :: Respondable PmInResponse where
       <$> readProp "id" json
       <*> readProp "pm_id" json
       <*> readProp "user_id" json
-      <*> (runNullOrUndefined <$> readProp "label" json)
+      <*> (unNullOrUndefined <$> readProp "label" json)
       <*> readProp "is_read" json
       <*> readProp "is_starred" json
       <*> readProp "is_new" json
       <*> readProp "is_saved" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmInResponseIsForeign :: IsForeign PmInResponse where
@@ -10842,19 +12124,19 @@ instance pmInResponseIsForeign :: IsForeign PmInResponse where
       <$> readProp "id" json
       <*> readProp "pm_id" json
       <*> readProp "user_id" json
-      <*> (runNullOrUndefined <$> readProp "label" json)
+      <*> (unNullOrUndefined <$> readProp "label" json)
       <*> readProp "is_read" json
       <*> readProp "is_starred" json
       <*> readProp "is_new" json
       <*> readProp "is_saved" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmInResponseShow :: Show PmInResponse where
-    show (PmInResponse o) = show "id: " ++ show o.id ++ ", " ++ show "pmId: " ++ show o.pmId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "label: " ++ show o.label ++ ", " ++ show "isRead: " ++ show o.isRead ++ ", " ++ show "isStarred: " ++ show o.isStarred ++ ", " ++ show "isNew: " ++ show o.isNew ++ ", " ++ show "isSaved: " ++ show o.isSaved ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (PmInResponse o) = show "id: " <> show o.id <> ", " <> show "pmId: " <> show o.pmId <> ", " <> show "userId: " <> show o.userId <> ", " <> show "label: " <> show o.label <> ", " <> show "isRead: " <> show o.isRead <> ", " <> show "isStarred: " <> show o.isStarred <> ", " <> show "isNew: " <> show o.isNew <> ", " <> show "isSaved: " <> show o.isSaved <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
 
 newtype PmInResponses = PmInResponses {
   pmInResponses :: (Array PmInResponse)
@@ -10866,7 +12148,7 @@ type PmInResponsesR = {
 }
 
 
-_PmInResponses :: LensP PmInResponses {
+_PmInResponses :: Lens' PmInResponses {
   pmInResponses :: (Array PmInResponse)
 }
 _PmInResponses f (PmInResponses o) = PmInResponses <$> f o
@@ -10877,6 +12159,9 @@ mkPmInResponses pmInResponses =
   PmInResponses{pmInResponses}
 
 
+unwrapPmInResponses :: PmInResponses -> {
+  pmInResponses :: (Array PmInResponse)
+}
 unwrapPmInResponses (PmInResponses r) = r
 
 instance pmInResponsesEncodeJson :: EncodeJson PmInResponses where
@@ -10916,7 +12201,7 @@ instance pmInResponsesIsForeign :: IsForeign PmInResponses where
 
 
 instance pmInResponsesShow :: Show PmInResponses where
-    show (PmInResponses o) = show "pmInResponses: " ++ show o.pmInResponses
+    show (PmInResponses o) = show "pmInResponses: " <> show o.pmInResponses
 
 newtype PmOutRequest = PmOutRequest {
   label :: (Maybe String),
@@ -10930,7 +12215,7 @@ type PmOutRequestR = {
 }
 
 
-_PmOutRequest :: LensP PmOutRequest {
+_PmOutRequest :: Lens' PmOutRequest {
   label :: (Maybe String),
   guard :: Int
 }
@@ -10942,6 +12227,10 @@ mkPmOutRequest label guard =
   PmOutRequest{label, guard}
 
 
+unwrapPmOutRequest :: PmOutRequest -> {
+  label :: (Maybe String),
+  guard :: Int
+}
 unwrapPmOutRequest (PmOutRequest r) = r
 
 instance pmOutRequestEncodeJson :: EncodeJson PmOutRequest where
@@ -10974,19 +12263,19 @@ instance pmOutRequestRespondable :: Respondable PmOutRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkPmOutRequest
-      <$> (runNullOrUndefined <$> readProp "label" json)
+      <$> (unNullOrUndefined <$> readProp "label" json)
       <*> readProp "guard" json
 
 
 instance pmOutRequestIsForeign :: IsForeign PmOutRequest where
   read json =
       mkPmOutRequest
-      <$> (runNullOrUndefined <$> readProp "label" json)
+      <$> (unNullOrUndefined <$> readProp "label" json)
       <*> readProp "guard" json
 
 
 instance pmOutRequestShow :: Show PmOutRequest where
-    show (PmOutRequest o) = show "label: " ++ show o.label ++ ", " ++ show "guard: " ++ show o.guard
+    show (PmOutRequest o) = show "label: " <> show o.label <> ", " <> show "guard: " <> show o.guard
 
 newtype PmOutResponse = PmOutResponse {
   id :: Int,
@@ -11014,7 +12303,7 @@ type PmOutResponseR = {
 }
 
 
-_PmOutResponse :: LensP PmOutResponse {
+_PmOutResponse :: Lens' PmOutResponse {
   id :: Int,
   pmId :: Int,
   userId :: Int,
@@ -11033,6 +12322,17 @@ mkPmOutResponse id pmId userId label isSaved active guard createdAt modifiedAt =
   PmOutResponse{id, pmId, userId, label, isSaved, active, guard, createdAt, modifiedAt}
 
 
+unwrapPmOutResponse :: PmOutResponse -> {
+  id :: Int,
+  pmId :: Int,
+  userId :: Int,
+  label :: (Maybe String),
+  isSaved :: Boolean,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
 unwrapPmOutResponse (PmOutResponse r) = r
 
 instance pmOutResponseEncodeJson :: EncodeJson PmOutResponse where
@@ -11089,12 +12389,12 @@ instance pmOutResponseRespondable :: Respondable PmOutResponse where
       <$> readProp "id" json
       <*> readProp "pm_id" json
       <*> readProp "user_id" json
-      <*> (runNullOrUndefined <$> readProp "label" json)
+      <*> (unNullOrUndefined <$> readProp "label" json)
       <*> readProp "is_saved" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmOutResponseIsForeign :: IsForeign PmOutResponse where
@@ -11103,16 +12403,16 @@ instance pmOutResponseIsForeign :: IsForeign PmOutResponse where
       <$> readProp "id" json
       <*> readProp "pm_id" json
       <*> readProp "user_id" json
-      <*> (runNullOrUndefined <$> readProp "label" json)
+      <*> (unNullOrUndefined <$> readProp "label" json)
       <*> readProp "is_saved" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance pmOutResponseShow :: Show PmOutResponse where
-    show (PmOutResponse o) = show "id: " ++ show o.id ++ ", " ++ show "pmId: " ++ show o.pmId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "label: " ++ show o.label ++ ", " ++ show "isSaved: " ++ show o.isSaved ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (PmOutResponse o) = show "id: " <> show o.id <> ", " <> show "pmId: " <> show o.pmId <> ", " <> show "userId: " <> show o.userId <> ", " <> show "label: " <> show o.label <> ", " <> show "isSaved: " <> show o.isSaved <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
 
 newtype PmOutResponses = PmOutResponses {
   pmOutResponses :: (Array PmOutResponse)
@@ -11124,7 +12424,7 @@ type PmOutResponsesR = {
 }
 
 
-_PmOutResponses :: LensP PmOutResponses {
+_PmOutResponses :: Lens' PmOutResponses {
   pmOutResponses :: (Array PmOutResponse)
 }
 _PmOutResponses f (PmOutResponses o) = PmOutResponses <$> f o
@@ -11135,6 +12435,9 @@ mkPmOutResponses pmOutResponses =
   PmOutResponses{pmOutResponses}
 
 
+unwrapPmOutResponses :: PmOutResponses -> {
+  pmOutResponses :: (Array PmOutResponse)
+}
 unwrapPmOutResponses (PmOutResponses r) = r
 
 instance pmOutResponsesEncodeJson :: EncodeJson PmOutResponses where
@@ -11174,7 +12477,7 @@ instance pmOutResponsesIsForeign :: IsForeign PmOutResponses where
 
 
 instance pmOutResponsesShow :: Show PmOutResponses where
-    show (PmOutResponses o) = show "pmOutResponses: " ++ show o.pmOutResponses
+    show (PmOutResponses o) = show "pmOutResponses: " <> show o.pmOutResponses
 
 newtype ProfileX = ProfileX {
   profileLogin :: String,
@@ -11190,7 +12493,7 @@ type ProfileXR = {
 }
 
 
-_ProfileX :: LensP ProfileX {
+_ProfileX :: Lens' ProfileX {
   profileLogin :: String,
   profileName :: String,
   profileEmail :: String
@@ -11203,6 +12506,11 @@ mkProfileX profileLogin profileName profileEmail =
   ProfileX{profileLogin, profileName, profileEmail}
 
 
+unwrapProfileX :: ProfileX -> {
+  profileLogin :: String,
+  profileName :: String,
+  profileEmail :: String
+}
 unwrapProfileX (ProfileX r) = r
 
 instance profileXEncodeJson :: EncodeJson ProfileX where
@@ -11252,7 +12560,7 @@ instance profileXIsForeign :: IsForeign ProfileX where
 
 
 instance profileXShow :: Show ProfileX where
-    show (ProfileX o) = show "profileLogin: " ++ show o.profileLogin ++ ", " ++ show "profileName: " ++ show o.profileName ++ ", " ++ show "profileEmail: " ++ show o.profileEmail
+    show (ProfileX o) = show "profileLogin: " <> show o.profileLogin <> ", " <> show "profileName: " <> show o.profileName <> ", " <> show "profileEmail: " <> show o.profileEmail
 
 data ProfileGender
   = GenderMale 
@@ -11281,16 +12589,17 @@ instance profileGenderDecodeJson :: DecodeJson ProfileGender where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "GenderMale" -> do
-          return GenderMale
+      "GenderMale" -> do
+        pure GenderMale
 
-        "GenderFemale" -> do
-          return GenderFemale
+      "GenderFemale" -> do
+        pure GenderFemale
 
-        "GenderUnknown" -> do
-          return GenderUnknown
+      "GenderUnknown" -> do
+        pure GenderUnknown
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for ProfileGender"
+
 
 
 instance profileGenderRequestable :: Requestable ProfileGender where
@@ -11305,14 +12614,16 @@ instance profileGenderRespondable :: Respondable ProfileGender where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "GenderMale" -> do
-          return GenderMale
+      "GenderMale" -> do
+        pure GenderMale
 
-        "GenderFemale" -> do
-          return GenderFemale
+      "GenderFemale" -> do
+        pure GenderFemale
 
-        "GenderUnknown" -> do
-          return GenderUnknown
+      "GenderUnknown" -> do
+        pure GenderUnknown
+
+      _ -> Left $ TypeMismatch "ProfileGender" "Respondable"
 
 
 
@@ -11320,14 +12631,16 @@ instance profileGenderIsForeign :: IsForeign ProfileGender where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "GenderMale" -> do
-          return GenderMale
+      "GenderMale" -> do
+        pure GenderMale
 
-        "GenderFemale" -> do
-          return GenderFemale
+      "GenderFemale" -> do
+        pure GenderFemale
 
-        "GenderUnknown" -> do
-          return GenderUnknown
+      "GenderUnknown" -> do
+        pure GenderUnknown
+
+      _ -> Left $ TypeMismatch "ProfileGender" "IsForeign"
 
 
 
@@ -11365,7 +12678,7 @@ type ProfileRequestR = {
 }
 
 
-_ProfileRequest :: LensP ProfileRequest {
+_ProfileRequest :: Lens' ProfileRequest {
   gender :: ProfileGender,
   birthdate :: Date,
   website :: (Maybe String),
@@ -11382,6 +12695,15 @@ mkProfileRequest gender birthdate website location signature debug guard =
   ProfileRequest{gender, birthdate, website, location, signature, debug, guard}
 
 
+unwrapProfileRequest :: ProfileRequest -> {
+  gender :: ProfileGender,
+  birthdate :: Date,
+  website :: (Maybe String),
+  location :: (Maybe String),
+  signature :: (Maybe String),
+  debug :: Boolean,
+  guard :: Int
+}
 unwrapProfileRequest (ProfileRequest r) = r
 
 instance profileRequestEncodeJson :: EncodeJson ProfileRequest where
@@ -11431,9 +12753,9 @@ instance profileRequestRespondable :: Respondable ProfileRequest where
       mkProfileRequest
       <$> readProp "gender" json
       <*> readProp "birthdate" json
-      <*> (runNullOrUndefined <$> readProp "website" json)
-      <*> (runNullOrUndefined <$> readProp "location" json)
-      <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> (unNullOrUndefined <$> readProp "website" json)
+      <*> (unNullOrUndefined <$> readProp "location" json)
+      <*> (unNullOrUndefined <$> readProp "signature" json)
       <*> readProp "debug" json
       <*> readProp "guard" json
 
@@ -11443,15 +12765,15 @@ instance profileRequestIsForeign :: IsForeign ProfileRequest where
       mkProfileRequest
       <$> readProp "gender" json
       <*> readProp "birthdate" json
-      <*> (runNullOrUndefined <$> readProp "website" json)
-      <*> (runNullOrUndefined <$> readProp "location" json)
-      <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> (unNullOrUndefined <$> readProp "website" json)
+      <*> (unNullOrUndefined <$> readProp "location" json)
+      <*> (unNullOrUndefined <$> readProp "signature" json)
       <*> readProp "debug" json
       <*> readProp "guard" json
 
 
 instance profileRequestShow :: Show ProfileRequest where
-    show (ProfileRequest o) = show "gender: " ++ show o.gender ++ ", " ++ show "birthdate: " ++ show o.birthdate ++ ", " ++ show "website: " ++ show o.website ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "signature: " ++ show o.signature ++ ", " ++ show "debug: " ++ show o.debug ++ ", " ++ show "guard: " ++ show o.guard
+    show (ProfileRequest o) = show "gender: " <> show o.gender <> ", " <> show "birthdate: " <> show o.birthdate <> ", " <> show "website: " <> show o.website <> ", " <> show "location: " <> show o.location <> ", " <> show "signature: " <> show o.signature <> ", " <> show "debug: " <> show o.debug <> ", " <> show "guard: " <> show o.guard
 
 newtype ProfileResponse = ProfileResponse {
   id :: Int,
@@ -11489,7 +12811,7 @@ type ProfileResponseR = {
 }
 
 
-_ProfileResponse :: LensP ProfileResponse {
+_ProfileResponse :: Lens' ProfileResponse {
   id :: Int,
   ent :: Ent,
   entId :: Int,
@@ -11513,6 +12835,22 @@ mkProfileResponse id ent entId gender birthdate website location signature debug
   ProfileResponse{id, ent, entId, gender, birthdate, website, location, signature, debug, karmaGood, karmaBad, guard, createdAt, modifiedAt}
 
 
+unwrapProfileResponse :: ProfileResponse -> {
+  id :: Int,
+  ent :: Ent,
+  entId :: Int,
+  gender :: ProfileGender,
+  birthdate :: Date,
+  website :: (Maybe String),
+  location :: (Maybe String),
+  signature :: (Maybe String),
+  debug :: Boolean,
+  karmaGood :: Int,
+  karmaBad :: Int,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
 unwrapProfileResponse (ProfileResponse r) = r
 
 instance profileResponseEncodeJson :: EncodeJson ProfileResponse where
@@ -11586,15 +12924,15 @@ instance profileResponseRespondable :: Respondable ProfileResponse where
       <*> readProp "ent_id" json
       <*> readProp "gender" json
       <*> readProp "birthdate" json
-      <*> (runNullOrUndefined <$> readProp "website" json)
-      <*> (runNullOrUndefined <$> readProp "location" json)
-      <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> (unNullOrUndefined <$> readProp "website" json)
+      <*> (unNullOrUndefined <$> readProp "location" json)
+      <*> (unNullOrUndefined <$> readProp "signature" json)
       <*> readProp "debug" json
       <*> readProp "karma_good" json
       <*> readProp "karma_bad" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance profileResponseIsForeign :: IsForeign ProfileResponse where
@@ -11605,19 +12943,19 @@ instance profileResponseIsForeign :: IsForeign ProfileResponse where
       <*> readProp "ent_id" json
       <*> readProp "gender" json
       <*> readProp "birthdate" json
-      <*> (runNullOrUndefined <$> readProp "website" json)
-      <*> (runNullOrUndefined <$> readProp "location" json)
-      <*> (runNullOrUndefined <$> readProp "signature" json)
+      <*> (unNullOrUndefined <$> readProp "website" json)
+      <*> (unNullOrUndefined <$> readProp "location" json)
+      <*> (unNullOrUndefined <$> readProp "signature" json)
       <*> readProp "debug" json
       <*> readProp "karma_good" json
       <*> readProp "karma_bad" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance profileResponseShow :: Show ProfileResponse where
-    show (ProfileResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "gender: " ++ show o.gender ++ ", " ++ show "birthdate: " ++ show o.birthdate ++ ", " ++ show "website: " ++ show o.website ++ ", " ++ show "location: " ++ show o.location ++ ", " ++ show "signature: " ++ show o.signature ++ ", " ++ show "debug: " ++ show o.debug ++ ", " ++ show "karmaGood: " ++ show o.karmaGood ++ ", " ++ show "karmaBad: " ++ show o.karmaBad ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (ProfileResponse o) = show "id: " <> show o.id <> ", " <> show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "gender: " <> show o.gender <> ", " <> show "birthdate: " <> show o.birthdate <> ", " <> show "website: " <> show o.website <> ", " <> show "location: " <> show o.location <> ", " <> show "signature: " <> show o.signature <> ", " <> show "debug: " <> show o.debug <> ", " <> show "karmaGood: " <> show o.karmaGood <> ", " <> show "karmaBad: " <> show o.karmaBad <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
 
 newtype ProfileResponses = ProfileResponses {
   profileResponses :: (Array ProfileResponse)
@@ -11629,7 +12967,7 @@ type ProfileResponsesR = {
 }
 
 
-_ProfileResponses :: LensP ProfileResponses {
+_ProfileResponses :: Lens' ProfileResponses {
   profileResponses :: (Array ProfileResponse)
 }
 _ProfileResponses f (ProfileResponses o) = ProfileResponses <$> f o
@@ -11640,6 +12978,9 @@ mkProfileResponses profileResponses =
   ProfileResponses{profileResponses}
 
 
+unwrapProfileResponses :: ProfileResponses -> {
+  profileResponses :: (Array ProfileResponse)
+}
 unwrapProfileResponses (ProfileResponses r) = r
 
 instance profileResponsesEncodeJson :: EncodeJson ProfileResponses where
@@ -11679,7 +13020,7 @@ instance profileResponsesIsForeign :: IsForeign ProfileResponses where
 
 
 instance profileResponsesShow :: Show ProfileResponses where
-    show (ProfileResponses o) = show "profileResponses: " ++ show o.profileResponses
+    show (ProfileResponses o) = show "profileResponses: " <> show o.profileResponses
 
 newtype ReminderRequest = ReminderRequest {
   dataP :: String,
@@ -11693,7 +13034,7 @@ type ReminderRequestR = {
 }
 
 
-_ReminderRequest :: LensP ReminderRequest {
+_ReminderRequest :: Lens' ReminderRequest {
   dataP :: String,
   guard :: Int
 }
@@ -11705,6 +13046,10 @@ mkReminderRequest dataP guard =
   ReminderRequest{dataP, guard}
 
 
+unwrapReminderRequest :: ReminderRequest -> {
+  dataP :: String,
+  guard :: Int
+}
 unwrapReminderRequest (ReminderRequest r) = r
 
 instance reminderRequestEncodeJson :: EncodeJson ReminderRequest where
@@ -11749,7 +13094,7 @@ instance reminderRequestIsForeign :: IsForeign ReminderRequest where
 
 
 instance reminderRequestShow :: Show ReminderRequest where
-    show (ReminderRequest o) = show "dataP: " ++ show o.dataP ++ ", " ++ show "guard: " ++ show o.guard
+    show (ReminderRequest o) = show "dataP: " <> show o.dataP <> ", " <> show "guard: " <> show o.guard
 
 newtype ReminderResponse = ReminderResponse {
   id :: Int,
@@ -11777,7 +13122,7 @@ type ReminderResponseR = {
 }
 
 
-_ReminderResponse :: LensP ReminderResponse {
+_ReminderResponse :: Lens' ReminderResponse {
   id :: Int,
   userId :: Int,
   parentFolderId :: Int,
@@ -11796,6 +13141,17 @@ mkReminderResponse id userId parentFolderId dataP active guard createdAt modifie
   ReminderResponse{id, userId, parentFolderId, dataP, active, guard, createdAt, modifiedAt, activityAt}
 
 
+unwrapReminderResponse :: ReminderResponse -> {
+  id :: Int,
+  userId :: Int,
+  parentFolderId :: Int,
+  dataP :: String,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapReminderResponse (ReminderResponse r) = r
 
 instance reminderResponseEncodeJson :: EncodeJson ReminderResponse where
@@ -11855,9 +13211,9 @@ instance reminderResponseRespondable :: Respondable ReminderResponse where
       <*> readProp "data" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance reminderResponseIsForeign :: IsForeign ReminderResponse where
@@ -11869,13 +13225,13 @@ instance reminderResponseIsForeign :: IsForeign ReminderResponse where
       <*> readProp "data" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance reminderResponseShow :: Show ReminderResponse where
-    show (ReminderResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "parentFolderId: " ++ show o.parentFolderId ++ ", " ++ show "dataP: " ++ show o.dataP ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ReminderResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "parentFolderId: " <> show o.parentFolderId <> ", " <> show "dataP: " <> show o.dataP <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype ReminderResponses = ReminderResponses {
   reminderResponses :: (Array ReminderResponse)
@@ -11887,7 +13243,7 @@ type ReminderResponsesR = {
 }
 
 
-_ReminderResponses :: LensP ReminderResponses {
+_ReminderResponses :: Lens' ReminderResponses {
   reminderResponses :: (Array ReminderResponse)
 }
 _ReminderResponses f (ReminderResponses o) = ReminderResponses <$> f o
@@ -11898,6 +13254,9 @@ mkReminderResponses reminderResponses =
   ReminderResponses{reminderResponses}
 
 
+unwrapReminderResponses :: ReminderResponses -> {
+  reminderResponses :: (Array ReminderResponse)
+}
 unwrapReminderResponses (ReminderResponses r) = r
 
 instance reminderResponsesEncodeJson :: EncodeJson ReminderResponses where
@@ -11937,7 +13296,7 @@ instance reminderResponsesIsForeign :: IsForeign ReminderResponses where
 
 
 instance reminderResponsesShow :: Show ReminderResponses where
-    show (ReminderResponses o) = show "reminderResponses: " ++ show o.reminderResponses
+    show (ReminderResponses o) = show "reminderResponses: " <> show o.reminderResponses
 
 newtype ReminderFolderRequest = ReminderFolderRequest {
   displayName :: String,
@@ -11955,7 +13314,7 @@ type ReminderFolderRequestR = {
 }
 
 
-_ReminderFolderRequest :: LensP ReminderFolderRequest {
+_ReminderFolderRequest :: Lens' ReminderFolderRequest {
   displayName :: String,
   description :: (Maybe String),
   visibility :: Visibility,
@@ -11969,6 +13328,12 @@ mkReminderFolderRequest displayName description visibility guard =
   ReminderFolderRequest{displayName, description, visibility, guard}
 
 
+unwrapReminderFolderRequest :: ReminderFolderRequest -> {
+  displayName :: String,
+  description :: (Maybe String),
+  visibility :: Visibility,
+  guard :: Int
+}
 unwrapReminderFolderRequest (ReminderFolderRequest r) = r
 
 instance reminderFolderRequestEncodeJson :: EncodeJson ReminderFolderRequest where
@@ -12008,7 +13373,7 @@ instance reminderFolderRequestRespondable :: Respondable ReminderFolderRequest w
   fromResponse json =
       mkReminderFolderRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
@@ -12017,13 +13382,13 @@ instance reminderFolderRequestIsForeign :: IsForeign ReminderFolderRequest where
   read json =
       mkReminderFolderRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
 
 instance reminderFolderRequestShow :: Show ReminderFolderRequest where
-    show (ReminderFolderRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
+    show (ReminderFolderRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype ReminderFolderResponse = ReminderFolderResponse {
   id :: Int,
@@ -12057,7 +13422,7 @@ type ReminderFolderResponseR = {
 }
 
 
-_ReminderFolderResponse :: LensP ReminderFolderResponse {
+_ReminderFolderResponse :: Lens' ReminderFolderResponse {
   id :: Int,
   userId :: Int,
   parentFolderId :: (Maybe Int),
@@ -12079,6 +13444,20 @@ mkReminderFolderResponse id userId parentFolderId name displayName visibility de
   ReminderFolderResponse{id, userId, parentFolderId, name, displayName, visibility, description, active, guard, createdAt, modifiedAt, activityAt}
 
 
+unwrapReminderFolderResponse :: ReminderFolderResponse -> {
+  id :: Int,
+  userId :: Int,
+  parentFolderId :: (Maybe Int),
+  name :: String,
+  displayName :: String,
+  visibility :: Visibility,
+  description :: (Maybe String),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapReminderFolderResponse (ReminderFolderResponse r) = r
 
 instance reminderFolderResponseEncodeJson :: EncodeJson ReminderFolderResponse where
@@ -12143,16 +13522,16 @@ instance reminderFolderResponseRespondable :: Respondable ReminderFolderResponse
       mkReminderFolderResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
-      <*> (runNullOrUndefined <$> readProp "parent_folder_id" json)
+      <*> (unNullOrUndefined <$> readProp "parent_folder_id" json)
       <*> readProp "name" json
       <*> readProp "display_name" json
       <*> readProp "visibility" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance reminderFolderResponseIsForeign :: IsForeign ReminderFolderResponse where
@@ -12160,20 +13539,20 @@ instance reminderFolderResponseIsForeign :: IsForeign ReminderFolderResponse whe
       mkReminderFolderResponse
       <$> readProp "id" json
       <*> readProp "user_id" json
-      <*> (runNullOrUndefined <$> readProp "parent_folder_id" json)
+      <*> (unNullOrUndefined <$> readProp "parent_folder_id" json)
       <*> readProp "name" json
       <*> readProp "display_name" json
       <*> readProp "visibility" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance reminderFolderResponseShow :: Show ReminderFolderResponse where
-    show (ReminderFolderResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "parentFolderId: " ++ show o.parentFolderId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ReminderFolderResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "parentFolderId: " <> show o.parentFolderId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "description: " <> show o.description <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype ReminderFolderResponses = ReminderFolderResponses {
   reminderFolderResponses :: (Array ReminderFolderResponse)
@@ -12185,7 +13564,7 @@ type ReminderFolderResponsesR = {
 }
 
 
-_ReminderFolderResponses :: LensP ReminderFolderResponses {
+_ReminderFolderResponses :: Lens' ReminderFolderResponses {
   reminderFolderResponses :: (Array ReminderFolderResponse)
 }
 _ReminderFolderResponses f (ReminderFolderResponses o) = ReminderFolderResponses <$> f o
@@ -12196,6 +13575,9 @@ mkReminderFolderResponses reminderFolderResponses =
   ReminderFolderResponses{reminderFolderResponses}
 
 
+unwrapReminderFolderResponses :: ReminderFolderResponses -> {
+  reminderFolderResponses :: (Array ReminderFolderResponse)
+}
 unwrapReminderFolderResponses (ReminderFolderResponses r) = r
 
 instance reminderFolderResponsesEncodeJson :: EncodeJson ReminderFolderResponses where
@@ -12235,7 +13617,7 @@ instance reminderFolderResponsesIsForeign :: IsForeign ReminderFolderResponses w
 
 
 instance reminderFolderResponsesShow :: Show ReminderFolderResponses where
-    show (ReminderFolderResponses o) = show "reminderFolderResponses: " ++ show o.reminderFolderResponses
+    show (ReminderFolderResponses o) = show "reminderFolderResponses: " <> show o.reminderFolderResponses
 
 data ResourceType
   = ISBN13 String
@@ -12249,19 +13631,19 @@ data ResourceType
 instance resourceTypeEncodeJson :: EncodeJson ResourceType where
   encodeJson (ISBN13 x0) =
        "tag" := "ISBN13"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ISBN10 x0) =
        "tag" := "ISBN10"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ISBN x0) =
        "tag" := "ISBN"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (URL x0) =
        "tag" := "URL"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (SourceNone ) =
        "tag" := "SourceNone"
@@ -12274,26 +13656,39 @@ instance resourceTypeDecodeJson :: DecodeJson ResourceType where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "ISBN13" -> do
-          x0 <- obj .? "contents"
-          ISBN13 <$> decodeJson x0
+      "ISBN13" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ISBN13 <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ISBN13"
 
-        "ISBN10" -> do
-          x0 <- obj .? "contents"
-          ISBN10 <$> decodeJson x0
 
-        "ISBN" -> do
-          x0 <- obj .? "contents"
-          ISBN <$> decodeJson x0
+      "ISBN10" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ISBN10 <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ISBN10"
 
-        "URL" -> do
-          x0 <- obj .? "contents"
-          URL <$> decodeJson x0
 
-        "SourceNone" -> do
-          return SourceNone
+      "ISBN" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> ISBN <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ISBN"
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+
+      "URL" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> URL <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for URL"
+
+
+      "SourceNone" -> do
+        pure SourceNone
+
+      _ -> Left $ "DecodeJson TypeMismatch for ResourceType"
+
 
 
 instance resourceTypeRequestable :: Requestable ResourceType where
@@ -12308,24 +13703,38 @@ instance resourceTypeRespondable :: Respondable ResourceType where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "ISBN13" -> do
-          x0 <- readProp "contents" json
-          ISBN13 <$> read x0
+      "ISBN13" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ISBN13 <$> read x0
+          _ -> Left $ TypeMismatch "ISBN13" "Respondable"
 
-        "ISBN10" -> do
-          x0 <- readProp "contents" json
-          ISBN10 <$> read x0
 
-        "ISBN" -> do
-          x0 <- readProp "contents" json
-          ISBN <$> read x0
+      "ISBN10" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ISBN10 <$> read x0
+          _ -> Left $ TypeMismatch "ISBN10" "Respondable"
 
-        "URL" -> do
-          x0 <- readProp "contents" json
-          URL <$> read x0
 
-        "SourceNone" -> do
-          return SourceNone
+      "ISBN" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ISBN <$> read x0
+          _ -> Left $ TypeMismatch "ISBN" "Respondable"
+
+
+      "URL" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> URL <$> read x0
+          _ -> Left $ TypeMismatch "URL" "Respondable"
+
+
+      "SourceNone" -> do
+        pure SourceNone
+
+      _ -> Left $ TypeMismatch "ResourceType" "Respondable"
 
 
 
@@ -12333,32 +13742,46 @@ instance resourceTypeIsForeign :: IsForeign ResourceType where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "ISBN13" -> do
-          x0 <- readProp "contents" json
-          ISBN13 <$> read x0
+      "ISBN13" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ISBN13 <$> read x0
+          _ -> Left $ TypeMismatch "ISBN13" "IsForeign"
 
-        "ISBN10" -> do
-          x0 <- readProp "contents" json
-          ISBN10 <$> read x0
 
-        "ISBN" -> do
-          x0 <- readProp "contents" json
-          ISBN <$> read x0
+      "ISBN10" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ISBN10 <$> read x0
+          _ -> Left $ TypeMismatch "ISBN10" "IsForeign"
 
-        "URL" -> do
-          x0 <- readProp "contents" json
-          URL <$> read x0
 
-        "SourceNone" -> do
-          return SourceNone
+      "ISBN" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> ISBN <$> read x0
+          _ -> Left $ TypeMismatch "ISBN" "IsForeign"
+
+
+      "URL" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> URL <$> read x0
+          _ -> Left $ TypeMismatch "URL" "IsForeign"
+
+
+      "SourceNone" -> do
+        pure SourceNone
+
+      _ -> Left $ TypeMismatch "ResourceType" "IsForeign"
 
 
 
 instance resourceTypeShow :: Show ResourceType where
-  show (ISBN13 x0) = "ISBN13: " ++ show x0
-  show (ISBN10 x0) = "ISBN10: " ++ show x0
-  show (ISBN x0) = "ISBN: " ++ show x0
-  show (URL x0) = "URL: " ++ show x0
+  show (ISBN13 x0) = "ISBN13: " <> show x0
+  show (ISBN10 x0) = "ISBN10: " <> show x0
+  show (ISBN x0) = "ISBN: " <> show x0
+  show (URL x0) = "URL: " <> show x0
   show (SourceNone) = "SourceNone"
 
 
@@ -12399,22 +13822,23 @@ instance tyResourceTypeDecodeJson :: DecodeJson TyResourceType where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "TyISBN13" -> do
-          return TyISBN13
+      "TyISBN13" -> do
+        pure TyISBN13
 
-        "TyISBN10" -> do
-          return TyISBN10
+      "TyISBN10" -> do
+        pure TyISBN10
 
-        "TyISBN" -> do
-          return TyISBN
+      "TyISBN" -> do
+        pure TyISBN
 
-        "TyURL" -> do
-          return TyURL
+      "TyURL" -> do
+        pure TyURL
 
-        "TySourceNone" -> do
-          return TySourceNone
+      "TySourceNone" -> do
+        pure TySourceNone
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for TyResourceType"
+
 
 
 instance tyResourceTypeRequestable :: Requestable TyResourceType where
@@ -12429,20 +13853,22 @@ instance tyResourceTypeRespondable :: Respondable TyResourceType where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "TyISBN13" -> do
-          return TyISBN13
+      "TyISBN13" -> do
+        pure TyISBN13
 
-        "TyISBN10" -> do
-          return TyISBN10
+      "TyISBN10" -> do
+        pure TyISBN10
 
-        "TyISBN" -> do
-          return TyISBN
+      "TyISBN" -> do
+        pure TyISBN
 
-        "TyURL" -> do
-          return TyURL
+      "TyURL" -> do
+        pure TyURL
 
-        "TySourceNone" -> do
-          return TySourceNone
+      "TySourceNone" -> do
+        pure TySourceNone
+
+      _ -> Left $ TypeMismatch "TyResourceType" "Respondable"
 
 
 
@@ -12450,20 +13876,22 @@ instance tyResourceTypeIsForeign :: IsForeign TyResourceType where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "TyISBN13" -> do
-          return TyISBN13
+      "TyISBN13" -> do
+        pure TyISBN13
 
-        "TyISBN10" -> do
-          return TyISBN10
+      "TyISBN10" -> do
+        pure TyISBN10
 
-        "TyISBN" -> do
-          return TyISBN
+      "TyISBN" -> do
+        pure TyISBN
 
-        "TyURL" -> do
-          return TyURL
+      "TyURL" -> do
+        pure TyURL
 
-        "TySourceNone" -> do
-          return TySourceNone
+      "TySourceNone" -> do
+        pure TySourceNone
+
+      _ -> Left $ TypeMismatch "TyResourceType" "IsForeign"
 
 
 
@@ -12517,7 +13945,7 @@ type ResourceRequestR = {
 }
 
 
-_ResourceRequest :: LensP ResourceRequest {
+_ResourceRequest :: Lens' ResourceRequest {
   displayName :: String,
   description :: String,
   source :: ResourceType,
@@ -12540,6 +13968,21 @@ mkResourceRequest displayName description source author prerequisites categories
   ResourceRequest{displayName, description, source, author, prerequisites, categories, visibility, counter, version, urls, icon, tags, guard}
 
 
+unwrapResourceRequest :: ResourceRequest -> {
+  displayName :: String,
+  description :: String,
+  source :: ResourceType,
+  author :: (Maybe (Array String)),
+  prerequisites :: (DepList String),
+  categories :: (DepList String),
+  visibility :: Visibility,
+  counter :: Int,
+  version :: (Maybe String),
+  urls :: (Maybe (Array String)),
+  icon :: (Maybe String),
+  tags :: (Array String),
+  guard :: Int
+}
 unwrapResourceRequest (ResourceRequest r) = r
 
 instance resourceRequestEncodeJson :: EncodeJson ResourceRequest where
@@ -12608,14 +14051,14 @@ instance resourceRequestRespondable :: Respondable ResourceRequest where
       <$> readProp "display_name" json
       <*> readProp "description" json
       <*> readProp "source" json
-      <*> (runNullOrUndefined <$> readProp "author" json)
+      <*> (unNullOrUndefined <$> readProp "author" json)
       <*> readProp "prerequisites" json
       <*> readProp "categories" json
       <*> readProp "visibility" json
       <*> readProp "counter" json
-      <*> (runNullOrUndefined <$> readProp "version" json)
-      <*> (runNullOrUndefined <$> readProp "urls" json)
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "version" json)
+      <*> (unNullOrUndefined <$> readProp "urls" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "guard" json
 
@@ -12626,20 +14069,20 @@ instance resourceRequestIsForeign :: IsForeign ResourceRequest where
       <$> readProp "display_name" json
       <*> readProp "description" json
       <*> readProp "source" json
-      <*> (runNullOrUndefined <$> readProp "author" json)
+      <*> (unNullOrUndefined <$> readProp "author" json)
       <*> readProp "prerequisites" json
       <*> readProp "categories" json
       <*> readProp "visibility" json
       <*> readProp "counter" json
-      <*> (runNullOrUndefined <$> readProp "version" json)
-      <*> (runNullOrUndefined <$> readProp "urls" json)
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "version" json)
+      <*> (unNullOrUndefined <$> readProp "urls" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "guard" json
 
 
 instance resourceRequestShow :: Show ResourceRequest where
-    show (ResourceRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "source: " ++ show o.source ++ ", " ++ show "author: " ++ show o.author ++ ", " ++ show "prerequisites: " ++ show o.prerequisites ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "counter: " ++ show o.counter ++ ", " ++ show "version: " ++ show o.version ++ ", " ++ show "urls: " ++ show o.urls ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "guard: " ++ show o.guard
+    show (ResourceRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "source: " <> show o.source <> ", " <> show "author: " <> show o.author <> ", " <> show "prerequisites: " <> show o.prerequisites <> ", " <> show "categories: " <> show o.categories <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "counter: " <> show o.counter <> ", " <> show "version: " <> show o.version <> ", " <> show "urls: " <> show o.urls <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "guard: " <> show o.guard
 
 newtype ResourceResponse = ResourceResponse {
   id :: Int,
@@ -12689,7 +14132,7 @@ type ResourceResponseR = {
 }
 
 
-_ResourceResponse :: LensP ResourceResponse {
+_ResourceResponse :: Lens' ResourceResponse {
   id :: Int,
   userId :: Int,
   name :: String,
@@ -12719,6 +14162,28 @@ mkResourceResponse id userId name displayName description source author prerequi
   ResourceResponse{id, userId, name, displayName, description, source, author, prerequisites, categories, visibility, counter, version, urls, icon, tags, active, guard, createdAt, modifiedAt, activityAt}
 
 
+unwrapResourceResponse :: ResourceResponse -> {
+  id :: Int,
+  userId :: Int,
+  name :: String,
+  displayName :: String,
+  description :: String,
+  source :: ResourceType,
+  author :: (Maybe (Array String)),
+  prerequisites :: (DepList String),
+  categories :: (DepList String),
+  visibility :: Visibility,
+  counter :: Int,
+  version :: (Maybe String),
+  urls :: (Maybe (Array String)),
+  icon :: (Maybe String),
+  tags :: (Array String),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapResourceResponse (ResourceResponse r) = r
 
 instance resourceResponseEncodeJson :: EncodeJson ResourceResponse where
@@ -12811,20 +14276,20 @@ instance resourceResponseRespondable :: Respondable ResourceResponse where
       <*> readProp "display_name" json
       <*> readProp "description" json
       <*> readProp "source" json
-      <*> (runNullOrUndefined <$> readProp "author" json)
+      <*> (unNullOrUndefined <$> readProp "author" json)
       <*> readProp "prerequisites" json
       <*> readProp "categories" json
       <*> readProp "visibility" json
       <*> readProp "counter" json
-      <*> (runNullOrUndefined <$> readProp "version" json)
-      <*> (runNullOrUndefined <$> readProp "urls" json)
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "version" json)
+      <*> (unNullOrUndefined <$> readProp "urls" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance resourceResponseIsForeign :: IsForeign ResourceResponse where
@@ -12836,24 +14301,24 @@ instance resourceResponseIsForeign :: IsForeign ResourceResponse where
       <*> readProp "display_name" json
       <*> readProp "description" json
       <*> readProp "source" json
-      <*> (runNullOrUndefined <$> readProp "author" json)
+      <*> (unNullOrUndefined <$> readProp "author" json)
       <*> readProp "prerequisites" json
       <*> readProp "categories" json
       <*> readProp "visibility" json
       <*> readProp "counter" json
-      <*> (runNullOrUndefined <$> readProp "version" json)
-      <*> (runNullOrUndefined <$> readProp "urls" json)
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "version" json)
+      <*> (unNullOrUndefined <$> readProp "urls" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance resourceResponseShow :: Show ResourceResponse where
-    show (ResourceResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "source: " ++ show o.source ++ ", " ++ show "author: " ++ show o.author ++ ", " ++ show "prerequisites: " ++ show o.prerequisites ++ ", " ++ show "categories: " ++ show o.categories ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "counter: " ++ show o.counter ++ ", " ++ show "version: " ++ show o.version ++ ", " ++ show "urls: " ++ show o.urls ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ResourceResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "source: " <> show o.source <> ", " <> show "author: " <> show o.author <> ", " <> show "prerequisites: " <> show o.prerequisites <> ", " <> show "categories: " <> show o.categories <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "counter: " <> show o.counter <> ", " <> show "version: " <> show o.version <> ", " <> show "urls: " <> show o.urls <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype ResourceResponses = ResourceResponses {
   resourceResponses :: (Array ResourceResponse)
@@ -12865,7 +14330,7 @@ type ResourceResponsesR = {
 }
 
 
-_ResourceResponses :: LensP ResourceResponses {
+_ResourceResponses :: Lens' ResourceResponses {
   resourceResponses :: (Array ResourceResponse)
 }
 _ResourceResponses f (ResourceResponses o) = ResourceResponses <$> f o
@@ -12876,6 +14341,9 @@ mkResourceResponses resourceResponses =
   ResourceResponses{resourceResponses}
 
 
+unwrapResourceResponses :: ResourceResponses -> {
+  resourceResponses :: (Array ResourceResponse)
+}
 unwrapResourceResponses (ResourceResponses r) = r
 
 instance resourceResponsesEncodeJson :: EncodeJson ResourceResponses where
@@ -12915,7 +14383,7 @@ instance resourceResponsesIsForeign :: IsForeign ResourceResponses where
 
 
 instance resourceResponsesShow :: Show ResourceResponses where
-    show (ResourceResponses o) = show "resourceResponses: " ++ show o.resourceResponses
+    show (ResourceResponses o) = show "resourceResponses: " <> show o.resourceResponses
 
 newtype ResourceStatResponse = ResourceStatResponse {
   resourceId :: Int,
@@ -12939,7 +14407,7 @@ type ResourceStatResponseR = {
 }
 
 
-_ResourceStatResponse :: LensP ResourceStatResponse {
+_ResourceStatResponse :: Lens' ResourceStatResponse {
   resourceId :: Int,
   leurons :: Int,
   likes :: Int,
@@ -12956,6 +14424,15 @@ mkResourceStatResponse resourceId leurons likes neutral dislikes stars views =
   ResourceStatResponse{resourceId, leurons, likes, neutral, dislikes, stars, views}
 
 
+unwrapResourceStatResponse :: ResourceStatResponse -> {
+  resourceId :: Int,
+  leurons :: Int,
+  likes :: Int,
+  neutral :: Int,
+  dislikes :: Int,
+  stars :: Int,
+  views :: Int
+}
 unwrapResourceStatResponse (ResourceStatResponse r) = r
 
 instance resourceStatResponseEncodeJson :: EncodeJson ResourceStatResponse where
@@ -13025,7 +14502,7 @@ instance resourceStatResponseIsForeign :: IsForeign ResourceStatResponse where
 
 
 instance resourceStatResponseShow :: Show ResourceStatResponse where
-    show (ResourceStatResponse o) = show "resourceId: " ++ show o.resourceId ++ ", " ++ show "leurons: " ++ show o.leurons ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "stars: " ++ show o.stars ++ ", " ++ show "views: " ++ show o.views
+    show (ResourceStatResponse o) = show "resourceId: " <> show o.resourceId <> ", " <> show "leurons: " <> show o.leurons <> ", " <> show "likes: " <> show o.likes <> ", " <> show "neutral: " <> show o.neutral <> ", " <> show "dislikes: " <> show o.dislikes <> ", " <> show "stars: " <> show o.stars <> ", " <> show "views: " <> show o.views
 
 newtype ResourceStatResponses = ResourceStatResponses {
   resourceStatResponses :: (Array ResourceStatResponse)
@@ -13037,7 +14514,7 @@ type ResourceStatResponsesR = {
 }
 
 
-_ResourceStatResponses :: LensP ResourceStatResponses {
+_ResourceStatResponses :: Lens' ResourceStatResponses {
   resourceStatResponses :: (Array ResourceStatResponse)
 }
 _ResourceStatResponses f (ResourceStatResponses o) = ResourceStatResponses <$> f o
@@ -13048,6 +14525,9 @@ mkResourceStatResponses resourceStatResponses =
   ResourceStatResponses{resourceStatResponses}
 
 
+unwrapResourceStatResponses :: ResourceStatResponses -> {
+  resourceStatResponses :: (Array ResourceStatResponse)
+}
 unwrapResourceStatResponses (ResourceStatResponses r) = r
 
 instance resourceStatResponsesEncodeJson :: EncodeJson ResourceStatResponses where
@@ -13087,7 +14567,7 @@ instance resourceStatResponsesIsForeign :: IsForeign ResourceStatResponses where
 
 
 instance resourceStatResponsesShow :: Show ResourceStatResponses where
-    show (ResourceStatResponses o) = show "resourceStatResponses: " ++ show o.resourceStatResponses
+    show (ResourceStatResponses o) = show "resourceStatResponses: " <> show o.resourceStatResponses
 
 data Size
   = XSmall 
@@ -13126,22 +14606,23 @@ instance sizeDecodeJson :: DecodeJson Size where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "XSmall" -> do
-          return XSmall
+      "XSmall" -> do
+        pure XSmall
 
-        "Small" -> do
-          return Small
+      "Small" -> do
+        pure Small
 
-        "Medium" -> do
-          return Medium
+      "Medium" -> do
+        pure Medium
 
-        "Large" -> do
-          return Large
+      "Large" -> do
+        pure Large
 
-        "XLarge" -> do
-          return XLarge
+      "XLarge" -> do
+        pure XLarge
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for Size"
+
 
 
 instance sizeRequestable :: Requestable Size where
@@ -13156,20 +14637,22 @@ instance sizeRespondable :: Respondable Size where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "XSmall" -> do
-          return XSmall
+      "XSmall" -> do
+        pure XSmall
 
-        "Small" -> do
-          return Small
+      "Small" -> do
+        pure Small
 
-        "Medium" -> do
-          return Medium
+      "Medium" -> do
+        pure Medium
 
-        "Large" -> do
-          return Large
+      "Large" -> do
+        pure Large
 
-        "XLarge" -> do
-          return XLarge
+      "XLarge" -> do
+        pure XLarge
+
+      _ -> Left $ TypeMismatch "Size" "Respondable"
 
 
 
@@ -13177,20 +14660,22 @@ instance sizeIsForeign :: IsForeign Size where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "XSmall" -> do
-          return XSmall
+      "XSmall" -> do
+        pure XSmall
 
-        "Small" -> do
-          return Small
+      "Small" -> do
+        pure Small
 
-        "Medium" -> do
-          return Medium
+      "Medium" -> do
+        pure Medium
 
-        "Large" -> do
-          return Large
+      "Large" -> do
+        pure Large
 
-        "XLarge" -> do
-          return XLarge
+      "XLarge" -> do
+        pure XLarge
+
+      _ -> Left $ TypeMismatch "Size" "IsForeign"
 
 
 
@@ -13232,14 +14717,18 @@ instance splitsDecodeJson :: DecodeJson Splits where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "SplitAt" -> do
-          [x0, x1, x2] <- obj .? "contents"
-          SplitAt <$> decodeJson x0 <*> decodeJson x1 <*> decodeJson x2
+      "SplitAt" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0, x1, x2] -> SplitAt <$> decodeJson x0 <*> decodeJson x1 <*> decodeJson x2
+          _ -> Left $ "DecodeJson TypeMismatch for SplitAt"
 
-        "SplitNone" -> do
-          return SplitNone
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      "SplitNone" -> do
+        pure SplitNone
+
+      _ -> Left $ "DecodeJson TypeMismatch for Splits"
+
 
 
 instance splitsRequestable :: Requestable Splits where
@@ -13254,12 +14743,17 @@ instance splitsRespondable :: Respondable Splits where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "SplitAt" -> do
-          [x0, x1, x2] <- readProp "contents" json
-          SplitAt <$> read x0 <*> read x1 <*> read x2
+      "SplitAt" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1, x2] -> SplitAt <$> read x0 <*> read x1 <*> read x2
+          _ -> Left $ TypeMismatch "SplitAt" "Respondable"
 
-        "SplitNone" -> do
-          return SplitNone
+
+      "SplitNone" -> do
+        pure SplitNone
+
+      _ -> Left $ TypeMismatch "Splits" "Respondable"
 
 
 
@@ -13267,17 +14761,22 @@ instance splitsIsForeign :: IsForeign Splits where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "SplitAt" -> do
-          [x0, x1, x2] <- readProp "contents" json
-          SplitAt <$> read x0 <*> read x1 <*> read x2
+      "SplitAt" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1, x2] -> SplitAt <$> read x0 <*> read x1 <*> read x2
+          _ -> Left $ TypeMismatch "SplitAt" "IsForeign"
 
-        "SplitNone" -> do
-          return SplitNone
+
+      "SplitNone" -> do
+        pure SplitNone
+
+      _ -> Left $ TypeMismatch "Splits" "IsForeign"
 
 
 
 instance splitsShow :: Show Splits where
-  show (SplitAt x0 x1 x2) = "SplitAt: " ++ show x0 ++ " " ++ show x1 ++ " " ++ show x2
+  show (SplitAt x0 x1 x2) = "SplitAt: " <> show x0 <> " " <> show x1 <> " " <> show x2
   show (SplitNone) = "SplitNone"
 
 
@@ -13303,13 +14802,14 @@ instance tySplitsDecodeJson :: DecodeJson TySplits where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "TySplitA" -> do
-          return TySplitA
+      "TySplitA" -> do
+        pure TySplitA
 
-        "TySplitNone" -> do
-          return TySplitNone
+      "TySplitNone" -> do
+        pure TySplitNone
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for TySplits"
+
 
 
 instance tySplitsRequestable :: Requestable TySplits where
@@ -13324,11 +14824,13 @@ instance tySplitsRespondable :: Respondable TySplits where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "TySplitA" -> do
-          return TySplitA
+      "TySplitA" -> do
+        pure TySplitA
 
-        "TySplitNone" -> do
-          return TySplitNone
+      "TySplitNone" -> do
+        pure TySplitNone
+
+      _ -> Left $ TypeMismatch "TySplits" "Respondable"
 
 
 
@@ -13336,11 +14838,13 @@ instance tySplitsIsForeign :: IsForeign TySplits where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "TySplitA" -> do
-          return TySplitA
+      "TySplitA" -> do
+        pure TySplitA
 
-        "TySplitNone" -> do
-          return TySplitNone
+      "TySplitNone" -> do
+        pure TySplitNone
+
+      _ -> Left $ TypeMismatch "TySplits" "IsForeign"
 
 
 
@@ -13369,11 +14873,11 @@ instance substitutionsEncodeJson :: EncodeJson Substitutions where
     ~> jsonEmptyObject
   encodeJson (SubsOneOf x0) =
        "tag" := "SubsOneOf"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (SubsAllOf x0) =
        "tag" := "SubsAllOf"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (SubsBoth x0 x1) =
        "tag" := "SubsBoth"
@@ -13386,23 +14890,36 @@ instance substitutionsDecodeJson :: DecodeJson Substitutions where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "SubsExpr" -> do
-          [x0, x1] <- obj .? "contents"
-          SubsExpr <$> decodeJson x0 <*> decodeJson x1
+      "SubsExpr" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0, x1] -> SubsExpr <$> decodeJson x0 <*> decodeJson x1
+          _ -> Left $ "DecodeJson TypeMismatch for SubsExpr"
 
-        "SubsOneOf" -> do
-          x0 <- obj .? "contents"
-          SubsOneOf <$> decodeJson x0
 
-        "SubsAllOf" -> do
-          x0 <- obj .? "contents"
-          SubsAllOf <$> decodeJson x0
+      "SubsOneOf" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> SubsOneOf <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for SubsOneOf"
 
-        "SubsBoth" -> do
-          [x0, x1] <- obj .? "contents"
-          SubsBoth <$> decodeJson x0 <*> decodeJson x1
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      "SubsAllOf" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> SubsAllOf <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for SubsAllOf"
+
+
+      "SubsBoth" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0, x1] -> SubsBoth <$> decodeJson x0 <*> decodeJson x1
+          _ -> Left $ "DecodeJson TypeMismatch for SubsBoth"
+
+
+      _ -> Left $ "DecodeJson TypeMismatch for Substitutions"
+
 
 
 instance substitutionsRequestable :: Requestable Substitutions where
@@ -13417,21 +14934,35 @@ instance substitutionsRespondable :: Respondable Substitutions where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "SubsExpr" -> do
-          [x0, x1] <- readProp "contents" json
-          SubsExpr <$> read x0 <*> read x1
+      "SubsExpr" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> SubsExpr <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "SubsExpr" "Respondable"
 
-        "SubsOneOf" -> do
-          x0 <- readProp "contents" json
-          SubsOneOf <$> read x0
 
-        "SubsAllOf" -> do
-          x0 <- readProp "contents" json
-          SubsAllOf <$> read x0
+      "SubsOneOf" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> SubsOneOf <$> read x0
+          _ -> Left $ TypeMismatch "SubsOneOf" "Respondable"
 
-        "SubsBoth" -> do
-          [x0, x1] <- readProp "contents" json
-          SubsBoth <$> read x0 <*> read x1
+
+      "SubsAllOf" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> SubsAllOf <$> read x0
+          _ -> Left $ TypeMismatch "SubsAllOf" "Respondable"
+
+
+      "SubsBoth" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> SubsBoth <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "SubsBoth" "Respondable"
+
+
+      _ -> Left $ TypeMismatch "Substitutions" "Respondable"
 
 
 
@@ -13439,29 +14970,43 @@ instance substitutionsIsForeign :: IsForeign Substitutions where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "SubsExpr" -> do
-          [x0, x1] <- readProp "contents" json
-          SubsExpr <$> read x0 <*> read x1
+      "SubsExpr" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> SubsExpr <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "SubsExpr" "IsForeign"
 
-        "SubsOneOf" -> do
-          x0 <- readProp "contents" json
-          SubsOneOf <$> read x0
 
-        "SubsAllOf" -> do
-          x0 <- readProp "contents" json
-          SubsAllOf <$> read x0
+      "SubsOneOf" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> SubsOneOf <$> read x0
+          _ -> Left $ TypeMismatch "SubsOneOf" "IsForeign"
 
-        "SubsBoth" -> do
-          [x0, x1] <- readProp "contents" json
-          SubsBoth <$> read x0 <*> read x1
+
+      "SubsAllOf" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> SubsAllOf <$> read x0
+          _ -> Left $ TypeMismatch "SubsAllOf" "IsForeign"
+
+
+      "SubsBoth" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> SubsBoth <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "SubsBoth" "IsForeign"
+
+
+      _ -> Left $ TypeMismatch "Substitutions" "IsForeign"
 
 
 
 instance substitutionsShow :: Show Substitutions where
-  show (SubsExpr x0 x1) = "SubsExpr: " ++ show x0 ++ " " ++ show x1
-  show (SubsOneOf x0) = "SubsOneOf: " ++ show x0
-  show (SubsAllOf x0) = "SubsAllOf: " ++ show x0
-  show (SubsBoth x0 x1) = "SubsBoth: " ++ show x0 ++ " " ++ show x1
+  show (SubsExpr x0 x1) = "SubsExpr: " <> show x0 <> " " <> show x1
+  show (SubsOneOf x0) = "SubsOneOf: " <> show x0
+  show (SubsAllOf x0) = "SubsAllOf: " <> show x0
+  show (SubsBoth x0 x1) = "SubsBoth: " <> show x0 <> " " <> show x1
 
 
 data TySubstitutions
@@ -13496,19 +15041,20 @@ instance tySubstitutionsDecodeJson :: DecodeJson TySubstitutions where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "TySubsExpr" -> do
-          return TySubsExpr
+      "TySubsExpr" -> do
+        pure TySubsExpr
 
-        "TySubsOneOf" -> do
-          return TySubsOneOf
+      "TySubsOneOf" -> do
+        pure TySubsOneOf
 
-        "TySubsAllOf" -> do
-          return TySubsAllOf
+      "TySubsAllOf" -> do
+        pure TySubsAllOf
 
-        "TySubsBoth" -> do
-          return TySubsBoth
+      "TySubsBoth" -> do
+        pure TySubsBoth
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for TySubstitutions"
+
 
 
 instance tySubstitutionsRequestable :: Requestable TySubstitutions where
@@ -13523,17 +15069,19 @@ instance tySubstitutionsRespondable :: Respondable TySubstitutions where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "TySubsExpr" -> do
-          return TySubsExpr
+      "TySubsExpr" -> do
+        pure TySubsExpr
 
-        "TySubsOneOf" -> do
-          return TySubsOneOf
+      "TySubsOneOf" -> do
+        pure TySubsOneOf
 
-        "TySubsAllOf" -> do
-          return TySubsAllOf
+      "TySubsAllOf" -> do
+        pure TySubsAllOf
 
-        "TySubsBoth" -> do
-          return TySubsBoth
+      "TySubsBoth" -> do
+        pure TySubsBoth
+
+      _ -> Left $ TypeMismatch "TySubstitutions" "Respondable"
 
 
 
@@ -13541,17 +15089,19 @@ instance tySubstitutionsIsForeign :: IsForeign TySubstitutions where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "TySubsExpr" -> do
-          return TySubsExpr
+      "TySubsExpr" -> do
+        pure TySubsExpr
 
-        "TySubsOneOf" -> do
-          return TySubsOneOf
+      "TySubsOneOf" -> do
+        pure TySubsOneOf
 
-        "TySubsAllOf" -> do
-          return TySubsAllOf
+      "TySubsAllOf" -> do
+        pure TySubsAllOf
 
-        "TySubsBoth" -> do
-          return TySubsBoth
+      "TySubsBoth" -> do
+        pure TySubsBoth
+
+      _ -> Left $ TypeMismatch "TySubstitutions" "IsForeign"
 
 
 
@@ -13581,7 +15131,7 @@ type StarRequestR = {
 }
 
 
-_StarRequest :: LensP StarRequest {
+_StarRequest :: Lens' StarRequest {
   reason :: (Maybe String),
   guard :: Int
 }
@@ -13593,6 +15143,10 @@ mkStarRequest reason guard =
   StarRequest{reason, guard}
 
 
+unwrapStarRequest :: StarRequest -> {
+  reason :: (Maybe String),
+  guard :: Int
+}
 unwrapStarRequest (StarRequest r) = r
 
 instance starRequestEncodeJson :: EncodeJson StarRequest where
@@ -13625,19 +15179,19 @@ instance starRequestRespondable :: Respondable StarRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkStarRequest
-      <$> (runNullOrUndefined <$> readProp "reason" json)
+      <$> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "guard" json
 
 
 instance starRequestIsForeign :: IsForeign StarRequest where
   read json =
       mkStarRequest
-      <$> (runNullOrUndefined <$> readProp "reason" json)
+      <$> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "guard" json
 
 
 instance starRequestShow :: Show StarRequest where
-    show (StarRequest o) = show "reason: " ++ show o.reason ++ ", " ++ show "guard: " ++ show o.guard
+    show (StarRequest o) = show "reason: " <> show o.reason <> ", " <> show "guard: " <> show o.guard
 
 newtype StarResponse = StarResponse {
   id :: Int,
@@ -13665,7 +15219,7 @@ type StarResponseR = {
 }
 
 
-_StarResponse :: LensP StarResponse {
+_StarResponse :: Lens' StarResponse {
   id :: Int,
   ent :: Ent,
   entId :: Int,
@@ -13684,6 +15238,17 @@ mkStarResponse id ent entId userId reason active guard createdAt modifiedAt =
   StarResponse{id, ent, entId, userId, reason, active, guard, createdAt, modifiedAt}
 
 
+unwrapStarResponse :: StarResponse -> {
+  id :: Int,
+  ent :: Ent,
+  entId :: Int,
+  userId :: Int,
+  reason :: (Maybe String),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
 unwrapStarResponse (StarResponse r) = r
 
 instance starResponseEncodeJson :: EncodeJson StarResponse where
@@ -13741,11 +15306,11 @@ instance starResponseRespondable :: Respondable StarResponse where
       <*> readProp "ent" json
       <*> readProp "ent_id" json
       <*> readProp "user_id" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance starResponseIsForeign :: IsForeign StarResponse where
@@ -13755,15 +15320,15 @@ instance starResponseIsForeign :: IsForeign StarResponse where
       <*> readProp "ent" json
       <*> readProp "ent_id" json
       <*> readProp "user_id" json
-      <*> (runNullOrUndefined <$> readProp "reason" json)
+      <*> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance starResponseShow :: Show StarResponse where
-    show (StarResponse o) = show "id: " ++ show o.id ++ ", " ++ show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "reason: " ++ show o.reason ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (StarResponse o) = show "id: " <> show o.id <> ", " <> show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "userId: " <> show o.userId <> ", " <> show "reason: " <> show o.reason <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
 
 newtype StarResponses = StarResponses {
   starResponses :: (Array StarResponse)
@@ -13775,7 +15340,7 @@ type StarResponsesR = {
 }
 
 
-_StarResponses :: LensP StarResponses {
+_StarResponses :: Lens' StarResponses {
   starResponses :: (Array StarResponse)
 }
 _StarResponses f (StarResponses o) = StarResponses <$> f o
@@ -13786,6 +15351,9 @@ mkStarResponses starResponses =
   StarResponses{starResponses}
 
 
+unwrapStarResponses :: StarResponses -> {
+  starResponses :: (Array StarResponse)
+}
 unwrapStarResponses (StarResponses r) = r
 
 instance starResponsesEncodeJson :: EncodeJson StarResponses where
@@ -13825,7 +15393,7 @@ instance starResponsesIsForeign :: IsForeign StarResponses where
 
 
 instance starResponsesShow :: Show StarResponses where
-    show (StarResponses o) = show "starResponses: " ++ show o.starResponses
+    show (StarResponses o) = show "starResponses: " <> show o.starResponses
 
 newtype StarStatResponse = StarStatResponse {
   ent :: Ent,
@@ -13841,7 +15409,7 @@ type StarStatResponseR = {
 }
 
 
-_StarStatResponse :: LensP StarStatResponse {
+_StarStatResponse :: Lens' StarStatResponse {
   ent :: Ent,
   entId :: Int,
   stars :: Int
@@ -13854,6 +15422,11 @@ mkStarStatResponse ent entId stars =
   StarStatResponse{ent, entId, stars}
 
 
+unwrapStarStatResponse :: StarStatResponse -> {
+  ent :: Ent,
+  entId :: Int,
+  stars :: Int
+}
 unwrapStarStatResponse (StarStatResponse r) = r
 
 instance starStatResponseEncodeJson :: EncodeJson StarStatResponse where
@@ -13903,7 +15476,7 @@ instance starStatResponseIsForeign :: IsForeign StarStatResponse where
 
 
 instance starStatResponseShow :: Show StarStatResponse where
-    show (StarStatResponse o) = show "ent: " ++ show o.ent ++ ", " ++ show "entId: " ++ show o.entId ++ ", " ++ show "stars: " ++ show o.stars
+    show (StarStatResponse o) = show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "stars: " <> show o.stars
 
 newtype StarStatResponses = StarStatResponses {
   starStatResponses :: (Array StarStatResponse)
@@ -13915,7 +15488,7 @@ type StarStatResponsesR = {
 }
 
 
-_StarStatResponses :: LensP StarStatResponses {
+_StarStatResponses :: Lens' StarStatResponses {
   starStatResponses :: (Array StarStatResponse)
 }
 _StarStatResponses f (StarStatResponses o) = StarStatResponses <$> f o
@@ -13926,6 +15499,9 @@ mkStarStatResponses starStatResponses =
   StarStatResponses{starStatResponses}
 
 
+unwrapStarStatResponses :: StarStatResponses -> {
+  starStatResponses :: (Array StarStatResponse)
+}
 unwrapStarStatResponses (StarStatResponses r) = r
 
 instance starStatResponsesEncodeJson :: EncodeJson StarStatResponses where
@@ -13965,7 +15541,7 @@ instance starStatResponsesIsForeign :: IsForeign StarStatResponses where
 
 
 instance starStatResponsesShow :: Show StarStatResponses where
-    show (StarStatResponses o) = show "starStatResponses: " ++ show o.starStatResponses
+    show (StarStatResponses o) = show "starStatResponses: " <> show o.starStatResponses
 
 data SystemTeam
   = Team_Owners 
@@ -13989,13 +15565,14 @@ instance systemTeamDecodeJson :: DecodeJson SystemTeam where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "Team_Owners" -> do
-          return Team_Owners
+      "Team_Owners" -> do
+        pure Team_Owners
 
-        "Team_Members" -> do
-          return Team_Members
+      "Team_Members" -> do
+        pure Team_Members
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for SystemTeam"
+
 
 
 instance systemTeamRequestable :: Requestable SystemTeam where
@@ -14010,11 +15587,13 @@ instance systemTeamRespondable :: Respondable SystemTeam where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "Team_Owners" -> do
-          return Team_Owners
+      "Team_Owners" -> do
+        pure Team_Owners
 
-        "Team_Members" -> do
-          return Team_Members
+      "Team_Members" -> do
+        pure Team_Members
+
+      _ -> Left $ TypeMismatch "SystemTeam" "Respondable"
 
 
 
@@ -14022,11 +15601,13 @@ instance systemTeamIsForeign :: IsForeign SystemTeam where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "Team_Owners" -> do
-          return Team_Owners
+      "Team_Owners" -> do
+        pure Team_Owners
 
-        "Team_Members" -> do
-          return Team_Members
+      "Team_Members" -> do
+        pure Team_Members
+
+      _ -> Left $ TypeMismatch "SystemTeam" "IsForeign"
 
 
 
@@ -14058,7 +15639,7 @@ type TeamRequestR = {
 }
 
 
-_TeamRequest :: LensP TeamRequest {
+_TeamRequest :: Lens' TeamRequest {
   membership :: Membership,
   icon :: (Maybe String),
   tags :: (Array String),
@@ -14073,6 +15654,13 @@ mkTeamRequest membership icon tags visibility guard =
   TeamRequest{membership, icon, tags, visibility, guard}
 
 
+unwrapTeamRequest :: TeamRequest -> {
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  guard :: Int
+}
 unwrapTeamRequest (TeamRequest r) = r
 
 instance teamRequestEncodeJson :: EncodeJson TeamRequest where
@@ -14115,7 +15703,7 @@ instance teamRequestRespondable :: Respondable TeamRequest where
   fromResponse json =
       mkTeamRequest
       <$> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "guard" json
@@ -14125,14 +15713,14 @@ instance teamRequestIsForeign :: IsForeign TeamRequest where
   read json =
       mkTeamRequest
       <$> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
 
 instance teamRequestShow :: Show TeamRequest where
-    show (TeamRequest o) = show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "guard: " ++ show o.guard
+    show (TeamRequest o) = show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype TeamResponse = TeamResponse {
   id :: Int,
@@ -14170,7 +15758,7 @@ type TeamResponseR = {
 }
 
 
-_TeamResponse :: LensP TeamResponse {
+_TeamResponse :: Lens' TeamResponse {
   id :: Int,
   userId :: Int,
   orgId :: Int,
@@ -14194,6 +15782,22 @@ mkTeamResponse id userId orgId system membership icon tags visibility active gua
   TeamResponse{id, userId, orgId, system, membership, icon, tags, visibility, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapTeamResponse :: TeamResponse -> {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  system :: SystemTeam,
+  membership :: Membership,
+  icon :: (Maybe String),
+  tags :: (Array String),
+  visibility :: Visibility,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapTeamResponse (TeamResponse r) = r
 
 instance teamResponseEncodeJson :: EncodeJson TeamResponse where
@@ -14267,15 +15871,15 @@ instance teamResponseRespondable :: Respondable TeamResponse where
       <*> readProp "org_id" json
       <*> readProp "system" json
       <*> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance teamResponseIsForeign :: IsForeign TeamResponse where
@@ -14286,19 +15890,19 @@ instance teamResponseIsForeign :: IsForeign TeamResponse where
       <*> readProp "org_id" json
       <*> readProp "system" json
       <*> readProp "membership" json
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "visibility" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance teamResponseShow :: Show TeamResponse where
-    show (TeamResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "system: " ++ show o.system ++ ", " ++ show "membership: " ++ show o.membership ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "visibility: " ++ show o.visibility ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (TeamResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "system: " <> show o.system <> ", " <> show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype TeamResponses = TeamResponses {
   teamResponses :: (Array TeamResponse)
@@ -14310,7 +15914,7 @@ type TeamResponsesR = {
 }
 
 
-_TeamResponses :: LensP TeamResponses {
+_TeamResponses :: Lens' TeamResponses {
   teamResponses :: (Array TeamResponse)
 }
 _TeamResponses f (TeamResponses o) = TeamResponses <$> f o
@@ -14321,6 +15925,9 @@ mkTeamResponses teamResponses =
   TeamResponses{teamResponses}
 
 
+unwrapTeamResponses :: TeamResponses -> {
+  teamResponses :: (Array TeamResponse)
+}
 unwrapTeamResponses (TeamResponses r) = r
 
 instance teamResponsesEncodeJson :: EncodeJson TeamResponses where
@@ -14360,7 +15967,7 @@ instance teamResponsesIsForeign :: IsForeign TeamResponses where
 
 
 instance teamResponsesShow :: Show TeamResponses where
-    show (TeamResponses o) = show "teamResponses: " ++ show o.teamResponses
+    show (TeamResponses o) = show "teamResponses: " <> show o.teamResponses
 
 newtype TeamStatResponse = TeamStatResponse {
   members :: Int
@@ -14372,7 +15979,7 @@ type TeamStatResponseR = {
 }
 
 
-_TeamStatResponse :: LensP TeamStatResponse {
+_TeamStatResponse :: Lens' TeamStatResponse {
   members :: Int
 }
 _TeamStatResponse f (TeamStatResponse o) = TeamStatResponse <$> f o
@@ -14383,6 +15990,9 @@ mkTeamStatResponse members =
   TeamStatResponse{members}
 
 
+unwrapTeamStatResponse :: TeamStatResponse -> {
+  members :: Int
+}
 unwrapTeamStatResponse (TeamStatResponse r) = r
 
 instance teamStatResponseEncodeJson :: EncodeJson TeamStatResponse where
@@ -14422,7 +16032,7 @@ instance teamStatResponseIsForeign :: IsForeign TeamStatResponse where
 
 
 instance teamStatResponseShow :: Show TeamStatResponse where
-    show (TeamStatResponse o) = show "members: " ++ show o.members
+    show (TeamStatResponse o) = show "members: " <> show o.members
 
 newtype TeamStatResponses = TeamStatResponses {
   teamStatResponses :: (Array TeamStatResponse)
@@ -14434,7 +16044,7 @@ type TeamStatResponsesR = {
 }
 
 
-_TeamStatResponses :: LensP TeamStatResponses {
+_TeamStatResponses :: Lens' TeamStatResponses {
   teamStatResponses :: (Array TeamStatResponse)
 }
 _TeamStatResponses f (TeamStatResponses o) = TeamStatResponses <$> f o
@@ -14445,6 +16055,9 @@ mkTeamStatResponses teamStatResponses =
   TeamStatResponses{teamStatResponses}
 
 
+unwrapTeamStatResponses :: TeamStatResponses -> {
+  teamStatResponses :: (Array TeamStatResponse)
+}
 unwrapTeamStatResponses (TeamStatResponses r) = r
 
 instance teamStatResponsesEncodeJson :: EncodeJson TeamStatResponses where
@@ -14484,7 +16097,7 @@ instance teamStatResponsesIsForeign :: IsForeign TeamStatResponses where
 
 
 instance teamStatResponsesShow :: Show TeamStatResponses where
-    show (TeamStatResponses o) = show "teamStatResponses: " ++ show o.teamStatResponses
+    show (TeamStatResponses o) = show "teamStatResponses: " <> show o.teamStatResponses
 
 newtype TeamMemberRequest = TeamMemberRequest {
   guard :: Int
@@ -14496,7 +16109,7 @@ type TeamMemberRequestR = {
 }
 
 
-_TeamMemberRequest :: LensP TeamMemberRequest {
+_TeamMemberRequest :: Lens' TeamMemberRequest {
   guard :: Int
 }
 _TeamMemberRequest f (TeamMemberRequest o) = TeamMemberRequest <$> f o
@@ -14507,6 +16120,9 @@ mkTeamMemberRequest guard =
   TeamMemberRequest{guard}
 
 
+unwrapTeamMemberRequest :: TeamMemberRequest -> {
+  guard :: Int
+}
 unwrapTeamMemberRequest (TeamMemberRequest r) = r
 
 instance teamMemberRequestEncodeJson :: EncodeJson TeamMemberRequest where
@@ -14546,7 +16162,7 @@ instance teamMemberRequestIsForeign :: IsForeign TeamMemberRequest where
 
 
 instance teamMemberRequestShow :: Show TeamMemberRequest where
-    show (TeamMemberRequest o) = show "guard: " ++ show o.guard
+    show (TeamMemberRequest o) = show "guard: " <> show o.guard
 
 newtype TeamMemberResponse = TeamMemberResponse {
   id :: Int,
@@ -14584,7 +16200,7 @@ type TeamMemberResponseR = {
 }
 
 
-_TeamMemberResponse :: LensP TeamMemberResponse {
+_TeamMemberResponse :: Lens' TeamMemberResponse {
   id :: Int,
   userId :: Int,
   orgId :: Int,
@@ -14608,6 +16224,22 @@ mkTeamMemberResponse id userId orgId teamId isAccepted acceptedAt isBlocked bloc
   TeamMemberResponse{id, userId, orgId, teamId, isAccepted, acceptedAt, isBlocked, blockedAt, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapTeamMemberResponse :: TeamMemberResponse -> {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  teamId :: Int,
+  isAccepted :: Boolean,
+  acceptedAt :: (Maybe Date),
+  isBlocked :: Boolean,
+  blockedAt :: (Maybe Date),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapTeamMemberResponse (TeamMemberResponse r) = r
 
 instance teamMemberResponseEncodeJson :: EncodeJson TeamMemberResponse where
@@ -14681,15 +16313,15 @@ instance teamMemberResponseRespondable :: Respondable TeamMemberResponse where
       <*> readProp "org_id" json
       <*> readProp "team_id" json
       <*> readProp "is_accepted" json
-      <*> (runNullOrUndefined <$> readProp "accepted_at" json)
+      <*> (unNullOrUndefined <$> readProp "accepted_at" json)
       <*> readProp "is_blocked" json
-      <*> (runNullOrUndefined <$> readProp "blocked_at" json)
+      <*> (unNullOrUndefined <$> readProp "blocked_at" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
@@ -14700,19 +16332,19 @@ instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
       <*> readProp "org_id" json
       <*> readProp "team_id" json
       <*> readProp "is_accepted" json
-      <*> (runNullOrUndefined <$> readProp "accepted_at" json)
+      <*> (unNullOrUndefined <$> readProp "accepted_at" json)
       <*> readProp "is_blocked" json
-      <*> (runNullOrUndefined <$> readProp "blocked_at" json)
+      <*> (unNullOrUndefined <$> readProp "blocked_at" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance teamMemberResponseShow :: Show TeamMemberResponse where
-    show (TeamMemberResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "isAccepted: " ++ show o.isAccepted ++ ", " ++ show "acceptedAt: " ++ show o.acceptedAt ++ ", " ++ show "isBlocked: " ++ show o.isBlocked ++ ", " ++ show "blockedAt: " ++ show o.blockedAt ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (TeamMemberResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "teamId: " <> show o.teamId <> ", " <> show "isAccepted: " <> show o.isAccepted <> ", " <> show "acceptedAt: " <> show o.acceptedAt <> ", " <> show "isBlocked: " <> show o.isBlocked <> ", " <> show "blockedAt: " <> show o.blockedAt <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype TeamMemberResponses = TeamMemberResponses {
   teamMemberResponses :: (Array TeamMemberResponse)
@@ -14724,7 +16356,7 @@ type TeamMemberResponsesR = {
 }
 
 
-_TeamMemberResponses :: LensP TeamMemberResponses {
+_TeamMemberResponses :: Lens' TeamMemberResponses {
   teamMemberResponses :: (Array TeamMemberResponse)
 }
 _TeamMemberResponses f (TeamMemberResponses o) = TeamMemberResponses <$> f o
@@ -14735,6 +16367,9 @@ mkTeamMemberResponses teamMemberResponses =
   TeamMemberResponses{teamMemberResponses}
 
 
+unwrapTeamMemberResponses :: TeamMemberResponses -> {
+  teamMemberResponses :: (Array TeamMemberResponse)
+}
 unwrapTeamMemberResponses (TeamMemberResponses r) = r
 
 instance teamMemberResponsesEncodeJson :: EncodeJson TeamMemberResponses where
@@ -14774,7 +16409,7 @@ instance teamMemberResponsesIsForeign :: IsForeign TeamMemberResponses where
 
 
 instance teamMemberResponsesShow :: Show TeamMemberResponses where
-    show (TeamMemberResponses o) = show "teamMemberResponses: " ++ show o.teamMemberResponses
+    show (TeamMemberResponses o) = show "teamMemberResponses: " <> show o.teamMemberResponses
 
 data TeamMemberStatResponse
   = TeamMemberStatResponse 
@@ -14793,10 +16428,11 @@ instance teamMemberStatResponseDecodeJson :: DecodeJson TeamMemberStatResponse w
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "TeamMemberStatResponse" -> do
-          return TeamMemberStatResponse
+      "TeamMemberStatResponse" -> do
+        pure TeamMemberStatResponse
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for TeamMemberStatResponse"
+
 
 
 instance teamMemberStatResponseRequestable :: Requestable TeamMemberStatResponse where
@@ -14811,8 +16447,10 @@ instance teamMemberStatResponseRespondable :: Respondable TeamMemberStatResponse
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "TeamMemberStatResponse" -> do
-          return TeamMemberStatResponse
+      "TeamMemberStatResponse" -> do
+        pure TeamMemberStatResponse
+
+      _ -> Left $ TypeMismatch "TeamMemberStatResponse" "Respondable"
 
 
 
@@ -14820,8 +16458,10 @@ instance teamMemberStatResponseIsForeign :: IsForeign TeamMemberStatResponse whe
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "TeamMemberStatResponse" -> do
-          return TeamMemberStatResponse
+      "TeamMemberStatResponse" -> do
+        pure TeamMemberStatResponse
+
+      _ -> Left $ TypeMismatch "TeamMemberStatResponse" "IsForeign"
 
 
 
@@ -14839,7 +16479,7 @@ type TeamMemberStatResponsesR = {
 }
 
 
-_TeamMemberStatResponses :: LensP TeamMemberStatResponses {
+_TeamMemberStatResponses :: Lens' TeamMemberStatResponses {
   teamMemberStatResponses :: (Array TeamMemberStatResponse)
 }
 _TeamMemberStatResponses f (TeamMemberStatResponses o) = TeamMemberStatResponses <$> f o
@@ -14850,6 +16490,9 @@ mkTeamMemberStatResponses teamMemberStatResponses =
   TeamMemberStatResponses{teamMemberStatResponses}
 
 
+unwrapTeamMemberStatResponses :: TeamMemberStatResponses -> {
+  teamMemberStatResponses :: (Array TeamMemberStatResponse)
+}
 unwrapTeamMemberStatResponses (TeamMemberStatResponses r) = r
 
 instance teamMemberStatResponsesEncodeJson :: EncodeJson TeamMemberStatResponses where
@@ -14889,7 +16532,7 @@ instance teamMemberStatResponsesIsForeign :: IsForeign TeamMemberStatResponses w
 
 
 instance teamMemberStatResponsesShow :: Show TeamMemberStatResponses where
-    show (TeamMemberStatResponses o) = show "teamMemberStatResponses: " ++ show o.teamMemberStatResponses
+    show (TeamMemberStatResponses o) = show "teamMemberStatResponses: " <> show o.teamMemberStatResponses
 
 newtype TestRequest = TestRequest {
   msg :: String
@@ -14901,7 +16544,7 @@ type TestRequestR = {
 }
 
 
-_TestRequest :: LensP TestRequest {
+_TestRequest :: Lens' TestRequest {
   msg :: String
 }
 _TestRequest f (TestRequest o) = TestRequest <$> f o
@@ -14912,6 +16555,9 @@ mkTestRequest msg =
   TestRequest{msg}
 
 
+unwrapTestRequest :: TestRequest -> {
+  msg :: String
+}
 unwrapTestRequest (TestRequest r) = r
 
 instance testRequestEncodeJson :: EncodeJson TestRequest where
@@ -14951,7 +16597,7 @@ instance testRequestIsForeign :: IsForeign TestRequest where
 
 
 instance testRequestShow :: Show TestRequest where
-    show (TestRequest o) = show "msg: " ++ show o.msg
+    show (TestRequest o) = show "msg: " <> show o.msg
 
 newtype TestResponse = TestResponse {
   id :: Int,
@@ -14971,7 +16617,7 @@ type TestResponseR = {
 }
 
 
-_TestResponse :: LensP TestResponse {
+_TestResponse :: Lens' TestResponse {
   id :: Int,
   userId :: Int,
   msg :: String,
@@ -14986,6 +16632,13 @@ mkTestResponse id userId msg createdAt modifiedAt =
   TestResponse{id, userId, msg, createdAt, modifiedAt}
 
 
+unwrapTestResponse :: TestResponse -> {
+  id :: Int,
+  userId :: Int,
+  msg :: String,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date)
+}
 unwrapTestResponse (TestResponse r) = r
 
 instance testResponseEncodeJson :: EncodeJson TestResponse where
@@ -15030,8 +16683,8 @@ instance testResponseRespondable :: Respondable TestResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "msg" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance testResponseIsForeign :: IsForeign TestResponse where
@@ -15040,12 +16693,12 @@ instance testResponseIsForeign :: IsForeign TestResponse where
       <$> readProp "id" json
       <*> readProp "user_id" json
       <*> readProp "msg" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
 instance testResponseShow :: Show TestResponse where
-    show (TestResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "msg: " ++ show o.msg ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt
+    show (TestResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "msg: " <> show o.msg <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
 
 newtype TestResponses = TestResponses {
   testResponses :: (Array TestResponse)
@@ -15057,7 +16710,7 @@ type TestResponsesR = {
 }
 
 
-_TestResponses :: LensP TestResponses {
+_TestResponses :: Lens' TestResponses {
   testResponses :: (Array TestResponse)
 }
 _TestResponses f (TestResponses o) = TestResponses <$> f o
@@ -15068,6 +16721,9 @@ mkTestResponses testResponses =
   TestResponses{testResponses}
 
 
+unwrapTestResponses :: TestResponses -> {
+  testResponses :: (Array TestResponse)
+}
 unwrapTestResponses (TestResponses r) = r
 
 instance testResponsesEncodeJson :: EncodeJson TestResponses where
@@ -15107,7 +16763,7 @@ instance testResponsesIsForeign :: IsForeign TestResponses where
 
 
 instance testResponsesShow :: Show TestResponses where
-    show (TestResponses o) = show "testResponses: " ++ show o.testResponses
+    show (TestResponses o) = show "testResponses: " <> show o.testResponses
 
 newtype ThreadRequest = ThreadRequest {
   displayName :: String,
@@ -15133,7 +16789,7 @@ type ThreadRequestR = {
 }
 
 
-_ThreadRequest :: LensP ThreadRequest {
+_ThreadRequest :: Lens' ThreadRequest {
   displayName :: String,
   description :: (Maybe String),
   sticky :: Boolean,
@@ -15151,6 +16807,16 @@ mkThreadRequest displayName description sticky locked poll icon tags guard =
   ThreadRequest{displayName, description, sticky, locked, poll, icon, tags, guard}
 
 
+unwrapThreadRequest :: ThreadRequest -> {
+  displayName :: String,
+  description :: (Maybe String),
+  sticky :: Boolean,
+  locked :: Boolean,
+  poll :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array String),
+  guard :: Int
+}
 unwrapThreadRequest (ThreadRequest r) = r
 
 instance threadRequestEncodeJson :: EncodeJson ThreadRequest where
@@ -15202,11 +16868,11 @@ instance threadRequestRespondable :: Respondable ThreadRequest where
   fromResponse json =
       mkThreadRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "sticky" json
       <*> readProp "locked" json
-      <*> (runNullOrUndefined <$> readProp "poll" json)
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "poll" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "guard" json
 
@@ -15215,17 +16881,17 @@ instance threadRequestIsForeign :: IsForeign ThreadRequest where
   read json =
       mkThreadRequest
       <$> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "sticky" json
       <*> readProp "locked" json
-      <*> (runNullOrUndefined <$> readProp "poll" json)
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "poll" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "guard" json
 
 
 instance threadRequestShow :: Show ThreadRequest where
-    show (ThreadRequest o) = show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "sticky: " ++ show o.sticky ++ ", " ++ show "locked: " ++ show o.locked ++ ", " ++ show "poll: " ++ show o.poll ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "guard: " ++ show o.guard
+    show (ThreadRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "sticky: " <> show o.sticky <> ", " <> show "locked: " <> show o.locked <> ", " <> show "poll: " <> show o.poll <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "guard: " <> show o.guard
 
 newtype ThreadResponse = ThreadResponse {
   id :: Int,
@@ -15273,7 +16939,7 @@ type ThreadResponseR = {
 }
 
 
-_ThreadResponse :: LensP ThreadResponse {
+_ThreadResponse :: Lens' ThreadResponse {
   id :: Int,
   userId :: Int,
   orgId :: Int,
@@ -15302,6 +16968,27 @@ mkThreadResponse id userId orgId forumId boardId name displayName description st
   ThreadResponse{id, userId, orgId, forumId, boardId, name, displayName, description, sticky, locked, poll, icon, tags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapThreadResponse :: ThreadResponse -> {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  forumId :: Int,
+  boardId :: Int,
+  name :: String,
+  displayName :: String,
+  description :: (Maybe String),
+  sticky :: Boolean,
+  locked :: Boolean,
+  poll :: (Maybe String),
+  icon :: (Maybe String),
+  tags :: (Array String),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapThreadResponse (ThreadResponse r) = r
 
 instance threadResponseEncodeJson :: EncodeJson ThreadResponse where
@@ -15392,18 +17079,18 @@ instance threadResponseRespondable :: Respondable ThreadResponse where
       <*> readProp "board_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "sticky" json
       <*> readProp "locked" json
-      <*> (runNullOrUndefined <$> readProp "poll" json)
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "poll" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance threadResponseIsForeign :: IsForeign ThreadResponse where
@@ -15416,22 +17103,22 @@ instance threadResponseIsForeign :: IsForeign ThreadResponse where
       <*> readProp "board_id" json
       <*> readProp "name" json
       <*> readProp "display_name" json
-      <*> (runNullOrUndefined <$> readProp "description" json)
+      <*> (unNullOrUndefined <$> readProp "description" json)
       <*> readProp "sticky" json
       <*> readProp "locked" json
-      <*> (runNullOrUndefined <$> readProp "poll" json)
-      <*> (runNullOrUndefined <$> readProp "icon" json)
+      <*> (unNullOrUndefined <$> readProp "poll" json)
+      <*> (unNullOrUndefined <$> readProp "icon" json)
       <*> readProp "tags" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance threadResponseShow :: Show ThreadResponse where
-    show (ThreadResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "displayName: " ++ show o.displayName ++ ", " ++ show "description: " ++ show o.description ++ ", " ++ show "sticky: " ++ show o.sticky ++ ", " ++ show "locked: " ++ show o.locked ++ ", " ++ show "poll: " ++ show o.poll ++ ", " ++ show "icon: " ++ show o.icon ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ThreadResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "forumId: " <> show o.forumId <> ", " <> show "boardId: " <> show o.boardId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "sticky: " <> show o.sticky <> ", " <> show "locked: " <> show o.locked <> ", " <> show "poll: " <> show o.poll <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype ThreadResponses = ThreadResponses {
   threadResponses :: (Array ThreadResponse)
@@ -15443,7 +17130,7 @@ type ThreadResponsesR = {
 }
 
 
-_ThreadResponses :: LensP ThreadResponses {
+_ThreadResponses :: Lens' ThreadResponses {
   threadResponses :: (Array ThreadResponse)
 }
 _ThreadResponses f (ThreadResponses o) = ThreadResponses <$> f o
@@ -15454,6 +17141,9 @@ mkThreadResponses threadResponses =
   ThreadResponses{threadResponses}
 
 
+unwrapThreadResponses :: ThreadResponses -> {
+  threadResponses :: (Array ThreadResponse)
+}
 unwrapThreadResponses (ThreadResponses r) = r
 
 instance threadResponsesEncodeJson :: EncodeJson ThreadResponses where
@@ -15493,7 +17183,7 @@ instance threadResponsesIsForeign :: IsForeign ThreadResponses where
 
 
 instance threadResponsesShow :: Show ThreadResponses where
-    show (ThreadResponses o) = show "threadResponses: " ++ show o.threadResponses
+    show (ThreadResponses o) = show "threadResponses: " <> show o.threadResponses
 
 newtype ThreadStatResponse = ThreadStatResponse {
   threadId :: Int,
@@ -15509,7 +17199,7 @@ type ThreadStatResponseR = {
 }
 
 
-_ThreadStatResponse :: LensP ThreadStatResponse {
+_ThreadStatResponse :: Lens' ThreadStatResponse {
   threadId :: Int,
   threadPosts :: Int,
   views :: Int
@@ -15522,6 +17212,11 @@ mkThreadStatResponse threadId threadPosts views =
   ThreadStatResponse{threadId, threadPosts, views}
 
 
+unwrapThreadStatResponse :: ThreadStatResponse -> {
+  threadId :: Int,
+  threadPosts :: Int,
+  views :: Int
+}
 unwrapThreadStatResponse (ThreadStatResponse r) = r
 
 instance threadStatResponseEncodeJson :: EncodeJson ThreadStatResponse where
@@ -15571,7 +17266,7 @@ instance threadStatResponseIsForeign :: IsForeign ThreadStatResponse where
 
 
 instance threadStatResponseShow :: Show ThreadStatResponse where
-    show (ThreadStatResponse o) = show "threadId: " ++ show o.threadId ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "views: " ++ show o.views
+    show (ThreadStatResponse o) = show "threadId: " <> show o.threadId <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "views: " <> show o.views
 
 newtype ThreadStatResponses = ThreadStatResponses {
   threadStatResponses :: (Array ThreadStatResponse)
@@ -15583,7 +17278,7 @@ type ThreadStatResponsesR = {
 }
 
 
-_ThreadStatResponses :: LensP ThreadStatResponses {
+_ThreadStatResponses :: Lens' ThreadStatResponses {
   threadStatResponses :: (Array ThreadStatResponse)
 }
 _ThreadStatResponses f (ThreadStatResponses o) = ThreadStatResponses <$> f o
@@ -15594,6 +17289,9 @@ mkThreadStatResponses threadStatResponses =
   ThreadStatResponses{threadStatResponses}
 
 
+unwrapThreadStatResponses :: ThreadStatResponses -> {
+  threadStatResponses :: (Array ThreadStatResponse)
+}
 unwrapThreadStatResponses (ThreadStatResponses r) = r
 
 instance threadStatResponsesEncodeJson :: EncodeJson ThreadStatResponses where
@@ -15633,7 +17331,7 @@ instance threadStatResponsesIsForeign :: IsForeign ThreadStatResponses where
 
 
 instance threadStatResponsesShow :: Show ThreadStatResponses where
-    show (ThreadStatResponses o) = show "threadStatResponses: " ++ show o.threadStatResponses
+    show (ThreadStatResponses o) = show "threadStatResponses: " <> show o.threadStatResponses
 
 data PostData
   = PostDataRaw String
@@ -15648,15 +17346,15 @@ data PostData
 instance postDataEncodeJson :: EncodeJson PostData where
   encodeJson (PostDataRaw x0) =
        "tag" := "PostDataRaw"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (PostDataMarkdown x0) =
        "tag" := "PostDataMarkdown"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (PostDataBBCode x0) =
        "tag" := "PostDataBBCode"
-    ~> "contents" := encodeJson x0
+    ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (PostDataCode x0 x1) =
        "tag" := "PostDataCode"
@@ -15677,30 +17375,46 @@ instance postDataDecodeJson :: DecodeJson PostData where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "PostDataRaw" -> do
-          x0 <- obj .? "contents"
-          PostDataRaw <$> decodeJson x0
+      "PostDataRaw" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> PostDataRaw <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for PostDataRaw"
 
-        "PostDataMarkdown" -> do
-          x0 <- obj .? "contents"
-          PostDataMarkdown <$> decodeJson x0
 
-        "PostDataBBCode" -> do
-          x0 <- obj .? "contents"
-          PostDataBBCode <$> decodeJson x0
+      "PostDataMarkdown" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> PostDataMarkdown <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for PostDataMarkdown"
 
-        "PostDataCode" -> do
-          [x0, x1] <- obj .? "contents"
-          PostDataCode <$> decodeJson x0 <*> decodeJson x1
 
-        "PostDataOther" -> do
-          [x0, x1] <- obj .? "contents"
-          PostDataOther <$> decodeJson x0 <*> decodeJson x1
+      "PostDataBBCode" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> PostDataBBCode <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for PostDataBBCode"
 
-        "PostDataEmpty" -> do
-          return PostDataEmpty
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      "PostDataCode" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0, x1] -> PostDataCode <$> decodeJson x0 <*> decodeJson x1
+          _ -> Left $ "DecodeJson TypeMismatch for PostDataCode"
+
+
+      "PostDataOther" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0, x1] -> PostDataOther <$> decodeJson x0 <*> decodeJson x1
+          _ -> Left $ "DecodeJson TypeMismatch for PostDataOther"
+
+
+      "PostDataEmpty" -> do
+        pure PostDataEmpty
+
+      _ -> Left $ "DecodeJson TypeMismatch for PostData"
+
 
 
 instance postDataRequestable :: Requestable PostData where
@@ -15715,28 +17429,45 @@ instance postDataRespondable :: Respondable PostData where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "PostDataRaw" -> do
-          x0 <- readProp "contents" json
-          PostDataRaw <$> read x0
+      "PostDataRaw" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> PostDataRaw <$> read x0
+          _ -> Left $ TypeMismatch "PostDataRaw" "Respondable"
 
-        "PostDataMarkdown" -> do
-          x0 <- readProp "contents" json
-          PostDataMarkdown <$> read x0
 
-        "PostDataBBCode" -> do
-          x0 <- readProp "contents" json
-          PostDataBBCode <$> read x0
+      "PostDataMarkdown" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> PostDataMarkdown <$> read x0
+          _ -> Left $ TypeMismatch "PostDataMarkdown" "Respondable"
 
-        "PostDataCode" -> do
-          [x0, x1] <- readProp "contents" json
-          PostDataCode <$> read x0 <*> read x1
 
-        "PostDataOther" -> do
-          [x0, x1] <- readProp "contents" json
-          PostDataOther <$> read x0 <*> read x1
+      "PostDataBBCode" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> PostDataBBCode <$> read x0
+          _ -> Left $ TypeMismatch "PostDataBBCode" "Respondable"
 
-        "PostDataEmpty" -> do
-          return PostDataEmpty
+
+      "PostDataCode" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> PostDataCode <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "PostDataCode" "Respondable"
+
+
+      "PostDataOther" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> PostDataOther <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "PostDataOther" "Respondable"
+
+
+      "PostDataEmpty" -> do
+        pure PostDataEmpty
+
+      _ -> Left $ TypeMismatch "PostData" "Respondable"
 
 
 
@@ -15744,37 +17475,54 @@ instance postDataIsForeign :: IsForeign PostData where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "PostDataRaw" -> do
-          x0 <- readProp "contents" json
-          PostDataRaw <$> read x0
+      "PostDataRaw" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> PostDataRaw <$> read x0
+          _ -> Left $ TypeMismatch "PostDataRaw" "IsForeign"
 
-        "PostDataMarkdown" -> do
-          x0 <- readProp "contents" json
-          PostDataMarkdown <$> read x0
 
-        "PostDataBBCode" -> do
-          x0 <- readProp "contents" json
-          PostDataBBCode <$> read x0
+      "PostDataMarkdown" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> PostDataMarkdown <$> read x0
+          _ -> Left $ TypeMismatch "PostDataMarkdown" "IsForeign"
 
-        "PostDataCode" -> do
-          [x0, x1] <- readProp "contents" json
-          PostDataCode <$> read x0 <*> read x1
 
-        "PostDataOther" -> do
-          [x0, x1] <- readProp "contents" json
-          PostDataOther <$> read x0 <*> read x1
+      "PostDataBBCode" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> PostDataBBCode <$> read x0
+          _ -> Left $ TypeMismatch "PostDataBBCode" "IsForeign"
 
-        "PostDataEmpty" -> do
-          return PostDataEmpty
+
+      "PostDataCode" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> PostDataCode <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "PostDataCode" "IsForeign"
+
+
+      "PostDataOther" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> PostDataOther <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "PostDataOther" "IsForeign"
+
+
+      "PostDataEmpty" -> do
+        pure PostDataEmpty
+
+      _ -> Left $ TypeMismatch "PostData" "IsForeign"
 
 
 
 instance postDataShow :: Show PostData where
-  show (PostDataRaw x0) = "PostDataRaw: " ++ show x0
-  show (PostDataMarkdown x0) = "PostDataMarkdown: " ++ show x0
-  show (PostDataBBCode x0) = "PostDataBBCode: " ++ show x0
-  show (PostDataCode x0 x1) = "PostDataCode: " ++ show x0 ++ " " ++ show x1
-  show (PostDataOther x0 x1) = "PostDataOther: " ++ show x0 ++ " " ++ show x1
+  show (PostDataRaw x0) = "PostDataRaw: " <> show x0
+  show (PostDataMarkdown x0) = "PostDataMarkdown: " <> show x0
+  show (PostDataBBCode x0) = "PostDataBBCode: " <> show x0
+  show (PostDataCode x0 x1) = "PostDataCode: " <> show x0 <> " " <> show x1
+  show (PostDataOther x0 x1) = "PostDataOther: " <> show x0 <> " " <> show x1
   show (PostDataEmpty) = "PostDataEmpty"
 
 
@@ -15796,7 +17544,7 @@ type ThreadPostRequestR = {
 }
 
 
-_ThreadPostRequest :: LensP ThreadPostRequest {
+_ThreadPostRequest :: Lens' ThreadPostRequest {
   title :: (Maybe String),
   body :: PostData,
   tags :: (Array String),
@@ -15811,6 +17559,13 @@ mkThreadPostRequest title body tags privateTags guard =
   ThreadPostRequest{title, body, tags, privateTags, guard}
 
 
+unwrapThreadPostRequest :: ThreadPostRequest -> {
+  title :: (Maybe String),
+  body :: PostData,
+  tags :: (Array String),
+  privateTags :: (Array String),
+  guard :: Int
+}
 unwrapThreadPostRequest (ThreadPostRequest r) = r
 
 instance threadPostRequestEncodeJson :: EncodeJson ThreadPostRequest where
@@ -15852,7 +17607,7 @@ instance threadPostRequestRespondable :: Respondable ThreadPostRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkThreadPostRequest
-      <$> (runNullOrUndefined <$> readProp "title" json)
+      <$> (unNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
       <*> readProp "tags" json
       <*> readProp "private_tags" json
@@ -15862,7 +17617,7 @@ instance threadPostRequestRespondable :: Respondable ThreadPostRequest where
 instance threadPostRequestIsForeign :: IsForeign ThreadPostRequest where
   read json =
       mkThreadPostRequest
-      <$> (runNullOrUndefined <$> readProp "title" json)
+      <$> (unNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
       <*> readProp "tags" json
       <*> readProp "private_tags" json
@@ -15870,7 +17625,7 @@ instance threadPostRequestIsForeign :: IsForeign ThreadPostRequest where
 
 
 instance threadPostRequestShow :: Show ThreadPostRequest where
-    show (ThreadPostRequest o) = show "title: " ++ show o.title ++ ", " ++ show "body: " ++ show o.body ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "privateTags: " ++ show o.privateTags ++ ", " ++ show "guard: " ++ show o.guard
+    show (ThreadPostRequest o) = show "title: " <> show o.title <> ", " <> show "body: " <> show o.body <> ", " <> show "tags: " <> show o.tags <> ", " <> show "privateTags: " <> show o.privateTags <> ", " <> show "guard: " <> show o.guard
 
 newtype ThreadPostResponse = ThreadPostResponse {
   id :: Int,
@@ -15914,7 +17669,7 @@ type ThreadPostResponseR = {
 }
 
 
-_ThreadPostResponse :: LensP ThreadPostResponse {
+_ThreadPostResponse :: Lens' ThreadPostResponse {
   id :: Int,
   userId :: Int,
   orgId :: Int,
@@ -15941,6 +17696,25 @@ mkThreadPostResponse id userId orgId forumId boardId threadId parentId title bod
   ThreadPostResponse{id, userId, orgId, forumId, boardId, threadId, parentId, title, body, tags, privateTags, active, guard, createdAt, modifiedBy, modifiedAt, activityAt}
 
 
+unwrapThreadPostResponse :: ThreadPostResponse -> {
+  id :: Int,
+  userId :: Int,
+  orgId :: Int,
+  forumId :: Int,
+  boardId :: Int,
+  threadId :: Int,
+  parentId :: (Maybe Int),
+  title :: (Maybe String),
+  body :: PostData,
+  tags :: (Array String),
+  privateTags :: (Array String),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedBy :: (Maybe Int),
+  modifiedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapThreadPostResponse (ThreadPostResponse r) = r
 
 instance threadPostResponseEncodeJson :: EncodeJson ThreadPostResponse where
@@ -16024,17 +17798,17 @@ instance threadPostResponseRespondable :: Respondable ThreadPostResponse where
       <*> readProp "forum_id" json
       <*> readProp "board_id" json
       <*> readProp "thread_id" json
-      <*> (runNullOrUndefined <$> readProp "parent_id" json)
-      <*> (runNullOrUndefined <$> readProp "title" json)
+      <*> (unNullOrUndefined <$> readProp "parent_id" json)
+      <*> (unNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
       <*> readProp "tags" json
       <*> readProp "private_tags" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance threadPostResponseIsForeign :: IsForeign ThreadPostResponse where
@@ -16046,21 +17820,21 @@ instance threadPostResponseIsForeign :: IsForeign ThreadPostResponse where
       <*> readProp "forum_id" json
       <*> readProp "board_id" json
       <*> readProp "thread_id" json
-      <*> (runNullOrUndefined <$> readProp "parent_id" json)
-      <*> (runNullOrUndefined <$> readProp "title" json)
+      <*> (unNullOrUndefined <$> readProp "parent_id" json)
+      <*> (unNullOrUndefined <$> readProp "title" json)
       <*> readProp "body" json
       <*> readProp "tags" json
       <*> readProp "private_tags" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_by" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_by" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance threadPostResponseShow :: Show ThreadPostResponse where
-    show (ThreadPostResponse o) = show "id: " ++ show o.id ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "orgId: " ++ show o.orgId ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "threadId: " ++ show o.threadId ++ ", " ++ show "parentId: " ++ show o.parentId ++ ", " ++ show "title: " ++ show o.title ++ ", " ++ show "body: " ++ show o.body ++ ", " ++ show "tags: " ++ show o.tags ++ ", " ++ show "privateTags: " ++ show o.privateTags ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedBy: " ++ show o.modifiedBy ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (ThreadPostResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "forumId: " <> show o.forumId <> ", " <> show "boardId: " <> show o.boardId <> ", " <> show "threadId: " <> show o.threadId <> ", " <> show "parentId: " <> show o.parentId <> ", " <> show "title: " <> show o.title <> ", " <> show "body: " <> show o.body <> ", " <> show "tags: " <> show o.tags <> ", " <> show "privateTags: " <> show o.privateTags <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype ThreadPostResponses = ThreadPostResponses {
   threadPostResponses :: (Array ThreadPostResponse)
@@ -16072,7 +17846,7 @@ type ThreadPostResponsesR = {
 }
 
 
-_ThreadPostResponses :: LensP ThreadPostResponses {
+_ThreadPostResponses :: Lens' ThreadPostResponses {
   threadPostResponses :: (Array ThreadPostResponse)
 }
 _ThreadPostResponses f (ThreadPostResponses o) = ThreadPostResponses <$> f o
@@ -16083,6 +17857,9 @@ mkThreadPostResponses threadPostResponses =
   ThreadPostResponses{threadPostResponses}
 
 
+unwrapThreadPostResponses :: ThreadPostResponses -> {
+  threadPostResponses :: (Array ThreadPostResponse)
+}
 unwrapThreadPostResponses (ThreadPostResponses r) = r
 
 instance threadPostResponsesEncodeJson :: EncodeJson ThreadPostResponses where
@@ -16122,7 +17899,7 @@ instance threadPostResponsesIsForeign :: IsForeign ThreadPostResponses where
 
 
 instance threadPostResponsesShow :: Show ThreadPostResponses where
-    show (ThreadPostResponses o) = show "threadPostResponses: " ++ show o.threadPostResponses
+    show (ThreadPostResponses o) = show "threadPostResponses: " <> show o.threadPostResponses
 
 newtype ThreadPostStatResponse = ThreadPostStatResponse {
   threadPostId :: Int,
@@ -16144,7 +17921,7 @@ type ThreadPostStatResponseR = {
 }
 
 
-_ThreadPostStatResponse :: LensP ThreadPostStatResponse {
+_ThreadPostStatResponse :: Lens' ThreadPostStatResponse {
   threadPostId :: Int,
   likes :: Int,
   neutral :: Int,
@@ -16160,6 +17937,14 @@ mkThreadPostStatResponse threadPostId likes neutral dislikes stars views =
   ThreadPostStatResponse{threadPostId, likes, neutral, dislikes, stars, views}
 
 
+unwrapThreadPostStatResponse :: ThreadPostStatResponse -> {
+  threadPostId :: Int,
+  likes :: Int,
+  neutral :: Int,
+  dislikes :: Int,
+  stars :: Int,
+  views :: Int
+}
 unwrapThreadPostStatResponse (ThreadPostStatResponse r) = r
 
 instance threadPostStatResponseEncodeJson :: EncodeJson ThreadPostStatResponse where
@@ -16224,7 +18009,7 @@ instance threadPostStatResponseIsForeign :: IsForeign ThreadPostStatResponse whe
 
 
 instance threadPostStatResponseShow :: Show ThreadPostStatResponse where
-    show (ThreadPostStatResponse o) = show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "likes: " ++ show o.likes ++ ", " ++ show "neutral: " ++ show o.neutral ++ ", " ++ show "dislikes: " ++ show o.dislikes ++ ", " ++ show "stars: " ++ show o.stars ++ ", " ++ show "views: " ++ show o.views
+    show (ThreadPostStatResponse o) = show "threadPostId: " <> show o.threadPostId <> ", " <> show "likes: " <> show o.likes <> ", " <> show "neutral: " <> show o.neutral <> ", " <> show "dislikes: " <> show o.dislikes <> ", " <> show "stars: " <> show o.stars <> ", " <> show "views: " <> show o.views
 
 newtype ThreadPostStatResponses = ThreadPostStatResponses {
   threadPostStatResponses :: (Array ThreadPostStatResponse)
@@ -16236,7 +18021,7 @@ type ThreadPostStatResponsesR = {
 }
 
 
-_ThreadPostStatResponses :: LensP ThreadPostStatResponses {
+_ThreadPostStatResponses :: Lens' ThreadPostStatResponses {
   threadPostStatResponses :: (Array ThreadPostStatResponse)
 }
 _ThreadPostStatResponses f (ThreadPostStatResponses o) = ThreadPostStatResponses <$> f o
@@ -16247,6 +18032,9 @@ mkThreadPostStatResponses threadPostStatResponses =
   ThreadPostStatResponses{threadPostStatResponses}
 
 
+unwrapThreadPostStatResponses :: ThreadPostStatResponses -> {
+  threadPostStatResponses :: (Array ThreadPostStatResponse)
+}
 unwrapThreadPostStatResponses (ThreadPostStatResponses r) = r
 
 instance threadPostStatResponsesEncodeJson :: EncodeJson ThreadPostStatResponses where
@@ -16286,7 +18074,7 @@ instance threadPostStatResponsesIsForeign :: IsForeign ThreadPostStatResponses w
 
 
 instance threadPostStatResponsesShow :: Show ThreadPostStatResponses where
-    show (ThreadPostStatResponses o) = show "threadPostStatResponses: " ++ show o.threadPostStatResponses
+    show (ThreadPostStatResponses o) = show "threadPostStatResponses: " <> show o.threadPostStatResponses
 
 newtype UserRequest = UserRequest {
   displayNick :: String,
@@ -16308,7 +18096,7 @@ type UserRequestR = {
 }
 
 
-_UserRequest :: LensP UserRequest {
+_UserRequest :: Lens' UserRequest {
   displayNick :: String,
   name :: String,
   email :: String,
@@ -16324,6 +18112,14 @@ mkUserRequest displayNick name email plugin ident acceptTOS =
   UserRequest{displayNick, name, email, plugin, ident, acceptTOS}
 
 
+unwrapUserRequest :: UserRequest -> {
+  displayNick :: String,
+  name :: String,
+  email :: String,
+  plugin :: String,
+  ident :: String,
+  acceptTOS :: (Maybe Date)
+}
 unwrapUserRequest (UserRequest r) = r
 
 instance userRequestEncodeJson :: EncodeJson UserRequest where
@@ -16373,7 +18169,7 @@ instance userRequestRespondable :: Respondable UserRequest where
       <*> readProp "email" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
-      <*> (runNullOrUndefined <$> readProp "accept_tos" json)
+      <*> (unNullOrUndefined <$> readProp "accept_tos" json)
 
 
 instance userRequestIsForeign :: IsForeign UserRequest where
@@ -16384,11 +18180,11 @@ instance userRequestIsForeign :: IsForeign UserRequest where
       <*> readProp "email" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
-      <*> (runNullOrUndefined <$> readProp "accept_tos" json)
+      <*> (unNullOrUndefined <$> readProp "accept_tos" json)
 
 
 instance userRequestShow :: Show UserRequest where
-    show (UserRequest o) = show "displayNick: " ++ show o.displayNick ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "plugin: " ++ show o.plugin ++ ", " ++ show "ident: " ++ show o.ident ++ ", " ++ show "acceptTOS: " ++ show o.acceptTOS
+    show (UserRequest o) = show "displayNick: " <> show o.displayNick <> ", " <> show "name: " <> show o.name <> ", " <> show "email: " <> show o.email <> ", " <> show "plugin: " <> show o.plugin <> ", " <> show "ident: " <> show o.ident <> ", " <> show "acceptTOS: " <> show o.acceptTOS
 
 newtype UserResponse = UserResponse {
   id :: Int,
@@ -16428,7 +18224,7 @@ type UserResponseR = {
 }
 
 
-_UserResponse :: LensP UserResponse {
+_UserResponse :: Lens' UserResponse {
   id :: Int,
   nick :: String,
   displayNick :: String,
@@ -16453,6 +18249,23 @@ mkUserResponse id nick displayNick name email emailMD5 plugin ident acceptTOS ac
   UserResponse{id, nick, displayNick, name, email, emailMD5, plugin, ident, acceptTOS, active, guard, createdAt, modifiedAt, deactivatedAt, activityAt}
 
 
+unwrapUserResponse :: UserResponse -> {
+  id :: Int,
+  nick :: String,
+  displayNick :: String,
+  name :: String,
+  email :: String,
+  emailMD5 :: String,
+  plugin :: String,
+  ident :: String,
+  acceptTOS :: (Maybe Date),
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  modifiedAt :: (Maybe Date),
+  deactivatedAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapUserResponse (UserResponse r) = r
 
 instance userResponseEncodeJson :: EncodeJson UserResponse where
@@ -16532,13 +18345,13 @@ instance userResponseRespondable :: Respondable UserResponse where
       <*> readProp "email_md5" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
-      <*> (runNullOrUndefined <$> readProp "accept_tos" json)
+      <*> (unNullOrUndefined <$> readProp "accept_tos" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "deactivated_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "deactivated_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance userResponseIsForeign :: IsForeign UserResponse where
@@ -16552,17 +18365,17 @@ instance userResponseIsForeign :: IsForeign UserResponse where
       <*> readProp "email_md5" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
-      <*> (runNullOrUndefined <$> readProp "accept_tos" json)
+      <*> (unNullOrUndefined <$> readProp "accept_tos" json)
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "modified_at" json)
-      <*> (runNullOrUndefined <$> readProp "deactivated_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "modified_at" json)
+      <*> (unNullOrUndefined <$> readProp "deactivated_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance userResponseShow :: Show UserResponse where
-    show (UserResponse o) = show "id: " ++ show o.id ++ ", " ++ show "nick: " ++ show o.nick ++ ", " ++ show "displayNick: " ++ show o.displayNick ++ ", " ++ show "name: " ++ show o.name ++ ", " ++ show "email: " ++ show o.email ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "plugin: " ++ show o.plugin ++ ", " ++ show "ident: " ++ show o.ident ++ ", " ++ show "acceptTOS: " ++ show o.acceptTOS ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "modifiedAt: " ++ show o.modifiedAt ++ ", " ++ show "deactivatedAt: " ++ show o.deactivatedAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (UserResponse o) = show "id: " <> show o.id <> ", " <> show "nick: " <> show o.nick <> ", " <> show "displayNick: " <> show o.displayNick <> ", " <> show "name: " <> show o.name <> ", " <> show "email: " <> show o.email <> ", " <> show "emailMD5: " <> show o.emailMD5 <> ", " <> show "plugin: " <> show o.plugin <> ", " <> show "ident: " <> show o.ident <> ", " <> show "acceptTOS: " <> show o.acceptTOS <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "deactivatedAt: " <> show o.deactivatedAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype UserResponses = UserResponses {
   userResponses :: (Array UserResponse)
@@ -16574,7 +18387,7 @@ type UserResponsesR = {
 }
 
 
-_UserResponses :: LensP UserResponses {
+_UserResponses :: Lens' UserResponses {
   userResponses :: (Array UserResponse)
 }
 _UserResponses f (UserResponses o) = UserResponses <$> f o
@@ -16585,6 +18398,9 @@ mkUserResponses userResponses =
   UserResponses{userResponses}
 
 
+unwrapUserResponses :: UserResponses -> {
+  userResponses :: (Array UserResponse)
+}
 unwrapUserResponses (UserResponses r) = r
 
 instance userResponsesEncodeJson :: EncodeJson UserResponses where
@@ -16624,7 +18440,7 @@ instance userResponsesIsForeign :: IsForeign UserResponses where
 
 
 instance userResponsesShow :: Show UserResponses where
-    show (UserResponses o) = show "userResponses: " ++ show o.userResponses
+    show (UserResponses o) = show "userResponses: " <> show o.userResponses
 
 newtype UserSanitizedResponse = UserSanitizedResponse {
   id :: Int,
@@ -16650,7 +18466,7 @@ type UserSanitizedResponseR = {
 }
 
 
-_UserSanitizedResponse :: LensP UserSanitizedResponse {
+_UserSanitizedResponse :: Lens' UserSanitizedResponse {
   id :: Int,
   nick :: String,
   displayNick :: String,
@@ -16668,6 +18484,16 @@ mkUserSanitizedResponse id nick displayNick emailMD5 active guard createdAt acti
   UserSanitizedResponse{id, nick, displayNick, emailMD5, active, guard, createdAt, activityAt}
 
 
+unwrapUserSanitizedResponse :: UserSanitizedResponse -> {
+  id :: Int,
+  nick :: String,
+  displayNick :: String,
+  emailMD5 :: String,
+  active :: Boolean,
+  guard :: Int,
+  createdAt :: (Maybe Date),
+  activityAt :: (Maybe Date)
+}
 unwrapUserSanitizedResponse (UserSanitizedResponse r) = r
 
 instance userSanitizedResponseEncodeJson :: EncodeJson UserSanitizedResponse where
@@ -16724,8 +18550,8 @@ instance userSanitizedResponseRespondable :: Respondable UserSanitizedResponse w
       <*> readProp "email_md5" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance userSanitizedResponseIsForeign :: IsForeign UserSanitizedResponse where
@@ -16737,12 +18563,12 @@ instance userSanitizedResponseIsForeign :: IsForeign UserSanitizedResponse where
       <*> readProp "email_md5" json
       <*> readProp "active" json
       <*> readProp "guard" json
-      <*> (runNullOrUndefined <$> readProp "created_at" json)
-      <*> (runNullOrUndefined <$> readProp "activity_at" json)
+      <*> (unNullOrUndefined <$> readProp "created_at" json)
+      <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
 instance userSanitizedResponseShow :: Show UserSanitizedResponse where
-    show (UserSanitizedResponse o) = show "id: " ++ show o.id ++ ", " ++ show "nick: " ++ show o.nick ++ ", " ++ show "displayNick: " ++ show o.displayNick ++ ", " ++ show "emailMD5: " ++ show o.emailMD5 ++ ", " ++ show "active: " ++ show o.active ++ ", " ++ show "guard: " ++ show o.guard ++ ", " ++ show "createdAt: " ++ show o.createdAt ++ ", " ++ show "activityAt: " ++ show o.activityAt
+    show (UserSanitizedResponse o) = show "id: " <> show o.id <> ", " <> show "nick: " <> show o.nick <> ", " <> show "displayNick: " <> show o.displayNick <> ", " <> show "emailMD5: " <> show o.emailMD5 <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "activityAt: " <> show o.activityAt
 
 newtype UserSanitizedResponses = UserSanitizedResponses {
   userSanitizedResponses :: (Array UserSanitizedResponse)
@@ -16754,7 +18580,7 @@ type UserSanitizedResponsesR = {
 }
 
 
-_UserSanitizedResponses :: LensP UserSanitizedResponses {
+_UserSanitizedResponses :: Lens' UserSanitizedResponses {
   userSanitizedResponses :: (Array UserSanitizedResponse)
 }
 _UserSanitizedResponses f (UserSanitizedResponses o) = UserSanitizedResponses <$> f o
@@ -16765,6 +18591,9 @@ mkUserSanitizedResponses userSanitizedResponses =
   UserSanitizedResponses{userSanitizedResponses}
 
 
+unwrapUserSanitizedResponses :: UserSanitizedResponses -> {
+  userSanitizedResponses :: (Array UserSanitizedResponse)
+}
 unwrapUserSanitizedResponses (UserSanitizedResponses r) = r
 
 instance userSanitizedResponsesEncodeJson :: EncodeJson UserSanitizedResponses where
@@ -16804,7 +18633,7 @@ instance userSanitizedResponsesIsForeign :: IsForeign UserSanitizedResponses whe
 
 
 instance userSanitizedResponsesShow :: Show UserSanitizedResponses where
-    show (UserSanitizedResponses o) = show "userSanitizedResponses: " ++ show o.userSanitizedResponses
+    show (UserSanitizedResponses o) = show "userSanitizedResponses: " <> show o.userSanitizedResponses
 
 newtype UserSanitizedStatResponse = UserSanitizedStatResponse {
   userId :: Int,
@@ -16828,7 +18657,7 @@ type UserSanitizedStatResponseR = {
 }
 
 
-_UserSanitizedStatResponse :: LensP UserSanitizedStatResponse {
+_UserSanitizedStatResponse :: Lens' UserSanitizedStatResponse {
   userId :: Int,
   threads :: Int,
   threadPosts :: Int,
@@ -16845,6 +18674,15 @@ mkUserSanitizedStatResponse userId threads threadPosts respect resources leurons
   UserSanitizedStatResponse{userId, threads, threadPosts, respect, resources, leurons, workouts}
 
 
+unwrapUserSanitizedStatResponse :: UserSanitizedStatResponse -> {
+  userId :: Int,
+  threads :: Int,
+  threadPosts :: Int,
+  respect :: Int,
+  resources :: Int,
+  leurons :: Int,
+  workouts :: Int
+}
 unwrapUserSanitizedStatResponse (UserSanitizedStatResponse r) = r
 
 instance userSanitizedStatResponseEncodeJson :: EncodeJson UserSanitizedStatResponse where
@@ -16914,7 +18752,7 @@ instance userSanitizedStatResponseIsForeign :: IsForeign UserSanitizedStatRespon
 
 
 instance userSanitizedStatResponseShow :: Show UserSanitizedStatResponse where
-    show (UserSanitizedStatResponse o) = show "userId: " ++ show o.userId ++ ", " ++ show "threads: " ++ show o.threads ++ ", " ++ show "threadPosts: " ++ show o.threadPosts ++ ", " ++ show "respect: " ++ show o.respect ++ ", " ++ show "resources: " ++ show o.resources ++ ", " ++ show "leurons: " ++ show o.leurons ++ ", " ++ show "workouts: " ++ show o.workouts
+    show (UserSanitizedStatResponse o) = show "userId: " <> show o.userId <> ", " <> show "threads: " <> show o.threads <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "respect: " <> show o.respect <> ", " <> show "resources: " <> show o.resources <> ", " <> show "leurons: " <> show o.leurons <> ", " <> show "workouts: " <> show o.workouts
 
 newtype UserSanitizedStatResponses = UserSanitizedStatResponses {
   userSanitizedStatResponses :: (Array UserSanitizedStatResponse)
@@ -16926,7 +18764,7 @@ type UserSanitizedStatResponsesR = {
 }
 
 
-_UserSanitizedStatResponses :: LensP UserSanitizedStatResponses {
+_UserSanitizedStatResponses :: Lens' UserSanitizedStatResponses {
   userSanitizedStatResponses :: (Array UserSanitizedStatResponse)
 }
 _UserSanitizedStatResponses f (UserSanitizedStatResponses o) = UserSanitizedStatResponses <$> f o
@@ -16937,6 +18775,9 @@ mkUserSanitizedStatResponses userSanitizedStatResponses =
   UserSanitizedStatResponses{userSanitizedStatResponses}
 
 
+unwrapUserSanitizedStatResponses :: UserSanitizedStatResponses -> {
+  userSanitizedStatResponses :: (Array UserSanitizedStatResponse)
+}
 unwrapUserSanitizedStatResponses (UserSanitizedStatResponses r) = r
 
 instance userSanitizedStatResponsesEncodeJson :: EncodeJson UserSanitizedStatResponses where
@@ -16976,7 +18817,7 @@ instance userSanitizedStatResponsesIsForeign :: IsForeign UserSanitizedStatRespo
 
 
 instance userSanitizedStatResponsesShow :: Show UserSanitizedStatResponses where
-    show (UserSanitizedStatResponses o) = show "userSanitizedStatResponses: " ++ show o.userSanitizedStatResponses
+    show (UserSanitizedStatResponses o) = show "userSanitizedStatResponses: " <> show o.userSanitizedStatResponses
 
 data Visibility
   = Public 
@@ -17000,13 +18841,14 @@ instance visibilityDecodeJson :: DecodeJson Visibility where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-        "Public" -> do
-          return Public
+      "Public" -> do
+        pure Public
 
-        "Private" -> do
-          return Private
+      "Private" -> do
+        pure Private
 
-  decodeJson x = fail $ "Could not parse object: " ++ show x
+      _ -> Left $ "DecodeJson TypeMismatch for Visibility"
+
 
 
 instance visibilityRequestable :: Requestable Visibility where
@@ -17021,11 +18863,13 @@ instance visibilityRespondable :: Respondable Visibility where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-        "Public" -> do
-          return Public
+      "Public" -> do
+        pure Public
 
-        "Private" -> do
-          return Private
+      "Private" -> do
+        pure Private
+
+      _ -> Left $ TypeMismatch "Visibility" "Respondable"
 
 
 
@@ -17033,11 +18877,13 @@ instance visibilityIsForeign :: IsForeign Visibility where
   read json = do
     tag <- readProp "tag" json
     case tag of
-        "Public" -> do
-          return Public
+      "Public" -> do
+        pure Public
 
-        "Private" -> do
-          return Private
+      "Private" -> do
+        pure Private
+
+      _ -> Left $ TypeMismatch "Visibility" "IsForeign"
 
 
 
@@ -17077,7 +18923,7 @@ type OrganizationPackResponseR = {
 }
 
 
-_OrganizationPackResponse :: LensP OrganizationPackResponse {
+_OrganizationPackResponse :: Lens' OrganizationPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   organization :: OrganizationResponse,
@@ -17096,6 +18942,17 @@ mkOrganizationPackResponse user userId organization organizationId stat like sta
   OrganizationPackResponse{user, userId, organization, organizationId, stat, like, star, permissions, teams}
 
 
+unwrapOrganizationPackResponse :: OrganizationPackResponse -> {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  organization :: OrganizationResponse,
+  organizationId :: Int,
+  stat :: OrganizationStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse),
+  permissions :: Permissions,
+  teams :: (Array SystemTeam)
+}
 unwrapOrganizationPackResponse (OrganizationPackResponse r) = r
 
 instance organizationPackResponseEncodeJson :: EncodeJson OrganizationPackResponse where
@@ -17154,8 +19011,8 @@ instance organizationPackResponseRespondable :: Respondable OrganizationPackResp
       <*> readProp "organization" json
       <*> readProp "organization_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
       <*> readProp "teams" json
 
@@ -17168,14 +19025,14 @@ instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse
       <*> readProp "organization" json
       <*> readProp "organization_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
       <*> readProp "teams" json
 
 
 instance organizationPackResponseShow :: Show OrganizationPackResponse where
-    show (OrganizationPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "permissions: " ++ show o.permissions ++ ", " ++ show "teams: " ++ show o.teams
+    show (OrganizationPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "organization: " <> show o.organization <> ", " <> show "organizationId: " <> show o.organizationId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "permissions: " <> show o.permissions <> ", " <> show "teams: " <> show o.teams
 
 newtype OrganizationPackResponses = OrganizationPackResponses {
   organizationPackResponses :: (Array OrganizationPackResponse)
@@ -17187,7 +19044,7 @@ type OrganizationPackResponsesR = {
 }
 
 
-_OrganizationPackResponses :: LensP OrganizationPackResponses {
+_OrganizationPackResponses :: Lens' OrganizationPackResponses {
   organizationPackResponses :: (Array OrganizationPackResponse)
 }
 _OrganizationPackResponses f (OrganizationPackResponses o) = OrganizationPackResponses <$> f o
@@ -17198,6 +19055,9 @@ mkOrganizationPackResponses organizationPackResponses =
   OrganizationPackResponses{organizationPackResponses}
 
 
+unwrapOrganizationPackResponses :: OrganizationPackResponses -> {
+  organizationPackResponses :: (Array OrganizationPackResponse)
+}
 unwrapOrganizationPackResponses (OrganizationPackResponses r) = r
 
 instance organizationPackResponsesEncodeJson :: EncodeJson OrganizationPackResponses where
@@ -17237,7 +19097,7 @@ instance organizationPackResponsesIsForeign :: IsForeign OrganizationPackRespons
 
 
 instance organizationPackResponsesShow :: Show OrganizationPackResponses where
-    show (OrganizationPackResponses o) = show "organizationPackResponses: " ++ show o.organizationPackResponses
+    show (OrganizationPackResponses o) = show "organizationPackResponses: " <> show o.organizationPackResponses
 
 newtype TeamPackResponse = TeamPackResponse {
   user :: UserSanitizedResponse,
@@ -17259,7 +19119,7 @@ type TeamPackResponseR = {
 }
 
 
-_TeamPackResponse :: LensP TeamPackResponse {
+_TeamPackResponse :: Lens' TeamPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   team :: TeamResponse,
@@ -17275,6 +19135,14 @@ mkTeamPackResponse user userId team teamId stat permissions =
   TeamPackResponse{user, userId, team, teamId, stat, permissions}
 
 
+unwrapTeamPackResponse :: TeamPackResponse -> {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  team :: TeamResponse,
+  teamId :: Int,
+  stat :: TeamStatResponse,
+  permissions :: Permissions
+}
 unwrapTeamPackResponse (TeamPackResponse r) = r
 
 instance teamPackResponseEncodeJson :: EncodeJson TeamPackResponse where
@@ -17339,7 +19207,7 @@ instance teamPackResponseIsForeign :: IsForeign TeamPackResponse where
 
 
 instance teamPackResponseShow :: Show TeamPackResponse where
-    show (TeamPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "team: " ++ show o.team ++ ", " ++ show "teamId: " ++ show o.teamId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (TeamPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "team: " <> show o.team <> ", " <> show "teamId: " <> show o.teamId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "permissions: " <> show o.permissions
 
 newtype TeamPackResponses = TeamPackResponses {
   teamPackResponses :: (Array TeamPackResponse)
@@ -17351,7 +19219,7 @@ type TeamPackResponsesR = {
 }
 
 
-_TeamPackResponses :: LensP TeamPackResponses {
+_TeamPackResponses :: Lens' TeamPackResponses {
   teamPackResponses :: (Array TeamPackResponse)
 }
 _TeamPackResponses f (TeamPackResponses o) = TeamPackResponses <$> f o
@@ -17362,6 +19230,9 @@ mkTeamPackResponses teamPackResponses =
   TeamPackResponses{teamPackResponses}
 
 
+unwrapTeamPackResponses :: TeamPackResponses -> {
+  teamPackResponses :: (Array TeamPackResponse)
+}
 unwrapTeamPackResponses (TeamPackResponses r) = r
 
 instance teamPackResponsesEncodeJson :: EncodeJson TeamPackResponses where
@@ -17401,7 +19272,7 @@ instance teamPackResponsesIsForeign :: IsForeign TeamPackResponses where
 
 
 instance teamPackResponsesShow :: Show TeamPackResponses where
-    show (TeamPackResponses o) = show "teamPackResponses: " ++ show o.teamPackResponses
+    show (TeamPackResponses o) = show "teamPackResponses: " <> show o.teamPackResponses
 
 newtype TeamMemberPackResponse = TeamMemberPackResponse {
   user :: UserSanitizedResponse,
@@ -17421,7 +19292,7 @@ type TeamMemberPackResponseR = {
 }
 
 
-_TeamMemberPackResponse :: LensP TeamMemberPackResponse {
+_TeamMemberPackResponse :: Lens' TeamMemberPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   teamMember :: TeamMemberResponse,
@@ -17436,6 +19307,13 @@ mkTeamMemberPackResponse user userId teamMember teamMemberId permissions =
   TeamMemberPackResponse{user, userId, teamMember, teamMemberId, permissions}
 
 
+unwrapTeamMemberPackResponse :: TeamMemberPackResponse -> {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  teamMember :: TeamMemberResponse,
+  teamMemberId :: Int,
+  permissions :: Permissions
+}
 unwrapTeamMemberPackResponse (TeamMemberPackResponse r) = r
 
 instance teamMemberPackResponseEncodeJson :: EncodeJson TeamMemberPackResponse where
@@ -17495,7 +19373,7 @@ instance teamMemberPackResponseIsForeign :: IsForeign TeamMemberPackResponse whe
 
 
 instance teamMemberPackResponseShow :: Show TeamMemberPackResponse where
-    show (TeamMemberPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "teamMember: " ++ show o.teamMember ++ ", " ++ show "teamMemberId: " ++ show o.teamMemberId ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (TeamMemberPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "teamMember: " <> show o.teamMember <> ", " <> show "teamMemberId: " <> show o.teamMemberId <> ", " <> show "permissions: " <> show o.permissions
 
 newtype TeamMemberPackResponses = TeamMemberPackResponses {
   teamMemberPackResponses :: (Array TeamMemberPackResponse)
@@ -17507,7 +19385,7 @@ type TeamMemberPackResponsesR = {
 }
 
 
-_TeamMemberPackResponses :: LensP TeamMemberPackResponses {
+_TeamMemberPackResponses :: Lens' TeamMemberPackResponses {
   teamMemberPackResponses :: (Array TeamMemberPackResponse)
 }
 _TeamMemberPackResponses f (TeamMemberPackResponses o) = TeamMemberPackResponses <$> f o
@@ -17518,6 +19396,9 @@ mkTeamMemberPackResponses teamMemberPackResponses =
   TeamMemberPackResponses{teamMemberPackResponses}
 
 
+unwrapTeamMemberPackResponses :: TeamMemberPackResponses -> {
+  teamMemberPackResponses :: (Array TeamMemberPackResponse)
+}
 unwrapTeamMemberPackResponses (TeamMemberPackResponses r) = r
 
 instance teamMemberPackResponsesEncodeJson :: EncodeJson TeamMemberPackResponses where
@@ -17557,7 +19438,7 @@ instance teamMemberPackResponsesIsForeign :: IsForeign TeamMemberPackResponses w
 
 
 instance teamMemberPackResponsesShow :: Show TeamMemberPackResponses where
-    show (TeamMemberPackResponses o) = show "teamMemberPackResponses: " ++ show o.teamMemberPackResponses
+    show (TeamMemberPackResponses o) = show "teamMemberPackResponses: " <> show o.teamMemberPackResponses
 
 newtype UserPackResponse = UserPackResponse {
   user :: UserResponse,
@@ -17577,7 +19458,7 @@ type UserPackResponseR = {
 }
 
 
-_UserPackResponse :: LensP UserPackResponse {
+_UserPackResponse :: Lens' UserPackResponse {
   user :: UserResponse,
   userId :: Int,
   stat :: UserSanitizedStatResponse,
@@ -17592,6 +19473,13 @@ mkUserPackResponse user userId stat profile profileId =
   UserPackResponse{user, userId, stat, profile, profileId}
 
 
+unwrapUserPackResponse :: UserPackResponse -> {
+  user :: UserResponse,
+  userId :: Int,
+  stat :: UserSanitizedStatResponse,
+  profile :: ProfileResponse,
+  profileId :: Int
+}
 unwrapUserPackResponse (UserPackResponse r) = r
 
 instance userPackResponseEncodeJson :: EncodeJson UserPackResponse where
@@ -17651,7 +19539,7 @@ instance userPackResponseIsForeign :: IsForeign UserPackResponse where
 
 
 instance userPackResponseShow :: Show UserPackResponse where
-    show (UserPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "profile: " ++ show o.profile ++ ", " ++ show "profileId: " ++ show o.profileId
+    show (UserPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "profile: " <> show o.profile <> ", " <> show "profileId: " <> show o.profileId
 
 newtype UserPackResponses = UserPackResponses {
   userPackResponses :: (Array UserPackResponse)
@@ -17663,7 +19551,7 @@ type UserPackResponsesR = {
 }
 
 
-_UserPackResponses :: LensP UserPackResponses {
+_UserPackResponses :: Lens' UserPackResponses {
   userPackResponses :: (Array UserPackResponse)
 }
 _UserPackResponses f (UserPackResponses o) = UserPackResponses <$> f o
@@ -17674,6 +19562,9 @@ mkUserPackResponses userPackResponses =
   UserPackResponses{userPackResponses}
 
 
+unwrapUserPackResponses :: UserPackResponses -> {
+  userPackResponses :: (Array UserPackResponse)
+}
 unwrapUserPackResponses (UserPackResponses r) = r
 
 instance userPackResponsesEncodeJson :: EncodeJson UserPackResponses where
@@ -17713,7 +19604,7 @@ instance userPackResponsesIsForeign :: IsForeign UserPackResponses where
 
 
 instance userPackResponsesShow :: Show UserPackResponses where
-    show (UserPackResponses o) = show "userPackResponses: " ++ show o.userPackResponses
+    show (UserPackResponses o) = show "userPackResponses: " <> show o.userPackResponses
 
 newtype UserSanitizedPackResponse = UserSanitizedPackResponse {
   user :: UserSanitizedResponse,
@@ -17737,7 +19628,7 @@ type UserSanitizedPackResponseR = {
 }
 
 
-_UserSanitizedPackResponse :: LensP UserSanitizedPackResponse {
+_UserSanitizedPackResponse :: Lens' UserSanitizedPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   profile :: ProfileResponse,
@@ -17754,6 +19645,15 @@ mkUserSanitizedPackResponse user userId profile profileId stat like star =
   UserSanitizedPackResponse{user, userId, profile, profileId, stat, like, star}
 
 
+unwrapUserSanitizedPackResponse :: UserSanitizedPackResponse -> {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  profile :: ProfileResponse,
+  profileId :: Int,
+  stat :: UserSanitizedStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse)
+}
 unwrapUserSanitizedPackResponse (UserSanitizedPackResponse r) = r
 
 instance userSanitizedPackResponseEncodeJson :: EncodeJson UserSanitizedPackResponse where
@@ -17806,8 +19706,8 @@ instance userSanitizedPackResponseRespondable :: Respondable UserSanitizedPackRe
       <*> readProp "profile" json
       <*> readProp "profile_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
 
 
 instance userSanitizedPackResponseIsForeign :: IsForeign UserSanitizedPackResponse where
@@ -17818,12 +19718,12 @@ instance userSanitizedPackResponseIsForeign :: IsForeign UserSanitizedPackRespon
       <*> readProp "profile" json
       <*> readProp "profile_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
 
 
 instance userSanitizedPackResponseShow :: Show UserSanitizedPackResponse where
-    show (UserSanitizedPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "profile: " ++ show o.profile ++ ", " ++ show "profileId: " ++ show o.profileId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star
+    show (UserSanitizedPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "profile: " <> show o.profile <> ", " <> show "profileId: " <> show o.profileId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star
 
 newtype UserSanitizedPackResponses = UserSanitizedPackResponses {
   userSanitizedPackResponses :: (Array UserSanitizedPackResponse)
@@ -17835,7 +19735,7 @@ type UserSanitizedPackResponsesR = {
 }
 
 
-_UserSanitizedPackResponses :: LensP UserSanitizedPackResponses {
+_UserSanitizedPackResponses :: Lens' UserSanitizedPackResponses {
   userSanitizedPackResponses :: (Array UserSanitizedPackResponse)
 }
 _UserSanitizedPackResponses f (UserSanitizedPackResponses o) = UserSanitizedPackResponses <$> f o
@@ -17846,6 +19746,9 @@ mkUserSanitizedPackResponses userSanitizedPackResponses =
   UserSanitizedPackResponses{userSanitizedPackResponses}
 
 
+unwrapUserSanitizedPackResponses :: UserSanitizedPackResponses -> {
+  userSanitizedPackResponses :: (Array UserSanitizedPackResponse)
+}
 unwrapUserSanitizedPackResponses (UserSanitizedPackResponses r) = r
 
 instance userSanitizedPackResponsesEncodeJson :: EncodeJson UserSanitizedPackResponses where
@@ -17885,7 +19788,7 @@ instance userSanitizedPackResponsesIsForeign :: IsForeign UserSanitizedPackRespo
 
 
 instance userSanitizedPackResponsesShow :: Show UserSanitizedPackResponses where
-    show (UserSanitizedPackResponses o) = show "userSanitizedPackResponses: " ++ show o.userSanitizedPackResponses
+    show (UserSanitizedPackResponses o) = show "userSanitizedPackResponses: " <> show o.userSanitizedPackResponses
 
 newtype GlobalGroupPackResponse = GlobalGroupPackResponse {
   user :: UserSanitizedResponse,
@@ -17907,7 +19810,7 @@ type GlobalGroupPackResponseR = {
 }
 
 
-_GlobalGroupPackResponse :: LensP GlobalGroupPackResponse {
+_GlobalGroupPackResponse :: Lens' GlobalGroupPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   globalGroup :: GlobalGroupResponse,
@@ -17923,6 +19826,14 @@ mkGlobalGroupPackResponse user userId globalGroup globalGroupId stat permissions
   GlobalGroupPackResponse{user, userId, globalGroup, globalGroupId, stat, permissions}
 
 
+unwrapGlobalGroupPackResponse :: GlobalGroupPackResponse -> {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  globalGroup :: GlobalGroupResponse,
+  globalGroupId :: Int,
+  stat :: GlobalGroupStatResponse,
+  permissions :: Permissions
+}
 unwrapGlobalGroupPackResponse (GlobalGroupPackResponse r) = r
 
 instance globalGroupPackResponseEncodeJson :: EncodeJson GlobalGroupPackResponse where
@@ -17987,7 +19898,7 @@ instance globalGroupPackResponseIsForeign :: IsForeign GlobalGroupPackResponse w
 
 
 instance globalGroupPackResponseShow :: Show GlobalGroupPackResponse where
-    show (GlobalGroupPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "globalGroup: " ++ show o.globalGroup ++ ", " ++ show "globalGroupId: " ++ show o.globalGroupId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (GlobalGroupPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "globalGroup: " <> show o.globalGroup <> ", " <> show "globalGroupId: " <> show o.globalGroupId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "permissions: " <> show o.permissions
 
 newtype GlobalGroupPackResponses = GlobalGroupPackResponses {
   globalGroupPackResponses :: (Array GlobalGroupPackResponse)
@@ -17999,7 +19910,7 @@ type GlobalGroupPackResponsesR = {
 }
 
 
-_GlobalGroupPackResponses :: LensP GlobalGroupPackResponses {
+_GlobalGroupPackResponses :: Lens' GlobalGroupPackResponses {
   globalGroupPackResponses :: (Array GlobalGroupPackResponse)
 }
 _GlobalGroupPackResponses f (GlobalGroupPackResponses o) = GlobalGroupPackResponses <$> f o
@@ -18010,6 +19921,9 @@ mkGlobalGroupPackResponses globalGroupPackResponses =
   GlobalGroupPackResponses{globalGroupPackResponses}
 
 
+unwrapGlobalGroupPackResponses :: GlobalGroupPackResponses -> {
+  globalGroupPackResponses :: (Array GlobalGroupPackResponse)
+}
 unwrapGlobalGroupPackResponses (GlobalGroupPackResponses r) = r
 
 instance globalGroupPackResponsesEncodeJson :: EncodeJson GlobalGroupPackResponses where
@@ -18049,7 +19963,7 @@ instance globalGroupPackResponsesIsForeign :: IsForeign GlobalGroupPackResponses
 
 
 instance globalGroupPackResponsesShow :: Show GlobalGroupPackResponses where
-    show (GlobalGroupPackResponses o) = show "globalGroupPackResponses: " ++ show o.globalGroupPackResponses
+    show (GlobalGroupPackResponses o) = show "globalGroupPackResponses: " <> show o.globalGroupPackResponses
 
 newtype GroupPackResponse = GroupPackResponse {
   user :: UserSanitizedResponse,
@@ -18075,7 +19989,7 @@ type GroupPackResponseR = {
 }
 
 
-_GroupPackResponse :: LensP GroupPackResponse {
+_GroupPackResponse :: Lens' GroupPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   group :: GroupResponse,
@@ -18093,6 +20007,16 @@ mkGroupPackResponse user userId group groupId organization organizationId stat p
   GroupPackResponse{user, userId, group, groupId, organization, organizationId, stat, permissions}
 
 
+unwrapGroupPackResponse :: GroupPackResponse -> {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  group :: GroupResponse,
+  groupId :: Int,
+  organization :: OrganizationResponse,
+  organizationId :: Int,
+  stat :: GroupStatResponse,
+  permissions :: Permissions
+}
 unwrapGroupPackResponse (GroupPackResponse r) = r
 
 instance groupPackResponseEncodeJson :: EncodeJson GroupPackResponse where
@@ -18167,7 +20091,7 @@ instance groupPackResponseIsForeign :: IsForeign GroupPackResponse where
 
 
 instance groupPackResponseShow :: Show GroupPackResponse where
-    show (GroupPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "group: " ++ show o.group ++ ", " ++ show "groupId: " ++ show o.groupId ++ ", " ++ show "organization: " ++ show o.organization ++ ", " ++ show "organizationId: " ++ show o.organizationId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (GroupPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "group: " <> show o.group <> ", " <> show "groupId: " <> show o.groupId <> ", " <> show "organization: " <> show o.organization <> ", " <> show "organizationId: " <> show o.organizationId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "permissions: " <> show o.permissions
 
 newtype GroupPackResponses = GroupPackResponses {
   groupPackResponses :: (Array GroupPackResponse)
@@ -18179,7 +20103,7 @@ type GroupPackResponsesR = {
 }
 
 
-_GroupPackResponses :: LensP GroupPackResponses {
+_GroupPackResponses :: Lens' GroupPackResponses {
   groupPackResponses :: (Array GroupPackResponse)
 }
 _GroupPackResponses f (GroupPackResponses o) = GroupPackResponses <$> f o
@@ -18190,6 +20114,9 @@ mkGroupPackResponses groupPackResponses =
   GroupPackResponses{groupPackResponses}
 
 
+unwrapGroupPackResponses :: GroupPackResponses -> {
+  groupPackResponses :: (Array GroupPackResponse)
+}
 unwrapGroupPackResponses (GroupPackResponses r) = r
 
 instance groupPackResponsesEncodeJson :: EncodeJson GroupPackResponses where
@@ -18229,7 +20156,7 @@ instance groupPackResponsesIsForeign :: IsForeign GroupPackResponses where
 
 
 instance groupPackResponsesShow :: Show GroupPackResponses where
-    show (GroupPackResponses o) = show "groupPackResponses: " ++ show o.groupPackResponses
+    show (GroupPackResponses o) = show "groupPackResponses: " <> show o.groupPackResponses
 
 newtype GroupMemberPackResponse = GroupMemberPackResponse {
   user :: UserSanitizedResponse,
@@ -18249,7 +20176,7 @@ type GroupMemberPackResponseR = {
 }
 
 
-_GroupMemberPackResponse :: LensP GroupMemberPackResponse {
+_GroupMemberPackResponse :: Lens' GroupMemberPackResponse {
   user :: UserSanitizedResponse,
   userId :: Int,
   groupMember :: GroupMemberResponse,
@@ -18264,6 +20191,13 @@ mkGroupMemberPackResponse user userId groupMember groupMemberId isOwner =
   GroupMemberPackResponse{user, userId, groupMember, groupMemberId, isOwner}
 
 
+unwrapGroupMemberPackResponse :: GroupMemberPackResponse -> {
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  groupMember :: GroupMemberResponse,
+  groupMemberId :: Int,
+  isOwner :: Boolean
+}
 unwrapGroupMemberPackResponse (GroupMemberPackResponse r) = r
 
 instance groupMemberPackResponseEncodeJson :: EncodeJson GroupMemberPackResponse where
@@ -18323,7 +20257,7 @@ instance groupMemberPackResponseIsForeign :: IsForeign GroupMemberPackResponse w
 
 
 instance groupMemberPackResponseShow :: Show GroupMemberPackResponse where
-    show (GroupMemberPackResponse o) = show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "groupMember: " ++ show o.groupMember ++ ", " ++ show "groupMemberId: " ++ show o.groupMemberId ++ ", " ++ show "isOwner: " ++ show o.isOwner
+    show (GroupMemberPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "groupMember: " <> show o.groupMember <> ", " <> show "groupMemberId: " <> show o.groupMemberId <> ", " <> show "isOwner: " <> show o.isOwner
 
 newtype GroupMemberPackResponses = GroupMemberPackResponses {
   groupMemberPackResponses :: (Array GroupMemberPackResponse)
@@ -18335,7 +20269,7 @@ type GroupMemberPackResponsesR = {
 }
 
 
-_GroupMemberPackResponses :: LensP GroupMemberPackResponses {
+_GroupMemberPackResponses :: Lens' GroupMemberPackResponses {
   groupMemberPackResponses :: (Array GroupMemberPackResponse)
 }
 _GroupMemberPackResponses f (GroupMemberPackResponses o) = GroupMemberPackResponses <$> f o
@@ -18346,6 +20280,9 @@ mkGroupMemberPackResponses groupMemberPackResponses =
   GroupMemberPackResponses{groupMemberPackResponses}
 
 
+unwrapGroupMemberPackResponses :: GroupMemberPackResponses -> {
+  groupMemberPackResponses :: (Array GroupMemberPackResponse)
+}
 unwrapGroupMemberPackResponses (GroupMemberPackResponses r) = r
 
 instance groupMemberPackResponsesEncodeJson :: EncodeJson GroupMemberPackResponses where
@@ -18385,7 +20322,7 @@ instance groupMemberPackResponsesIsForeign :: IsForeign GroupMemberPackResponses
 
 
 instance groupMemberPackResponsesShow :: Show GroupMemberPackResponses where
-    show (GroupMemberPackResponses o) = show "groupMemberPackResponses: " ++ show o.groupMemberPackResponses
+    show (GroupMemberPackResponses o) = show "groupMemberPackResponses: " <> show o.groupMemberPackResponses
 
 newtype ForumPackResponse = ForumPackResponse {
   forum :: ForumResponse,
@@ -18409,7 +20346,7 @@ type ForumPackResponseR = {
 }
 
 
-_ForumPackResponse :: LensP ForumPackResponse {
+_ForumPackResponse :: Lens' ForumPackResponse {
   forum :: ForumResponse,
   forumId :: Int,
   stat :: ForumStatResponse,
@@ -18426,6 +20363,15 @@ mkForumPackResponse forum forumId stat like star withOrganization permissions =
   ForumPackResponse{forum, forumId, stat, like, star, withOrganization, permissions}
 
 
+unwrapForumPackResponse :: ForumPackResponse -> {
+  forum :: ForumResponse,
+  forumId :: Int,
+  stat :: ForumStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse),
+  withOrganization :: (Maybe OrganizationResponse),
+  permissions :: Permissions
+}
 unwrapForumPackResponse (ForumPackResponse r) = r
 
 instance forumPackResponseEncodeJson :: EncodeJson ForumPackResponse where
@@ -18476,9 +20422,9 @@ instance forumPackResponseRespondable :: Respondable ForumPackResponse where
       <$> readProp "forum" json
       <*> readProp "forum_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
-      <*> (runNullOrUndefined <$> readProp "with_organization" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "with_organization" json)
       <*> readProp "permissions" json
 
 
@@ -18488,14 +20434,14 @@ instance forumPackResponseIsForeign :: IsForeign ForumPackResponse where
       <$> readProp "forum" json
       <*> readProp "forum_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
-      <*> (runNullOrUndefined <$> readProp "with_organization" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "with_organization" json)
       <*> readProp "permissions" json
 
 
 instance forumPackResponseShow :: Show ForumPackResponse where
-    show (ForumPackResponse o) = show "forum: " ++ show o.forum ++ ", " ++ show "forumId: " ++ show o.forumId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "withOrganization: " ++ show o.withOrganization ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (ForumPackResponse o) = show "forum: " <> show o.forum <> ", " <> show "forumId: " <> show o.forumId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "withOrganization: " <> show o.withOrganization <> ", " <> show "permissions: " <> show o.permissions
 
 newtype ForumPackResponses = ForumPackResponses {
   forumPackResponses :: (Array ForumPackResponse)
@@ -18507,7 +20453,7 @@ type ForumPackResponsesR = {
 }
 
 
-_ForumPackResponses :: LensP ForumPackResponses {
+_ForumPackResponses :: Lens' ForumPackResponses {
   forumPackResponses :: (Array ForumPackResponse)
 }
 _ForumPackResponses f (ForumPackResponses o) = ForumPackResponses <$> f o
@@ -18518,6 +20464,9 @@ mkForumPackResponses forumPackResponses =
   ForumPackResponses{forumPackResponses}
 
 
+unwrapForumPackResponses :: ForumPackResponses -> {
+  forumPackResponses :: (Array ForumPackResponse)
+}
 unwrapForumPackResponses (ForumPackResponses r) = r
 
 instance forumPackResponsesEncodeJson :: EncodeJson ForumPackResponses where
@@ -18557,7 +20506,7 @@ instance forumPackResponsesIsForeign :: IsForeign ForumPackResponses where
 
 
 instance forumPackResponsesShow :: Show ForumPackResponses where
-    show (ForumPackResponses o) = show "forumPackResponses: " ++ show o.forumPackResponses
+    show (ForumPackResponses o) = show "forumPackResponses: " <> show o.forumPackResponses
 
 newtype BoardPackResponse = BoardPackResponse {
   board :: BoardResponse,
@@ -18589,7 +20538,7 @@ type BoardPackResponseR = {
 }
 
 
-_BoardPackResponse :: LensP BoardPackResponse {
+_BoardPackResponse :: Lens' BoardPackResponse {
   board :: BoardResponse,
   boardId :: Int,
   stat :: BoardStatResponse,
@@ -18610,6 +20559,19 @@ mkBoardPackResponse board boardId stat like star latestThread latestThreadPost l
   BoardPackResponse{board, boardId, stat, like, star, latestThread, latestThreadPost, latestThreadPostUser, withOrganization, withForum, permissions}
 
 
+unwrapBoardPackResponse :: BoardPackResponse -> {
+  board :: BoardResponse,
+  boardId :: Int,
+  stat :: BoardStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse),
+  latestThread :: (Maybe ThreadResponse),
+  latestThreadPost :: (Maybe ThreadPostResponse),
+  latestThreadPostUser :: (Maybe UserSanitizedResponse),
+  withOrganization :: (Maybe OrganizationResponse),
+  withForum :: (Maybe ForumResponse),
+  permissions :: Permissions
+}
 unwrapBoardPackResponse (BoardPackResponse r) = r
 
 instance boardPackResponseEncodeJson :: EncodeJson BoardPackResponse where
@@ -18672,13 +20634,13 @@ instance boardPackResponseRespondable :: Respondable BoardPackResponse where
       <$> readProp "board" json
       <*> readProp "board_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
-      <*> (runNullOrUndefined <$> readProp "with_organization" json)
-      <*> (runNullOrUndefined <$> readProp "with_forum" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread_post" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread_post_user" json)
+      <*> (unNullOrUndefined <$> readProp "with_organization" json)
+      <*> (unNullOrUndefined <$> readProp "with_forum" json)
       <*> readProp "permissions" json
 
 
@@ -18688,18 +20650,18 @@ instance boardPackResponseIsForeign :: IsForeign BoardPackResponse where
       <$> readProp "board" json
       <*> readProp "board_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
-      <*> (runNullOrUndefined <$> readProp "with_organization" json)
-      <*> (runNullOrUndefined <$> readProp "with_forum" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread_post" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread_post_user" json)
+      <*> (unNullOrUndefined <$> readProp "with_organization" json)
+      <*> (unNullOrUndefined <$> readProp "with_forum" json)
       <*> readProp "permissions" json
 
 
 instance boardPackResponseShow :: Show BoardPackResponse where
-    show (BoardPackResponse o) = show "board: " ++ show o.board ++ ", " ++ show "boardId: " ++ show o.boardId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "latestThread: " ++ show o.latestThread ++ ", " ++ show "latestThreadPost: " ++ show o.latestThreadPost ++ ", " ++ show "latestThreadPostUser: " ++ show o.latestThreadPostUser ++ ", " ++ show "withOrganization: " ++ show o.withOrganization ++ ", " ++ show "withForum: " ++ show o.withForum ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (BoardPackResponse o) = show "board: " <> show o.board <> ", " <> show "boardId: " <> show o.boardId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "latestThread: " <> show o.latestThread <> ", " <> show "latestThreadPost: " <> show o.latestThreadPost <> ", " <> show "latestThreadPostUser: " <> show o.latestThreadPostUser <> ", " <> show "withOrganization: " <> show o.withOrganization <> ", " <> show "withForum: " <> show o.withForum <> ", " <> show "permissions: " <> show o.permissions
 
 newtype BoardPackResponses = BoardPackResponses {
   boardPackResponses :: (Array BoardPackResponse)
@@ -18711,7 +20673,7 @@ type BoardPackResponsesR = {
 }
 
 
-_BoardPackResponses :: LensP BoardPackResponses {
+_BoardPackResponses :: Lens' BoardPackResponses {
   boardPackResponses :: (Array BoardPackResponse)
 }
 _BoardPackResponses f (BoardPackResponses o) = BoardPackResponses <$> f o
@@ -18722,6 +20684,9 @@ mkBoardPackResponses boardPackResponses =
   BoardPackResponses{boardPackResponses}
 
 
+unwrapBoardPackResponses :: BoardPackResponses -> {
+  boardPackResponses :: (Array BoardPackResponse)
+}
 unwrapBoardPackResponses (BoardPackResponses r) = r
 
 instance boardPackResponsesEncodeJson :: EncodeJson BoardPackResponses where
@@ -18761,7 +20726,7 @@ instance boardPackResponsesIsForeign :: IsForeign BoardPackResponses where
 
 
 instance boardPackResponsesShow :: Show BoardPackResponses where
-    show (BoardPackResponses o) = show "boardPackResponses: " ++ show o.boardPackResponses
+    show (BoardPackResponses o) = show "boardPackResponses: " <> show o.boardPackResponses
 
 newtype ThreadPackResponse = ThreadPackResponse {
   thread :: ThreadResponse,
@@ -18797,7 +20762,7 @@ type ThreadPackResponseR = {
 }
 
 
-_ThreadPackResponse :: LensP ThreadPackResponse {
+_ThreadPackResponse :: Lens' ThreadPackResponse {
   thread :: ThreadResponse,
   threadId :: Int,
   user :: UserSanitizedResponse,
@@ -18820,6 +20785,21 @@ mkThreadPackResponse thread threadId user userId stat like star latestThreadPost
   ThreadPackResponse{thread, threadId, user, userId, stat, like, star, latestThreadPost, latestThreadPostUser, withOrganization, withForum, withBoard, permissions}
 
 
+unwrapThreadPackResponse :: ThreadPackResponse -> {
+  thread :: ThreadResponse,
+  threadId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  stat :: ThreadStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse),
+  latestThreadPost :: (Maybe ThreadPostResponse),
+  latestThreadPostUser :: (Maybe UserSanitizedResponse),
+  withOrganization :: (Maybe OrganizationResponse),
+  withForum :: (Maybe ForumResponse),
+  withBoard :: (Maybe BoardResponse),
+  permissions :: Permissions
+}
 unwrapThreadPackResponse (ThreadPackResponse r) = r
 
 instance threadPackResponseEncodeJson :: EncodeJson ThreadPackResponse where
@@ -18890,13 +20870,13 @@ instance threadPackResponseRespondable :: Respondable ThreadPackResponse where
       <*> readProp "user" json
       <*> readProp "user_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
-      <*> (runNullOrUndefined <$> readProp "with_organization" json)
-      <*> (runNullOrUndefined <$> readProp "with_forum" json)
-      <*> (runNullOrUndefined <$> readProp "with_board" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread_post" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread_post_user" json)
+      <*> (unNullOrUndefined <$> readProp "with_organization" json)
+      <*> (unNullOrUndefined <$> readProp "with_forum" json)
+      <*> (unNullOrUndefined <$> readProp "with_board" json)
       <*> readProp "permissions" json
 
 
@@ -18908,18 +20888,18 @@ instance threadPackResponseIsForeign :: IsForeign ThreadPackResponse where
       <*> readProp "user" json
       <*> readProp "user_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread_post" json)
-      <*> (runNullOrUndefined <$> readProp "latest_thread_post_user" json)
-      <*> (runNullOrUndefined <$> readProp "with_organization" json)
-      <*> (runNullOrUndefined <$> readProp "with_forum" json)
-      <*> (runNullOrUndefined <$> readProp "with_board" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread_post" json)
+      <*> (unNullOrUndefined <$> readProp "latest_thread_post_user" json)
+      <*> (unNullOrUndefined <$> readProp "with_organization" json)
+      <*> (unNullOrUndefined <$> readProp "with_forum" json)
+      <*> (unNullOrUndefined <$> readProp "with_board" json)
       <*> readProp "permissions" json
 
 
 instance threadPackResponseShow :: Show ThreadPackResponse where
-    show (ThreadPackResponse o) = show "thread: " ++ show o.thread ++ ", " ++ show "threadId: " ++ show o.threadId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "latestThreadPost: " ++ show o.latestThreadPost ++ ", " ++ show "latestThreadPostUser: " ++ show o.latestThreadPostUser ++ ", " ++ show "withOrganization: " ++ show o.withOrganization ++ ", " ++ show "withForum: " ++ show o.withForum ++ ", " ++ show "withBoard: " ++ show o.withBoard ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (ThreadPackResponse o) = show "thread: " <> show o.thread <> ", " <> show "threadId: " <> show o.threadId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "latestThreadPost: " <> show o.latestThreadPost <> ", " <> show "latestThreadPostUser: " <> show o.latestThreadPostUser <> ", " <> show "withOrganization: " <> show o.withOrganization <> ", " <> show "withForum: " <> show o.withForum <> ", " <> show "withBoard: " <> show o.withBoard <> ", " <> show "permissions: " <> show o.permissions
 
 newtype ThreadPackResponses = ThreadPackResponses {
   threadPackResponses :: (Array ThreadPackResponse)
@@ -18931,7 +20911,7 @@ type ThreadPackResponsesR = {
 }
 
 
-_ThreadPackResponses :: LensP ThreadPackResponses {
+_ThreadPackResponses :: Lens' ThreadPackResponses {
   threadPackResponses :: (Array ThreadPackResponse)
 }
 _ThreadPackResponses f (ThreadPackResponses o) = ThreadPackResponses <$> f o
@@ -18942,6 +20922,9 @@ mkThreadPackResponses threadPackResponses =
   ThreadPackResponses{threadPackResponses}
 
 
+unwrapThreadPackResponses :: ThreadPackResponses -> {
+  threadPackResponses :: (Array ThreadPackResponse)
+}
 unwrapThreadPackResponses (ThreadPackResponses r) = r
 
 instance threadPackResponsesEncodeJson :: EncodeJson ThreadPackResponses where
@@ -18981,7 +20964,7 @@ instance threadPackResponsesIsForeign :: IsForeign ThreadPackResponses where
 
 
 instance threadPackResponsesShow :: Show ThreadPackResponses where
-    show (ThreadPackResponses o) = show "threadPackResponses: " ++ show o.threadPackResponses
+    show (ThreadPackResponses o) = show "threadPackResponses: " <> show o.threadPackResponses
 
 newtype ThreadPostPackResponse = ThreadPostPackResponse {
   threadPost :: ThreadPostResponse,
@@ -19015,7 +20998,7 @@ type ThreadPostPackResponseR = {
 }
 
 
-_ThreadPostPackResponse :: LensP ThreadPostPackResponse {
+_ThreadPostPackResponse :: Lens' ThreadPostPackResponse {
   threadPost :: ThreadPostResponse,
   threadPostId :: Int,
   user :: UserSanitizedResponse,
@@ -19037,6 +21020,20 @@ mkThreadPostPackResponse threadPost threadPostId user userId stat like star with
   ThreadPostPackResponse{threadPost, threadPostId, user, userId, stat, like, star, withOrganization, withForum, withBoard, withThread, permissions}
 
 
+unwrapThreadPostPackResponse :: ThreadPostPackResponse -> {
+  threadPost :: ThreadPostResponse,
+  threadPostId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  stat :: ThreadPostStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse),
+  withOrganization :: (Maybe OrganizationResponse),
+  withForum :: (Maybe ForumResponse),
+  withBoard :: (Maybe BoardResponse),
+  withThread :: (Maybe ThreadResponse),
+  permissions :: Permissions
+}
 unwrapThreadPostPackResponse (ThreadPostPackResponse r) = r
 
 instance threadPostPackResponseEncodeJson :: EncodeJson ThreadPostPackResponse where
@@ -19104,12 +21101,12 @@ instance threadPostPackResponseRespondable :: Respondable ThreadPostPackResponse
       <*> readProp "user" json
       <*> readProp "user_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
-      <*> (runNullOrUndefined <$> readProp "with_organization" json)
-      <*> (runNullOrUndefined <$> readProp "with_forum" json)
-      <*> (runNullOrUndefined <$> readProp "with_board" json)
-      <*> (runNullOrUndefined <$> readProp "with_thread" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "with_organization" json)
+      <*> (unNullOrUndefined <$> readProp "with_forum" json)
+      <*> (unNullOrUndefined <$> readProp "with_board" json)
+      <*> (unNullOrUndefined <$> readProp "with_thread" json)
       <*> readProp "permissions" json
 
 
@@ -19121,17 +21118,17 @@ instance threadPostPackResponseIsForeign :: IsForeign ThreadPostPackResponse whe
       <*> readProp "user" json
       <*> readProp "user_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
-      <*> (runNullOrUndefined <$> readProp "with_organization" json)
-      <*> (runNullOrUndefined <$> readProp "with_forum" json)
-      <*> (runNullOrUndefined <$> readProp "with_board" json)
-      <*> (runNullOrUndefined <$> readProp "with_thread" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "with_organization" json)
+      <*> (unNullOrUndefined <$> readProp "with_forum" json)
+      <*> (unNullOrUndefined <$> readProp "with_board" json)
+      <*> (unNullOrUndefined <$> readProp "with_thread" json)
       <*> readProp "permissions" json
 
 
 instance threadPostPackResponseShow :: Show ThreadPostPackResponse where
-    show (ThreadPostPackResponse o) = show "threadPost: " ++ show o.threadPost ++ ", " ++ show "threadPostId: " ++ show o.threadPostId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "withOrganization: " ++ show o.withOrganization ++ ", " ++ show "withForum: " ++ show o.withForum ++ ", " ++ show "withBoard: " ++ show o.withBoard ++ ", " ++ show "withThread: " ++ show o.withThread ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (ThreadPostPackResponse o) = show "threadPost: " <> show o.threadPost <> ", " <> show "threadPostId: " <> show o.threadPostId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "withOrganization: " <> show o.withOrganization <> ", " <> show "withForum: " <> show o.withForum <> ", " <> show "withBoard: " <> show o.withBoard <> ", " <> show "withThread: " <> show o.withThread <> ", " <> show "permissions: " <> show o.permissions
 
 newtype ThreadPostPackResponses = ThreadPostPackResponses {
   threadPostPackResponses :: (Array ThreadPostPackResponse)
@@ -19143,7 +21140,7 @@ type ThreadPostPackResponsesR = {
 }
 
 
-_ThreadPostPackResponses :: LensP ThreadPostPackResponses {
+_ThreadPostPackResponses :: Lens' ThreadPostPackResponses {
   threadPostPackResponses :: (Array ThreadPostPackResponse)
 }
 _ThreadPostPackResponses f (ThreadPostPackResponses o) = ThreadPostPackResponses <$> f o
@@ -19154,6 +21151,9 @@ mkThreadPostPackResponses threadPostPackResponses =
   ThreadPostPackResponses{threadPostPackResponses}
 
 
+unwrapThreadPostPackResponses :: ThreadPostPackResponses -> {
+  threadPostPackResponses :: (Array ThreadPostPackResponse)
+}
 unwrapThreadPostPackResponses (ThreadPostPackResponses r) = r
 
 instance threadPostPackResponsesEncodeJson :: EncodeJson ThreadPostPackResponses where
@@ -19193,7 +21193,7 @@ instance threadPostPackResponsesIsForeign :: IsForeign ThreadPostPackResponses w
 
 
 instance threadPostPackResponsesShow :: Show ThreadPostPackResponses where
-    show (ThreadPostPackResponses o) = show "threadPostPackResponses: " ++ show o.threadPostPackResponses
+    show (ThreadPostPackResponses o) = show "threadPostPackResponses: " <> show o.threadPostPackResponses
 
 newtype ResourcePackResponse = ResourcePackResponse {
   resource :: ResourceResponse,
@@ -19219,7 +21219,7 @@ type ResourcePackResponseR = {
 }
 
 
-_ResourcePackResponse :: LensP ResourcePackResponse {
+_ResourcePackResponse :: Lens' ResourcePackResponse {
   resource :: ResourceResponse,
   resourceId :: Int,
   user :: UserSanitizedResponse,
@@ -19237,6 +21237,16 @@ mkResourcePackResponse resource resourceId user userId stat like star permission
   ResourcePackResponse{resource, resourceId, user, userId, stat, like, star, permissions}
 
 
+unwrapResourcePackResponse :: ResourcePackResponse -> {
+  resource :: ResourceResponse,
+  resourceId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  stat :: ResourceStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse),
+  permissions :: Permissions
+}
 unwrapResourcePackResponse (ResourcePackResponse r) = r
 
 instance resourcePackResponseEncodeJson :: EncodeJson ResourcePackResponse where
@@ -19292,8 +21302,8 @@ instance resourcePackResponseRespondable :: Respondable ResourcePackResponse whe
       <*> readProp "user" json
       <*> readProp "user_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
 
 
@@ -19305,13 +21315,13 @@ instance resourcePackResponseIsForeign :: IsForeign ResourcePackResponse where
       <*> readProp "user" json
       <*> readProp "user_id" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
 
 
 instance resourcePackResponseShow :: Show ResourcePackResponse where
-    show (ResourcePackResponse o) = show "resource: " ++ show o.resource ++ ", " ++ show "resourceId: " ++ show o.resourceId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (ResourcePackResponse o) = show "resource: " <> show o.resource <> ", " <> show "resourceId: " <> show o.resourceId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "permissions: " <> show o.permissions
 
 newtype ResourcePackResponses = ResourcePackResponses {
   resourcePackResponses :: (Array ResourcePackResponse)
@@ -19323,7 +21333,7 @@ type ResourcePackResponsesR = {
 }
 
 
-_ResourcePackResponses :: LensP ResourcePackResponses {
+_ResourcePackResponses :: Lens' ResourcePackResponses {
   resourcePackResponses :: (Array ResourcePackResponse)
 }
 _ResourcePackResponses f (ResourcePackResponses o) = ResourcePackResponses <$> f o
@@ -19334,6 +21344,9 @@ mkResourcePackResponses resourcePackResponses =
   ResourcePackResponses{resourcePackResponses}
 
 
+unwrapResourcePackResponses :: ResourcePackResponses -> {
+  resourcePackResponses :: (Array ResourcePackResponse)
+}
 unwrapResourcePackResponses (ResourcePackResponses r) = r
 
 instance resourcePackResponsesEncodeJson :: EncodeJson ResourcePackResponses where
@@ -19373,7 +21386,7 @@ instance resourcePackResponsesIsForeign :: IsForeign ResourcePackResponses where
 
 
 instance resourcePackResponsesShow :: Show ResourcePackResponses where
-    show (ResourcePackResponses o) = show "resourcePackResponses: " ++ show o.resourcePackResponses
+    show (ResourcePackResponses o) = show "resourcePackResponses: " <> show o.resourcePackResponses
 
 newtype LeuronPackResponse = LeuronPackResponse {
   leuron :: LeuronResponse,
@@ -19401,7 +21414,7 @@ type LeuronPackResponseR = {
 }
 
 
-_LeuronPackResponse :: LensP LeuronPackResponse {
+_LeuronPackResponse :: Lens' LeuronPackResponse {
   leuron :: LeuronResponse,
   leuronId :: Int,
   user :: UserSanitizedResponse,
@@ -19420,6 +21433,17 @@ mkLeuronPackResponse leuron leuronId user userId training stat like star permiss
   LeuronPackResponse{leuron, leuronId, user, userId, training, stat, like, star, permissions}
 
 
+unwrapLeuronPackResponse :: LeuronPackResponse -> {
+  leuron :: LeuronResponse,
+  leuronId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int,
+  training :: LeuronTrainingResponse,
+  stat :: LeuronStatResponse,
+  like :: (Maybe LikeResponse),
+  star :: (Maybe StarResponse),
+  permissions :: Permissions
+}
 unwrapLeuronPackResponse (LeuronPackResponse r) = r
 
 instance leuronPackResponseEncodeJson :: EncodeJson LeuronPackResponse where
@@ -19479,8 +21503,8 @@ instance leuronPackResponseRespondable :: Respondable LeuronPackResponse where
       <*> readProp "user_id" json
       <*> readProp "training" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
 
 
@@ -19493,13 +21517,13 @@ instance leuronPackResponseIsForeign :: IsForeign LeuronPackResponse where
       <*> readProp "user_id" json
       <*> readProp "training" json
       <*> readProp "stat" json
-      <*> (runNullOrUndefined <$> readProp "like" json)
-      <*> (runNullOrUndefined <$> readProp "star" json)
+      <*> (unNullOrUndefined <$> readProp "like" json)
+      <*> (unNullOrUndefined <$> readProp "star" json)
       <*> readProp "permissions" json
 
 
 instance leuronPackResponseShow :: Show LeuronPackResponse where
-    show (LeuronPackResponse o) = show "leuron: " ++ show o.leuron ++ ", " ++ show "leuronId: " ++ show o.leuronId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId ++ ", " ++ show "training: " ++ show o.training ++ ", " ++ show "stat: " ++ show o.stat ++ ", " ++ show "like: " ++ show o.like ++ ", " ++ show "star: " ++ show o.star ++ ", " ++ show "permissions: " ++ show o.permissions
+    show (LeuronPackResponse o) = show "leuron: " <> show o.leuron <> ", " <> show "leuronId: " <> show o.leuronId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "training: " <> show o.training <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "permissions: " <> show o.permissions
 
 newtype LeuronPackResponses = LeuronPackResponses {
   leuronPackResponses :: (Array LeuronPackResponse)
@@ -19511,7 +21535,7 @@ type LeuronPackResponsesR = {
 }
 
 
-_LeuronPackResponses :: LensP LeuronPackResponses {
+_LeuronPackResponses :: Lens' LeuronPackResponses {
   leuronPackResponses :: (Array LeuronPackResponse)
 }
 _LeuronPackResponses f (LeuronPackResponses o) = LeuronPackResponses <$> f o
@@ -19522,6 +21546,9 @@ mkLeuronPackResponses leuronPackResponses =
   LeuronPackResponses{leuronPackResponses}
 
 
+unwrapLeuronPackResponses :: LeuronPackResponses -> {
+  leuronPackResponses :: (Array LeuronPackResponse)
+}
 unwrapLeuronPackResponses (LeuronPackResponses r) = r
 
 instance leuronPackResponsesEncodeJson :: EncodeJson LeuronPackResponses where
@@ -19561,7 +21588,7 @@ instance leuronPackResponsesIsForeign :: IsForeign LeuronPackResponses where
 
 
 instance leuronPackResponsesShow :: Show LeuronPackResponses where
-    show (LeuronPackResponses o) = show "leuronPackResponses: " ++ show o.leuronPackResponses
+    show (LeuronPackResponses o) = show "leuronPackResponses: " <> show o.leuronPackResponses
 
 newtype PmInPackResponse = PmInPackResponse {
   pmIn :: PmInResponse,
@@ -19579,7 +21606,7 @@ type PmInPackResponseR = {
 }
 
 
-_PmInPackResponse :: LensP PmInPackResponse {
+_PmInPackResponse :: Lens' PmInPackResponse {
   pmIn :: PmInResponse,
   pmInId :: Int,
   user :: UserSanitizedResponse,
@@ -19593,6 +21620,12 @@ mkPmInPackResponse pmIn pmInId user userId =
   PmInPackResponse{pmIn, pmInId, user, userId}
 
 
+unwrapPmInPackResponse :: PmInPackResponse -> {
+  pmIn :: PmInResponse,
+  pmInId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int
+}
 unwrapPmInPackResponse (PmInPackResponse r) = r
 
 instance pmInPackResponseEncodeJson :: EncodeJson PmInPackResponse where
@@ -19647,7 +21680,7 @@ instance pmInPackResponseIsForeign :: IsForeign PmInPackResponse where
 
 
 instance pmInPackResponseShow :: Show PmInPackResponse where
-    show (PmInPackResponse o) = show "pmIn: " ++ show o.pmIn ++ ", " ++ show "pmInId: " ++ show o.pmInId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId
+    show (PmInPackResponse o) = show "pmIn: " <> show o.pmIn <> ", " <> show "pmInId: " <> show o.pmInId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId
 
 newtype PmInPackResponses = PmInPackResponses {
   pmInPackResponses :: (Array PmInPackResponse)
@@ -19659,7 +21692,7 @@ type PmInPackResponsesR = {
 }
 
 
-_PmInPackResponses :: LensP PmInPackResponses {
+_PmInPackResponses :: Lens' PmInPackResponses {
   pmInPackResponses :: (Array PmInPackResponse)
 }
 _PmInPackResponses f (PmInPackResponses o) = PmInPackResponses <$> f o
@@ -19670,6 +21703,9 @@ mkPmInPackResponses pmInPackResponses =
   PmInPackResponses{pmInPackResponses}
 
 
+unwrapPmInPackResponses :: PmInPackResponses -> {
+  pmInPackResponses :: (Array PmInPackResponse)
+}
 unwrapPmInPackResponses (PmInPackResponses r) = r
 
 instance pmInPackResponsesEncodeJson :: EncodeJson PmInPackResponses where
@@ -19709,7 +21745,7 @@ instance pmInPackResponsesIsForeign :: IsForeign PmInPackResponses where
 
 
 instance pmInPackResponsesShow :: Show PmInPackResponses where
-    show (PmInPackResponses o) = show "pmInPackResponses: " ++ show o.pmInPackResponses
+    show (PmInPackResponses o) = show "pmInPackResponses: " <> show o.pmInPackResponses
 
 newtype PmOutPackResponse = PmOutPackResponse {
   pmOut :: PmOutResponse,
@@ -19727,7 +21763,7 @@ type PmOutPackResponseR = {
 }
 
 
-_PmOutPackResponse :: LensP PmOutPackResponse {
+_PmOutPackResponse :: Lens' PmOutPackResponse {
   pmOut :: PmOutResponse,
   pmOutId :: Int,
   user :: UserSanitizedResponse,
@@ -19741,6 +21777,12 @@ mkPmOutPackResponse pmOut pmOutId user userId =
   PmOutPackResponse{pmOut, pmOutId, user, userId}
 
 
+unwrapPmOutPackResponse :: PmOutPackResponse -> {
+  pmOut :: PmOutResponse,
+  pmOutId :: Int,
+  user :: UserSanitizedResponse,
+  userId :: Int
+}
 unwrapPmOutPackResponse (PmOutPackResponse r) = r
 
 instance pmOutPackResponseEncodeJson :: EncodeJson PmOutPackResponse where
@@ -19795,7 +21837,7 @@ instance pmOutPackResponseIsForeign :: IsForeign PmOutPackResponse where
 
 
 instance pmOutPackResponseShow :: Show PmOutPackResponse where
-    show (PmOutPackResponse o) = show "pmOut: " ++ show o.pmOut ++ ", " ++ show "pmOutId: " ++ show o.pmOutId ++ ", " ++ show "user: " ++ show o.user ++ ", " ++ show "userId: " ++ show o.userId
+    show (PmOutPackResponse o) = show "pmOut: " <> show o.pmOut <> ", " <> show "pmOutId: " <> show o.pmOutId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId
 
 newtype PmOutPackResponses = PmOutPackResponses {
   pmOutPackResponses :: (Array PmOutPackResponse)
@@ -19807,7 +21849,7 @@ type PmOutPackResponsesR = {
 }
 
 
-_PmOutPackResponses :: LensP PmOutPackResponses {
+_PmOutPackResponses :: Lens' PmOutPackResponses {
   pmOutPackResponses :: (Array PmOutPackResponse)
 }
 _PmOutPackResponses f (PmOutPackResponses o) = PmOutPackResponses <$> f o
@@ -19818,6 +21860,9 @@ mkPmOutPackResponses pmOutPackResponses =
   PmOutPackResponses{pmOutPackResponses}
 
 
+unwrapPmOutPackResponses :: PmOutPackResponses -> {
+  pmOutPackResponses :: (Array PmOutPackResponse)
+}
 unwrapPmOutPackResponses (PmOutPackResponses r) = r
 
 instance pmOutPackResponsesEncodeJson :: EncodeJson PmOutPackResponses where
@@ -19857,7 +21902,7 @@ instance pmOutPackResponsesIsForeign :: IsForeign PmOutPackResponses where
 
 
 instance pmOutPackResponsesShow :: Show PmOutPackResponses where
-    show (PmOutPackResponses o) = show "pmOutPackResponses: " ++ show o.pmOutPackResponses
+    show (PmOutPackResponses o) = show "pmOutPackResponses: " <> show o.pmOutPackResponses
 
 a_ :: forall b a r. Lens { a :: a | r } { a :: b | r } a b
 a_ f o = o { a = _ } <$> f o.a

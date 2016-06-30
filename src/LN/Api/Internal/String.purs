@@ -29,73 +29,73 @@ getOrganizationPack' :: String -> ApiEff (Either ApiError OrganizationPackRespon
 getOrganizationPack' organization_name = handleError <$> getAt ([] :: Array Boolean) ["organization_pack", organization_name]
 
 getTeam_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError TeamResponse)
-getTeam_ByOrganizationId params team_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["team", team_name]
+getTeam_ByOrganizationId params team_name _ByOrganizationId = handleError <$> getAt (map qp params <> map qp [ByOrganizationId _ByOrganizationId]) ["team", team_name]
 
 getTeam_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError TeamResponse)
 getTeam_ByOrganizationId' team_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["team", team_name]
 
 getTeamPack_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError TeamPackResponse)
-getTeamPack_ByOrganizationId params team_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["team_pack", team_name]
+getTeamPack_ByOrganizationId params team_name _ByOrganizationId = handleError <$> getAt (map qp params <> map qp [ByOrganizationId _ByOrganizationId]) ["team_pack", team_name]
 
 getTeamPack_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError TeamPackResponse)
 getTeamPack_ByOrganizationId' team_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["team_pack", team_name]
 
 getGlobalGroup_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError GlobalGroupResponse)
-getGlobalGroup_ByOrganizationId params global_group_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["global_group", global_group_name]
+getGlobalGroup_ByOrganizationId params global_group_name _ByOrganizationId = handleError <$> getAt (map qp params <> map qp [ByOrganizationId _ByOrganizationId]) ["global_group", global_group_name]
 
 getGlobalGroup_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError GlobalGroupResponse)
 getGlobalGroup_ByOrganizationId' global_group_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["global_group", global_group_name]
 
 getGlobalGroupPack_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError GlobalGroupPackResponse)
-getGlobalGroupPack_ByOrganizationId params global_group_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["global_group_pack", global_group_name]
+getGlobalGroupPack_ByOrganizationId params global_group_name _ByOrganizationId = handleError <$> getAt (map qp params <> map qp [ByOrganizationId _ByOrganizationId]) ["global_group_pack", global_group_name]
 
 getGlobalGroupPack_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError GlobalGroupPackResponse)
 getGlobalGroupPack_ByOrganizationId' global_group_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["global_group_pack", global_group_name]
 
 getGroup_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError GroupResponse)
-getGroup_ByOrganizationId params group_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["group", group_name]
+getGroup_ByOrganizationId params group_name _ByOrganizationId = handleError <$> getAt (map qp params <> map qp [ByOrganizationId _ByOrganizationId]) ["group", group_name]
 
 getGroup_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError GroupResponse)
 getGroup_ByOrganizationId' group_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["group", group_name]
 
 getGroupPack_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError GroupPackResponse)
-getGroupPack_ByOrganizationId params group_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["group_pack", group_name]
+getGroupPack_ByOrganizationId params group_name _ByOrganizationId = handleError <$> getAt (map qp params <> map qp [ByOrganizationId _ByOrganizationId]) ["group_pack", group_name]
 
 getGroupPack_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError GroupPackResponse)
 getGroupPack_ByOrganizationId' group_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["group_pack", group_name]
 
 getForum_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError ForumResponse)
-getForum_ByOrganizationId params forum_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["forum", forum_name]
+getForum_ByOrganizationId params forum_name _ByOrganizationId = handleError <$> getAt (map qp params <> map qp [ByOrganizationId _ByOrganizationId]) ["forum", forum_name]
 
 getForum_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError ForumResponse)
 getForum_ByOrganizationId' forum_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["forum", forum_name]
 
 getForumPack_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError ForumPackResponse)
-getForumPack_ByOrganizationId params forum_name _ByOrganizationId = handleError <$> getAt (map qp params ++ map qp [ByOrganizationId _ByOrganizationId]) ["forum_pack", forum_name]
+getForumPack_ByOrganizationId params forum_name _ByOrganizationId = handleError <$> getAt (map qp params <> map qp [ByOrganizationId _ByOrganizationId]) ["forum_pack", forum_name]
 
 getForumPack_ByOrganizationId' :: String -> Int -> ApiEff (Either ApiError ForumPackResponse)
 getForumPack_ByOrganizationId' forum_name _ByOrganizationId = handleError <$> getAt [ByOrganizationId _ByOrganizationId] ["forum_pack", forum_name]
 
 getBoard_ByForumId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError BoardResponse)
-getBoard_ByForumId params board_name _ByForumId = handleError <$> getAt (map qp params ++ map qp [ByForumId _ByForumId]) ["board", board_name]
+getBoard_ByForumId params board_name _ByForumId = handleError <$> getAt (map qp params <> map qp [ByForumId _ByForumId]) ["board", board_name]
 
 getBoard_ByForumId' :: String -> Int -> ApiEff (Either ApiError BoardResponse)
 getBoard_ByForumId' board_name _ByForumId = handleError <$> getAt [ByForumId _ByForumId] ["board", board_name]
 
 getBoardPack_ByForumId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError BoardPackResponse)
-getBoardPack_ByForumId params board_name _ByForumId = handleError <$> getAt (map qp params ++ map qp [ByForumId _ByForumId]) ["board_pack", board_name]
+getBoardPack_ByForumId params board_name _ByForumId = handleError <$> getAt (map qp params <> map qp [ByForumId _ByForumId]) ["board_pack", board_name]
 
 getBoardPack_ByForumId' :: String -> Int -> ApiEff (Either ApiError BoardPackResponse)
 getBoardPack_ByForumId' board_name _ByForumId = handleError <$> getAt [ByForumId _ByForumId] ["board_pack", board_name]
 
 getThread_ByBoardId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError ThreadResponse)
-getThread_ByBoardId params thread_name _ByBoardId = handleError <$> getAt (map qp params ++ map qp [ByBoardId _ByBoardId]) ["thread", thread_name]
+getThread_ByBoardId params thread_name _ByBoardId = handleError <$> getAt (map qp params <> map qp [ByBoardId _ByBoardId]) ["thread", thread_name]
 
 getThread_ByBoardId' :: String -> Int -> ApiEff (Either ApiError ThreadResponse)
 getThread_ByBoardId' thread_name _ByBoardId = handleError <$> getAt [ByBoardId _ByBoardId] ["thread", thread_name]
 
 getThreadPack_ByBoardId :: forall qp. QueryParam qp => Array qp -> String -> Int -> ApiEff (Either ApiError ThreadPackResponse)
-getThreadPack_ByBoardId params thread_name _ByBoardId = handleError <$> getAt (map qp params ++ map qp [ByBoardId _ByBoardId]) ["thread_pack", thread_name]
+getThreadPack_ByBoardId params thread_name _ByBoardId = handleError <$> getAt (map qp params <> map qp [ByBoardId _ByBoardId]) ["thread_pack", thread_name]
 
 getThreadPack_ByBoardId' :: String -> Int -> ApiEff (Either ApiError ThreadPackResponse)
 getThreadPack_ByBoardId' thread_name _ByBoardId = handleError <$> getAt [ByBoardId _ByBoardId] ["thread_pack", thread_name]

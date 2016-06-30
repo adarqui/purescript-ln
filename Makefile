@@ -12,3 +12,4 @@ tests:
 
 bower:
 	bower install
+	rsync -av ../purescript-foreign-extra/src/ ./bower_components/purescript-foreign/src/

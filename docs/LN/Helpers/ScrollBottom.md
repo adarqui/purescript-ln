@@ -1,11 +1,5 @@
 ## Module LN.Helpers.ScrollBottom
 
-#### `scrollBottomImpl`
-
-``` purescript
-scrollBottomImpl :: forall e. Fn1 String (Eff (dom :: DOM | e) Unit)
-```
-
 #### `scrollBottom`
 
 ``` purescript

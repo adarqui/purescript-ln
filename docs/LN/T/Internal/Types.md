@@ -1,5 +1,24 @@
 ## Module LN.T.Internal.Types
 
+#### `ACL`
+
+``` purescript
+data ACL
+  = ACL_Grant Permissions
+  | ACL_Deny
+```
+
+##### Instances
+``` purescript
+EncodeJson ACL
+DecodeJson ACL
+Requestable ACL
+Respondable ACL
+IsForeign ACL
+Show ACL
+Eq ACL
+```
+
 #### `ApiRequest`
 
 ``` purescript
@@ -26,7 +45,7 @@ type ApiRequestR = { comment :: Maybe String, guard :: Int }
 #### `_ApiRequest`
 
 ``` purescript
-_ApiRequest :: LensP ApiRequest { comment :: Maybe String, guard :: Int }
+_ApiRequest :: Lens' ApiRequest { comment :: Maybe String, guard :: Int }
 ```
 
 #### `mkApiRequest`
@@ -67,7 +86,7 @@ type ApiResponseR = { id :: Int, userId :: Int, key :: String, comment :: Maybe 
 #### `_ApiResponse`
 
 ``` purescript
-_ApiResponse :: LensP ApiResponse { id :: Int, userId :: Int, key :: String, comment :: Maybe String, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+_ApiResponse :: Lens' ApiResponse { id :: Int, userId :: Int, key :: String, comment :: Maybe String, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `mkApiResponse`
@@ -108,7 +127,7 @@ type ApiResponsesR = { apiResponses :: Array ApiResponse }
 #### `_ApiResponses`
 
 ``` purescript
-_ApiResponses :: LensP ApiResponses { apiResponses :: Array ApiResponse }
+_ApiResponses :: Lens' ApiResponses { apiResponses :: Array ApiResponse }
 ```
 
 #### `mkApiResponses`
@@ -149,7 +168,7 @@ type BoardRequestR = { displayName :: String, description :: Maybe String, isAno
 #### `_BoardRequest`
 
 ``` purescript
-_BoardRequest :: LensP BoardRequest { displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, guard :: Int }
+_BoardRequest :: Lens' BoardRequest { displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, guard :: Int }
 ```
 
 #### `mkBoardRequest`
@@ -168,7 +187,7 @@ unwrapBoardRequest :: BoardRequest -> { displayName :: String, description :: Ma
 
 ``` purescript
 newtype BoardResponse
-  = BoardResponse { id :: Int, userId :: Int, forumId :: Int, parentId :: Maybe Int, name :: String, displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+  = BoardResponse { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, parentId :: Maybe Int, name :: String, displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 ##### Instances
@@ -184,25 +203,25 @@ Show BoardResponse
 #### `BoardResponseR`
 
 ``` purescript
-type BoardResponseR = { id :: Int, userId :: Int, forumId :: Int, parentId :: Maybe Int, name :: String, displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+type BoardResponseR = { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, parentId :: Maybe Int, name :: String, displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `_BoardResponse`
 
 ``` purescript
-_BoardResponse :: LensP BoardResponse { id :: Int, userId :: Int, forumId :: Int, parentId :: Maybe Int, name :: String, displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_BoardResponse :: Lens' BoardResponse { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, parentId :: Maybe Int, name :: String, displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkBoardResponse`
 
 ``` purescript
-mkBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> String -> (Maybe String) -> Boolean -> Boolean -> Boolean -> (Array String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardResponse
+mkBoardResponse :: Int -> Int -> Int -> Int -> (Maybe Int) -> String -> String -> (Maybe String) -> Boolean -> Boolean -> Boolean -> (Array String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardResponse
 ```
 
 #### `unwrapBoardResponse`
 
 ``` purescript
-unwrapBoardResponse :: BoardResponse -> { id :: Int, userId :: Int, forumId :: Int, parentId :: Maybe Int, name :: String, displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+unwrapBoardResponse :: BoardResponse -> { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, parentId :: Maybe Int, name :: String, displayName :: String, description :: Maybe String, isAnonymous :: Boolean, canCreateSubBoards :: Boolean, canCreateThreads :: Boolean, suggestedTags :: Array String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `BoardResponses`
@@ -231,7 +250,7 @@ type BoardResponsesR = { boardResponses :: Array BoardResponse }
 #### `_BoardResponses`
 
 ``` purescript
-_BoardResponses :: LensP BoardResponses { boardResponses :: Array BoardResponse }
+_BoardResponses :: Lens' BoardResponses { boardResponses :: Array BoardResponse }
 ```
 
 #### `mkBoardResponses`
@@ -272,7 +291,7 @@ type BoardStatResponseR = { boardId :: Int, threads :: Int, threadPosts :: Int, 
 #### `_BoardStatResponse`
 
 ``` purescript
-_BoardStatResponse :: LensP BoardStatResponse { boardId :: Int, threads :: Int, threadPosts :: Int, views :: Int }
+_BoardStatResponse :: Lens' BoardStatResponse { boardId :: Int, threads :: Int, threadPosts :: Int, views :: Int }
 ```
 
 #### `mkBoardStatResponse`
@@ -313,7 +332,7 @@ type BoardStatResponsesR = { boardStatResponses :: Array BoardStatResponse }
 #### `_BoardStatResponses`
 
 ``` purescript
-_BoardStatResponses :: LensP BoardStatResponses { boardStatResponses :: Array BoardStatResponse }
+_BoardStatResponses :: Lens' BoardStatResponses { boardStatResponses :: Array BoardStatResponse }
 ```
 
 #### `mkBoardStatResponses`
@@ -354,7 +373,7 @@ type BucketRequestR = { displayName :: String, description :: Maybe String, scor
 #### `_BucketRequest`
 
 ``` purescript
-_BucketRequest :: LensP BucketRequest { displayName :: String, description :: Maybe String, scoreLo :: Int, scoreHi :: Int, leurons :: Array Int, resources :: Array Int, categories :: Array String, filters :: Array Int, guard :: Int }
+_BucketRequest :: Lens' BucketRequest { displayName :: String, description :: Maybe String, scoreLo :: Int, scoreHi :: Int, leurons :: Array Int, resources :: Array Int, categories :: Array String, filters :: Array Int, guard :: Int }
 ```
 
 #### `mkBucketRequest`
@@ -395,7 +414,7 @@ type BucketResponseR = { id :: Int, userId :: Int, name :: String, displayName :
 #### `_BucketResponse`
 
 ``` purescript
-_BucketResponse :: LensP BucketResponse { id :: Int, userId :: Int, name :: String, displayName :: String, description :: Maybe String, scoreLo :: Int, scoreHi :: Int, leurons :: Array Int, resources :: Array Int, categories :: Array String, filters :: Array Int, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_BucketResponse :: Lens' BucketResponse { id :: Int, userId :: Int, name :: String, displayName :: String, description :: Maybe String, scoreLo :: Int, scoreHi :: Int, leurons :: Array Int, resources :: Array Int, categories :: Array String, filters :: Array Int, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkBucketResponse`
@@ -436,7 +455,7 @@ type BucketResponsesR = { bucketResponses :: Array BucketResponse }
 #### `_BucketResponses`
 
 ``` purescript
-_BucketResponses :: LensP BucketResponses { bucketResponses :: Array BucketResponse }
+_BucketResponses :: Lens' BucketResponses { bucketResponses :: Array BucketResponse }
 ```
 
 #### `mkBucketResponses`
@@ -477,7 +496,7 @@ type CountResponseR = { id :: Int, n :: Int }
 #### `_CountResponse`
 
 ``` purescript
-_CountResponse :: LensP CountResponse { id :: Int, n :: Int }
+_CountResponse :: Lens' CountResponse { id :: Int, n :: Int }
 ```
 
 #### `mkCountResponse`
@@ -518,7 +537,7 @@ type CountResponsesR = { countResponses :: Array CountResponse }
 #### `_CountResponses`
 
 ``` purescript
-_CountResponses :: LensP CountResponses { countResponses :: Array CountResponse }
+_CountResponses :: Lens' CountResponses { countResponses :: Array CountResponse }
 ```
 
 #### `mkCountResponses`
@@ -565,7 +584,7 @@ type EmptyRequestR = { value :: Boolean }
 #### `_EmptyRequest`
 
 ``` purescript
-_EmptyRequest :: LensP EmptyRequest { value :: Boolean }
+_EmptyRequest :: Lens' EmptyRequest { value :: Boolean }
 ```
 
 #### `mkEmptyRequest`
@@ -606,7 +625,7 @@ type EmptyResponseR = { id :: Int, userId :: Int, value :: Boolean, createdAt ::
 #### `_EmptyResponse`
 
 ``` purescript
-_EmptyResponse :: LensP EmptyResponse { id :: Int, userId :: Int, value :: Boolean, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+_EmptyResponse :: Lens' EmptyResponse { id :: Int, userId :: Int, value :: Boolean, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `mkEmptyResponse`
@@ -647,7 +666,7 @@ type EmptyResponsesR = { emptyResponses :: Array EmptyResponse }
 #### `_EmptyResponses`
 
 ``` purescript
-_EmptyResponses :: LensP EmptyResponses { emptyResponses :: Array EmptyResponse }
+_EmptyResponses :: Lens' EmptyResponses { emptyResponses :: Array EmptyResponse }
 ```
 
 #### `mkEmptyResponses`
@@ -700,11 +719,38 @@ IsForeign Ent
 Show Ent
 ```
 
+#### `ApplicationError`
+
+``` purescript
+data ApplicationError
+  = Error_Empty
+  | Error_NotFound
+  | Error_PermissionDenied
+  | Error_Visibility
+  | Error_Membership
+  | Error_Validation String
+  | Error_NotImplemented
+  | Error_InvalidArguments String
+  | Error_Unexpected
+  | Error_Unknown
+```
+
+##### Instances
+``` purescript
+EncodeJson ApplicationError
+DecodeJson ApplicationError
+Requestable ApplicationError
+Respondable ApplicationError
+IsForeign ApplicationError
+Show ApplicationError
+Eq ApplicationError
+```
+
 #### `ForumRequest`
 
 ``` purescript
 newtype ForumRequest
-  = ForumRequest { displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
+  = ForumRequest { displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, recentThreadsLimit :: Int, recentPostsLimit :: Int, motwLimit :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
 ```
 
 ##### Instances
@@ -720,32 +766,32 @@ Show ForumRequest
 #### `ForumRequestR`
 
 ``` purescript
-type ForumRequestR = { displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
+type ForumRequestR = { displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, recentThreadsLimit :: Int, recentPostsLimit :: Int, motwLimit :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
 ```
 
 #### `_ForumRequest`
 
 ``` purescript
-_ForumRequest :: LensP ForumRequest { displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
+_ForumRequest :: Lens' ForumRequest { displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, recentThreadsLimit :: Int, recentPostsLimit :: Int, motwLimit :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
 ```
 
 #### `mkForumRequest`
 
 ``` purescript
-mkForumRequest :: String -> (Maybe String) -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Int -> ForumRequest
+mkForumRequest :: String -> (Maybe String) -> Int -> Int -> Int -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Int -> ForumRequest
 ```
 
 #### `unwrapForumRequest`
 
 ``` purescript
-unwrapForumRequest :: ForumRequest -> { displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
+unwrapForumRequest :: ForumRequest -> { displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, recentThreadsLimit :: Int, recentPostsLimit :: Int, motwLimit :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
 ```
 
 #### `ForumResponse`
 
 ``` purescript
 newtype ForumResponse
-  = ForumResponse { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+  = ForumResponse { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, recentThreadsLimit :: Int, recentPostsLimit :: Int, motwLimit :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 ##### Instances
@@ -761,25 +807,25 @@ Show ForumResponse
 #### `ForumResponseR`
 
 ``` purescript
-type ForumResponseR = { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+type ForumResponseR = { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, recentThreadsLimit :: Int, recentPostsLimit :: Int, motwLimit :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `_ForumResponse`
 
 ``` purescript
-_ForumResponse :: LensP ForumResponse { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_ForumResponse :: Lens' ForumResponse { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, recentThreadsLimit :: Int, recentPostsLimit :: Int, motwLimit :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkForumResponse`
 
 ``` purescript
-mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
+mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Int -> Int -> Int -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
 ```
 
 #### `unwrapForumResponse`
 
 ``` purescript
-unwrapForumResponse :: ForumResponse -> { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+unwrapForumResponse :: ForumResponse -> { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, threadsPerBoard :: Int, threadPostsPerThread :: Int, recentThreadsLimit :: Int, recentPostsLimit :: Int, motwLimit :: Int, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `ForumResponses`
@@ -808,7 +854,7 @@ type ForumResponsesR = { forumResponses :: Array ForumResponse }
 #### `_ForumResponses`
 
 ``` purescript
-_ForumResponses :: LensP ForumResponses { forumResponses :: Array ForumResponse }
+_ForumResponses :: Lens' ForumResponses { forumResponses :: Array ForumResponse }
 ```
 
 #### `mkForumResponses`
@@ -849,7 +895,7 @@ type ForumStatResponseR = { forumId :: Int, boards :: Int, threads :: Int, threa
 #### `_ForumStatResponse`
 
 ``` purescript
-_ForumStatResponse :: LensP ForumStatResponse { forumId :: Int, boards :: Int, threads :: Int, threadPosts :: Int, views :: Int }
+_ForumStatResponse :: Lens' ForumStatResponse { forumId :: Int, boards :: Int, threads :: Int, threadPosts :: Int, views :: Int }
 ```
 
 #### `mkForumStatResponse`
@@ -890,7 +936,7 @@ type ForumStatResponsesR = { forumStatResponses :: Array ForumStatResponse }
 #### `_ForumStatResponses`
 
 ``` purescript
-_ForumStatResponses :: LensP ForumStatResponses { forumStatResponses :: Array ForumStatResponse }
+_ForumStatResponses :: Lens' ForumStatResponses { forumStatResponses :: Array ForumStatResponse }
 ```
 
 #### `mkForumStatResponses`
@@ -931,7 +977,7 @@ type GlobalGroupRequestR = { displayName :: String, description :: Maybe String,
 #### `_GlobalGroupRequest`
 
 ``` purescript
-_GlobalGroupRequest :: LensP GlobalGroupRequest { displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
+_GlobalGroupRequest :: Lens' GlobalGroupRequest { displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
 ```
 
 #### `mkGlobalGroupRequest`
@@ -972,7 +1018,7 @@ type GlobalGroupResponseR = { id :: Int, userId :: Int, name :: String, displayN
 #### `_GlobalGroupResponse`
 
 ``` purescript
-_GlobalGroupResponse :: LensP GlobalGroupResponse { id :: Int, userId :: Int, name :: String, displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_GlobalGroupResponse :: Lens' GlobalGroupResponse { id :: Int, userId :: Int, name :: String, displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkGlobalGroupResponse`
@@ -1013,7 +1059,7 @@ type GlobalGroupResponsesR = { globalGroupResponses :: Array GlobalGroupResponse
 #### `_GlobalGroupResponses`
 
 ``` purescript
-_GlobalGroupResponses :: LensP GlobalGroupResponses { globalGroupResponses :: Array GlobalGroupResponse }
+_GlobalGroupResponses :: Lens' GlobalGroupResponses { globalGroupResponses :: Array GlobalGroupResponse }
 ```
 
 #### `mkGlobalGroupResponses`
@@ -1054,7 +1100,7 @@ type GlobalGroupStatResponseR = { groups :: Int }
 #### `_GlobalGroupStatResponse`
 
 ``` purescript
-_GlobalGroupStatResponse :: LensP GlobalGroupStatResponse { groups :: Int }
+_GlobalGroupStatResponse :: Lens' GlobalGroupStatResponse { groups :: Int }
 ```
 
 #### `mkGlobalGroupStatResponse`
@@ -1095,7 +1141,7 @@ type GlobalGroupStatResponsesR = { globalGroupStatResponses :: Array GlobalGroup
 #### `_GlobalGroupStatResponses`
 
 ``` purescript
-_GlobalGroupStatResponses :: LensP GlobalGroupStatResponses { globalGroupStatResponses :: Array GlobalGroupStatResponse }
+_GlobalGroupStatResponses :: Lens' GlobalGroupStatResponses { globalGroupStatResponses :: Array GlobalGroupStatResponse }
 ```
 
 #### `mkGlobalGroupStatResponses`
@@ -1136,7 +1182,7 @@ type GroupRequestR = { guard :: Int }
 #### `_GroupRequest`
 
 ``` purescript
-_GroupRequest :: LensP GroupRequest { guard :: Int }
+_GroupRequest :: Lens' GroupRequest { guard :: Int }
 ```
 
 #### `mkGroupRequest`
@@ -1177,7 +1223,7 @@ type GroupResponseR = { id :: Int, userId :: Int, globalGroupId :: Int, organiza
 #### `_GroupResponse`
 
 ``` purescript
-_GroupResponse :: LensP GroupResponse { id :: Int, userId :: Int, globalGroupId :: Int, organizationId :: Int, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_GroupResponse :: Lens' GroupResponse { id :: Int, userId :: Int, globalGroupId :: Int, organizationId :: Int, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkGroupResponse`
@@ -1218,7 +1264,7 @@ type GroupResponsesR = { groupResponses :: Array GroupResponse }
 #### `_GroupResponses`
 
 ``` purescript
-_GroupResponses :: LensP GroupResponses { groupResponses :: Array GroupResponse }
+_GroupResponses :: Lens' GroupResponses { groupResponses :: Array GroupResponse }
 ```
 
 #### `mkGroupResponses`
@@ -1259,7 +1305,7 @@ type GroupStatResponseR = { members :: Int }
 #### `_GroupStatResponse`
 
 ``` purescript
-_GroupStatResponse :: LensP GroupStatResponse { members :: Int }
+_GroupStatResponse :: Lens' GroupStatResponse { members :: Int }
 ```
 
 #### `mkGroupStatResponse`
@@ -1300,7 +1346,7 @@ type GroupStatResponsesR = { groupStatResponses :: Array GroupStatResponse }
 #### `_GroupStatResponses`
 
 ``` purescript
-_GroupStatResponses :: LensP GroupStatResponses { groupStatResponses :: Array GroupStatResponse }
+_GroupStatResponses :: Lens' GroupStatResponses { groupStatResponses :: Array GroupStatResponse }
 ```
 
 #### `mkGroupStatResponses`
@@ -1341,7 +1387,7 @@ type GroupMemberRequestR = { guard :: Int }
 #### `_GroupMemberRequest`
 
 ``` purescript
-_GroupMemberRequest :: LensP GroupMemberRequest { guard :: Int }
+_GroupMemberRequest :: Lens' GroupMemberRequest { guard :: Int }
 ```
 
 #### `mkGroupMemberRequest`
@@ -1382,7 +1428,7 @@ type GroupMemberResponseR = { id :: Int, userId :: Int, globalGroupId :: Int, cr
 #### `_GroupMemberResponse`
 
 ``` purescript
-_GroupMemberResponse :: LensP GroupMemberResponse { id :: Int, userId :: Int, globalGroupId :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_GroupMemberResponse :: Lens' GroupMemberResponse { id :: Int, userId :: Int, globalGroupId :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkGroupMemberResponse`
@@ -1423,7 +1469,7 @@ type GroupMemberResponsesR = { groupMemberResponses :: Array GroupMemberResponse
 #### `_GroupMemberResponses`
 
 ``` purescript
-_GroupMemberResponses :: LensP GroupMemberResponses { groupMemberResponses :: Array GroupMemberResponse }
+_GroupMemberResponses :: Lens' GroupMemberResponses { groupMemberResponses :: Array GroupMemberResponse }
 ```
 
 #### `mkGroupMemberResponses`
@@ -1498,7 +1544,7 @@ type LeuronRequestR = { dataP :: LeuronData, title :: Maybe String, description 
 #### `_LeuronRequest`
 
 ``` purescript
-_LeuronRequest :: LensP LeuronRequest { dataP :: LeuronData, title :: Maybe String, description :: Maybe String, section :: Maybe String, page :: Maybe String, examples :: Maybe (Array String), strengths :: Maybe (Array String), categories :: DepList String, splits :: Maybe (Array Splits), substitutions :: Maybe (Array Substitutions), tags :: Array String, style :: Maybe (Array String), guard :: Int }
+_LeuronRequest :: Lens' LeuronRequest { dataP :: LeuronData, title :: Maybe String, description :: Maybe String, section :: Maybe String, page :: Maybe String, examples :: Maybe (Array String), strengths :: Maybe (Array String), categories :: DepList String, splits :: Maybe (Array Splits), substitutions :: Maybe (Array Substitutions), tags :: Array String, style :: Maybe (Array String), guard :: Int }
 ```
 
 #### `mkLeuronRequest`
@@ -1539,7 +1585,7 @@ type LeuronResponseR = { id :: Int, userId :: Int, resourceId :: Int, dataP :: L
 #### `_LeuronResponse`
 
 ``` purescript
-_LeuronResponse :: LensP LeuronResponse { id :: Int, userId :: Int, resourceId :: Int, dataP :: LeuronData, title :: Maybe String, description :: Maybe String, section :: Maybe String, page :: Maybe String, examples :: Maybe (Array String), strengths :: Maybe (Array String), categories :: DepList String, splits :: Maybe (Array Splits), substitutions :: Maybe (Array Substitutions), tags :: Array String, style :: Maybe (Array String), active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_LeuronResponse :: Lens' LeuronResponse { id :: Int, userId :: Int, resourceId :: Int, dataP :: LeuronData, title :: Maybe String, description :: Maybe String, section :: Maybe String, page :: Maybe String, examples :: Maybe (Array String), strengths :: Maybe (Array String), categories :: DepList String, splits :: Maybe (Array Splits), substitutions :: Maybe (Array Substitutions), tags :: Array String, style :: Maybe (Array String), active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkLeuronResponse`
@@ -1580,7 +1626,7 @@ type LeuronResponsesR = { leuronResponses :: Array LeuronResponse }
 #### `_LeuronResponses`
 
 ``` purescript
-_LeuronResponses :: LensP LeuronResponses { leuronResponses :: Array LeuronResponse }
+_LeuronResponses :: Lens' LeuronResponses { leuronResponses :: Array LeuronResponse }
 ```
 
 #### `mkLeuronResponses`
@@ -1621,7 +1667,7 @@ type LeuronStatResponseR = { leuronId :: Int, likes :: Int, neutral :: Int, disl
 #### `_LeuronStatResponse`
 
 ``` purescript
-_LeuronStatResponse :: LensP LeuronStatResponse { leuronId :: Int, likes :: Int, neutral :: Int, dislikes :: Int, stars :: Int, views :: Int }
+_LeuronStatResponse :: Lens' LeuronStatResponse { leuronId :: Int, likes :: Int, neutral :: Int, dislikes :: Int, stars :: Int, views :: Int }
 ```
 
 #### `mkLeuronStatResponse`
@@ -1662,7 +1708,7 @@ type LeuronStatResponsesR = { leuronStatResponses :: Array LeuronStatResponse }
 #### `_LeuronStatResponses`
 
 ``` purescript
-_LeuronStatResponses :: LensP LeuronStatResponses { leuronStatResponses :: Array LeuronStatResponse }
+_LeuronStatResponses :: Lens' LeuronStatResponses { leuronStatResponses :: Array LeuronStatResponse }
 ```
 
 #### `mkLeuronStatResponses`
@@ -1726,7 +1772,7 @@ type LeuronTrainingRequestR = { summary :: LeuronTrainingSummary, guard :: Int }
 #### `_LeuronTrainingRequest`
 
 ``` purescript
-_LeuronTrainingRequest :: LensP LeuronTrainingRequest { summary :: LeuronTrainingSummary, guard :: Int }
+_LeuronTrainingRequest :: Lens' LeuronTrainingRequest { summary :: LeuronTrainingSummary, guard :: Int }
 ```
 
 #### `mkLeuronTrainingRequest`
@@ -1767,7 +1813,7 @@ type LeuronTrainingResponseR = { id :: Int, userId :: Int, leuronId :: Int, summ
 #### `_LeuronTrainingResponse`
 
 ``` purescript
-_LeuronTrainingResponse :: LensP LeuronTrainingResponse { id :: Int, userId :: Int, leuronId :: Int, summary :: LeuronTrainingSummary, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+_LeuronTrainingResponse :: Lens' LeuronTrainingResponse { id :: Int, userId :: Int, leuronId :: Int, summary :: LeuronTrainingSummary, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `mkLeuronTrainingResponse`
@@ -1808,7 +1854,7 @@ type LeuronTrainingResponsesR = { leuronTrainingResponses :: Array LeuronTrainin
 #### `_LeuronTrainingResponses`
 
 ``` purescript
-_LeuronTrainingResponses :: LensP LeuronTrainingResponses { leuronTrainingResponses :: Array LeuronTrainingResponse }
+_LeuronTrainingResponses :: Lens' LeuronTrainingResponses { leuronTrainingResponses :: Array LeuronTrainingResponse }
 ```
 
 #### `mkLeuronTrainingResponses`
@@ -1849,7 +1895,7 @@ type LeuronTrainingStatResponseR = { leuronTrainingId :: Int }
 #### `_LeuronTrainingStatResponse`
 
 ``` purescript
-_LeuronTrainingStatResponse :: LensP LeuronTrainingStatResponse { leuronTrainingId :: Int }
+_LeuronTrainingStatResponse :: Lens' LeuronTrainingStatResponse { leuronTrainingId :: Int }
 ```
 
 #### `mkLeuronTrainingStatResponse`
@@ -1890,7 +1936,7 @@ type LeuronTrainingStatResponsesR = { leuronTrainingStatResponses :: Array Leuro
 #### `_LeuronTrainingStatResponses`
 
 ``` purescript
-_LeuronTrainingStatResponses :: LensP LeuronTrainingStatResponses { leuronTrainingStatResponses :: Array LeuronTrainingStatResponse }
+_LeuronTrainingStatResponses :: Lens' LeuronTrainingStatResponses { leuronTrainingStatResponses :: Array LeuronTrainingStatResponse }
 ```
 
 #### `mkLeuronTrainingStatResponses`
@@ -1950,7 +1996,7 @@ type LikeRequestR = { opt :: LikeOpt, reason :: Maybe String, guard :: Int }
 #### `_LikeRequest`
 
 ``` purescript
-_LikeRequest :: LensP LikeRequest { opt :: LikeOpt, reason :: Maybe String, guard :: Int }
+_LikeRequest :: Lens' LikeRequest { opt :: LikeOpt, reason :: Maybe String, guard :: Int }
 ```
 
 #### `mkLikeRequest`
@@ -1991,7 +2037,7 @@ type LikeResponseR = { id :: Int, ent :: Ent, entId :: Int, userId :: Int, opt :
 #### `_LikeResponse`
 
 ``` purescript
-_LikeResponse :: LensP LikeResponse { id :: Int, ent :: Ent, entId :: Int, userId :: Int, opt :: LikeOpt, score :: Int, reason :: Maybe String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+_LikeResponse :: Lens' LikeResponse { id :: Int, ent :: Ent, entId :: Int, userId :: Int, opt :: LikeOpt, score :: Int, reason :: Maybe String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `mkLikeResponse`
@@ -2032,7 +2078,7 @@ type LikeResponsesR = { likeResponses :: Array LikeResponse }
 #### `_LikeResponses`
 
 ``` purescript
-_LikeResponses :: LensP LikeResponses { likeResponses :: Array LikeResponse }
+_LikeResponses :: Lens' LikeResponses { likeResponses :: Array LikeResponse }
 ```
 
 #### `mkLikeResponses`
@@ -2073,7 +2119,7 @@ type LikeStatResponseR = { ent :: Ent, entId :: Int, score :: Int, like :: Int, 
 #### `_LikeStatResponse`
 
 ``` purescript
-_LikeStatResponse :: LensP LikeStatResponse { ent :: Ent, entId :: Int, score :: Int, like :: Int, neutral :: Int, dislike :: Int }
+_LikeStatResponse :: Lens' LikeStatResponse { ent :: Ent, entId :: Int, score :: Int, like :: Int, neutral :: Int, dislike :: Int }
 ```
 
 #### `mkLikeStatResponse`
@@ -2114,7 +2160,7 @@ type LikeStatResponsesR = { likeStatResponses :: Array LikeStatResponse }
 #### `_LikeStatResponses`
 
 ``` purescript
-_LikeStatResponses :: LensP LikeStatResponses { likeStatResponses :: Array LikeStatResponse }
+_LikeStatResponses :: Lens' LikeStatResponses { likeStatResponses :: Array LikeStatResponse }
 ```
 
 #### `mkLikeStatResponses`
@@ -2220,7 +2266,7 @@ type FactR = { text :: String }
 #### `_Fact`
 
 ``` purescript
-_Fact :: LensP Fact { text :: String }
+_Fact :: Lens' Fact { text :: String }
 ```
 
 #### `mkFact`
@@ -2261,7 +2307,7 @@ type FactListR = { fact :: String, list :: Array String }
 #### `_FactList`
 
 ``` purescript
-_FactList :: LensP FactList { fact :: String, list :: Array String }
+_FactList :: Lens' FactList { fact :: String, list :: Array String }
 ```
 
 #### `mkFactList`
@@ -2302,7 +2348,7 @@ type CardR = { front :: String, back :: String }
 #### `_Card`
 
 ``` purescript
-_Card :: LensP Card { front :: String, back :: String }
+_Card :: Lens' Card { front :: String, back :: String }
 ```
 
 #### `mkCard`
@@ -2343,7 +2389,7 @@ type DCardR = { front :: String, back :: String }
 #### `_DCard`
 
 ``` purescript
-_DCard :: LensP DCard { front :: String, back :: String }
+_DCard :: Lens' DCard { front :: String, back :: String }
 ```
 
 #### `mkDCard`
@@ -2384,7 +2430,7 @@ type DCardXR = { front :: Array String, back :: Array String }
 #### `_DCardX`
 
 ``` purescript
-_DCardX :: LensP DCardX { front :: Array String, back :: Array String }
+_DCardX :: Lens' DCardX { front :: Array String, back :: Array String }
 ```
 
 #### `mkDCardX`
@@ -2425,7 +2471,7 @@ type AcronymR = { abbreviation :: String, meaning :: String }
 #### `_Acronym`
 
 ``` purescript
-_Acronym :: LensP Acronym { abbreviation :: String, meaning :: String }
+_Acronym :: Lens' Acronym { abbreviation :: String, meaning :: String }
 ```
 
 #### `mkAcronym`
@@ -2466,7 +2512,7 @@ type SynonymR = { a :: String, b :: String }
 #### `_Synonym`
 
 ``` purescript
-_Synonym :: LensP Synonym { a :: String, b :: String }
+_Synonym :: Lens' Synonym { a :: String, b :: String }
 ```
 
 #### `mkSynonym`
@@ -2507,7 +2553,7 @@ type AntonymR = { a :: String, b :: String }
 #### `_Antonym`
 
 ``` purescript
-_Antonym :: LensP Antonym { a :: String, b :: String }
+_Antonym :: Lens' Antonym { a :: String, b :: String }
 ```
 
 #### `mkAntonym`
@@ -2548,7 +2594,7 @@ type TemplateR = { template :: String, values :: Array TemplateValue }
 #### `_Template`
 
 ``` purescript
-_Template :: LensP Template { template :: String, values :: Array TemplateValue }
+_Template :: Lens' Template { template :: String, values :: Array TemplateValue }
 ```
 
 #### `mkTemplate`
@@ -2595,7 +2641,7 @@ type ImageAssociationR = { imageUrl :: Array String, assocBy :: Array String, as
 #### `_ImageAssociation`
 
 ``` purescript
-_ImageAssociation :: LensP ImageAssociation { imageUrl :: Array String, assocBy :: Array String, assocResult :: Array String }
+_ImageAssociation :: Lens' ImageAssociation { imageUrl :: Array String, assocBy :: Array String, assocResult :: Array String }
 ```
 
 #### `mkImageAssociation`
@@ -2636,7 +2682,7 @@ type ScriptR = { title :: String, desc :: String, url :: String }
 #### `_Script`
 
 ``` purescript
-_Script :: LensP Script { title :: String, desc :: String, url :: String }
+_Script :: Lens' Script { title :: String, desc :: String, url :: String }
 ```
 
 #### `mkScript`
@@ -2695,7 +2741,7 @@ type LinearDemoR = { label :: String, content :: Array LinearDemoNode }
 #### `_LinearDemo`
 
 ``` purescript
-_LinearDemo :: LensP LinearDemo { label :: String, content :: Array LinearDemoNode }
+_LinearDemo :: Lens' LinearDemo { label :: String, content :: Array LinearDemoNode }
 ```
 
 #### `mkLinearDemo`
@@ -2736,7 +2782,7 @@ type QAR = { question :: String, answer :: String }
 #### `_QA`
 
 ``` purescript
-_QA :: LensP QA { question :: String, answer :: String }
+_QA :: Lens' QA { question :: String, answer :: String }
 ```
 
 #### `mkQA`
@@ -2777,7 +2823,7 @@ type TableR = { title :: String, columns :: Array String, rows :: Array (Array (
 #### `_Table`
 
 ``` purescript
-_Table :: LensP Table { title :: String, columns :: Array String, rows :: Array (Array (Maybe String)) }
+_Table :: Lens' Table { title :: String, columns :: Array String, rows :: Array (Array (Maybe String)) }
 ```
 
 #### `mkTable`
@@ -2839,7 +2885,7 @@ type OrganizationRequestR = { displayName :: String, description :: Maybe String
 #### `_OrganizationRequest`
 
 ``` purescript
-_OrganizationRequest :: LensP OrganizationRequest { displayName :: String, description :: Maybe String, company :: String, location :: String, email :: String, membership :: Membership, tags :: Array String, icon :: Maybe String, visibility :: Visibility, guard :: Int }
+_OrganizationRequest :: Lens' OrganizationRequest { displayName :: String, description :: Maybe String, company :: String, location :: String, email :: String, membership :: Membership, tags :: Array String, icon :: Maybe String, visibility :: Visibility, guard :: Int }
 ```
 
 #### `mkOrganizationRequest`
@@ -2880,7 +2926,7 @@ type OrganizationResponseR = { id :: Int, userId :: Int, name :: String, display
 #### `_OrganizationResponse`
 
 ``` purescript
-_OrganizationResponse :: LensP OrganizationResponse { id :: Int, userId :: Int, name :: String, displayName :: String, description :: Maybe String, company :: String, location :: String, email :: String, emailMD5 :: String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_OrganizationResponse :: Lens' OrganizationResponse { id :: Int, userId :: Int, name :: String, displayName :: String, description :: Maybe String, company :: String, location :: String, email :: String, emailMD5 :: String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkOrganizationResponse`
@@ -2921,7 +2967,7 @@ type OrganizationResponsesR = { organizationResponses :: Array OrganizationRespo
 #### `_OrganizationResponses`
 
 ``` purescript
-_OrganizationResponses :: LensP OrganizationResponses { organizationResponses :: Array OrganizationResponse }
+_OrganizationResponses :: Lens' OrganizationResponses { organizationResponses :: Array OrganizationResponse }
 ```
 
 #### `mkOrganizationResponses`
@@ -2962,7 +3008,7 @@ type OrganizationStatResponseR = { organizationId :: Int, teams :: Int, members 
 #### `_OrganizationStatResponse`
 
 ``` purescript
-_OrganizationStatResponse :: LensP OrganizationStatResponse { organizationId :: Int, teams :: Int, members :: Int, forums :: Int, boards :: Int, threads :: Int, threadPosts :: Int, views :: Int }
+_OrganizationStatResponse :: Lens' OrganizationStatResponse { organizationId :: Int, teams :: Int, members :: Int, forums :: Int, boards :: Int, threads :: Int, threadPosts :: Int, views :: Int }
 ```
 
 #### `mkOrganizationStatResponse`
@@ -3003,7 +3049,7 @@ type OrganizationStatResponsesR = { organizationStatResponses :: Array Organizat
 #### `_OrganizationStatResponses`
 
 ``` purescript
-_OrganizationStatResponses :: LensP OrganizationStatResponses { organizationStatResponses :: Array OrganizationStatResponse }
+_OrganizationStatResponses :: Lens' OrganizationStatResponses { organizationStatResponses :: Array OrganizationStatResponse }
 ```
 
 #### `mkOrganizationStatResponses`
@@ -3073,12 +3119,18 @@ data Param
   | ByParentId Int
   | ByParentsIds (Array Int)
   | ByParentName String
+  | BySelf Boolean
   | Timestamp Date
   | UnixTimestamp Int
   | CreatedAtTimestamp Date
   | CreatedAtUnixTimestamp Int
   | RealIP String
   | IP String
+  | WithOrganization Boolean
+  | WithForum Boolean
+  | WithBoard Boolean
+  | WithThread Boolean
+  | WithResource Boolean
 ```
 
 ##### Instances
@@ -3146,12 +3198,18 @@ data ParamTag
   | ParamTag_ByParentId
   | ParamTag_ByParentsIds
   | ParamTag_ByParentName
+  | ParamTag_BySelf
   | ParamTag_Timestamp
   | ParamTag_UnixTimestamp
   | ParamTag_CreatedAtTimestamp
   | ParamTag_CreatedAtUnixTimestamp
   | ParamTag_RealIP
   | ParamTag_IP
+  | ParamTag_WithOrganization
+  | ParamTag_WithForum
+  | ParamTag_WithBoard
+  | ParamTag_WithThread
+  | ParamTag_WithResource
 ```
 
 ##### Instances
@@ -3212,6 +3270,34 @@ IsForeign OrderBy
 Show OrderBy
 ```
 
+#### `Permission`
+
+``` purescript
+data Permission
+  = Perm_Create
+  | Perm_Read
+  | Perm_Update
+  | Perm_Delete
+  | Perm_Execute
+```
+
+##### Instances
+``` purescript
+EncodeJson Permission
+DecodeJson Permission
+Requestable Permission
+Respondable Permission
+IsForeign Permission
+Show Permission
+Eq Permission
+```
+
+#### `Permissions`
+
+``` purescript
+type Permissions = Array Permission
+```
+
 #### `PmRequest`
 
 ``` purescript
@@ -3238,7 +3324,7 @@ type PmRequestR = { subject :: String, body :: String, guard :: Int }
 #### `_PmRequest`
 
 ``` purescript
-_PmRequest :: LensP PmRequest { subject :: String, body :: String, guard :: Int }
+_PmRequest :: Lens' PmRequest { subject :: String, body :: String, guard :: Int }
 ```
 
 #### `mkPmRequest`
@@ -3279,7 +3365,7 @@ type PmResponseR = { id :: Int, userId :: Int, toUserId :: Int, subject :: Strin
 #### `_PmResponse`
 
 ``` purescript
-_PmResponse :: LensP PmResponse { id :: Int, userId :: Int, toUserId :: Int, subject :: String, body :: String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_PmResponse :: Lens' PmResponse { id :: Int, userId :: Int, toUserId :: Int, subject :: String, body :: String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkPmResponse`
@@ -3320,7 +3406,7 @@ type PmResponsesR = { pmResponses :: Array PmResponse }
 #### `_PmResponses`
 
 ``` purescript
-_PmResponses :: LensP PmResponses { pmResponses :: Array PmResponse }
+_PmResponses :: Lens' PmResponses { pmResponses :: Array PmResponse }
 ```
 
 #### `mkPmResponses`
@@ -3361,7 +3447,7 @@ type PmInRequestR = { label :: Maybe String, isRead :: Boolean, isStarred :: Boo
 #### `_PmInRequest`
 
 ``` purescript
-_PmInRequest :: LensP PmInRequest { label :: Maybe String, isRead :: Boolean, isStarred :: Boolean, guard :: Int }
+_PmInRequest :: Lens' PmInRequest { label :: Maybe String, isRead :: Boolean, isStarred :: Boolean, guard :: Int }
 ```
 
 #### `mkPmInRequest`
@@ -3402,7 +3488,7 @@ type PmInResponseR = { id :: Int, pmId :: Int, userId :: Int, label :: Maybe Str
 #### `_PmInResponse`
 
 ``` purescript
-_PmInResponse :: LensP PmInResponse { id :: Int, pmId :: Int, userId :: Int, label :: Maybe String, isRead :: Boolean, isStarred :: Boolean, isNew :: Boolean, isSaved :: Boolean, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+_PmInResponse :: Lens' PmInResponse { id :: Int, pmId :: Int, userId :: Int, label :: Maybe String, isRead :: Boolean, isStarred :: Boolean, isNew :: Boolean, isSaved :: Boolean, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `mkPmInResponse`
@@ -3443,7 +3529,7 @@ type PmInResponsesR = { pmInResponses :: Array PmInResponse }
 #### `_PmInResponses`
 
 ``` purescript
-_PmInResponses :: LensP PmInResponses { pmInResponses :: Array PmInResponse }
+_PmInResponses :: Lens' PmInResponses { pmInResponses :: Array PmInResponse }
 ```
 
 #### `mkPmInResponses`
@@ -3484,7 +3570,7 @@ type PmOutRequestR = { label :: Maybe String, guard :: Int }
 #### `_PmOutRequest`
 
 ``` purescript
-_PmOutRequest :: LensP PmOutRequest { label :: Maybe String, guard :: Int }
+_PmOutRequest :: Lens' PmOutRequest { label :: Maybe String, guard :: Int }
 ```
 
 #### `mkPmOutRequest`
@@ -3525,7 +3611,7 @@ type PmOutResponseR = { id :: Int, pmId :: Int, userId :: Int, label :: Maybe St
 #### `_PmOutResponse`
 
 ``` purescript
-_PmOutResponse :: LensP PmOutResponse { id :: Int, pmId :: Int, userId :: Int, label :: Maybe String, isSaved :: Boolean, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+_PmOutResponse :: Lens' PmOutResponse { id :: Int, pmId :: Int, userId :: Int, label :: Maybe String, isSaved :: Boolean, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `mkPmOutResponse`
@@ -3566,7 +3652,7 @@ type PmOutResponsesR = { pmOutResponses :: Array PmOutResponse }
 #### `_PmOutResponses`
 
 ``` purescript
-_PmOutResponses :: LensP PmOutResponses { pmOutResponses :: Array PmOutResponse }
+_PmOutResponses :: Lens' PmOutResponses { pmOutResponses :: Array PmOutResponse }
 ```
 
 #### `mkPmOutResponses`
@@ -3607,7 +3693,7 @@ type ProfileXR = { profileLogin :: String, profileName :: String, profileEmail :
 #### `_ProfileX`
 
 ``` purescript
-_ProfileX :: LensP ProfileX { profileLogin :: String, profileName :: String, profileEmail :: String }
+_ProfileX :: Lens' ProfileX { profileLogin :: String, profileName :: String, profileEmail :: String }
 ```
 
 #### `mkProfileX`
@@ -3646,7 +3732,7 @@ Eq ProfileGender
 
 ``` purescript
 newtype ProfileRequest
-  = ProfileRequest { gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, guard :: Int }
+  = ProfileRequest { gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, debug :: Boolean, guard :: Int }
 ```
 
 ##### Instances
@@ -3662,32 +3748,32 @@ Show ProfileRequest
 #### `ProfileRequestR`
 
 ``` purescript
-type ProfileRequestR = { gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, guard :: Int }
+type ProfileRequestR = { gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, debug :: Boolean, guard :: Int }
 ```
 
 #### `_ProfileRequest`
 
 ``` purescript
-_ProfileRequest :: LensP ProfileRequest { gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, guard :: Int }
+_ProfileRequest :: Lens' ProfileRequest { gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, debug :: Boolean, guard :: Int }
 ```
 
 #### `mkProfileRequest`
 
 ``` purescript
-mkProfileRequest :: ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Int -> ProfileRequest
+mkProfileRequest :: ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Boolean -> Int -> ProfileRequest
 ```
 
 #### `unwrapProfileRequest`
 
 ``` purescript
-unwrapProfileRequest :: ProfileRequest -> { gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, guard :: Int }
+unwrapProfileRequest :: ProfileRequest -> { gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, debug :: Boolean, guard :: Int }
 ```
 
 #### `ProfileResponse`
 
 ``` purescript
 newtype ProfileResponse
-  = ProfileResponse { id :: Int, ent :: Ent, entId :: Int, gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, karmaGood :: Int, karmaBad :: Int, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+  = ProfileResponse { id :: Int, ent :: Ent, entId :: Int, gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, debug :: Boolean, karmaGood :: Int, karmaBad :: Int, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 ##### Instances
@@ -3703,25 +3789,25 @@ Show ProfileResponse
 #### `ProfileResponseR`
 
 ``` purescript
-type ProfileResponseR = { id :: Int, ent :: Ent, entId :: Int, gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, karmaGood :: Int, karmaBad :: Int, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+type ProfileResponseR = { id :: Int, ent :: Ent, entId :: Int, gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, debug :: Boolean, karmaGood :: Int, karmaBad :: Int, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `_ProfileResponse`
 
 ``` purescript
-_ProfileResponse :: LensP ProfileResponse { id :: Int, ent :: Ent, entId :: Int, gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, karmaGood :: Int, karmaBad :: Int, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+_ProfileResponse :: Lens' ProfileResponse { id :: Int, ent :: Ent, entId :: Int, gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, debug :: Boolean, karmaGood :: Int, karmaBad :: Int, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `mkProfileResponse`
 
 ``` purescript
-mkProfileResponse :: Int -> Ent -> Int -> ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ProfileResponse
+mkProfileResponse :: Int -> Ent -> Int -> ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Boolean -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ProfileResponse
 ```
 
 #### `unwrapProfileResponse`
 
 ``` purescript
-unwrapProfileResponse :: ProfileResponse -> { id :: Int, ent :: Ent, entId :: Int, gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, karmaGood :: Int, karmaBad :: Int, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+unwrapProfileResponse :: ProfileResponse -> { id :: Int, ent :: Ent, entId :: Int, gender :: ProfileGender, birthdate :: Date, website :: Maybe String, location :: Maybe String, signature :: Maybe String, debug :: Boolean, karmaGood :: Int, karmaBad :: Int, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `ProfileResponses`
@@ -3750,7 +3836,7 @@ type ProfileResponsesR = { profileResponses :: Array ProfileResponse }
 #### `_ProfileResponses`
 
 ``` purescript
-_ProfileResponses :: LensP ProfileResponses { profileResponses :: Array ProfileResponse }
+_ProfileResponses :: Lens' ProfileResponses { profileResponses :: Array ProfileResponse }
 ```
 
 #### `mkProfileResponses`
@@ -3791,7 +3877,7 @@ type ReminderRequestR = { dataP :: String, guard :: Int }
 #### `_ReminderRequest`
 
 ``` purescript
-_ReminderRequest :: LensP ReminderRequest { dataP :: String, guard :: Int }
+_ReminderRequest :: Lens' ReminderRequest { dataP :: String, guard :: Int }
 ```
 
 #### `mkReminderRequest`
@@ -3832,7 +3918,7 @@ type ReminderResponseR = { id :: Int, userId :: Int, parentFolderId :: Int, data
 #### `_ReminderResponse`
 
 ``` purescript
-_ReminderResponse :: LensP ReminderResponse { id :: Int, userId :: Int, parentFolderId :: Int, dataP :: String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_ReminderResponse :: Lens' ReminderResponse { id :: Int, userId :: Int, parentFolderId :: Int, dataP :: String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkReminderResponse`
@@ -3873,7 +3959,7 @@ type ReminderResponsesR = { reminderResponses :: Array ReminderResponse }
 #### `_ReminderResponses`
 
 ``` purescript
-_ReminderResponses :: LensP ReminderResponses { reminderResponses :: Array ReminderResponse }
+_ReminderResponses :: Lens' ReminderResponses { reminderResponses :: Array ReminderResponse }
 ```
 
 #### `mkReminderResponses`
@@ -3914,7 +4000,7 @@ type ReminderFolderRequestR = { displayName :: String, description :: Maybe Stri
 #### `_ReminderFolderRequest`
 
 ``` purescript
-_ReminderFolderRequest :: LensP ReminderFolderRequest { displayName :: String, description :: Maybe String, visibility :: Visibility, guard :: Int }
+_ReminderFolderRequest :: Lens' ReminderFolderRequest { displayName :: String, description :: Maybe String, visibility :: Visibility, guard :: Int }
 ```
 
 #### `mkReminderFolderRequest`
@@ -3955,7 +4041,7 @@ type ReminderFolderResponseR = { id :: Int, userId :: Int, parentFolderId :: May
 #### `_ReminderFolderResponse`
 
 ``` purescript
-_ReminderFolderResponse :: LensP ReminderFolderResponse { id :: Int, userId :: Int, parentFolderId :: Maybe Int, name :: String, displayName :: String, visibility :: Visibility, description :: Maybe String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_ReminderFolderResponse :: Lens' ReminderFolderResponse { id :: Int, userId :: Int, parentFolderId :: Maybe Int, name :: String, displayName :: String, visibility :: Visibility, description :: Maybe String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkReminderFolderResponse`
@@ -3996,7 +4082,7 @@ type ReminderFolderResponsesR = { reminderFolderResponses :: Array ReminderFolde
 #### `_ReminderFolderResponses`
 
 ``` purescript
-_ReminderFolderResponses :: LensP ReminderFolderResponses { reminderFolderResponses :: Array ReminderFolderResponse }
+_ReminderFolderResponses :: Lens' ReminderFolderResponses { reminderFolderResponses :: Array ReminderFolderResponse }
 ```
 
 #### `mkReminderFolderResponses`
@@ -4080,7 +4166,7 @@ type ResourceRequestR = { displayName :: String, description :: String, source :
 #### `_ResourceRequest`
 
 ``` purescript
-_ResourceRequest :: LensP ResourceRequest { displayName :: String, description :: String, source :: ResourceType, author :: Maybe (Array String), prerequisites :: DepList String, categories :: DepList String, visibility :: Visibility, counter :: Int, version :: Maybe String, urls :: Maybe (Array String), icon :: Maybe String, tags :: Array String, guard :: Int }
+_ResourceRequest :: Lens' ResourceRequest { displayName :: String, description :: String, source :: ResourceType, author :: Maybe (Array String), prerequisites :: DepList String, categories :: DepList String, visibility :: Visibility, counter :: Int, version :: Maybe String, urls :: Maybe (Array String), icon :: Maybe String, tags :: Array String, guard :: Int }
 ```
 
 #### `mkResourceRequest`
@@ -4121,7 +4207,7 @@ type ResourceResponseR = { id :: Int, userId :: Int, name :: String, displayName
 #### `_ResourceResponse`
 
 ``` purescript
-_ResourceResponse :: LensP ResourceResponse { id :: Int, userId :: Int, name :: String, displayName :: String, description :: String, source :: ResourceType, author :: Maybe (Array String), prerequisites :: DepList String, categories :: DepList String, visibility :: Visibility, counter :: Int, version :: Maybe String, urls :: Maybe (Array String), icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_ResourceResponse :: Lens' ResourceResponse { id :: Int, userId :: Int, name :: String, displayName :: String, description :: String, source :: ResourceType, author :: Maybe (Array String), prerequisites :: DepList String, categories :: DepList String, visibility :: Visibility, counter :: Int, version :: Maybe String, urls :: Maybe (Array String), icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkResourceResponse`
@@ -4162,7 +4248,7 @@ type ResourceResponsesR = { resourceResponses :: Array ResourceResponse }
 #### `_ResourceResponses`
 
 ``` purescript
-_ResourceResponses :: LensP ResourceResponses { resourceResponses :: Array ResourceResponse }
+_ResourceResponses :: Lens' ResourceResponses { resourceResponses :: Array ResourceResponse }
 ```
 
 #### `mkResourceResponses`
@@ -4203,7 +4289,7 @@ type ResourceStatResponseR = { resourceId :: Int, leurons :: Int, likes :: Int, 
 #### `_ResourceStatResponse`
 
 ``` purescript
-_ResourceStatResponse :: LensP ResourceStatResponse { resourceId :: Int, leurons :: Int, likes :: Int, neutral :: Int, dislikes :: Int, stars :: Int, views :: Int }
+_ResourceStatResponse :: Lens' ResourceStatResponse { resourceId :: Int, leurons :: Int, likes :: Int, neutral :: Int, dislikes :: Int, stars :: Int, views :: Int }
 ```
 
 #### `mkResourceStatResponse`
@@ -4244,7 +4330,7 @@ type ResourceStatResponsesR = { resourceStatResponses :: Array ResourceStatRespo
 #### `_ResourceStatResponses`
 
 ``` purescript
-_ResourceStatResponses :: LensP ResourceStatResponses { resourceStatResponses :: Array ResourceStatResponse }
+_ResourceStatResponses :: Lens' ResourceStatResponses { resourceStatResponses :: Array ResourceStatResponse }
 ```
 
 #### `mkResourceStatResponses`
@@ -4385,7 +4471,7 @@ type StarRequestR = { reason :: Maybe String, guard :: Int }
 #### `_StarRequest`
 
 ``` purescript
-_StarRequest :: LensP StarRequest { reason :: Maybe String, guard :: Int }
+_StarRequest :: Lens' StarRequest { reason :: Maybe String, guard :: Int }
 ```
 
 #### `mkStarRequest`
@@ -4426,7 +4512,7 @@ type StarResponseR = { id :: Int, ent :: Ent, entId :: Int, userId :: Int, reaso
 #### `_StarResponse`
 
 ``` purescript
-_StarResponse :: LensP StarResponse { id :: Int, ent :: Ent, entId :: Int, userId :: Int, reason :: Maybe String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+_StarResponse :: Lens' StarResponse { id :: Int, ent :: Ent, entId :: Int, userId :: Int, reason :: Maybe String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `mkStarResponse`
@@ -4467,7 +4553,7 @@ type StarResponsesR = { starResponses :: Array StarResponse }
 #### `_StarResponses`
 
 ``` purescript
-_StarResponses :: LensP StarResponses { starResponses :: Array StarResponse }
+_StarResponses :: Lens' StarResponses { starResponses :: Array StarResponse }
 ```
 
 #### `mkStarResponses`
@@ -4508,7 +4594,7 @@ type StarStatResponseR = { ent :: Ent, entId :: Int, stars :: Int }
 #### `_StarStatResponse`
 
 ``` purescript
-_StarStatResponse :: LensP StarStatResponse { ent :: Ent, entId :: Int, stars :: Int }
+_StarStatResponse :: Lens' StarStatResponse { ent :: Ent, entId :: Int, stars :: Int }
 ```
 
 #### `mkStarStatResponse`
@@ -4549,7 +4635,7 @@ type StarStatResponsesR = { starStatResponses :: Array StarStatResponse }
 #### `_StarStatResponses`
 
 ``` purescript
-_StarStatResponses :: LensP StarStatResponses { starStatResponses :: Array StarStatResponse }
+_StarStatResponses :: Lens' StarStatResponses { starStatResponses :: Array StarStatResponse }
 ```
 
 #### `mkStarStatResponses`
@@ -4564,11 +4650,30 @@ mkStarStatResponses :: (Array StarStatResponse) -> StarStatResponses
 unwrapStarStatResponses :: StarStatResponses -> { starStatResponses :: Array StarStatResponse }
 ```
 
+#### `SystemTeam`
+
+``` purescript
+data SystemTeam
+  = Team_Owners
+  | Team_Members
+```
+
+##### Instances
+``` purescript
+EncodeJson SystemTeam
+DecodeJson SystemTeam
+Requestable SystemTeam
+Respondable SystemTeam
+IsForeign SystemTeam
+Show SystemTeam
+Eq SystemTeam
+```
+
 #### `TeamRequest`
 
 ``` purescript
 newtype TeamRequest
-  = TeamRequest { displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
+  = TeamRequest { membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
 ```
 
 ##### Instances
@@ -4584,32 +4689,32 @@ Show TeamRequest
 #### `TeamRequestR`
 
 ``` purescript
-type TeamRequestR = { displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
+type TeamRequestR = { membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
 ```
 
 #### `_TeamRequest`
 
 ``` purescript
-_TeamRequest :: LensP TeamRequest { displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
+_TeamRequest :: Lens' TeamRequest { membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
 ```
 
 #### `mkTeamRequest`
 
 ``` purescript
-mkTeamRequest :: String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Int -> TeamRequest
+mkTeamRequest :: Membership -> (Maybe String) -> (Array String) -> Visibility -> Int -> TeamRequest
 ```
 
 #### `unwrapTeamRequest`
 
 ``` purescript
-unwrapTeamRequest :: TeamRequest -> { displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
+unwrapTeamRequest :: TeamRequest -> { membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, guard :: Int }
 ```
 
 #### `TeamResponse`
 
 ``` purescript
 newtype TeamResponse
-  = TeamResponse { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+  = TeamResponse { id :: Int, userId :: Int, orgId :: Int, system :: SystemTeam, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 ##### Instances
@@ -4625,25 +4730,25 @@ Show TeamResponse
 #### `TeamResponseR`
 
 ``` purescript
-type TeamResponseR = { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+type TeamResponseR = { id :: Int, userId :: Int, orgId :: Int, system :: SystemTeam, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `_TeamResponse`
 
 ``` purescript
-_TeamResponse :: LensP TeamResponse { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_TeamResponse :: Lens' TeamResponse { id :: Int, userId :: Int, orgId :: Int, system :: SystemTeam, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkTeamResponse`
 
 ``` purescript
-mkTeamResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamResponse
+mkTeamResponse :: Int -> Int -> Int -> SystemTeam -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamResponse
 ```
 
 #### `unwrapTeamResponse`
 
 ``` purescript
-unwrapTeamResponse :: TeamResponse -> { id :: Int, userId :: Int, orgId :: Int, name :: String, displayName :: String, description :: Maybe String, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+unwrapTeamResponse :: TeamResponse -> { id :: Int, userId :: Int, orgId :: Int, system :: SystemTeam, membership :: Membership, icon :: Maybe String, tags :: Array String, visibility :: Visibility, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `TeamResponses`
@@ -4672,7 +4777,7 @@ type TeamResponsesR = { teamResponses :: Array TeamResponse }
 #### `_TeamResponses`
 
 ``` purescript
-_TeamResponses :: LensP TeamResponses { teamResponses :: Array TeamResponse }
+_TeamResponses :: Lens' TeamResponses { teamResponses :: Array TeamResponse }
 ```
 
 #### `mkTeamResponses`
@@ -4713,7 +4818,7 @@ type TeamStatResponseR = { members :: Int }
 #### `_TeamStatResponse`
 
 ``` purescript
-_TeamStatResponse :: LensP TeamStatResponse { members :: Int }
+_TeamStatResponse :: Lens' TeamStatResponse { members :: Int }
 ```
 
 #### `mkTeamStatResponse`
@@ -4754,7 +4859,7 @@ type TeamStatResponsesR = { teamStatResponses :: Array TeamStatResponse }
 #### `_TeamStatResponses`
 
 ``` purescript
-_TeamStatResponses :: LensP TeamStatResponses { teamStatResponses :: Array TeamStatResponse }
+_TeamStatResponses :: Lens' TeamStatResponses { teamStatResponses :: Array TeamStatResponse }
 ```
 
 #### `mkTeamStatResponses`
@@ -4795,7 +4900,7 @@ type TeamMemberRequestR = { guard :: Int }
 #### `_TeamMemberRequest`
 
 ``` purescript
-_TeamMemberRequest :: LensP TeamMemberRequest { guard :: Int }
+_TeamMemberRequest :: Lens' TeamMemberRequest { guard :: Int }
 ```
 
 #### `mkTeamMemberRequest`
@@ -4814,7 +4919,7 @@ unwrapTeamMemberRequest :: TeamMemberRequest -> { guard :: Int }
 
 ``` purescript
 newtype TeamMemberResponse
-  = TeamMemberResponse { id :: Int, userId :: Int, teamId :: Int, isAccepted :: Boolean, acceptedAt :: Maybe Date, isBlocked :: Boolean, blockedAt :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+  = TeamMemberResponse { id :: Int, userId :: Int, orgId :: Int, teamId :: Int, isAccepted :: Boolean, acceptedAt :: Maybe Date, isBlocked :: Boolean, blockedAt :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 ##### Instances
@@ -4830,25 +4935,25 @@ Show TeamMemberResponse
 #### `TeamMemberResponseR`
 
 ``` purescript
-type TeamMemberResponseR = { id :: Int, userId :: Int, teamId :: Int, isAccepted :: Boolean, acceptedAt :: Maybe Date, isBlocked :: Boolean, blockedAt :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+type TeamMemberResponseR = { id :: Int, userId :: Int, orgId :: Int, teamId :: Int, isAccepted :: Boolean, acceptedAt :: Maybe Date, isBlocked :: Boolean, blockedAt :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `_TeamMemberResponse`
 
 ``` purescript
-_TeamMemberResponse :: LensP TeamMemberResponse { id :: Int, userId :: Int, teamId :: Int, isAccepted :: Boolean, acceptedAt :: Maybe Date, isBlocked :: Boolean, blockedAt :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_TeamMemberResponse :: Lens' TeamMemberResponse { id :: Int, userId :: Int, orgId :: Int, teamId :: Int, isAccepted :: Boolean, acceptedAt :: Maybe Date, isBlocked :: Boolean, blockedAt :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkTeamMemberResponse`
 
 ``` purescript
-mkTeamMemberResponse :: Int -> Int -> Int -> Boolean -> (Maybe Date) -> Boolean -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamMemberResponse
+mkTeamMemberResponse :: Int -> Int -> Int -> Int -> Boolean -> (Maybe Date) -> Boolean -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamMemberResponse
 ```
 
 #### `unwrapTeamMemberResponse`
 
 ``` purescript
-unwrapTeamMemberResponse :: TeamMemberResponse -> { id :: Int, userId :: Int, teamId :: Int, isAccepted :: Boolean, acceptedAt :: Maybe Date, isBlocked :: Boolean, blockedAt :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+unwrapTeamMemberResponse :: TeamMemberResponse -> { id :: Int, userId :: Int, orgId :: Int, teamId :: Int, isAccepted :: Boolean, acceptedAt :: Maybe Date, isBlocked :: Boolean, blockedAt :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `TeamMemberResponses`
@@ -4877,7 +4982,7 @@ type TeamMemberResponsesR = { teamMemberResponses :: Array TeamMemberResponse }
 #### `_TeamMemberResponses`
 
 ``` purescript
-_TeamMemberResponses :: LensP TeamMemberResponses { teamMemberResponses :: Array TeamMemberResponse }
+_TeamMemberResponses :: Lens' TeamMemberResponses { teamMemberResponses :: Array TeamMemberResponse }
 ```
 
 #### `mkTeamMemberResponses`
@@ -4935,7 +5040,7 @@ type TeamMemberStatResponsesR = { teamMemberStatResponses :: Array TeamMemberSta
 #### `_TeamMemberStatResponses`
 
 ``` purescript
-_TeamMemberStatResponses :: LensP TeamMemberStatResponses { teamMemberStatResponses :: Array TeamMemberStatResponse }
+_TeamMemberStatResponses :: Lens' TeamMemberStatResponses { teamMemberStatResponses :: Array TeamMemberStatResponse }
 ```
 
 #### `mkTeamMemberStatResponses`
@@ -4976,7 +5081,7 @@ type TestRequestR = { msg :: String }
 #### `_TestRequest`
 
 ``` purescript
-_TestRequest :: LensP TestRequest { msg :: String }
+_TestRequest :: Lens' TestRequest { msg :: String }
 ```
 
 #### `mkTestRequest`
@@ -5017,7 +5122,7 @@ type TestResponseR = { id :: Int, userId :: Int, msg :: String, createdAt :: May
 #### `_TestResponse`
 
 ``` purescript
-_TestResponse :: LensP TestResponse { id :: Int, userId :: Int, msg :: String, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
+_TestResponse :: Lens' TestResponse { id :: Int, userId :: Int, msg :: String, createdAt :: Maybe Date, modifiedAt :: Maybe Date }
 ```
 
 #### `mkTestResponse`
@@ -5058,7 +5163,7 @@ type TestResponsesR = { testResponses :: Array TestResponse }
 #### `_TestResponses`
 
 ``` purescript
-_TestResponses :: LensP TestResponses { testResponses :: Array TestResponse }
+_TestResponses :: Lens' TestResponses { testResponses :: Array TestResponse }
 ```
 
 #### `mkTestResponses`
@@ -5099,7 +5204,7 @@ type ThreadRequestR = { displayName :: String, description :: Maybe String, stic
 #### `_ThreadRequest`
 
 ``` purescript
-_ThreadRequest :: LensP ThreadRequest { displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, guard :: Int }
+_ThreadRequest :: Lens' ThreadRequest { displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, guard :: Int }
 ```
 
 #### `mkThreadRequest`
@@ -5118,7 +5223,7 @@ unwrapThreadRequest :: ThreadRequest -> { displayName :: String, description :: 
 
 ``` purescript
 newtype ThreadResponse
-  = ThreadResponse { id :: Int, userId :: Int, boardId :: Int, name :: String, displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+  = ThreadResponse { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, boardId :: Int, name :: String, displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 ##### Instances
@@ -5134,25 +5239,25 @@ Show ThreadResponse
 #### `ThreadResponseR`
 
 ``` purescript
-type ThreadResponseR = { id :: Int, userId :: Int, boardId :: Int, name :: String, displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+type ThreadResponseR = { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, boardId :: Int, name :: String, displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `_ThreadResponse`
 
 ``` purescript
-_ThreadResponse :: LensP ThreadResponse { id :: Int, userId :: Int, boardId :: Int, name :: String, displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_ThreadResponse :: Lens' ThreadResponse { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, boardId :: Int, name :: String, displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkThreadResponse`
 
 ``` purescript
-mkThreadResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadResponse
+mkThreadResponse :: Int -> Int -> Int -> Int -> Int -> String -> String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadResponse
 ```
 
 #### `unwrapThreadResponse`
 
 ``` purescript
-unwrapThreadResponse :: ThreadResponse -> { id :: Int, userId :: Int, boardId :: Int, name :: String, displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+unwrapThreadResponse :: ThreadResponse -> { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, boardId :: Int, name :: String, displayName :: String, description :: Maybe String, sticky :: Boolean, locked :: Boolean, poll :: Maybe String, icon :: Maybe String, tags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `ThreadResponses`
@@ -5181,7 +5286,7 @@ type ThreadResponsesR = { threadResponses :: Array ThreadResponse }
 #### `_ThreadResponses`
 
 ``` purescript
-_ThreadResponses :: LensP ThreadResponses { threadResponses :: Array ThreadResponse }
+_ThreadResponses :: Lens' ThreadResponses { threadResponses :: Array ThreadResponse }
 ```
 
 #### `mkThreadResponses`
@@ -5222,7 +5327,7 @@ type ThreadStatResponseR = { threadId :: Int, threadPosts :: Int, views :: Int }
 #### `_ThreadStatResponse`
 
 ``` purescript
-_ThreadStatResponse :: LensP ThreadStatResponse { threadId :: Int, threadPosts :: Int, views :: Int }
+_ThreadStatResponse :: Lens' ThreadStatResponse { threadId :: Int, threadPosts :: Int, views :: Int }
 ```
 
 #### `mkThreadStatResponse`
@@ -5263,7 +5368,7 @@ type ThreadStatResponsesR = { threadStatResponses :: Array ThreadStatResponse }
 #### `_ThreadStatResponses`
 
 ``` purescript
-_ThreadStatResponses :: LensP ThreadStatResponses { threadStatResponses :: Array ThreadStatResponse }
+_ThreadStatResponses :: Lens' ThreadStatResponses { threadStatResponses :: Array ThreadStatResponse }
 ```
 
 #### `mkThreadStatResponses`
@@ -5326,7 +5431,7 @@ type ThreadPostRequestR = { title :: Maybe String, body :: PostData, tags :: Arr
 #### `_ThreadPostRequest`
 
 ``` purescript
-_ThreadPostRequest :: LensP ThreadPostRequest { title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, guard :: Int }
+_ThreadPostRequest :: Lens' ThreadPostRequest { title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, guard :: Int }
 ```
 
 #### `mkThreadPostRequest`
@@ -5345,7 +5450,7 @@ unwrapThreadPostRequest :: ThreadPostRequest -> { title :: Maybe String, body ::
 
 ``` purescript
 newtype ThreadPostResponse
-  = ThreadPostResponse { id :: Int, userId :: Int, threadId :: Int, parentId :: Maybe Int, title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+  = ThreadPostResponse { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, boardId :: Int, threadId :: Int, parentId :: Maybe Int, title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 ##### Instances
@@ -5361,25 +5466,25 @@ Show ThreadPostResponse
 #### `ThreadPostResponseR`
 
 ``` purescript
-type ThreadPostResponseR = { id :: Int, userId :: Int, threadId :: Int, parentId :: Maybe Int, title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+type ThreadPostResponseR = { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, boardId :: Int, threadId :: Int, parentId :: Maybe Int, title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `_ThreadPostResponse`
 
 ``` purescript
-_ThreadPostResponse :: LensP ThreadPostResponse { id :: Int, userId :: Int, threadId :: Int, parentId :: Maybe Int, title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+_ThreadPostResponse :: Lens' ThreadPostResponse { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, boardId :: Int, threadId :: Int, parentId :: Maybe Int, title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkThreadPostResponse`
 
 ``` purescript
-mkThreadPostResponse :: Int -> Int -> Int -> (Maybe Int) -> (Maybe String) -> PostData -> (Array String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostResponse
+mkThreadPostResponse :: Int -> Int -> Int -> Int -> Int -> Int -> (Maybe Int) -> (Maybe String) -> PostData -> (Array String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostResponse
 ```
 
 #### `unwrapThreadPostResponse`
 
 ``` purescript
-unwrapThreadPostResponse :: ThreadPostResponse -> { id :: Int, userId :: Int, threadId :: Int, parentId :: Maybe Int, title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
+unwrapThreadPostResponse :: ThreadPostResponse -> { id :: Int, userId :: Int, orgId :: Int, forumId :: Int, boardId :: Int, threadId :: Int, parentId :: Maybe Int, title :: Maybe String, body :: PostData, tags :: Array String, privateTags :: Array String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedBy :: Maybe Int, modifiedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `ThreadPostResponses`
@@ -5408,7 +5513,7 @@ type ThreadPostResponsesR = { threadPostResponses :: Array ThreadPostResponse }
 #### `_ThreadPostResponses`
 
 ``` purescript
-_ThreadPostResponses :: LensP ThreadPostResponses { threadPostResponses :: Array ThreadPostResponse }
+_ThreadPostResponses :: Lens' ThreadPostResponses { threadPostResponses :: Array ThreadPostResponse }
 ```
 
 #### `mkThreadPostResponses`
@@ -5449,7 +5554,7 @@ type ThreadPostStatResponseR = { threadPostId :: Int, likes :: Int, neutral :: I
 #### `_ThreadPostStatResponse`
 
 ``` purescript
-_ThreadPostStatResponse :: LensP ThreadPostStatResponse { threadPostId :: Int, likes :: Int, neutral :: Int, dislikes :: Int, stars :: Int, views :: Int }
+_ThreadPostStatResponse :: Lens' ThreadPostStatResponse { threadPostId :: Int, likes :: Int, neutral :: Int, dislikes :: Int, stars :: Int, views :: Int }
 ```
 
 #### `mkThreadPostStatResponse`
@@ -5490,7 +5595,7 @@ type ThreadPostStatResponsesR = { threadPostStatResponses :: Array ThreadPostSta
 #### `_ThreadPostStatResponses`
 
 ``` purescript
-_ThreadPostStatResponses :: LensP ThreadPostStatResponses { threadPostStatResponses :: Array ThreadPostStatResponse }
+_ThreadPostStatResponses :: Lens' ThreadPostStatResponses { threadPostStatResponses :: Array ThreadPostStatResponse }
 ```
 
 #### `mkThreadPostStatResponses`
@@ -5531,7 +5636,7 @@ type UserRequestR = { displayNick :: String, name :: String, email :: String, pl
 #### `_UserRequest`
 
 ``` purescript
-_UserRequest :: LensP UserRequest { displayNick :: String, name :: String, email :: String, plugin :: String, ident :: String, acceptTOS :: Maybe Date }
+_UserRequest :: Lens' UserRequest { displayNick :: String, name :: String, email :: String, plugin :: String, ident :: String, acceptTOS :: Maybe Date }
 ```
 
 #### `mkUserRequest`
@@ -5572,7 +5677,7 @@ type UserResponseR = { id :: Int, nick :: String, displayNick :: String, name ::
 #### `_UserResponse`
 
 ``` purescript
-_UserResponse :: LensP UserResponse { id :: Int, nick :: String, displayNick :: String, name :: String, email :: String, emailMD5 :: String, plugin :: String, ident :: String, acceptTOS :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, deactivatedAt :: Maybe Date, activityAt :: Maybe Date }
+_UserResponse :: Lens' UserResponse { id :: Int, nick :: String, displayNick :: String, name :: String, email :: String, emailMD5 :: String, plugin :: String, ident :: String, acceptTOS :: Maybe Date, active :: Boolean, guard :: Int, createdAt :: Maybe Date, modifiedAt :: Maybe Date, deactivatedAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkUserResponse`
@@ -5613,7 +5718,7 @@ type UserResponsesR = { userResponses :: Array UserResponse }
 #### `_UserResponses`
 
 ``` purescript
-_UserResponses :: LensP UserResponses { userResponses :: Array UserResponse }
+_UserResponses :: Lens' UserResponses { userResponses :: Array UserResponse }
 ```
 
 #### `mkUserResponses`
@@ -5654,7 +5759,7 @@ type UserSanitizedResponseR = { id :: Int, nick :: String, displayNick :: String
 #### `_UserSanitizedResponse`
 
 ``` purescript
-_UserSanitizedResponse :: LensP UserSanitizedResponse { id :: Int, nick :: String, displayNick :: String, emailMD5 :: String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, activityAt :: Maybe Date }
+_UserSanitizedResponse :: Lens' UserSanitizedResponse { id :: Int, nick :: String, displayNick :: String, emailMD5 :: String, active :: Boolean, guard :: Int, createdAt :: Maybe Date, activityAt :: Maybe Date }
 ```
 
 #### `mkUserSanitizedResponse`
@@ -5695,7 +5800,7 @@ type UserSanitizedResponsesR = { userSanitizedResponses :: Array UserSanitizedRe
 #### `_UserSanitizedResponses`
 
 ``` purescript
-_UserSanitizedResponses :: LensP UserSanitizedResponses { userSanitizedResponses :: Array UserSanitizedResponse }
+_UserSanitizedResponses :: Lens' UserSanitizedResponses { userSanitizedResponses :: Array UserSanitizedResponse }
 ```
 
 #### `mkUserSanitizedResponses`
@@ -5736,7 +5841,7 @@ type UserSanitizedStatResponseR = { userId :: Int, threads :: Int, threadPosts :
 #### `_UserSanitizedStatResponse`
 
 ``` purescript
-_UserSanitizedStatResponse :: LensP UserSanitizedStatResponse { userId :: Int, threads :: Int, threadPosts :: Int, respect :: Int, resources :: Int, leurons :: Int, workouts :: Int }
+_UserSanitizedStatResponse :: Lens' UserSanitizedStatResponse { userId :: Int, threads :: Int, threadPosts :: Int, respect :: Int, resources :: Int, leurons :: Int, workouts :: Int }
 ```
 
 #### `mkUserSanitizedStatResponse`
@@ -5777,7 +5882,7 @@ type UserSanitizedStatResponsesR = { userSanitizedStatResponses :: Array UserSan
 #### `_UserSanitizedStatResponses`
 
 ``` purescript
-_UserSanitizedStatResponses :: LensP UserSanitizedStatResponses { userSanitizedStatResponses :: Array UserSanitizedStatResponse }
+_UserSanitizedStatResponses :: Lens' UserSanitizedStatResponses { userSanitizedStatResponses :: Array UserSanitizedStatResponse }
 ```
 
 #### `mkUserSanitizedStatResponses`
@@ -5815,7 +5920,7 @@ Eq Visibility
 
 ``` purescript
 newtype OrganizationPackResponse
-  = OrganizationPackResponse { user :: UserSanitizedResponse, userId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: OrganizationStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean, isMember :: Boolean }
+  = OrganizationPackResponse { user :: UserSanitizedResponse, userId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: OrganizationStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Permissions, teams :: Array SystemTeam }
 ```
 
 ##### Instances
@@ -5831,25 +5936,25 @@ Show OrganizationPackResponse
 #### `OrganizationPackResponseR`
 
 ``` purescript
-type OrganizationPackResponseR = { user :: UserSanitizedResponse, userId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: OrganizationStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean, isMember :: Boolean }
+type OrganizationPackResponseR = { user :: UserSanitizedResponse, userId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: OrganizationStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Permissions, teams :: Array SystemTeam }
 ```
 
 #### `_OrganizationPackResponse`
 
 ``` purescript
-_OrganizationPackResponse :: LensP OrganizationPackResponse { user :: UserSanitizedResponse, userId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: OrganizationStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean, isMember :: Boolean }
+_OrganizationPackResponse :: Lens' OrganizationPackResponse { user :: UserSanitizedResponse, userId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: OrganizationStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Permissions, teams :: Array SystemTeam }
 ```
 
 #### `mkOrganizationPackResponse`
 
 ``` purescript
-mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> Boolean -> OrganizationPackResponse
+mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> (Array SystemTeam) -> OrganizationPackResponse
 ```
 
 #### `unwrapOrganizationPackResponse`
 
 ``` purescript
-unwrapOrganizationPackResponse :: OrganizationPackResponse -> { user :: UserSanitizedResponse, userId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: OrganizationStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean, isMember :: Boolean }
+unwrapOrganizationPackResponse :: OrganizationPackResponse -> { user :: UserSanitizedResponse, userId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: OrganizationStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Array Permission, teams :: Array SystemTeam }
 ```
 
 #### `OrganizationPackResponses`
@@ -5878,7 +5983,7 @@ type OrganizationPackResponsesR = { organizationPackResponses :: Array Organizat
 #### `_OrganizationPackResponses`
 
 ``` purescript
-_OrganizationPackResponses :: LensP OrganizationPackResponses { organizationPackResponses :: Array OrganizationPackResponse }
+_OrganizationPackResponses :: Lens' OrganizationPackResponses { organizationPackResponses :: Array OrganizationPackResponse }
 ```
 
 #### `mkOrganizationPackResponses`
@@ -5897,7 +6002,7 @@ unwrapOrganizationPackResponses :: OrganizationPackResponses -> { organizationPa
 
 ``` purescript
 newtype TeamPackResponse
-  = TeamPackResponse { user :: UserSanitizedResponse, userId :: Int, team :: TeamResponse, teamId :: Int, stat :: TeamStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+  = TeamPackResponse { user :: UserSanitizedResponse, userId :: Int, team :: TeamResponse, teamId :: Int, stat :: TeamStatResponse, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -5913,25 +6018,25 @@ Show TeamPackResponse
 #### `TeamPackResponseR`
 
 ``` purescript
-type TeamPackResponseR = { user :: UserSanitizedResponse, userId :: Int, team :: TeamResponse, teamId :: Int, stat :: TeamStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+type TeamPackResponseR = { user :: UserSanitizedResponse, userId :: Int, team :: TeamResponse, teamId :: Int, stat :: TeamStatResponse, permissions :: Permissions }
 ```
 
 #### `_TeamPackResponse`
 
 ``` purescript
-_TeamPackResponse :: LensP TeamPackResponse { user :: UserSanitizedResponse, userId :: Int, team :: TeamResponse, teamId :: Int, stat :: TeamStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+_TeamPackResponse :: Lens' TeamPackResponse { user :: UserSanitizedResponse, userId :: Int, team :: TeamResponse, teamId :: Int, stat :: TeamStatResponse, permissions :: Permissions }
 ```
 
 #### `mkTeamPackResponse`
 
 ``` purescript
-mkTeamPackResponse :: UserSanitizedResponse -> Int -> TeamResponse -> Int -> TeamStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> TeamPackResponse
+mkTeamPackResponse :: UserSanitizedResponse -> Int -> TeamResponse -> Int -> TeamStatResponse -> Permissions -> TeamPackResponse
 ```
 
 #### `unwrapTeamPackResponse`
 
 ``` purescript
-unwrapTeamPackResponse :: TeamPackResponse -> { user :: UserSanitizedResponse, userId :: Int, team :: TeamResponse, teamId :: Int, stat :: TeamStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+unwrapTeamPackResponse :: TeamPackResponse -> { user :: UserSanitizedResponse, userId :: Int, team :: TeamResponse, teamId :: Int, stat :: TeamStatResponse, permissions :: Array Permission }
 ```
 
 #### `TeamPackResponses`
@@ -5960,7 +6065,7 @@ type TeamPackResponsesR = { teamPackResponses :: Array TeamPackResponse }
 #### `_TeamPackResponses`
 
 ``` purescript
-_TeamPackResponses :: LensP TeamPackResponses { teamPackResponses :: Array TeamPackResponse }
+_TeamPackResponses :: Lens' TeamPackResponses { teamPackResponses :: Array TeamPackResponse }
 ```
 
 #### `mkTeamPackResponses`
@@ -5979,7 +6084,7 @@ unwrapTeamPackResponses :: TeamPackResponses -> { teamPackResponses :: Array Tea
 
 ``` purescript
 newtype TeamMemberPackResponse
-  = TeamMemberPackResponse { user :: UserSanitizedResponse, userId :: Int, teamMember :: TeamMemberResponse, teamMemberId :: Int, isOwner :: Boolean }
+  = TeamMemberPackResponse { user :: UserSanitizedResponse, userId :: Int, teamMember :: TeamMemberResponse, teamMemberId :: Int, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -5995,25 +6100,25 @@ Show TeamMemberPackResponse
 #### `TeamMemberPackResponseR`
 
 ``` purescript
-type TeamMemberPackResponseR = { user :: UserSanitizedResponse, userId :: Int, teamMember :: TeamMemberResponse, teamMemberId :: Int, isOwner :: Boolean }
+type TeamMemberPackResponseR = { user :: UserSanitizedResponse, userId :: Int, teamMember :: TeamMemberResponse, teamMemberId :: Int, permissions :: Permissions }
 ```
 
 #### `_TeamMemberPackResponse`
 
 ``` purescript
-_TeamMemberPackResponse :: LensP TeamMemberPackResponse { user :: UserSanitizedResponse, userId :: Int, teamMember :: TeamMemberResponse, teamMemberId :: Int, isOwner :: Boolean }
+_TeamMemberPackResponse :: Lens' TeamMemberPackResponse { user :: UserSanitizedResponse, userId :: Int, teamMember :: TeamMemberResponse, teamMemberId :: Int, permissions :: Permissions }
 ```
 
 #### `mkTeamMemberPackResponse`
 
 ``` purescript
-mkTeamMemberPackResponse :: UserSanitizedResponse -> Int -> TeamMemberResponse -> Int -> Boolean -> TeamMemberPackResponse
+mkTeamMemberPackResponse :: UserSanitizedResponse -> Int -> TeamMemberResponse -> Int -> Permissions -> TeamMemberPackResponse
 ```
 
 #### `unwrapTeamMemberPackResponse`
 
 ``` purescript
-unwrapTeamMemberPackResponse :: TeamMemberPackResponse -> { user :: UserSanitizedResponse, userId :: Int, teamMember :: TeamMemberResponse, teamMemberId :: Int, isOwner :: Boolean }
+unwrapTeamMemberPackResponse :: TeamMemberPackResponse -> { user :: UserSanitizedResponse, userId :: Int, teamMember :: TeamMemberResponse, teamMemberId :: Int, permissions :: Array Permission }
 ```
 
 #### `TeamMemberPackResponses`
@@ -6042,7 +6147,7 @@ type TeamMemberPackResponsesR = { teamMemberPackResponses :: Array TeamMemberPac
 #### `_TeamMemberPackResponses`
 
 ``` purescript
-_TeamMemberPackResponses :: LensP TeamMemberPackResponses { teamMemberPackResponses :: Array TeamMemberPackResponse }
+_TeamMemberPackResponses :: Lens' TeamMemberPackResponses { teamMemberPackResponses :: Array TeamMemberPackResponse }
 ```
 
 #### `mkTeamMemberPackResponses`
@@ -6083,7 +6188,7 @@ type UserPackResponseR = { user :: UserResponse, userId :: Int, stat :: UserSani
 #### `_UserPackResponse`
 
 ``` purescript
-_UserPackResponse :: LensP UserPackResponse { user :: UserResponse, userId :: Int, stat :: UserSanitizedStatResponse, profile :: ProfileResponse, profileId :: Int }
+_UserPackResponse :: Lens' UserPackResponse { user :: UserResponse, userId :: Int, stat :: UserSanitizedStatResponse, profile :: ProfileResponse, profileId :: Int }
 ```
 
 #### `mkUserPackResponse`
@@ -6124,7 +6229,7 @@ type UserPackResponsesR = { userPackResponses :: Array UserPackResponse }
 #### `_UserPackResponses`
 
 ``` purescript
-_UserPackResponses :: LensP UserPackResponses { userPackResponses :: Array UserPackResponse }
+_UserPackResponses :: Lens' UserPackResponses { userPackResponses :: Array UserPackResponse }
 ```
 
 #### `mkUserPackResponses`
@@ -6165,7 +6270,7 @@ type UserSanitizedPackResponseR = { user :: UserSanitizedResponse, userId :: Int
 #### `_UserSanitizedPackResponse`
 
 ``` purescript
-_UserSanitizedPackResponse :: LensP UserSanitizedPackResponse { user :: UserSanitizedResponse, userId :: Int, profile :: ProfileResponse, profileId :: Int, stat :: UserSanitizedStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse }
+_UserSanitizedPackResponse :: Lens' UserSanitizedPackResponse { user :: UserSanitizedResponse, userId :: Int, profile :: ProfileResponse, profileId :: Int, stat :: UserSanitizedStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse }
 ```
 
 #### `mkUserSanitizedPackResponse`
@@ -6206,7 +6311,7 @@ type UserSanitizedPackResponsesR = { userSanitizedPackResponses :: Array UserSan
 #### `_UserSanitizedPackResponses`
 
 ``` purescript
-_UserSanitizedPackResponses :: LensP UserSanitizedPackResponses { userSanitizedPackResponses :: Array UserSanitizedPackResponse }
+_UserSanitizedPackResponses :: Lens' UserSanitizedPackResponses { userSanitizedPackResponses :: Array UserSanitizedPackResponse }
 ```
 
 #### `mkUserSanitizedPackResponses`
@@ -6225,7 +6330,7 @@ unwrapUserSanitizedPackResponses :: UserSanitizedPackResponses -> { userSanitize
 
 ``` purescript
 newtype GlobalGroupPackResponse
-  = GlobalGroupPackResponse { user :: UserSanitizedResponse, userId :: Int, globalGroup :: GlobalGroupResponse, globalGroupId :: Int, stat :: GlobalGroupStatResponse, isOwner :: Boolean }
+  = GlobalGroupPackResponse { user :: UserSanitizedResponse, userId :: Int, globalGroup :: GlobalGroupResponse, globalGroupId :: Int, stat :: GlobalGroupStatResponse, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -6241,25 +6346,25 @@ Show GlobalGroupPackResponse
 #### `GlobalGroupPackResponseR`
 
 ``` purescript
-type GlobalGroupPackResponseR = { user :: UserSanitizedResponse, userId :: Int, globalGroup :: GlobalGroupResponse, globalGroupId :: Int, stat :: GlobalGroupStatResponse, isOwner :: Boolean }
+type GlobalGroupPackResponseR = { user :: UserSanitizedResponse, userId :: Int, globalGroup :: GlobalGroupResponse, globalGroupId :: Int, stat :: GlobalGroupStatResponse, permissions :: Permissions }
 ```
 
 #### `_GlobalGroupPackResponse`
 
 ``` purescript
-_GlobalGroupPackResponse :: LensP GlobalGroupPackResponse { user :: UserSanitizedResponse, userId :: Int, globalGroup :: GlobalGroupResponse, globalGroupId :: Int, stat :: GlobalGroupStatResponse, isOwner :: Boolean }
+_GlobalGroupPackResponse :: Lens' GlobalGroupPackResponse { user :: UserSanitizedResponse, userId :: Int, globalGroup :: GlobalGroupResponse, globalGroupId :: Int, stat :: GlobalGroupStatResponse, permissions :: Permissions }
 ```
 
 #### `mkGlobalGroupPackResponse`
 
 ``` purescript
-mkGlobalGroupPackResponse :: UserSanitizedResponse -> Int -> GlobalGroupResponse -> Int -> GlobalGroupStatResponse -> Boolean -> GlobalGroupPackResponse
+mkGlobalGroupPackResponse :: UserSanitizedResponse -> Int -> GlobalGroupResponse -> Int -> GlobalGroupStatResponse -> Permissions -> GlobalGroupPackResponse
 ```
 
 #### `unwrapGlobalGroupPackResponse`
 
 ``` purescript
-unwrapGlobalGroupPackResponse :: GlobalGroupPackResponse -> { user :: UserSanitizedResponse, userId :: Int, globalGroup :: GlobalGroupResponse, globalGroupId :: Int, stat :: GlobalGroupStatResponse, isOwner :: Boolean }
+unwrapGlobalGroupPackResponse :: GlobalGroupPackResponse -> { user :: UserSanitizedResponse, userId :: Int, globalGroup :: GlobalGroupResponse, globalGroupId :: Int, stat :: GlobalGroupStatResponse, permissions :: Array Permission }
 ```
 
 #### `GlobalGroupPackResponses`
@@ -6288,7 +6393,7 @@ type GlobalGroupPackResponsesR = { globalGroupPackResponses :: Array GlobalGroup
 #### `_GlobalGroupPackResponses`
 
 ``` purescript
-_GlobalGroupPackResponses :: LensP GlobalGroupPackResponses { globalGroupPackResponses :: Array GlobalGroupPackResponse }
+_GlobalGroupPackResponses :: Lens' GlobalGroupPackResponses { globalGroupPackResponses :: Array GlobalGroupPackResponse }
 ```
 
 #### `mkGlobalGroupPackResponses`
@@ -6307,7 +6412,7 @@ unwrapGlobalGroupPackResponses :: GlobalGroupPackResponses -> { globalGroupPackR
 
 ``` purescript
 newtype GroupPackResponse
-  = GroupPackResponse { user :: UserSanitizedResponse, userId :: Int, group :: GroupResponse, groupId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: GroupStatResponse, isOwner :: Boolean }
+  = GroupPackResponse { user :: UserSanitizedResponse, userId :: Int, group :: GroupResponse, groupId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: GroupStatResponse, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -6323,25 +6428,25 @@ Show GroupPackResponse
 #### `GroupPackResponseR`
 
 ``` purescript
-type GroupPackResponseR = { user :: UserSanitizedResponse, userId :: Int, group :: GroupResponse, groupId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: GroupStatResponse, isOwner :: Boolean }
+type GroupPackResponseR = { user :: UserSanitizedResponse, userId :: Int, group :: GroupResponse, groupId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: GroupStatResponse, permissions :: Permissions }
 ```
 
 #### `_GroupPackResponse`
 
 ``` purescript
-_GroupPackResponse :: LensP GroupPackResponse { user :: UserSanitizedResponse, userId :: Int, group :: GroupResponse, groupId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: GroupStatResponse, isOwner :: Boolean }
+_GroupPackResponse :: Lens' GroupPackResponse { user :: UserSanitizedResponse, userId :: Int, group :: GroupResponse, groupId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: GroupStatResponse, permissions :: Permissions }
 ```
 
 #### `mkGroupPackResponse`
 
 ``` purescript
-mkGroupPackResponse :: UserSanitizedResponse -> Int -> GroupResponse -> Int -> OrganizationResponse -> Int -> GroupStatResponse -> Boolean -> GroupPackResponse
+mkGroupPackResponse :: UserSanitizedResponse -> Int -> GroupResponse -> Int -> OrganizationResponse -> Int -> GroupStatResponse -> Permissions -> GroupPackResponse
 ```
 
 #### `unwrapGroupPackResponse`
 
 ``` purescript
-unwrapGroupPackResponse :: GroupPackResponse -> { user :: UserSanitizedResponse, userId :: Int, group :: GroupResponse, groupId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: GroupStatResponse, isOwner :: Boolean }
+unwrapGroupPackResponse :: GroupPackResponse -> { user :: UserSanitizedResponse, userId :: Int, group :: GroupResponse, groupId :: Int, organization :: OrganizationResponse, organizationId :: Int, stat :: GroupStatResponse, permissions :: Array Permission }
 ```
 
 #### `GroupPackResponses`
@@ -6370,7 +6475,7 @@ type GroupPackResponsesR = { groupPackResponses :: Array GroupPackResponse }
 #### `_GroupPackResponses`
 
 ``` purescript
-_GroupPackResponses :: LensP GroupPackResponses { groupPackResponses :: Array GroupPackResponse }
+_GroupPackResponses :: Lens' GroupPackResponses { groupPackResponses :: Array GroupPackResponse }
 ```
 
 #### `mkGroupPackResponses`
@@ -6411,7 +6516,7 @@ type GroupMemberPackResponseR = { user :: UserSanitizedResponse, userId :: Int, 
 #### `_GroupMemberPackResponse`
 
 ``` purescript
-_GroupMemberPackResponse :: LensP GroupMemberPackResponse { user :: UserSanitizedResponse, userId :: Int, groupMember :: GroupMemberResponse, groupMemberId :: Int, isOwner :: Boolean }
+_GroupMemberPackResponse :: Lens' GroupMemberPackResponse { user :: UserSanitizedResponse, userId :: Int, groupMember :: GroupMemberResponse, groupMemberId :: Int, isOwner :: Boolean }
 ```
 
 #### `mkGroupMemberPackResponse`
@@ -6452,7 +6557,7 @@ type GroupMemberPackResponsesR = { groupMemberPackResponses :: Array GroupMember
 #### `_GroupMemberPackResponses`
 
 ``` purescript
-_GroupMemberPackResponses :: LensP GroupMemberPackResponses { groupMemberPackResponses :: Array GroupMemberPackResponse }
+_GroupMemberPackResponses :: Lens' GroupMemberPackResponses { groupMemberPackResponses :: Array GroupMemberPackResponse }
 ```
 
 #### `mkGroupMemberPackResponses`
@@ -6471,7 +6576,7 @@ unwrapGroupMemberPackResponses :: GroupMemberPackResponses -> { groupMemberPackR
 
 ``` purescript
 newtype ForumPackResponse
-  = ForumPackResponse { forum :: ForumResponse, forumId :: Int, stat :: ForumStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+  = ForumPackResponse { forum :: ForumResponse, forumId :: Int, stat :: ForumStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, withOrganization :: Maybe OrganizationResponse, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -6487,25 +6592,25 @@ Show ForumPackResponse
 #### `ForumPackResponseR`
 
 ``` purescript
-type ForumPackResponseR = { forum :: ForumResponse, forumId :: Int, stat :: ForumStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+type ForumPackResponseR = { forum :: ForumResponse, forumId :: Int, stat :: ForumStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, withOrganization :: Maybe OrganizationResponse, permissions :: Permissions }
 ```
 
 #### `_ForumPackResponse`
 
 ``` purescript
-_ForumPackResponse :: LensP ForumPackResponse { forum :: ForumResponse, forumId :: Int, stat :: ForumStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+_ForumPackResponse :: Lens' ForumPackResponse { forum :: ForumResponse, forumId :: Int, stat :: ForumStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, withOrganization :: Maybe OrganizationResponse, permissions :: Permissions }
 ```
 
 #### `mkForumPackResponse`
 
 ``` purescript
-mkForumPackResponse :: ForumResponse -> Int -> ForumStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> ForumPackResponse
+mkForumPackResponse :: ForumResponse -> Int -> ForumStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe OrganizationResponse) -> Permissions -> ForumPackResponse
 ```
 
 #### `unwrapForumPackResponse`
 
 ``` purescript
-unwrapForumPackResponse :: ForumPackResponse -> { forum :: ForumResponse, forumId :: Int, stat :: ForumStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+unwrapForumPackResponse :: ForumPackResponse -> { forum :: ForumResponse, forumId :: Int, stat :: ForumStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, withOrganization :: Maybe OrganizationResponse, permissions :: Array Permission }
 ```
 
 #### `ForumPackResponses`
@@ -6534,7 +6639,7 @@ type ForumPackResponsesR = { forumPackResponses :: Array ForumPackResponse }
 #### `_ForumPackResponses`
 
 ``` purescript
-_ForumPackResponses :: LensP ForumPackResponses { forumPackResponses :: Array ForumPackResponse }
+_ForumPackResponses :: Lens' ForumPackResponses { forumPackResponses :: Array ForumPackResponse }
 ```
 
 #### `mkForumPackResponses`
@@ -6553,7 +6658,7 @@ unwrapForumPackResponses :: ForumPackResponses -> { forumPackResponses :: Array 
 
 ``` purescript
 newtype BoardPackResponse
-  = BoardPackResponse { board :: BoardResponse, boardId :: Int, stat :: BoardStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThread :: Maybe ThreadResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, isOwner :: Boolean }
+  = BoardPackResponse { board :: BoardResponse, boardId :: Int, stat :: BoardStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThread :: Maybe ThreadResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -6569,25 +6674,25 @@ Show BoardPackResponse
 #### `BoardPackResponseR`
 
 ``` purescript
-type BoardPackResponseR = { board :: BoardResponse, boardId :: Int, stat :: BoardStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThread :: Maybe ThreadResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, isOwner :: Boolean }
+type BoardPackResponseR = { board :: BoardResponse, boardId :: Int, stat :: BoardStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThread :: Maybe ThreadResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, permissions :: Permissions }
 ```
 
 #### `_BoardPackResponse`
 
 ``` purescript
-_BoardPackResponse :: LensP BoardPackResponse { board :: BoardResponse, boardId :: Int, stat :: BoardStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThread :: Maybe ThreadResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, isOwner :: Boolean }
+_BoardPackResponse :: Lens' BoardPackResponse { board :: BoardResponse, boardId :: Int, stat :: BoardStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThread :: Maybe ThreadResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, permissions :: Permissions }
 ```
 
 #### `mkBoardPackResponse`
 
 ``` purescript
-mkBoardPackResponse :: BoardResponse -> Int -> BoardStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> Boolean -> BoardPackResponse
+mkBoardPackResponse :: BoardResponse -> Int -> BoardStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> (Maybe OrganizationResponse) -> (Maybe ForumResponse) -> Permissions -> BoardPackResponse
 ```
 
 #### `unwrapBoardPackResponse`
 
 ``` purescript
-unwrapBoardPackResponse :: BoardPackResponse -> { board :: BoardResponse, boardId :: Int, stat :: BoardStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThread :: Maybe ThreadResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, isOwner :: Boolean }
+unwrapBoardPackResponse :: BoardPackResponse -> { board :: BoardResponse, boardId :: Int, stat :: BoardStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThread :: Maybe ThreadResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, permissions :: Array Permission }
 ```
 
 #### `BoardPackResponses`
@@ -6616,7 +6721,7 @@ type BoardPackResponsesR = { boardPackResponses :: Array BoardPackResponse }
 #### `_BoardPackResponses`
 
 ``` purescript
-_BoardPackResponses :: LensP BoardPackResponses { boardPackResponses :: Array BoardPackResponse }
+_BoardPackResponses :: Lens' BoardPackResponses { boardPackResponses :: Array BoardPackResponse }
 ```
 
 #### `mkBoardPackResponses`
@@ -6635,7 +6740,7 @@ unwrapBoardPackResponses :: BoardPackResponses -> { boardPackResponses :: Array 
 
 ``` purescript
 newtype ThreadPackResponse
-  = ThreadPackResponse { thread :: ThreadResponse, threadId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, isOwner :: Boolean }
+  = ThreadPackResponse { thread :: ThreadResponse, threadId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, withBoard :: Maybe BoardResponse, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -6651,25 +6756,25 @@ Show ThreadPackResponse
 #### `ThreadPackResponseR`
 
 ``` purescript
-type ThreadPackResponseR = { thread :: ThreadResponse, threadId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, isOwner :: Boolean }
+type ThreadPackResponseR = { thread :: ThreadResponse, threadId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, withBoard :: Maybe BoardResponse, permissions :: Permissions }
 ```
 
 #### `_ThreadPackResponse`
 
 ``` purescript
-_ThreadPackResponse :: LensP ThreadPackResponse { thread :: ThreadResponse, threadId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, isOwner :: Boolean }
+_ThreadPackResponse :: Lens' ThreadPackResponse { thread :: ThreadResponse, threadId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, withBoard :: Maybe BoardResponse, permissions :: Permissions }
 ```
 
 #### `mkThreadPackResponse`
 
 ``` purescript
-mkThreadPackResponse :: ThreadResponse -> Int -> UserSanitizedResponse -> Int -> ThreadStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> Boolean -> ThreadPackResponse
+mkThreadPackResponse :: ThreadResponse -> Int -> UserSanitizedResponse -> Int -> ThreadStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> (Maybe OrganizationResponse) -> (Maybe ForumResponse) -> (Maybe BoardResponse) -> Permissions -> ThreadPackResponse
 ```
 
 #### `unwrapThreadPackResponse`
 
 ``` purescript
-unwrapThreadPackResponse :: ThreadPackResponse -> { thread :: ThreadResponse, threadId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, isOwner :: Boolean }
+unwrapThreadPackResponse :: ThreadPackResponse -> { thread :: ThreadResponse, threadId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, latestThreadPost :: Maybe ThreadPostResponse, latestThreadPostUser :: Maybe UserSanitizedResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, withBoard :: Maybe BoardResponse, permissions :: Array Permission }
 ```
 
 #### `ThreadPackResponses`
@@ -6698,7 +6803,7 @@ type ThreadPackResponsesR = { threadPackResponses :: Array ThreadPackResponse }
 #### `_ThreadPackResponses`
 
 ``` purescript
-_ThreadPackResponses :: LensP ThreadPackResponses { threadPackResponses :: Array ThreadPackResponse }
+_ThreadPackResponses :: Lens' ThreadPackResponses { threadPackResponses :: Array ThreadPackResponse }
 ```
 
 #### `mkThreadPackResponses`
@@ -6717,7 +6822,7 @@ unwrapThreadPackResponses :: ThreadPackResponses -> { threadPackResponses :: Arr
 
 ``` purescript
 newtype ThreadPostPackResponse
-  = ThreadPostPackResponse { threadPost :: ThreadPostResponse, threadPostId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadPostStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+  = ThreadPostPackResponse { threadPost :: ThreadPostResponse, threadPostId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadPostStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, withBoard :: Maybe BoardResponse, withThread :: Maybe ThreadResponse, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -6733,25 +6838,25 @@ Show ThreadPostPackResponse
 #### `ThreadPostPackResponseR`
 
 ``` purescript
-type ThreadPostPackResponseR = { threadPost :: ThreadPostResponse, threadPostId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadPostStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+type ThreadPostPackResponseR = { threadPost :: ThreadPostResponse, threadPostId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadPostStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, withBoard :: Maybe BoardResponse, withThread :: Maybe ThreadResponse, permissions :: Permissions }
 ```
 
 #### `_ThreadPostPackResponse`
 
 ``` purescript
-_ThreadPostPackResponse :: LensP ThreadPostPackResponse { threadPost :: ThreadPostResponse, threadPostId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadPostStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+_ThreadPostPackResponse :: Lens' ThreadPostPackResponse { threadPost :: ThreadPostResponse, threadPostId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadPostStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, withBoard :: Maybe BoardResponse, withThread :: Maybe ThreadResponse, permissions :: Permissions }
 ```
 
 #### `mkThreadPostPackResponse`
 
 ``` purescript
-mkThreadPostPackResponse :: ThreadPostResponse -> Int -> UserSanitizedResponse -> Int -> ThreadPostStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> ThreadPostPackResponse
+mkThreadPostPackResponse :: ThreadPostResponse -> Int -> UserSanitizedResponse -> Int -> ThreadPostStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe OrganizationResponse) -> (Maybe ForumResponse) -> (Maybe BoardResponse) -> (Maybe ThreadResponse) -> Permissions -> ThreadPostPackResponse
 ```
 
 #### `unwrapThreadPostPackResponse`
 
 ``` purescript
-unwrapThreadPostPackResponse :: ThreadPostPackResponse -> { threadPost :: ThreadPostResponse, threadPostId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadPostStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+unwrapThreadPostPackResponse :: ThreadPostPackResponse -> { threadPost :: ThreadPostResponse, threadPostId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ThreadPostStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, withOrganization :: Maybe OrganizationResponse, withForum :: Maybe ForumResponse, withBoard :: Maybe BoardResponse, withThread :: Maybe ThreadResponse, permissions :: Array Permission }
 ```
 
 #### `ThreadPostPackResponses`
@@ -6780,7 +6885,7 @@ type ThreadPostPackResponsesR = { threadPostPackResponses :: Array ThreadPostPac
 #### `_ThreadPostPackResponses`
 
 ``` purescript
-_ThreadPostPackResponses :: LensP ThreadPostPackResponses { threadPostPackResponses :: Array ThreadPostPackResponse }
+_ThreadPostPackResponses :: Lens' ThreadPostPackResponses { threadPostPackResponses :: Array ThreadPostPackResponse }
 ```
 
 #### `mkThreadPostPackResponses`
@@ -6799,7 +6904,7 @@ unwrapThreadPostPackResponses :: ThreadPostPackResponses -> { threadPostPackResp
 
 ``` purescript
 newtype ResourcePackResponse
-  = ResourcePackResponse { resource :: ResourceResponse, resourceId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ResourceStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+  = ResourcePackResponse { resource :: ResourceResponse, resourceId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ResourceStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -6815,25 +6920,25 @@ Show ResourcePackResponse
 #### `ResourcePackResponseR`
 
 ``` purescript
-type ResourcePackResponseR = { resource :: ResourceResponse, resourceId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ResourceStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+type ResourcePackResponseR = { resource :: ResourceResponse, resourceId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ResourceStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Permissions }
 ```
 
 #### `_ResourcePackResponse`
 
 ``` purescript
-_ResourcePackResponse :: LensP ResourcePackResponse { resource :: ResourceResponse, resourceId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ResourceStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+_ResourcePackResponse :: Lens' ResourcePackResponse { resource :: ResourceResponse, resourceId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ResourceStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Permissions }
 ```
 
 #### `mkResourcePackResponse`
 
 ``` purescript
-mkResourcePackResponse :: ResourceResponse -> Int -> UserSanitizedResponse -> Int -> ResourceStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> ResourcePackResponse
+mkResourcePackResponse :: ResourceResponse -> Int -> UserSanitizedResponse -> Int -> ResourceStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> ResourcePackResponse
 ```
 
 #### `unwrapResourcePackResponse`
 
 ``` purescript
-unwrapResourcePackResponse :: ResourcePackResponse -> { resource :: ResourceResponse, resourceId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ResourceStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+unwrapResourcePackResponse :: ResourcePackResponse -> { resource :: ResourceResponse, resourceId :: Int, user :: UserSanitizedResponse, userId :: Int, stat :: ResourceStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Array Permission }
 ```
 
 #### `ResourcePackResponses`
@@ -6862,7 +6967,7 @@ type ResourcePackResponsesR = { resourcePackResponses :: Array ResourcePackRespo
 #### `_ResourcePackResponses`
 
 ``` purescript
-_ResourcePackResponses :: LensP ResourcePackResponses { resourcePackResponses :: Array ResourcePackResponse }
+_ResourcePackResponses :: Lens' ResourcePackResponses { resourcePackResponses :: Array ResourcePackResponse }
 ```
 
 #### `mkResourcePackResponses`
@@ -6881,7 +6986,7 @@ unwrapResourcePackResponses :: ResourcePackResponses -> { resourcePackResponses 
 
 ``` purescript
 newtype LeuronPackResponse
-  = LeuronPackResponse { leuron :: LeuronResponse, leuronId :: Int, user :: UserSanitizedResponse, userId :: Int, training :: LeuronTrainingResponse, stat :: LeuronStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+  = LeuronPackResponse { leuron :: LeuronResponse, leuronId :: Int, user :: UserSanitizedResponse, userId :: Int, training :: LeuronTrainingResponse, stat :: LeuronStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Permissions }
 ```
 
 ##### Instances
@@ -6897,25 +7002,25 @@ Show LeuronPackResponse
 #### `LeuronPackResponseR`
 
 ``` purescript
-type LeuronPackResponseR = { leuron :: LeuronResponse, leuronId :: Int, user :: UserSanitizedResponse, userId :: Int, training :: LeuronTrainingResponse, stat :: LeuronStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+type LeuronPackResponseR = { leuron :: LeuronResponse, leuronId :: Int, user :: UserSanitizedResponse, userId :: Int, training :: LeuronTrainingResponse, stat :: LeuronStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Permissions }
 ```
 
 #### `_LeuronPackResponse`
 
 ``` purescript
-_LeuronPackResponse :: LensP LeuronPackResponse { leuron :: LeuronResponse, leuronId :: Int, user :: UserSanitizedResponse, userId :: Int, training :: LeuronTrainingResponse, stat :: LeuronStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+_LeuronPackResponse :: Lens' LeuronPackResponse { leuron :: LeuronResponse, leuronId :: Int, user :: UserSanitizedResponse, userId :: Int, training :: LeuronTrainingResponse, stat :: LeuronStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Permissions }
 ```
 
 #### `mkLeuronPackResponse`
 
 ``` purescript
-mkLeuronPackResponse :: LeuronResponse -> Int -> UserSanitizedResponse -> Int -> LeuronTrainingResponse -> LeuronStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Boolean -> LeuronPackResponse
+mkLeuronPackResponse :: LeuronResponse -> Int -> UserSanitizedResponse -> Int -> LeuronTrainingResponse -> LeuronStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> LeuronPackResponse
 ```
 
 #### `unwrapLeuronPackResponse`
 
 ``` purescript
-unwrapLeuronPackResponse :: LeuronPackResponse -> { leuron :: LeuronResponse, leuronId :: Int, user :: UserSanitizedResponse, userId :: Int, training :: LeuronTrainingResponse, stat :: LeuronStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, isOwner :: Boolean }
+unwrapLeuronPackResponse :: LeuronPackResponse -> { leuron :: LeuronResponse, leuronId :: Int, user :: UserSanitizedResponse, userId :: Int, training :: LeuronTrainingResponse, stat :: LeuronStatResponse, like :: Maybe LikeResponse, star :: Maybe StarResponse, permissions :: Array Permission }
 ```
 
 #### `LeuronPackResponses`
@@ -6944,7 +7049,7 @@ type LeuronPackResponsesR = { leuronPackResponses :: Array LeuronPackResponse }
 #### `_LeuronPackResponses`
 
 ``` purescript
-_LeuronPackResponses :: LensP LeuronPackResponses { leuronPackResponses :: Array LeuronPackResponse }
+_LeuronPackResponses :: Lens' LeuronPackResponses { leuronPackResponses :: Array LeuronPackResponse }
 ```
 
 #### `mkLeuronPackResponses`
@@ -6957,6 +7062,170 @@ mkLeuronPackResponses :: (Array LeuronPackResponse) -> LeuronPackResponses
 
 ``` purescript
 unwrapLeuronPackResponses :: LeuronPackResponses -> { leuronPackResponses :: Array LeuronPackResponse }
+```
+
+#### `PmInPackResponse`
+
+``` purescript
+newtype PmInPackResponse
+  = PmInPackResponse { pmIn :: PmInResponse, pmInId :: Int, user :: UserSanitizedResponse, userId :: Int }
+```
+
+##### Instances
+``` purescript
+EncodeJson PmInPackResponse
+DecodeJson PmInPackResponse
+Requestable PmInPackResponse
+Respondable PmInPackResponse
+IsForeign PmInPackResponse
+Show PmInPackResponse
+```
+
+#### `PmInPackResponseR`
+
+``` purescript
+type PmInPackResponseR = { pmIn :: PmInResponse, pmInId :: Int, user :: UserSanitizedResponse, userId :: Int }
+```
+
+#### `_PmInPackResponse`
+
+``` purescript
+_PmInPackResponse :: Lens' PmInPackResponse { pmIn :: PmInResponse, pmInId :: Int, user :: UserSanitizedResponse, userId :: Int }
+```
+
+#### `mkPmInPackResponse`
+
+``` purescript
+mkPmInPackResponse :: PmInResponse -> Int -> UserSanitizedResponse -> Int -> PmInPackResponse
+```
+
+#### `unwrapPmInPackResponse`
+
+``` purescript
+unwrapPmInPackResponse :: PmInPackResponse -> { pmIn :: PmInResponse, pmInId :: Int, user :: UserSanitizedResponse, userId :: Int }
+```
+
+#### `PmInPackResponses`
+
+``` purescript
+newtype PmInPackResponses
+  = PmInPackResponses { pmInPackResponses :: Array PmInPackResponse }
+```
+
+##### Instances
+``` purescript
+EncodeJson PmInPackResponses
+DecodeJson PmInPackResponses
+Requestable PmInPackResponses
+Respondable PmInPackResponses
+IsForeign PmInPackResponses
+Show PmInPackResponses
+```
+
+#### `PmInPackResponsesR`
+
+``` purescript
+type PmInPackResponsesR = { pmInPackResponses :: Array PmInPackResponse }
+```
+
+#### `_PmInPackResponses`
+
+``` purescript
+_PmInPackResponses :: Lens' PmInPackResponses { pmInPackResponses :: Array PmInPackResponse }
+```
+
+#### `mkPmInPackResponses`
+
+``` purescript
+mkPmInPackResponses :: (Array PmInPackResponse) -> PmInPackResponses
+```
+
+#### `unwrapPmInPackResponses`
+
+``` purescript
+unwrapPmInPackResponses :: PmInPackResponses -> { pmInPackResponses :: Array PmInPackResponse }
+```
+
+#### `PmOutPackResponse`
+
+``` purescript
+newtype PmOutPackResponse
+  = PmOutPackResponse { pmOut :: PmOutResponse, pmOutId :: Int, user :: UserSanitizedResponse, userId :: Int }
+```
+
+##### Instances
+``` purescript
+EncodeJson PmOutPackResponse
+DecodeJson PmOutPackResponse
+Requestable PmOutPackResponse
+Respondable PmOutPackResponse
+IsForeign PmOutPackResponse
+Show PmOutPackResponse
+```
+
+#### `PmOutPackResponseR`
+
+``` purescript
+type PmOutPackResponseR = { pmOut :: PmOutResponse, pmOutId :: Int, user :: UserSanitizedResponse, userId :: Int }
+```
+
+#### `_PmOutPackResponse`
+
+``` purescript
+_PmOutPackResponse :: Lens' PmOutPackResponse { pmOut :: PmOutResponse, pmOutId :: Int, user :: UserSanitizedResponse, userId :: Int }
+```
+
+#### `mkPmOutPackResponse`
+
+``` purescript
+mkPmOutPackResponse :: PmOutResponse -> Int -> UserSanitizedResponse -> Int -> PmOutPackResponse
+```
+
+#### `unwrapPmOutPackResponse`
+
+``` purescript
+unwrapPmOutPackResponse :: PmOutPackResponse -> { pmOut :: PmOutResponse, pmOutId :: Int, user :: UserSanitizedResponse, userId :: Int }
+```
+
+#### `PmOutPackResponses`
+
+``` purescript
+newtype PmOutPackResponses
+  = PmOutPackResponses { pmOutPackResponses :: Array PmOutPackResponse }
+```
+
+##### Instances
+``` purescript
+EncodeJson PmOutPackResponses
+DecodeJson PmOutPackResponses
+Requestable PmOutPackResponses
+Respondable PmOutPackResponses
+IsForeign PmOutPackResponses
+Show PmOutPackResponses
+```
+
+#### `PmOutPackResponsesR`
+
+``` purescript
+type PmOutPackResponsesR = { pmOutPackResponses :: Array PmOutPackResponse }
+```
+
+#### `_PmOutPackResponses`
+
+``` purescript
+_PmOutPackResponses :: Lens' PmOutPackResponses { pmOutPackResponses :: Array PmOutPackResponse }
+```
+
+#### `mkPmOutPackResponses`
+
+``` purescript
+mkPmOutPackResponses :: (Array PmOutPackResponse) -> PmOutPackResponses
+```
+
+#### `unwrapPmOutPackResponses`
+
+``` purescript
+unwrapPmOutPackResponses :: PmOutPackResponses -> { pmOutPackResponses :: Array PmOutPackResponse }
 ```
 
 #### `a_`
@@ -7167,6 +7436,12 @@ dataP_ :: forall b a r. Lens { dataP :: a | r } { dataP :: b | r } a b
 
 ``` purescript
 deactivatedAt_ :: forall b a r. Lens { deactivatedAt :: a | r } { deactivatedAt :: b | r } a b
+```
+
+#### `debug_`
+
+``` purescript
+debug_ :: forall b a r. Lens { debug :: a | r } { debug :: b | r } a b
 ```
 
 #### `desc_`
@@ -7439,12 +7714,6 @@ isAnonymous_ :: forall b a r. Lens { isAnonymous :: a | r } { isAnonymous :: b |
 isBlocked_ :: forall b a r. Lens { isBlocked :: a | r } { isBlocked :: b | r } a b
 ```
 
-#### `isMember_`
-
-``` purescript
-isMember_ :: forall b a r. Lens { isMember :: a | r } { isMember :: b | r } a b
-```
-
 #### `isNew_`
 
 ``` purescript
@@ -7643,6 +7912,12 @@ modifiedAt_ :: forall b a r. Lens { modifiedAt :: a | r } { modifiedAt :: b | r 
 modifiedBy_ :: forall b a r. Lens { modifiedBy :: a | r } { modifiedBy :: b | r } a b
 ```
 
+#### `motwLimit_`
+
+``` purescript
+motwLimit_ :: forall b a r. Lens { motwLimit :: a | r } { motwLimit :: b | r } a b
+```
+
 #### `msg_`
 
 ``` purescript
@@ -7733,6 +8008,12 @@ parentFolderId_ :: forall b a r. Lens { parentFolderId :: a | r } { parentFolder
 parentId_ :: forall b a r. Lens { parentId :: a | r } { parentId :: b | r } a b
 ```
 
+#### `permissions_`
+
+``` purescript
+permissions_ :: forall b a r. Lens { permissions :: a | r } { permissions :: b | r } a b
+```
+
 #### `plugin_`
 
 ``` purescript
@@ -7745,10 +8026,46 @@ plugin_ :: forall b a r. Lens { plugin :: a | r } { plugin :: b | r } a b
 pmId_ :: forall b a r. Lens { pmId :: a | r } { pmId :: b | r } a b
 ```
 
+#### `pmIn_`
+
+``` purescript
+pmIn_ :: forall b a r. Lens { pmIn :: a | r } { pmIn :: b | r } a b
+```
+
+#### `pmInId_`
+
+``` purescript
+pmInId_ :: forall b a r. Lens { pmInId :: a | r } { pmInId :: b | r } a b
+```
+
+#### `pmInPackResponses_`
+
+``` purescript
+pmInPackResponses_ :: forall b a r. Lens { pmInPackResponses :: a | r } { pmInPackResponses :: b | r } a b
+```
+
 #### `pmInResponses_`
 
 ``` purescript
 pmInResponses_ :: forall b a r. Lens { pmInResponses :: a | r } { pmInResponses :: b | r } a b
+```
+
+#### `pmOut_`
+
+``` purescript
+pmOut_ :: forall b a r. Lens { pmOut :: a | r } { pmOut :: b | r } a b
+```
+
+#### `pmOutId_`
+
+``` purescript
+pmOutId_ :: forall b a r. Lens { pmOutId :: a | r } { pmOutId :: b | r } a b
+```
+
+#### `pmOutPackResponses_`
+
+``` purescript
+pmOutPackResponses_ :: forall b a r. Lens { pmOutPackResponses :: a | r } { pmOutPackResponses :: b | r } a b
 ```
 
 #### `pmOutResponses_`
@@ -7827,6 +8144,18 @@ question_ :: forall b a r. Lens { question :: a | r } { question :: b | r } a b
 
 ``` purescript
 reason_ :: forall b a r. Lens { reason :: a | r } { reason :: b | r } a b
+```
+
+#### `recentPostsLimit_`
+
+``` purescript
+recentPostsLimit_ :: forall b a r. Lens { recentPostsLimit :: a | r } { recentPostsLimit :: b | r } a b
+```
+
+#### `recentThreadsLimit_`
+
+``` purescript
+recentThreadsLimit_ :: forall b a r. Lens { recentThreadsLimit :: a | r } { recentThreadsLimit :: b | r } a b
 ```
 
 #### `reminderFolderResponses_`
@@ -8001,6 +8330,12 @@ suggestedTags_ :: forall b a r. Lens { suggestedTags :: a | r } { suggestedTags 
 
 ``` purescript
 summary_ :: forall b a r. Lens { summary :: a | r } { summary :: b | r } a b
+```
+
+#### `system_`
+
+``` purescript
+system_ :: forall b a r. Lens { system :: a | r } { system :: b | r } a b
 ```
 
 #### `tags_`
@@ -8283,6 +8618,30 @@ visibility_ :: forall b a r. Lens { visibility :: a | r } { visibility :: b | r 
 
 ``` purescript
 website_ :: forall b a r. Lens { website :: a | r } { website :: b | r } a b
+```
+
+#### `withBoard_`
+
+``` purescript
+withBoard_ :: forall b a r. Lens { withBoard :: a | r } { withBoard :: b | r } a b
+```
+
+#### `withForum_`
+
+``` purescript
+withForum_ :: forall b a r. Lens { withForum :: a | r } { withForum :: b | r } a b
+```
+
+#### `withOrganization_`
+
+``` purescript
+withOrganization_ :: forall b a r. Lens { withOrganization :: a | r } { withOrganization :: b | r } a b
+```
+
+#### `withThread_`
+
+``` purescript
+withThread_ :: forall b a r. Lens { withThread :: a | r } { withThread :: b | r } a b
 ```
 
 #### `workouts_`

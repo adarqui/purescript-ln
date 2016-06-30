@@ -1,65 +1,5 @@
 ## Module LN.Api.Internal
 
-#### `getEmptys`
-
-``` purescript
-getEmptys :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError EmptyResponses)
-```
-
-#### `getEmptys'`
-
-``` purescript
-getEmptys' :: ApiEff (Either ApiError EmptyResponses)
-```
-
-#### `postEmpty`
-
-``` purescript
-postEmpty :: forall qp. QueryParam qp => Array qp -> EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
-```
-
-#### `postEmpty'`
-
-``` purescript
-postEmpty' :: EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
-```
-
-#### `getEmpty`
-
-``` purescript
-getEmpty :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError EmptyResponse)
-```
-
-#### `getEmpty'`
-
-``` purescript
-getEmpty' :: Int -> ApiEff (Either ApiError EmptyResponse)
-```
-
-#### `putEmpty`
-
-``` purescript
-putEmpty :: forall qp. QueryParam qp => Array qp -> Int -> EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
-```
-
-#### `putEmpty'`
-
-``` purescript
-putEmpty' :: Int -> EmptyRequest -> ApiEff (Either ApiError EmptyResponse)
-```
-
-#### `deleteEmpty`
-
-``` purescript
-deleteEmpty :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError Unit)
-```
-
-#### `deleteEmpty'`
-
-``` purescript
-deleteEmpty' :: Int -> ApiEff (Either ApiError Unit)
-```
-
 #### `getApis`
 
 ``` purescript
@@ -1584,16 +1524,16 @@ getPmIns :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError PmIn
 getPmIns' :: ApiEff (Either ApiError PmInResponses)
 ```
 
-#### `postPmIn`
+#### `getPmIns_ByUserId`
 
 ``` purescript
-postPmIn :: forall qp. QueryParam qp => Array qp -> PmInRequest -> ApiEff (Either ApiError PmInResponse)
+getPmIns_ByUserId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmInResponses)
 ```
 
-#### `postPmIn'`
+#### `getPmIns_ByUserId'`
 
 ``` purescript
-postPmIn' :: PmInRequest -> ApiEff (Either ApiError PmInResponse)
+getPmIns_ByUserId' :: Int -> ApiEff (Either ApiError PmInResponses)
 ```
 
 #### `getPmIn`
@@ -1644,16 +1584,16 @@ getPmOuts :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError PmO
 getPmOuts' :: ApiEff (Either ApiError PmOutResponses)
 ```
 
-#### `postPmOut`
+#### `getPmOuts_ByUserId`
 
 ``` purescript
-postPmOut :: forall qp. QueryParam qp => Array qp -> PmOutRequest -> ApiEff (Either ApiError PmOutResponse)
+getPmOuts_ByUserId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmOutResponses)
 ```
 
-#### `postPmOut'`
+#### `getPmOuts_ByUserId'`
 
 ``` purescript
-postPmOut' :: PmOutRequest -> ApiEff (Either ApiError PmOutResponse)
+getPmOuts_ByUserId' :: Int -> ApiEff (Either ApiError PmOutResponses)
 ```
 
 #### `getPmOut`
@@ -1894,6 +1834,18 @@ postTeamMember_ByTeamId :: forall qp. QueryParam qp => Array qp -> Int -> TeamMe
 
 ``` purescript
 postTeamMember_ByTeamId' :: Int -> TeamMemberRequest -> ApiEff (Either ApiError TeamMemberResponse)
+```
+
+#### `postTeamMember_ByOrganizationId`
+
+``` purescript
+postTeamMember_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> Int -> TeamMemberRequest -> ApiEff (Either ApiError TeamMemberResponse)
+```
+
+#### `postTeamMember_ByOrganizationId'`
+
+``` purescript
+postTeamMember_ByOrganizationId' :: Int -> TeamMemberRequest -> ApiEff (Either ApiError TeamMemberResponse)
 ```
 
 #### `getTeamMember`
@@ -2436,6 +2388,18 @@ getTeamMemberPacks_ByOrganizationId :: forall qp. QueryParam qp => Array qp -> I
 getTeamMemberPacks_ByOrganizationId' :: Int -> ApiEff (Either ApiError TeamMemberPackResponses)
 ```
 
+#### `getTeamMemberPacks_ByTeamId`
+
+``` purescript
+getTeamMemberPacks_ByTeamId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError TeamMemberPackResponses)
+```
+
+#### `getTeamMemberPacks_ByTeamId'`
+
+``` purescript
+getTeamMemberPacks_ByTeamId' :: Int -> ApiEff (Either ApiError TeamMemberPackResponses)
+```
+
 #### `getTeamMemberPack`
 
 ``` purescript
@@ -2808,6 +2772,18 @@ getThreadPacks_ByThreadsIds :: forall qp. QueryParam qp => Array qp -> (Array In
 getThreadPacks_ByThreadsIds' :: (Array Int) -> ApiEff (Either ApiError ThreadPackResponses)
 ```
 
+#### `getThreadPacks_ByForumId`
+
+``` purescript
+getThreadPacks_ByForumId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPackResponses)
+```
+
+#### `getThreadPacks_ByForumId'`
+
+``` purescript
+getThreadPacks_ByForumId' :: Int -> ApiEff (Either ApiError ThreadPackResponses)
+```
+
 #### `getThreadPacks_ByBoardId`
 
 ``` purescript
@@ -2866,6 +2842,30 @@ getThreadPostPacks_ByThreadId :: forall qp. QueryParam qp => Array qp -> Int -> 
 
 ``` purescript
 getThreadPostPacks_ByThreadId' :: Int -> ApiEff (Either ApiError ThreadPostPackResponses)
+```
+
+#### `getThreadPostPacks_ByForumId`
+
+``` purescript
+getThreadPostPacks_ByForumId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostPackResponses)
+```
+
+#### `getThreadPostPacks_ByForumId'`
+
+``` purescript
+getThreadPostPacks_ByForumId' :: Int -> ApiEff (Either ApiError ThreadPostPackResponses)
+```
+
+#### `getThreadPostPacks_ByBoardId`
+
+``` purescript
+getThreadPostPacks_ByBoardId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError ThreadPostPackResponses)
+```
+
+#### `getThreadPostPacks_ByBoardId'`
+
+``` purescript
+getThreadPostPacks_ByBoardId' :: Int -> ApiEff (Either ApiError ThreadPostPackResponses)
 ```
 
 #### `getThreadPostPack`
@@ -2962,6 +2962,54 @@ getLeuronPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either A
 
 ``` purescript
 getLeuronPack' :: Int -> ApiEff (Either ApiError LeuronPackResponse)
+```
+
+#### `getPmInPacks`
+
+``` purescript
+getPmInPacks :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError LeuronPackResponses)
+```
+
+#### `getPmInPacks'`
+
+``` purescript
+getPmInPacks' :: ApiEff (Either ApiError LeuronPackResponses)
+```
+
+#### `getPmInPack`
+
+``` purescript
+getPmInPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmInPackResponse)
+```
+
+#### `getPmInPack'`
+
+``` purescript
+getPmInPack' :: Int -> ApiEff (Either ApiError PmInPackResponse)
+```
+
+#### `getPmOutPacks`
+
+``` purescript
+getPmOutPacks :: forall qp. QueryParam qp => Array qp -> ApiEff (Either ApiError LeuronPackResponses)
+```
+
+#### `getPmOutPacks'`
+
+``` purescript
+getPmOutPacks' :: ApiEff (Either ApiError LeuronPackResponses)
+```
+
+#### `getPmOutPack`
+
+``` purescript
+getPmOutPack :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either ApiError PmOutPackResponse)
+```
+
+#### `getPmOutPack'`
+
+``` purescript
+getPmOutPack' :: Int -> ApiEff (Either ApiError PmOutPackResponse)
 ```
 
 

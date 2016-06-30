@@ -15,7 +15,7 @@ apiResponseToApiRequest :: ApiResponse -> ApiRequest
 #### `boardRequestToBoardResponse`
 
 ``` purescript
-boardRequestToBoardResponse :: Int -> Int -> Int -> (Maybe Int) -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardRequest -> BoardResponse
+boardRequestToBoardResponse :: Int -> Int -> Int -> Int -> (Maybe Int) -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardRequest -> BoardResponse
 ```
 
 #### `boardResponseToBoardRequest`
@@ -207,7 +207,7 @@ starResponseToStarRequest :: StarResponse -> StarRequest
 #### `teamRequestToTeamResponse`
 
 ``` purescript
-teamRequestToTeamResponse :: Int -> Int -> Int -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamRequest -> TeamResponse
+teamRequestToTeamResponse :: Int -> Int -> Int -> SystemTeam -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamRequest -> TeamResponse
 ```
 
 #### `teamResponseToTeamRequest`
@@ -219,7 +219,7 @@ teamResponseToTeamRequest :: TeamResponse -> TeamRequest
 #### `threadRequestToThreadResponse`
 
 ``` purescript
-threadRequestToThreadResponse :: Int -> Int -> Int -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadRequest -> ThreadResponse
+threadRequestToThreadResponse :: Int -> Int -> Int -> Int -> Int -> String -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadRequest -> ThreadResponse
 ```
 
 #### `threadResponseToThreadRequest`
@@ -231,7 +231,7 @@ threadResponseToThreadRequest :: ThreadResponse -> ThreadRequest
 #### `threadPostRequestToThreadPostResponse`
 
 ``` purescript
-threadPostRequestToThreadPostResponse :: Int -> Int -> Int -> (Maybe Int) -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostRequest -> ThreadPostResponse
+threadPostRequestToThreadPostResponse :: Int -> Int -> Int -> Int -> Int -> Int -> (Maybe Int) -> Boolean -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostRequest -> ThreadPostResponse
 ```
 
 #### `threadPostResponseToThreadPostRequest`

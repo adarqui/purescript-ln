@@ -3,7 +3,7 @@
 #### `rd`
 
 ``` purescript
-rd :: forall t23798 t23799 t23800. Affable t23798 t23799 => ReaderT ApiOptions (Aff t23798) t23800 -> t23799 t23800
+rd :: forall t22780 t22781 t22782. Affable t22780 t22781 => ReaderT ApiOptions (Aff t22780) t22782 -> t22781 t22782
 ```
 
 
