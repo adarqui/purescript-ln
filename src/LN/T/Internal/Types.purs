@@ -14,11 +14,12 @@ import Data.Foreign.NullOrUndefined     (unNullOrUndefined)
 import Data.Foreign.Class               (class IsForeign, read, readProp)
 import Data.Maybe                       (Maybe(..))
 import Data.Tuple                       (Tuple(..))
+import Purescript.Api.Helpers           (class QueryParam, qp)
 import Network.HTTP.Affjax.Request      (class Requestable, toRequest)
 import Network.HTTP.Affjax.Response     (class Respondable, ResponseType(..))
 import Optic.Core                       ((^.), (..))
 import Optic.Types                      (Lens, Lens')
-import Prelude                          (class Show, show, class Eq, pure, bind, ($), (<>), (<$>), (<*>), (==))
+import Prelude                          (class Show, show, class Eq, eq, pure, bind, ($), (<>), (<$>), (<*>), (==), (&&))
 
 import Purescript.Api.Helpers
 
@@ -102,14 +103,9 @@ instance aCLIsForeign :: IsForeign ACL where
 
 
 
-instance aCLShow :: Show ACL where
-  show (ACL_Grant x0) = "ACL_Grant: " <> show x0
-  show (ACL_Deny) = "ACL_Deny"
-
-
 instance aCLEq :: Eq ACL where
   eq (ACL_Grant x0a) (ACL_Grant x0b) = x0a == x0b
-  eq (ACL_Deny) (ACL_Deny) = true
+  eq ACL_Deny ACL_Deny = true
   eq _ _ = false
 
 newtype ApiRequest = ApiRequest {
@@ -182,9 +178,6 @@ instance apiRequestIsForeign :: IsForeign ApiRequest where
       <$> (unNullOrUndefined <$> readProp "comment" json)
       <*> readProp "guard" json
 
-
-instance apiRequestShow :: Show ApiRequest where
-    show (ApiRequest o) = show "comment: " <> show o.comment <> ", " <> show "guard: " <> show o.guard
 
 newtype ApiResponse = ApiResponse {
   id :: Int,
@@ -302,9 +295,6 @@ instance apiResponseIsForeign :: IsForeign ApiResponse where
       <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
-instance apiResponseShow :: Show ApiResponse where
-    show (ApiResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "key: " <> show o.key <> ", " <> show "comment: " <> show o.comment <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
-
 newtype ApiResponses = ApiResponses {
   apiResponses :: (Array ApiResponse)
 }
@@ -366,9 +356,6 @@ instance apiResponsesIsForeign :: IsForeign ApiResponses where
       mkApiResponses
       <$> readProp "api_responses" json
 
-
-instance apiResponsesShow :: Show ApiResponses where
-    show (ApiResponses o) = show "apiResponses: " <> show o.apiResponses
 
 newtype BoardRequest = BoardRequest {
   displayName :: String,
@@ -503,9 +490,6 @@ instance boardRequestIsForeign :: IsForeign BoardRequest where
       <*> readProp "tags" json
       <*> readProp "guard" json
 
-
-instance boardRequestShow :: Show BoardRequest where
-    show (BoardRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "isAnonymous: " <> show o.isAnonymous <> ", " <> show "canCreateSubBoards: " <> show o.canCreateSubBoards <> ", " <> show "canCreateThreads: " <> show o.canCreateThreads <> ", " <> show "suggestedTags: " <> show o.suggestedTags <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "guard: " <> show o.guard
 
 newtype BoardResponse = BoardResponse {
   id :: Int,
@@ -740,9 +724,6 @@ instance boardResponseIsForeign :: IsForeign BoardResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance boardResponseShow :: Show BoardResponse where
-    show (BoardResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "forumId: " <> show o.forumId <> ", " <> show "parentId: " <> show o.parentId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "isAnonymous: " <> show o.isAnonymous <> ", " <> show "canCreateSubBoards: " <> show o.canCreateSubBoards <> ", " <> show "canCreateThreads: " <> show o.canCreateThreads <> ", " <> show "suggestedTags: " <> show o.suggestedTags <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype BoardResponses = BoardResponses {
   boardResponses :: (Array BoardResponse)
 }
@@ -804,9 +785,6 @@ instance boardResponsesIsForeign :: IsForeign BoardResponses where
       mkBoardResponses
       <$> readProp "board_responses" json
 
-
-instance boardResponsesShow :: Show BoardResponses where
-    show (BoardResponses o) = show "boardResponses: " <> show o.boardResponses
 
 newtype BoardStatResponse = BoardStatResponse {
   boardId :: Int,
@@ -897,9 +875,6 @@ instance boardStatResponseIsForeign :: IsForeign BoardStatResponse where
       <*> readProp "views" json
 
 
-instance boardStatResponseShow :: Show BoardStatResponse where
-    show (BoardStatResponse o) = show "boardId: " <> show o.boardId <> ", " <> show "threads: " <> show o.threads <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "views: " <> show o.views
-
 newtype BoardStatResponses = BoardStatResponses {
   boardStatResponses :: (Array BoardStatResponse)
 }
@@ -961,9 +936,6 @@ instance boardStatResponsesIsForeign :: IsForeign BoardStatResponses where
       mkBoardStatResponses
       <$> readProp "board_stat_responses" json
 
-
-instance boardStatResponsesShow :: Show BoardStatResponses where
-    show (BoardStatResponses o) = show "boardStatResponses: " <> show o.boardStatResponses
 
 newtype BucketRequest = BucketRequest {
   displayName :: String,
@@ -1098,9 +1070,6 @@ instance bucketRequestIsForeign :: IsForeign BucketRequest where
       <*> readProp "filters" json
       <*> readProp "guard" json
 
-
-instance bucketRequestShow :: Show BucketRequest where
-    show (BucketRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "scoreLo: " <> show o.scoreLo <> ", " <> show "scoreHi: " <> show o.scoreHi <> ", " <> show "leurons: " <> show o.leurons <> ", " <> show "resources: " <> show o.resources <> ", " <> show "categories: " <> show o.categories <> ", " <> show "filters: " <> show o.filters <> ", " <> show "guard: " <> show o.guard
 
 newtype BucketResponse = BucketResponse {
   id :: Int,
@@ -1299,9 +1268,6 @@ instance bucketResponseIsForeign :: IsForeign BucketResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance bucketResponseShow :: Show BucketResponse where
-    show (BucketResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "scoreLo: " <> show o.scoreLo <> ", " <> show "scoreHi: " <> show o.scoreHi <> ", " <> show "leurons: " <> show o.leurons <> ", " <> show "resources: " <> show o.resources <> ", " <> show "categories: " <> show o.categories <> ", " <> show "filters: " <> show o.filters <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype BucketResponses = BucketResponses {
   bucketResponses :: (Array BucketResponse)
 }
@@ -1363,9 +1329,6 @@ instance bucketResponsesIsForeign :: IsForeign BucketResponses where
       mkBucketResponses
       <$> readProp "bucket_responses" json
 
-
-instance bucketResponsesShow :: Show BucketResponses where
-    show (BucketResponses o) = show "bucketResponses: " <> show o.bucketResponses
 
 newtype CountResponse = CountResponse {
   id :: Int,
@@ -1438,9 +1401,6 @@ instance countResponseIsForeign :: IsForeign CountResponse where
       <*> readProp "n" json
 
 
-instance countResponseShow :: Show CountResponse where
-    show (CountResponse o) = show "id: " <> show o.id <> ", " <> show "n: " <> show o.n
-
 newtype CountResponses = CountResponses {
   countResponses :: (Array CountResponse)
 }
@@ -1502,9 +1462,6 @@ instance countResponsesIsForeign :: IsForeign CountResponses where
       mkCountResponses
       <$> readProp "count_responses" json
 
-
-instance countResponsesShow :: Show CountResponses where
-    show (CountResponses o) = show "countResponses: " <> show o.countResponses
 
 type DepList a = (Array (Array a))
 
@@ -1570,9 +1527,6 @@ instance emptyRequestIsForeign :: IsForeign EmptyRequest where
       mkEmptyRequest
       <$> readProp "value" json
 
-
-instance emptyRequestShow :: Show EmptyRequest where
-    show (EmptyRequest o) = show "value: " <> show o.value
 
 newtype EmptyResponse = EmptyResponse {
   id :: Int,
@@ -1672,9 +1626,6 @@ instance emptyResponseIsForeign :: IsForeign EmptyResponse where
       <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
-instance emptyResponseShow :: Show EmptyResponse where
-    show (EmptyResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "value: " <> show o.value <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
-
 newtype EmptyResponses = EmptyResponses {
   emptyResponses :: (Array EmptyResponse)
 }
@@ -1736,9 +1687,6 @@ instance emptyResponsesIsForeign :: IsForeign EmptyResponses where
       mkEmptyResponses
       <$> readProp "empty_responses" json
 
-
-instance emptyResponsesShow :: Show EmptyResponses where
-    show (EmptyResponses o) = show "emptyResponses: " <> show o.emptyResponses
 
 data Ent
   = Ent_Organization 
@@ -2088,48 +2036,48 @@ instance entIsForeign :: IsForeign Ent where
 
 
 
-instance entShow :: Show Ent where
-  show (Ent_Organization) = "Ent_Organization"
-  show (Ent_Team) = "Ent_Team"
-  show (Ent_TeamMember) = "Ent_TeamMember"
-  show (Ent_GlobalGroup) = "Ent_GlobalGroup"
-  show (Ent_Group) = "Ent_Group"
-  show (Ent_GroupMember) = "Ent_GroupMember"
-  show (Ent_User) = "Ent_User"
-  show (Ent_UserSanitized) = "Ent_UserSanitized"
-  show (Ent_Forum) = "Ent_Forum"
-  show (Ent_Board) = "Ent_Board"
-  show (Ent_Thread) = "Ent_Thread"
-  show (Ent_ThreadPost) = "Ent_ThreadPost"
-  show (Ent_Blog) = "Ent_Blog"
-  show (Ent_BlogPost) = "Ent_BlogPost"
-  show (Ent_BlogComment) = "Ent_BlogComment"
-  show (Ent_Resource) = "Ent_Resource"
-  show (Ent_Leuron) = "Ent_Leuron"
-  show (Ent_Comment) = "Ent_Comment"
-  show (Ent_Api) = "Ent_Api"
-  show (Ent_Like) = "Ent_Like"
-  show (Ent_Star) = "Ent_Star"
-  show (Ent_None) = "Ent_None"
-
+instance entEq :: Eq Ent where
+  eq Ent_Organization Ent_Organization = true
+  eq Ent_Team Ent_Team = true
+  eq Ent_TeamMember Ent_TeamMember = true
+  eq Ent_GlobalGroup Ent_GlobalGroup = true
+  eq Ent_Group Ent_Group = true
+  eq Ent_GroupMember Ent_GroupMember = true
+  eq Ent_User Ent_User = true
+  eq Ent_UserSanitized Ent_UserSanitized = true
+  eq Ent_Forum Ent_Forum = true
+  eq Ent_Board Ent_Board = true
+  eq Ent_Thread Ent_Thread = true
+  eq Ent_ThreadPost Ent_ThreadPost = true
+  eq Ent_Blog Ent_Blog = true
+  eq Ent_BlogPost Ent_BlogPost = true
+  eq Ent_BlogComment Ent_BlogComment = true
+  eq Ent_Resource Ent_Resource = true
+  eq Ent_Leuron Ent_Leuron = true
+  eq Ent_Comment Ent_Comment = true
+  eq Ent_Api Ent_Api = true
+  eq Ent_Like Ent_Like = true
+  eq Ent_Star Ent_Star = true
+  eq Ent_None Ent_None = true
+  eq _ _ = false
 
 data ApplicationError
-  = Error_Empty 
+  = Error_Unknown 
   | Error_NotFound 
   | Error_PermissionDenied 
+  | Error_AlreadyExists 
   | Error_Visibility 
   | Error_Membership 
-  | Error_Validation String
+  | Error_Validation ValidationError
   | Error_NotImplemented 
   | Error_InvalidArguments String
   | Error_Unexpected 
-  | Error_Unknown 
 
 
 
 instance applicationErrorEncodeJson :: EncodeJson ApplicationError where
-  encodeJson (Error_Empty ) =
-       "tag" := "Error_Empty"
+  encodeJson (Error_Unknown ) =
+       "tag" := "Error_Unknown"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (Error_NotFound ) =
@@ -2138,6 +2086,10 @@ instance applicationErrorEncodeJson :: EncodeJson ApplicationError where
     ~> jsonEmptyObject
   encodeJson (Error_PermissionDenied ) =
        "tag" := "Error_PermissionDenied"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Error_AlreadyExists ) =
+       "tag" := "Error_AlreadyExists"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (Error_Visibility ) =
@@ -2164,10 +2116,6 @@ instance applicationErrorEncodeJson :: EncodeJson ApplicationError where
        "tag" := "Error_Unexpected"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
-  encodeJson (Error_Unknown ) =
-       "tag" := "Error_Unknown"
-    ~> "contents" := ([] :: Array String)
-    ~> jsonEmptyObject
 
 
 instance applicationErrorDecodeJson :: DecodeJson ApplicationError where
@@ -2175,14 +2123,17 @@ instance applicationErrorDecodeJson :: DecodeJson ApplicationError where
     obj <- decodeJson json
     tag <- obj .? "tag"
     case tag of
-      "Error_Empty" -> do
-        pure Error_Empty
+      "Error_Unknown" -> do
+        pure Error_Unknown
 
       "Error_NotFound" -> do
         pure Error_NotFound
 
       "Error_PermissionDenied" -> do
         pure Error_PermissionDenied
+
+      "Error_AlreadyExists" -> do
+        pure Error_AlreadyExists
 
       "Error_Visibility" -> do
         pure Error_Visibility
@@ -2210,9 +2161,6 @@ instance applicationErrorDecodeJson :: DecodeJson ApplicationError where
       "Error_Unexpected" -> do
         pure Error_Unexpected
 
-      "Error_Unknown" -> do
-        pure Error_Unknown
-
       _ -> Left $ "DecodeJson TypeMismatch for ApplicationError"
 
 
@@ -2229,14 +2177,17 @@ instance applicationErrorRespondable :: Respondable ApplicationError where
   fromResponse json = do
     tag <- readProp "tag" json
     case tag of
-      "Error_Empty" -> do
-        pure Error_Empty
+      "Error_Unknown" -> do
+        pure Error_Unknown
 
       "Error_NotFound" -> do
         pure Error_NotFound
 
       "Error_PermissionDenied" -> do
         pure Error_PermissionDenied
+
+      "Error_AlreadyExists" -> do
+        pure Error_AlreadyExists
 
       "Error_Visibility" -> do
         pure Error_Visibility
@@ -2264,9 +2215,6 @@ instance applicationErrorRespondable :: Respondable ApplicationError where
       "Error_Unexpected" -> do
         pure Error_Unexpected
 
-      "Error_Unknown" -> do
-        pure Error_Unknown
-
       _ -> Left $ TypeMismatch "ApplicationError" "Respondable"
 
 
@@ -2275,14 +2223,17 @@ instance applicationErrorIsForeign :: IsForeign ApplicationError where
   read json = do
     tag <- readProp "tag" json
     case tag of
-      "Error_Empty" -> do
-        pure Error_Empty
+      "Error_Unknown" -> do
+        pure Error_Unknown
 
       "Error_NotFound" -> do
         pure Error_NotFound
 
       "Error_PermissionDenied" -> do
         pure Error_PermissionDenied
+
+      "Error_AlreadyExists" -> do
+        pure Error_AlreadyExists
 
       "Error_Visibility" -> do
         pure Error_Visibility
@@ -2310,37 +2261,296 @@ instance applicationErrorIsForeign :: IsForeign ApplicationError where
       "Error_Unexpected" -> do
         pure Error_Unexpected
 
-      "Error_Unknown" -> do
-        pure Error_Unknown
-
       _ -> Left $ TypeMismatch "ApplicationError" "IsForeign"
 
 
 
-instance applicationErrorShow :: Show ApplicationError where
-  show (Error_Empty) = "Error_Empty"
-  show (Error_NotFound) = "Error_NotFound"
-  show (Error_PermissionDenied) = "Error_PermissionDenied"
-  show (Error_Visibility) = "Error_Visibility"
-  show (Error_Membership) = "Error_Membership"
-  show (Error_Validation x0) = "Error_Validation: " <> show x0
-  show (Error_NotImplemented) = "Error_NotImplemented"
-  show (Error_InvalidArguments x0) = "Error_InvalidArguments: " <> show x0
-  show (Error_Unexpected) = "Error_Unexpected"
-  show (Error_Unknown) = "Error_Unknown"
-
-
 instance applicationErrorEq :: Eq ApplicationError where
-  eq (Error_Empty) (Error_Empty) = true
-  eq (Error_NotFound) (Error_NotFound) = true
-  eq (Error_PermissionDenied) (Error_PermissionDenied) = true
-  eq (Error_Visibility) (Error_Visibility) = true
-  eq (Error_Membership) (Error_Membership) = true
+  eq Error_Unknown Error_Unknown = true
+  eq Error_NotFound Error_NotFound = true
+  eq Error_PermissionDenied Error_PermissionDenied = true
+  eq Error_AlreadyExists Error_AlreadyExists = true
+  eq Error_Visibility Error_Visibility = true
+  eq Error_Membership Error_Membership = true
   eq (Error_Validation x0a) (Error_Validation x0b) = x0a == x0b
-  eq (Error_NotImplemented) (Error_NotImplemented) = true
+  eq Error_NotImplemented Error_NotImplemented = true
   eq (Error_InvalidArguments x0a) (Error_InvalidArguments x0b) = x0a == x0b
-  eq (Error_Unexpected) (Error_Unexpected) = true
-  eq (Error_Unknown) (Error_Unknown) = true
+  eq Error_Unexpected Error_Unexpected = true
+  eq _ _ = false
+
+data ValidationError
+  = Validate ValidationErrorCode (Maybe String)
+
+
+
+instance validationErrorEncodeJson :: EncodeJson ValidationError where
+  encodeJson (Validate x0 x1) =
+       "tag" := "Validate"
+    ~> "contents" := [encodeJson x0, encodeJson x1]
+    ~> jsonEmptyObject
+
+
+instance validationErrorDecodeJson :: DecodeJson ValidationError where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+      "Validate" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0, x1] -> Validate <$> decodeJson x0 <*> decodeJson x1
+          _ -> Left $ "DecodeJson TypeMismatch for Validate"
+
+
+      _ -> Left $ "DecodeJson TypeMismatch for ValidationError"
+
+
+
+instance validationErrorRequestable :: Requestable ValidationError where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance validationErrorRespondable :: Respondable ValidationError where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+      "Validate" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> Validate <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "Validate" "Respondable"
+
+
+      _ -> Left $ TypeMismatch "ValidationError" "Respondable"
+
+
+
+instance validationErrorIsForeign :: IsForeign ValidationError where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+      "Validate" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0, x1] -> Validate <$> read x0 <*> read x1
+          _ -> Left $ TypeMismatch "Validate" "IsForeign"
+
+
+      _ -> Left $ TypeMismatch "ValidationError" "IsForeign"
+
+
+
+instance validationErrorEq :: Eq ValidationError where
+  eq (Validate x0a x1a) (Validate x0b x1b) = x0a == x0b && x1a == x1b
+
+
+data ValidationErrorCode
+  = Validate_Unknown 
+  | Validate_InvalidCharacters 
+  | Validate_InvalidEmail 
+  | Validate_InvalidDate 
+  | Validate_CannotBeEmpty 
+  | Validate_TooLong 
+  | Validate_TooShort 
+  | Validate_GreaterThanMaximum 
+  | Validate_SmallerThanMinimum 
+  | Validate_Reason String
+
+
+
+instance validationErrorCodeEncodeJson :: EncodeJson ValidationErrorCode where
+  encodeJson (Validate_Unknown ) =
+       "tag" := "Validate_Unknown"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Validate_InvalidCharacters ) =
+       "tag" := "Validate_InvalidCharacters"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Validate_InvalidEmail ) =
+       "tag" := "Validate_InvalidEmail"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Validate_InvalidDate ) =
+       "tag" := "Validate_InvalidDate"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Validate_CannotBeEmpty ) =
+       "tag" := "Validate_CannotBeEmpty"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Validate_TooLong ) =
+       "tag" := "Validate_TooLong"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Validate_TooShort ) =
+       "tag" := "Validate_TooShort"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Validate_GreaterThanMaximum ) =
+       "tag" := "Validate_GreaterThanMaximum"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Validate_SmallerThanMinimum ) =
+       "tag" := "Validate_SmallerThanMinimum"
+    ~> "contents" := ([] :: Array String)
+    ~> jsonEmptyObject
+  encodeJson (Validate_Reason x0) =
+       "tag" := "Validate_Reason"
+    ~> "contents" := [encodeJson x0]
+    ~> jsonEmptyObject
+
+
+instance validationErrorCodeDecodeJson :: DecodeJson ValidationErrorCode where
+  decodeJson json = do
+    obj <- decodeJson json
+    tag <- obj .? "tag"
+    case tag of
+      "Validate_Unknown" -> do
+        pure Validate_Unknown
+
+      "Validate_InvalidCharacters" -> do
+        pure Validate_InvalidCharacters
+
+      "Validate_InvalidEmail" -> do
+        pure Validate_InvalidEmail
+
+      "Validate_InvalidDate" -> do
+        pure Validate_InvalidDate
+
+      "Validate_CannotBeEmpty" -> do
+        pure Validate_CannotBeEmpty
+
+      "Validate_TooLong" -> do
+        pure Validate_TooLong
+
+      "Validate_TooShort" -> do
+        pure Validate_TooShort
+
+      "Validate_GreaterThanMaximum" -> do
+        pure Validate_GreaterThanMaximum
+
+      "Validate_SmallerThanMinimum" -> do
+        pure Validate_SmallerThanMinimum
+
+      "Validate_Reason" -> do
+        r <- obj .? "contents"
+        case r of
+          [x0] -> Validate_Reason <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for Validate_Reason"
+
+
+      _ -> Left $ "DecodeJson TypeMismatch for ValidationErrorCode"
+
+
+
+instance validationErrorCodeRequestable :: Requestable ValidationErrorCode where
+  toRequest s =
+    let str = printJson (encodeJson s) :: String
+    in toRequest str
+
+
+instance validationErrorCodeRespondable :: Respondable ValidationErrorCode where
+  responseType =
+    Tuple Nothing JSONResponse
+  fromResponse json = do
+    tag <- readProp "tag" json
+    case tag of
+      "Validate_Unknown" -> do
+        pure Validate_Unknown
+
+      "Validate_InvalidCharacters" -> do
+        pure Validate_InvalidCharacters
+
+      "Validate_InvalidEmail" -> do
+        pure Validate_InvalidEmail
+
+      "Validate_InvalidDate" -> do
+        pure Validate_InvalidDate
+
+      "Validate_CannotBeEmpty" -> do
+        pure Validate_CannotBeEmpty
+
+      "Validate_TooLong" -> do
+        pure Validate_TooLong
+
+      "Validate_TooShort" -> do
+        pure Validate_TooShort
+
+      "Validate_GreaterThanMaximum" -> do
+        pure Validate_GreaterThanMaximum
+
+      "Validate_SmallerThanMinimum" -> do
+        pure Validate_SmallerThanMinimum
+
+      "Validate_Reason" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Validate_Reason <$> read x0
+          _ -> Left $ TypeMismatch "Validate_Reason" "Respondable"
+
+
+      _ -> Left $ TypeMismatch "ValidationErrorCode" "Respondable"
+
+
+
+instance validationErrorCodeIsForeign :: IsForeign ValidationErrorCode where
+  read json = do
+    tag <- readProp "tag" json
+    case tag of
+      "Validate_Unknown" -> do
+        pure Validate_Unknown
+
+      "Validate_InvalidCharacters" -> do
+        pure Validate_InvalidCharacters
+
+      "Validate_InvalidEmail" -> do
+        pure Validate_InvalidEmail
+
+      "Validate_InvalidDate" -> do
+        pure Validate_InvalidDate
+
+      "Validate_CannotBeEmpty" -> do
+        pure Validate_CannotBeEmpty
+
+      "Validate_TooLong" -> do
+        pure Validate_TooLong
+
+      "Validate_TooShort" -> do
+        pure Validate_TooShort
+
+      "Validate_GreaterThanMaximum" -> do
+        pure Validate_GreaterThanMaximum
+
+      "Validate_SmallerThanMinimum" -> do
+        pure Validate_SmallerThanMinimum
+
+      "Validate_Reason" -> do
+        r <- readProp "contents" json
+        case r of
+          [x0] -> Validate_Reason <$> read x0
+          _ -> Left $ TypeMismatch "Validate_Reason" "IsForeign"
+
+
+      _ -> Left $ TypeMismatch "ValidationErrorCode" "IsForeign"
+
+
+
+instance validationErrorCodeEq :: Eq ValidationErrorCode where
+  eq Validate_Unknown Validate_Unknown = true
+  eq Validate_InvalidCharacters Validate_InvalidCharacters = true
+  eq Validate_InvalidEmail Validate_InvalidEmail = true
+  eq Validate_InvalidDate Validate_InvalidDate = true
+  eq Validate_CannotBeEmpty Validate_CannotBeEmpty = true
+  eq Validate_TooLong Validate_TooLong = true
+  eq Validate_TooShort Validate_TooShort = true
+  eq Validate_GreaterThanMaximum Validate_GreaterThanMaximum = true
+  eq Validate_SmallerThanMinimum Validate_SmallerThanMinimum = true
+  eq (Validate_Reason x0a) (Validate_Reason x0b) = x0a == x0b
   eq _ _ = false
 
 newtype ForumRequest = ForumRequest {
@@ -2494,9 +2704,6 @@ instance forumRequestIsForeign :: IsForeign ForumRequest where
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
-
-instance forumRequestShow :: Show ForumRequest where
-    show (ForumRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "threadsPerBoard: " <> show o.threadsPerBoard <> ", " <> show "threadPostsPerThread: " <> show o.threadPostsPerThread <> ", " <> show "recentThreadsLimit: " <> show o.recentThreadsLimit <> ", " <> show "recentPostsLimit: " <> show o.recentPostsLimit <> ", " <> show "motwLimit: " <> show o.motwLimit <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype ForumResponse = ForumResponse {
   id :: Int,
@@ -2731,9 +2938,6 @@ instance forumResponseIsForeign :: IsForeign ForumResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance forumResponseShow :: Show ForumResponse where
-    show (ForumResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "threadsPerBoard: " <> show o.threadsPerBoard <> ", " <> show "threadPostsPerThread: " <> show o.threadPostsPerThread <> ", " <> show "recentThreadsLimit: " <> show o.recentThreadsLimit <> ", " <> show "recentPostsLimit: " <> show o.recentPostsLimit <> ", " <> show "motwLimit: " <> show o.motwLimit <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype ForumResponses = ForumResponses {
   forumResponses :: (Array ForumResponse)
 }
@@ -2795,9 +2999,6 @@ instance forumResponsesIsForeign :: IsForeign ForumResponses where
       mkForumResponses
       <$> readProp "forum_responses" json
 
-
-instance forumResponsesShow :: Show ForumResponses where
-    show (ForumResponses o) = show "forumResponses: " <> show o.forumResponses
 
 newtype ForumStatResponse = ForumStatResponse {
   forumId :: Int,
@@ -2897,9 +3098,6 @@ instance forumStatResponseIsForeign :: IsForeign ForumStatResponse where
       <*> readProp "views" json
 
 
-instance forumStatResponseShow :: Show ForumStatResponse where
-    show (ForumStatResponse o) = show "forumId: " <> show o.forumId <> ", " <> show "boards: " <> show o.boards <> ", " <> show "threads: " <> show o.threads <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "views: " <> show o.views
-
 newtype ForumStatResponses = ForumStatResponses {
   forumStatResponses :: (Array ForumStatResponse)
 }
@@ -2961,9 +3159,6 @@ instance forumStatResponsesIsForeign :: IsForeign ForumStatResponses where
       mkForumStatResponses
       <$> readProp "forum_stat_responses" json
 
-
-instance forumStatResponsesShow :: Show ForumStatResponses where
-    show (ForumStatResponses o) = show "forumStatResponses: " <> show o.forumStatResponses
 
 newtype GlobalGroupRequest = GlobalGroupRequest {
   displayName :: String,
@@ -3080,9 +3275,6 @@ instance globalGroupRequestIsForeign :: IsForeign GlobalGroupRequest where
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
-
-instance globalGroupRequestShow :: Show GlobalGroupRequest where
-    show (GlobalGroupRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype GlobalGroupResponse = GlobalGroupResponse {
   id :: Int,
@@ -3272,9 +3464,6 @@ instance globalGroupResponseIsForeign :: IsForeign GlobalGroupResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance globalGroupResponseShow :: Show GlobalGroupResponse where
-    show (GlobalGroupResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype GlobalGroupResponses = GlobalGroupResponses {
   globalGroupResponses :: (Array GlobalGroupResponse)
 }
@@ -3336,9 +3525,6 @@ instance globalGroupResponsesIsForeign :: IsForeign GlobalGroupResponses where
       mkGlobalGroupResponses
       <$> readProp "global_group_responses" json
 
-
-instance globalGroupResponsesShow :: Show GlobalGroupResponses where
-    show (GlobalGroupResponses o) = show "globalGroupResponses: " <> show o.globalGroupResponses
 
 newtype GlobalGroupStatResponse = GlobalGroupStatResponse {
   groups :: Int
@@ -3402,9 +3588,6 @@ instance globalGroupStatResponseIsForeign :: IsForeign GlobalGroupStatResponse w
       <$> readProp "groups" json
 
 
-instance globalGroupStatResponseShow :: Show GlobalGroupStatResponse where
-    show (GlobalGroupStatResponse o) = show "groups: " <> show o.groups
-
 newtype GlobalGroupStatResponses = GlobalGroupStatResponses {
   globalGroupStatResponses :: (Array GlobalGroupStatResponse)
 }
@@ -3467,9 +3650,6 @@ instance globalGroupStatResponsesIsForeign :: IsForeign GlobalGroupStatResponses
       <$> readProp "global_group_stat_responses" json
 
 
-instance globalGroupStatResponsesShow :: Show GlobalGroupStatResponses where
-    show (GlobalGroupStatResponses o) = show "globalGroupStatResponses: " <> show o.globalGroupStatResponses
-
 newtype GroupRequest = GroupRequest {
   guard :: Int
 }
@@ -3531,9 +3711,6 @@ instance groupRequestIsForeign :: IsForeign GroupRequest where
       mkGroupRequest
       <$> readProp "guard" json
 
-
-instance groupRequestShow :: Show GroupRequest where
-    show (GroupRequest o) = show "guard: " <> show o.guard
 
 newtype GroupResponse = GroupResponse {
   id :: Int,
@@ -3678,9 +3855,6 @@ instance groupResponseIsForeign :: IsForeign GroupResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance groupResponseShow :: Show GroupResponse where
-    show (GroupResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "globalGroupId: " <> show o.globalGroupId <> ", " <> show "organizationId: " <> show o.organizationId <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype GroupResponses = GroupResponses {
   groupResponses :: (Array GroupResponse)
 }
@@ -3742,9 +3916,6 @@ instance groupResponsesIsForeign :: IsForeign GroupResponses where
       mkGroupResponses
       <$> readProp "group_responses" json
 
-
-instance groupResponsesShow :: Show GroupResponses where
-    show (GroupResponses o) = show "groupResponses: " <> show o.groupResponses
 
 newtype GroupStatResponse = GroupStatResponse {
   members :: Int
@@ -3808,9 +3979,6 @@ instance groupStatResponseIsForeign :: IsForeign GroupStatResponse where
       <$> readProp "members" json
 
 
-instance groupStatResponseShow :: Show GroupStatResponse where
-    show (GroupStatResponse o) = show "members: " <> show o.members
-
 newtype GroupStatResponses = GroupStatResponses {
   groupStatResponses :: (Array GroupStatResponse)
 }
@@ -3873,9 +4041,6 @@ instance groupStatResponsesIsForeign :: IsForeign GroupStatResponses where
       <$> readProp "group_stat_responses" json
 
 
-instance groupStatResponsesShow :: Show GroupStatResponses where
-    show (GroupStatResponses o) = show "groupStatResponses: " <> show o.groupStatResponses
-
 newtype GroupMemberRequest = GroupMemberRequest {
   guard :: Int
 }
@@ -3937,9 +4102,6 @@ instance groupMemberRequestIsForeign :: IsForeign GroupMemberRequest where
       mkGroupMemberRequest
       <$> readProp "guard" json
 
-
-instance groupMemberRequestShow :: Show GroupMemberRequest where
-    show (GroupMemberRequest o) = show "guard: " <> show o.guard
 
 newtype GroupMemberResponse = GroupMemberResponse {
   id :: Int,
@@ -4057,9 +4219,6 @@ instance groupMemberResponseIsForeign :: IsForeign GroupMemberResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance groupMemberResponseShow :: Show GroupMemberResponse where
-    show (GroupMemberResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "globalGroupId: " <> show o.globalGroupId <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype GroupMemberResponses = GroupMemberResponses {
   groupMemberResponses :: (Array GroupMemberResponse)
 }
@@ -4122,9 +4281,6 @@ instance groupMemberResponsesIsForeign :: IsForeign GroupMemberResponses where
       <$> readProp "group_member_responses" json
 
 
-instance groupMemberResponsesShow :: Show GroupMemberResponses where
-    show (GroupMemberResponses o) = show "groupMemberResponses: " <> show o.groupMemberResponses
-
 data GroupMemberStatResponse
   = GroupMemberStatResponse 
 
@@ -4179,10 +4335,6 @@ instance groupMemberStatResponseIsForeign :: IsForeign GroupMemberStatResponse w
 
 
 
-instance groupMemberStatResponseShow :: Show GroupMemberStatResponse where
-  show (GroupMemberStatResponse) = "GroupMemberStatResponse"
-
-
 data GroupMemberStatResponses
   = GroupMemberStatResponses 
 
@@ -4235,10 +4387,6 @@ instance groupMemberStatResponsesIsForeign :: IsForeign GroupMemberStatResponses
 
       _ -> Left $ TypeMismatch "GroupMemberStatResponses" "IsForeign"
 
-
-
-instance groupMemberStatResponsesShow :: Show GroupMemberStatResponses where
-  show (GroupMemberStatResponses) = "GroupMemberStatResponses"
 
 
 newtype LeuronRequest = LeuronRequest {
@@ -4410,9 +4558,6 @@ instance leuronRequestIsForeign :: IsForeign LeuronRequest where
       <*> (unNullOrUndefined <$> readProp "style" json)
       <*> readProp "guard" json
 
-
-instance leuronRequestShow :: Show LeuronRequest where
-    show (LeuronRequest o) = show "dataP: " <> show o.dataP <> ", " <> show "title: " <> show o.title <> ", " <> show "description: " <> show o.description <> ", " <> show "section: " <> show o.section <> ", " <> show "page: " <> show o.page <> ", " <> show "examples: " <> show o.examples <> ", " <> show "strengths: " <> show o.strengths <> ", " <> show "categories: " <> show o.categories <> ", " <> show "splits: " <> show o.splits <> ", " <> show "substitutions: " <> show o.substitutions <> ", " <> show "tags: " <> show o.tags <> ", " <> show "style: " <> show o.style <> ", " <> show "guard: " <> show o.guard
 
 newtype LeuronResponse = LeuronResponse {
   id :: Int,
@@ -4647,9 +4792,6 @@ instance leuronResponseIsForeign :: IsForeign LeuronResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance leuronResponseShow :: Show LeuronResponse where
-    show (LeuronResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "resourceId: " <> show o.resourceId <> ", " <> show "dataP: " <> show o.dataP <> ", " <> show "title: " <> show o.title <> ", " <> show "description: " <> show o.description <> ", " <> show "section: " <> show o.section <> ", " <> show "page: " <> show o.page <> ", " <> show "examples: " <> show o.examples <> ", " <> show "strengths: " <> show o.strengths <> ", " <> show "categories: " <> show o.categories <> ", " <> show "splits: " <> show o.splits <> ", " <> show "substitutions: " <> show o.substitutions <> ", " <> show "tags: " <> show o.tags <> ", " <> show "style: " <> show o.style <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype LeuronResponses = LeuronResponses {
   leuronResponses :: (Array LeuronResponse)
 }
@@ -4711,9 +4853,6 @@ instance leuronResponsesIsForeign :: IsForeign LeuronResponses where
       mkLeuronResponses
       <$> readProp "leuron_responses" json
 
-
-instance leuronResponsesShow :: Show LeuronResponses where
-    show (LeuronResponses o) = show "leuronResponses: " <> show o.leuronResponses
 
 newtype LeuronStatResponse = LeuronStatResponse {
   leuronId :: Int,
@@ -4822,9 +4961,6 @@ instance leuronStatResponseIsForeign :: IsForeign LeuronStatResponse where
       <*> readProp "views" json
 
 
-instance leuronStatResponseShow :: Show LeuronStatResponse where
-    show (LeuronStatResponse o) = show "leuronId: " <> show o.leuronId <> ", " <> show "likes: " <> show o.likes <> ", " <> show "neutral: " <> show o.neutral <> ", " <> show "dislikes: " <> show o.dislikes <> ", " <> show "stars: " <> show o.stars <> ", " <> show "views: " <> show o.views
-
 newtype LeuronStatResponses = LeuronStatResponses {
   leuronStatResponses :: (Array LeuronStatResponse)
 }
@@ -4886,9 +5022,6 @@ instance leuronStatResponsesIsForeign :: IsForeign LeuronStatResponses where
       mkLeuronStatResponses
       <$> readProp "leuron_stat_responses" json
 
-
-instance leuronStatResponsesShow :: Show LeuronStatResponses where
-    show (LeuronStatResponses o) = show "leuronStatResponses: " <> show o.leuronStatResponses
 
 data LeuronTrainingSummary
   = LTS_View 
@@ -5028,16 +5161,6 @@ instance leuronTrainingSummaryIsForeign :: IsForeign LeuronTrainingSummary where
 
 
 
-instance leuronTrainingSummaryShow :: Show LeuronTrainingSummary where
-  show (LTS_View) = "LTS_View"
-  show (LTS_Skip) = "LTS_Skip"
-  show (LTS_Know) = "LTS_Know"
-  show (LTS_DontKnow) = "LTS_DontKnow"
-  show (LTS_DontUnderstand) = "LTS_DontUnderstand"
-  show (LTS_DontCare) = "LTS_DontCare"
-  show (LTS_Protest) = "LTS_Protest"
-
-
 newtype LeuronTrainingRequest = LeuronTrainingRequest {
   summary :: LeuronTrainingSummary,
   guard :: Int
@@ -5108,9 +5231,6 @@ instance leuronTrainingRequestIsForeign :: IsForeign LeuronTrainingRequest where
       <$> readProp "summary" json
       <*> readProp "guard" json
 
-
-instance leuronTrainingRequestShow :: Show LeuronTrainingRequest where
-    show (LeuronTrainingRequest o) = show "summary: " <> show o.summary <> ", " <> show "guard: " <> show o.guard
 
 newtype LeuronTrainingResponse = LeuronTrainingResponse {
   id :: Int,
@@ -5228,9 +5348,6 @@ instance leuronTrainingResponseIsForeign :: IsForeign LeuronTrainingResponse whe
       <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
-instance leuronTrainingResponseShow :: Show LeuronTrainingResponse where
-    show (LeuronTrainingResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "leuronId: " <> show o.leuronId <> ", " <> show "summary: " <> show o.summary <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
-
 newtype LeuronTrainingResponses = LeuronTrainingResponses {
   leuronTrainingResponses :: (Array LeuronTrainingResponse)
 }
@@ -5292,9 +5409,6 @@ instance leuronTrainingResponsesIsForeign :: IsForeign LeuronTrainingResponses w
       mkLeuronTrainingResponses
       <$> readProp "leuron_training_responses" json
 
-
-instance leuronTrainingResponsesShow :: Show LeuronTrainingResponses where
-    show (LeuronTrainingResponses o) = show "leuronTrainingResponses: " <> show o.leuronTrainingResponses
 
 newtype LeuronTrainingStatResponse = LeuronTrainingStatResponse {
   leuronTrainingId :: Int
@@ -5358,9 +5472,6 @@ instance leuronTrainingStatResponseIsForeign :: IsForeign LeuronTrainingStatResp
       <$> readProp "leuron_training_id" json
 
 
-instance leuronTrainingStatResponseShow :: Show LeuronTrainingStatResponse where
-    show (LeuronTrainingStatResponse o) = show "leuronTrainingId: " <> show o.leuronTrainingId
-
 newtype LeuronTrainingStatResponses = LeuronTrainingStatResponses {
   leuronTrainingStatResponses :: (Array LeuronTrainingStatResponse)
 }
@@ -5422,9 +5533,6 @@ instance leuronTrainingStatResponsesIsForeign :: IsForeign LeuronTrainingStatRes
       mkLeuronTrainingStatResponses
       <$> readProp "leuron_training_stat_responses" json
 
-
-instance leuronTrainingStatResponsesShow :: Show LeuronTrainingStatResponses where
-    show (LeuronTrainingStatResponses o) = show "leuronTrainingStatResponses: " <> show o.leuronTrainingStatResponses
 
 data LikeOpt
   = Like 
@@ -5508,11 +5616,11 @@ instance likeOptIsForeign :: IsForeign LikeOpt where
 
 
 
-instance likeOptShow :: Show LikeOpt where
-  show (Like) = "Like"
-  show (Neutral) = "Neutral"
-  show (Dislike) = "Dislike"
-
+instance likeOptEq :: Eq LikeOpt where
+  eq Like Like = true
+  eq Neutral Neutral = true
+  eq Dislike Dislike = true
+  eq _ _ = false
 
 newtype LikeRequest = LikeRequest {
   opt :: LikeOpt,
@@ -5593,9 +5701,6 @@ instance likeRequestIsForeign :: IsForeign LikeRequest where
       <*> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "guard" json
 
-
-instance likeRequestShow :: Show LikeRequest where
-    show (LikeRequest o) = show "opt: " <> show o.opt <> ", " <> show "reason: " <> show o.reason <> ", " <> show "guard: " <> show o.guard
 
 newtype LikeResponse = LikeResponse {
   id :: Int,
@@ -5749,9 +5854,6 @@ instance likeResponseIsForeign :: IsForeign LikeResponse where
       <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
-instance likeResponseShow :: Show LikeResponse where
-    show (LikeResponse o) = show "id: " <> show o.id <> ", " <> show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "userId: " <> show o.userId <> ", " <> show "opt: " <> show o.opt <> ", " <> show "score: " <> show o.score <> ", " <> show "reason: " <> show o.reason <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
-
 newtype LikeResponses = LikeResponses {
   likeResponses :: (Array LikeResponse)
 }
@@ -5813,9 +5915,6 @@ instance likeResponsesIsForeign :: IsForeign LikeResponses where
       mkLikeResponses
       <$> readProp "like_responses" json
 
-
-instance likeResponsesShow :: Show LikeResponses where
-    show (LikeResponses o) = show "likeResponses: " <> show o.likeResponses
 
 newtype LikeStatResponse = LikeStatResponse {
   ent :: Ent,
@@ -5924,9 +6023,6 @@ instance likeStatResponseIsForeign :: IsForeign LikeStatResponse where
       <*> readProp "dislike" json
 
 
-instance likeStatResponseShow :: Show LikeStatResponse where
-    show (LikeStatResponse o) = show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "score: " <> show o.score <> ", " <> show "like: " <> show o.like <> ", " <> show "neutral: " <> show o.neutral <> ", " <> show "dislike: " <> show o.dislike
-
 newtype LikeStatResponses = LikeStatResponses {
   likeStatResponses :: (Array LikeStatResponse)
 }
@@ -5988,9 +6084,6 @@ instance likeStatResponsesIsForeign :: IsForeign LikeStatResponses where
       mkLikeStatResponses
       <$> readProp "like_stat_responses" json
 
-
-instance likeStatResponsesShow :: Show LikeStatResponses where
-    show (LikeStatResponses o) = show "likeStatResponses: " <> show o.likeStatResponses
 
 data LeuronData
   = LnFact Fact
@@ -6424,25 +6517,6 @@ instance leuronDataIsForeign :: IsForeign LeuronData where
 
 
 
-instance leuronDataShow :: Show LeuronData where
-  show (LnFact x0) = "LnFact: " <> show x0
-  show (LnFactList x0) = "LnFactList: " <> show x0
-  show (LnCard x0) = "LnCard: " <> show x0
-  show (LnDCard x0) = "LnDCard: " <> show x0
-  show (LnDCardX x0) = "LnDCardX: " <> show x0
-  show (LnAcronym x0) = "LnAcronym: " <> show x0
-  show (LnSynonym x0) = "LnSynonym: " <> show x0
-  show (LnAntonym x0) = "LnAntonym: " <> show x0
-  show (LnTemplate x0) = "LnTemplate: " <> show x0
-  show (LnImageAssociation x0) = "LnImageAssociation: " <> show x0
-  show (LnLinearDemo x0) = "LnLinearDemo: " <> show x0
-  show (LnTable x0) = "LnTable: " <> show x0
-  show (LnScript x0) = "LnScript: " <> show x0
-  show (LnQA x0) = "LnQA: " <> show x0
-  show (LnExamples) = "LnExamples"
-  show (LnEmpty) = "LnEmpty"
-
-
 data TyLeuron
   = TyLnFact 
   | TyLnFactList 
@@ -6707,42 +6781,23 @@ instance tyLeuronIsForeign :: IsForeign TyLeuron where
 
 
 
-instance tyLeuronShow :: Show TyLeuron where
-  show (TyLnFact) = "TyLnFact"
-  show (TyLnFactList) = "TyLnFactList"
-  show (TyLnCard) = "TyLnCard"
-  show (TyLnDCard) = "TyLnDCard"
-  show (TyLnDCardX) = "TyLnDCardX"
-  show (TyLnAcronym) = "TyLnAcronym"
-  show (TyLnSynonym) = "TyLnSynonym"
-  show (TyLnAntonym) = "TyLnAntonym"
-  show (TyLnTemplate) = "TyLnTemplate"
-  show (TyLnImageAssociation) = "TyLnImageAssociation"
-  show (TyLnLinearDemo) = "TyLnLinearDemo"
-  show (TyLnTable) = "TyLnTable"
-  show (TyLnScript) = "TyLnScript"
-  show (TyLnQA) = "TyLnQA"
-  show (TyLnExamples) = "TyLnExamples"
-  show (TyLnEmpty) = "TyLnEmpty"
-
-
 instance tyLeuronEq :: Eq TyLeuron where
-  eq (TyLnFact) (TyLnFact) = true
-  eq (TyLnFactList) (TyLnFactList) = true
-  eq (TyLnCard) (TyLnCard) = true
-  eq (TyLnDCard) (TyLnDCard) = true
-  eq (TyLnDCardX) (TyLnDCardX) = true
-  eq (TyLnAcronym) (TyLnAcronym) = true
-  eq (TyLnSynonym) (TyLnSynonym) = true
-  eq (TyLnAntonym) (TyLnAntonym) = true
-  eq (TyLnTemplate) (TyLnTemplate) = true
-  eq (TyLnImageAssociation) (TyLnImageAssociation) = true
-  eq (TyLnLinearDemo) (TyLnLinearDemo) = true
-  eq (TyLnTable) (TyLnTable) = true
-  eq (TyLnScript) (TyLnScript) = true
-  eq (TyLnQA) (TyLnQA) = true
-  eq (TyLnExamples) (TyLnExamples) = true
-  eq (TyLnEmpty) (TyLnEmpty) = true
+  eq TyLnFact TyLnFact = true
+  eq TyLnFactList TyLnFactList = true
+  eq TyLnCard TyLnCard = true
+  eq TyLnDCard TyLnDCard = true
+  eq TyLnDCardX TyLnDCardX = true
+  eq TyLnAcronym TyLnAcronym = true
+  eq TyLnSynonym TyLnSynonym = true
+  eq TyLnAntonym TyLnAntonym = true
+  eq TyLnTemplate TyLnTemplate = true
+  eq TyLnImageAssociation TyLnImageAssociation = true
+  eq TyLnLinearDemo TyLnLinearDemo = true
+  eq TyLnTable TyLnTable = true
+  eq TyLnScript TyLnScript = true
+  eq TyLnQA TyLnQA = true
+  eq TyLnExamples TyLnExamples = true
+  eq TyLnEmpty TyLnEmpty = true
   eq _ _ = false
 
 newtype Fact = Fact {
@@ -6806,9 +6861,6 @@ instance factIsForeign :: IsForeign Fact where
       mkFact
       <$> readProp "text" json
 
-
-instance factShow :: Show Fact where
-    show (Fact o) = show "text: " <> show o.text
 
 newtype FactList = FactList {
   fact :: String,
@@ -6881,9 +6933,6 @@ instance factListIsForeign :: IsForeign FactList where
       <*> readProp "list" json
 
 
-instance factListShow :: Show FactList where
-    show (FactList o) = show "fact: " <> show o.fact <> ", " <> show "list: " <> show o.list
-
 newtype Card = Card {
   front :: String,
   back :: String
@@ -6954,9 +7003,6 @@ instance cardIsForeign :: IsForeign Card where
       <$> readProp "front" json
       <*> readProp "back" json
 
-
-instance cardShow :: Show Card where
-    show (Card o) = show "front: " <> show o.front <> ", " <> show "back: " <> show o.back
 
 newtype DCard = DCard {
   front :: String,
@@ -7029,9 +7075,6 @@ instance dCardIsForeign :: IsForeign DCard where
       <*> readProp "back" json
 
 
-instance dCardShow :: Show DCard where
-    show (DCard o) = show "front: " <> show o.front <> ", " <> show "back: " <> show o.back
-
 newtype DCardX = DCardX {
   front :: (Array String),
   back :: (Array String)
@@ -7102,9 +7145,6 @@ instance dCardXIsForeign :: IsForeign DCardX where
       <$> readProp "front" json
       <*> readProp "back" json
 
-
-instance dCardXShow :: Show DCardX where
-    show (DCardX o) = show "front: " <> show o.front <> ", " <> show "back: " <> show o.back
 
 newtype Acronym = Acronym {
   abbreviation :: String,
@@ -7177,9 +7217,6 @@ instance acronymIsForeign :: IsForeign Acronym where
       <*> readProp "meaning" json
 
 
-instance acronymShow :: Show Acronym where
-    show (Acronym o) = show "abbreviation: " <> show o.abbreviation <> ", " <> show "meaning: " <> show o.meaning
-
 newtype Synonym = Synonym {
   a :: String,
   b :: String
@@ -7250,9 +7287,6 @@ instance synonymIsForeign :: IsForeign Synonym where
       <$> readProp "a" json
       <*> readProp "b" json
 
-
-instance synonymShow :: Show Synonym where
-    show (Synonym o) = show "a: " <> show o.a <> ", " <> show "b: " <> show o.b
 
 newtype Antonym = Antonym {
   a :: String,
@@ -7325,9 +7359,6 @@ instance antonymIsForeign :: IsForeign Antonym where
       <*> readProp "b" json
 
 
-instance antonymShow :: Show Antonym where
-    show (Antonym o) = show "a: " <> show o.a <> ", " <> show "b: " <> show o.b
-
 newtype Template = Template {
   template :: String,
   values :: (Array TemplateValue)
@@ -7398,9 +7429,6 @@ instance templateIsForeign :: IsForeign Template where
       <$> readProp "template" json
       <*> readProp "values" json
 
-
-instance templateShow :: Show Template where
-    show (Template o) = show "template: " <> show o.template <> ", " <> show "values: " <> show o.values
 
 type TemplateValue  = ((Tuple String) (Array String))
 
@@ -7485,9 +7513,6 @@ instance imageAssociationIsForeign :: IsForeign ImageAssociation where
       <*> readProp "assoc_result" json
 
 
-instance imageAssociationShow :: Show ImageAssociation where
-    show (ImageAssociation o) = show "imageUrl: " <> show o.imageUrl <> ", " <> show "assocBy: " <> show o.assocBy <> ", " <> show "assocResult: " <> show o.assocResult
-
 newtype Script = Script {
   title :: String,
   desc :: String,
@@ -7567,9 +7592,6 @@ instance scriptIsForeign :: IsForeign Script where
       <*> readProp "desc" json
       <*> readProp "url" json
 
-
-instance scriptShow :: Show Script where
-    show (Script o) = show "title: " <> show o.title <> ", " <> show "desc: " <> show o.desc <> ", " <> show "url: " <> show o.url
 
 type LDContent  = String
 
@@ -7651,9 +7673,6 @@ instance linearDemoIsForeign :: IsForeign LinearDemo where
       <*> readProp "content" json
 
 
-instance linearDemoShow :: Show LinearDemo where
-    show (LinearDemo o) = show "label: " <> show o.label <> ", " <> show "content: " <> show o.content
-
 newtype QA = QA {
   question :: String,
   answer :: String
@@ -7724,9 +7743,6 @@ instance qAIsForeign :: IsForeign QA where
       <$> readProp "question" json
       <*> readProp "answer" json
 
-
-instance qAShow :: Show QA where
-    show (QA o) = show "question: " <> show o.question <> ", " <> show "answer: " <> show o.answer
 
 newtype Table = Table {
   title :: String,
@@ -7807,9 +7823,6 @@ instance tableIsForeign :: IsForeign Table where
       <*> readProp "columns" json
       <*> readProp "rows" json
 
-
-instance tableShow :: Show Table where
-    show (Table o) = show "title: " <> show o.title <> ", " <> show "columns: " <> show o.columns <> ", " <> show "rows: " <> show o.rows
 
 data Membership
   = Membership_InviteOnly 
@@ -7907,18 +7920,11 @@ instance membershipIsForeign :: IsForeign Membership where
 
 
 
-instance membershipShow :: Show Membership where
-  show (Membership_InviteOnly) = "Membership_InviteOnly"
-  show (Membership_RequestInvite) = "Membership_RequestInvite"
-  show (Membership_Join) = "Membership_Join"
-  show (Membership_Locked) = "Membership_Locked"
-
-
 instance membershipEq :: Eq Membership where
-  eq (Membership_InviteOnly) (Membership_InviteOnly) = true
-  eq (Membership_RequestInvite) (Membership_RequestInvite) = true
-  eq (Membership_Join) (Membership_Join) = true
-  eq (Membership_Locked) (Membership_Locked) = true
+  eq Membership_InviteOnly Membership_InviteOnly = true
+  eq Membership_RequestInvite Membership_RequestInvite = true
+  eq Membership_Join Membership_Join = true
+  eq Membership_Locked Membership_Locked = true
   eq _ _ = false
 
 newtype OrganizationRequest = OrganizationRequest {
@@ -8063,9 +8069,6 @@ instance organizationRequestIsForeign :: IsForeign OrganizationRequest where
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
-
-instance organizationRequestShow :: Show OrganizationRequest where
-    show (OrganizationRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "company: " <> show o.company <> ", " <> show "location: " <> show o.location <> ", " <> show "email: " <> show o.email <> ", " <> show "membership: " <> show o.membership <> ", " <> show "tags: " <> show o.tags <> ", " <> show "icon: " <> show o.icon <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype OrganizationResponse = OrganizationResponse {
   id :: Int,
@@ -8291,9 +8294,6 @@ instance organizationResponseIsForeign :: IsForeign OrganizationResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance organizationResponseShow :: Show OrganizationResponse where
-    show (OrganizationResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "company: " <> show o.company <> ", " <> show "location: " <> show o.location <> ", " <> show "email: " <> show o.email <> ", " <> show "emailMD5: " <> show o.emailMD5 <> ", " <> show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype OrganizationResponses = OrganizationResponses {
   organizationResponses :: (Array OrganizationResponse)
 }
@@ -8355,9 +8355,6 @@ instance organizationResponsesIsForeign :: IsForeign OrganizationResponses where
       mkOrganizationResponses
       <$> readProp "organization_responses" json
 
-
-instance organizationResponsesShow :: Show OrganizationResponses where
-    show (OrganizationResponses o) = show "organizationResponses: " <> show o.organizationResponses
 
 newtype OrganizationStatResponse = OrganizationStatResponse {
   organizationId :: Int,
@@ -8484,9 +8481,6 @@ instance organizationStatResponseIsForeign :: IsForeign OrganizationStatResponse
       <*> readProp "views" json
 
 
-instance organizationStatResponseShow :: Show OrganizationStatResponse where
-    show (OrganizationStatResponse o) = show "organizationId: " <> show o.organizationId <> ", " <> show "teams: " <> show o.teams <> ", " <> show "members: " <> show o.members <> ", " <> show "forums: " <> show o.forums <> ", " <> show "boards: " <> show o.boards <> ", " <> show "threads: " <> show o.threads <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "views: " <> show o.views
-
 newtype OrganizationStatResponses = OrganizationStatResponses {
   organizationStatResponses :: (Array OrganizationStatResponse)
 }
@@ -8548,9 +8542,6 @@ instance organizationStatResponsesIsForeign :: IsForeign OrganizationStatRespons
       mkOrganizationStatResponses
       <$> readProp "organization_stat_responses" json
 
-
-instance organizationStatResponsesShow :: Show OrganizationStatResponses where
-    show (OrganizationStatResponses o) = show "organizationStatResponses: " <> show o.organizationStatResponses
 
 data Param
   = Limit Int
@@ -10230,6 +10221,204 @@ instance paramIsForeign :: IsForeign Param where
 
 
 
+instance paramEq :: Eq Param where
+  eq (Limit x0a) (Limit x0b) = x0a == x0b
+  eq (Offset x0a) (Offset x0b) = x0a == x0b
+  eq (SortOrder x0a) (SortOrder x0b) = x0a == x0b
+  eq (Order x0a) (Order x0b) = x0a == x0b
+  eq (ByOrganizationId x0a) (ByOrganizationId x0b) = x0a == x0b
+  eq (ByOrganizationsIds x0a) (ByOrganizationsIds x0b) = x0a == x0b
+  eq (ByOrganizationName x0a) (ByOrganizationName x0b) = x0a == x0b
+  eq (ByTeamId x0a) (ByTeamId x0b) = x0a == x0b
+  eq (ByTeamsIds x0a) (ByTeamsIds x0b) = x0a == x0b
+  eq (ByTeamName x0a) (ByTeamName x0b) = x0a == x0b
+  eq (ByTeamMemberId x0a) (ByTeamMemberId x0b) = x0a == x0b
+  eq (ByTeamMembersIds x0a) (ByTeamMembersIds x0b) = x0a == x0b
+  eq (ByUserId x0a) (ByUserId x0b) = x0a == x0b
+  eq (ByUsersIds x0a) (ByUsersIds x0b) = x0a == x0b
+  eq (ByUserNick x0a) (ByUserNick x0b) = x0a == x0b
+  eq (ByUsersNicks x0a) (ByUsersNicks x0b) = x0a == x0b
+  eq (ByGlobalGroupId x0a) (ByGlobalGroupId x0b) = x0a == x0b
+  eq (ByGlobalGroupsIds x0a) (ByGlobalGroupsIds x0b) = x0a == x0b
+  eq (ByGroupId x0a) (ByGroupId x0b) = x0a == x0b
+  eq (ByGroupsIds x0a) (ByGroupsIds x0b) = x0a == x0b
+  eq (ByGroupMemberId x0a) (ByGroupMemberId x0b) = x0a == x0b
+  eq (ByGroupMembersIds x0a) (ByGroupMembersIds x0b) = x0a == x0b
+  eq (ByForumId x0a) (ByForumId x0b) = x0a == x0b
+  eq (ByForumsIds x0a) (ByForumsIds x0b) = x0a == x0b
+  eq (ByForumName x0a) (ByForumName x0b) = x0a == x0b
+  eq (ByBoardId x0a) (ByBoardId x0b) = x0a == x0b
+  eq (ByBoardsIds x0a) (ByBoardsIds x0b) = x0a == x0b
+  eq (ByBoardName x0a) (ByBoardName x0b) = x0a == x0b
+  eq (ByThreadId x0a) (ByThreadId x0b) = x0a == x0b
+  eq (ByThreadsIds x0a) (ByThreadsIds x0b) = x0a == x0b
+  eq (ByThreadName x0a) (ByThreadName x0b) = x0a == x0b
+  eq (ByThreadPostId x0a) (ByThreadPostId x0b) = x0a == x0b
+  eq (ByThreadPostsIds x0a) (ByThreadPostsIds x0b) = x0a == x0b
+  eq (ByThreadPostName x0a) (ByThreadPostName x0b) = x0a == x0b
+  eq (ByThreadPostLikeId x0a) (ByThreadPostLikeId x0b) = x0a == x0b
+  eq (ByThreadPostLikesIds x0a) (ByThreadPostLikesIds x0b) = x0a == x0b
+  eq (ByThreadPostStarId x0a) (ByThreadPostStarId x0b) = x0a == x0b
+  eq (ByThreadPostStarsIds x0a) (ByThreadPostStarsIds x0b) = x0a == x0b
+  eq (ByBucketId x0a) (ByBucketId x0b) = x0a == x0b
+  eq (ByResourceId x0a) (ByResourceId x0b) = x0a == x0b
+  eq (ByResourcesIds x0a) (ByResourcesIds x0b) = x0a == x0b
+  eq (ByResourceName x0a) (ByResourceName x0b) = x0a == x0b
+  eq (ByLeuronId x0a) (ByLeuronId x0b) = x0a == x0b
+  eq (ByLeuronsIds x0a) (ByLeuronsIds x0b) = x0a == x0b
+  eq (ByPmId x0a) (ByPmId x0b) = x0a == x0b
+  eq (ByPmsIds x0a) (ByPmsIds x0b) = x0a == x0b
+  eq (ByReminderId x0a) (ByReminderId x0b) = x0a == x0b
+  eq (ByReminderFolderId x0a) (ByReminderFolderId x0b) = x0a == x0b
+  eq (ByParentId x0a) (ByParentId x0b) = x0a == x0b
+  eq (ByParentsIds x0a) (ByParentsIds x0b) = x0a == x0b
+  eq (ByParentName x0a) (ByParentName x0b) = x0a == x0b
+  eq (BySelf x0a) (BySelf x0b) = x0a == x0b
+  eq (Timestamp x0a) (Timestamp x0b) = x0a == x0b
+  eq (UnixTimestamp x0a) (UnixTimestamp x0b) = x0a == x0b
+  eq (CreatedAtTimestamp x0a) (CreatedAtTimestamp x0b) = x0a == x0b
+  eq (CreatedAtUnixTimestamp x0a) (CreatedAtUnixTimestamp x0b) = x0a == x0b
+  eq (RealIP x0a) (RealIP x0b) = x0a == x0b
+  eq (IP x0a) (IP x0b) = x0a == x0b
+  eq (WithOrganization x0a) (WithOrganization x0b) = x0a == x0b
+  eq (WithForum x0a) (WithForum x0b) = x0a == x0b
+  eq (WithBoard x0a) (WithBoard x0b) = x0a == x0b
+  eq (WithThread x0a) (WithThread x0b) = x0a == x0b
+  eq (WithResource x0a) (WithResource x0b) = x0a == x0b
+  eq _ _ = false
+
+instance paramShow :: Show Param where
+  show (Limit x0) = "Limit: " <> show x0
+  show (Offset x0) = "Offset: " <> show x0
+  show (SortOrder x0) = "SortOrder: " <> show x0
+  show (Order x0) = "Order: " <> show x0
+  show (ByOrganizationId x0) = "ByOrganizationId: " <> show x0
+  show (ByOrganizationsIds x0) = "ByOrganizationsIds: " <> show x0
+  show (ByOrganizationName x0) = "ByOrganizationName: " <> show x0
+  show (ByTeamId x0) = "ByTeamId: " <> show x0
+  show (ByTeamsIds x0) = "ByTeamsIds: " <> show x0
+  show (ByTeamName x0) = "ByTeamName: " <> show x0
+  show (ByTeamMemberId x0) = "ByTeamMemberId: " <> show x0
+  show (ByTeamMembersIds x0) = "ByTeamMembersIds: " <> show x0
+  show (ByUserId x0) = "ByUserId: " <> show x0
+  show (ByUsersIds x0) = "ByUsersIds: " <> show x0
+  show (ByUserNick x0) = "ByUserNick: " <> show x0
+  show (ByUsersNicks x0) = "ByUsersNicks: " <> show x0
+  show (ByGlobalGroupId x0) = "ByGlobalGroupId: " <> show x0
+  show (ByGlobalGroupsIds x0) = "ByGlobalGroupsIds: " <> show x0
+  show (ByGroupId x0) = "ByGroupId: " <> show x0
+  show (ByGroupsIds x0) = "ByGroupsIds: " <> show x0
+  show (ByGroupMemberId x0) = "ByGroupMemberId: " <> show x0
+  show (ByGroupMembersIds x0) = "ByGroupMembersIds: " <> show x0
+  show (ByForumId x0) = "ByForumId: " <> show x0
+  show (ByForumsIds x0) = "ByForumsIds: " <> show x0
+  show (ByForumName x0) = "ByForumName: " <> show x0
+  show (ByBoardId x0) = "ByBoardId: " <> show x0
+  show (ByBoardsIds x0) = "ByBoardsIds: " <> show x0
+  show (ByBoardName x0) = "ByBoardName: " <> show x0
+  show (ByThreadId x0) = "ByThreadId: " <> show x0
+  show (ByThreadsIds x0) = "ByThreadsIds: " <> show x0
+  show (ByThreadName x0) = "ByThreadName: " <> show x0
+  show (ByThreadPostId x0) = "ByThreadPostId: " <> show x0
+  show (ByThreadPostsIds x0) = "ByThreadPostsIds: " <> show x0
+  show (ByThreadPostName x0) = "ByThreadPostName: " <> show x0
+  show (ByThreadPostLikeId x0) = "ByThreadPostLikeId: " <> show x0
+  show (ByThreadPostLikesIds x0) = "ByThreadPostLikesIds: " <> show x0
+  show (ByThreadPostStarId x0) = "ByThreadPostStarId: " <> show x0
+  show (ByThreadPostStarsIds x0) = "ByThreadPostStarsIds: " <> show x0
+  show (ByBucketId x0) = "ByBucketId: " <> show x0
+  show (ByResourceId x0) = "ByResourceId: " <> show x0
+  show (ByResourcesIds x0) = "ByResourcesIds: " <> show x0
+  show (ByResourceName x0) = "ByResourceName: " <> show x0
+  show (ByLeuronId x0) = "ByLeuronId: " <> show x0
+  show (ByLeuronsIds x0) = "ByLeuronsIds: " <> show x0
+  show (ByPmId x0) = "ByPmId: " <> show x0
+  show (ByPmsIds x0) = "ByPmsIds: " <> show x0
+  show (ByReminderId x0) = "ByReminderId: " <> show x0
+  show (ByReminderFolderId x0) = "ByReminderFolderId: " <> show x0
+  show (ByParentId x0) = "ByParentId: " <> show x0
+  show (ByParentsIds x0) = "ByParentsIds: " <> show x0
+  show (ByParentName x0) = "ByParentName: " <> show x0
+  show (BySelf x0) = "BySelf: " <> show x0
+  show (Timestamp x0) = "Timestamp: " <> show x0
+  show (UnixTimestamp x0) = "UnixTimestamp: " <> show x0
+  show (CreatedAtTimestamp x0) = "CreatedAtTimestamp: " <> show x0
+  show (CreatedAtUnixTimestamp x0) = "CreatedAtUnixTimestamp: " <> show x0
+  show (RealIP x0) = "RealIP: " <> show x0
+  show (IP x0) = "IP: " <> show x0
+  show (WithOrganization x0) = "WithOrganization: " <> show x0
+  show (WithForum x0) = "WithForum: " <> show x0
+  show (WithBoard x0) = "WithBoard: " <> show x0
+  show (WithThread x0) = "WithThread: " <> show x0
+  show (WithResource x0) = "WithResource: " <> show x0
+
+
+instance paramQueryParam :: QueryParam Param where
+  qp (Limit x0) = Tuple "limit" (show x0)
+  qp (Offset x0) = Tuple "offset" (show x0)
+  qp (SortOrder x0) = Tuple "sort_order" (show x0)
+  qp (Order x0) = Tuple "order" (show x0)
+  qp (ByOrganizationId x0) = Tuple "by_organization_id" (show x0)
+  qp (ByOrganizationsIds x0) = Tuple "by_organizations_ids" (show x0)
+  qp (ByOrganizationName x0) = Tuple "by_organization_name" x0
+  qp (ByTeamId x0) = Tuple "by_team_id" (show x0)
+  qp (ByTeamsIds x0) = Tuple "by_teams_ids" (show x0)
+  qp (ByTeamName x0) = Tuple "by_team_name" x0
+  qp (ByTeamMemberId x0) = Tuple "by_team_member_id" (show x0)
+  qp (ByTeamMembersIds x0) = Tuple "by_team_members_ids" (show x0)
+  qp (ByUserId x0) = Tuple "by_user_id" (show x0)
+  qp (ByUsersIds x0) = Tuple "by_users_ids" (show x0)
+  qp (ByUserNick x0) = Tuple "by_user_nick" x0
+  qp (ByUsersNicks x0) = Tuple "by_users_nicks" (show x0)
+  qp (ByGlobalGroupId x0) = Tuple "by_global_group_id" (show x0)
+  qp (ByGlobalGroupsIds x0) = Tuple "by_global_groups_ids" (show x0)
+  qp (ByGroupId x0) = Tuple "by_group_id" (show x0)
+  qp (ByGroupsIds x0) = Tuple "by_groups_ids" (show x0)
+  qp (ByGroupMemberId x0) = Tuple "by_group_member_id" (show x0)
+  qp (ByGroupMembersIds x0) = Tuple "by_group_members_ids" (show x0)
+  qp (ByForumId x0) = Tuple "by_forum_id" (show x0)
+  qp (ByForumsIds x0) = Tuple "by_forums_ids" (show x0)
+  qp (ByForumName x0) = Tuple "by_forum_name" x0
+  qp (ByBoardId x0) = Tuple "by_board_id" (show x0)
+  qp (ByBoardsIds x0) = Tuple "by_boards_ids" (show x0)
+  qp (ByBoardName x0) = Tuple "by_board_name" x0
+  qp (ByThreadId x0) = Tuple "by_thread_id" (show x0)
+  qp (ByThreadsIds x0) = Tuple "by_threads_ids" (show x0)
+  qp (ByThreadName x0) = Tuple "by_thread_name" x0
+  qp (ByThreadPostId x0) = Tuple "by_thread_post_id" (show x0)
+  qp (ByThreadPostsIds x0) = Tuple "by_thread_posts_ids" (show x0)
+  qp (ByThreadPostName x0) = Tuple "by_thread_post_name" x0
+  qp (ByThreadPostLikeId x0) = Tuple "by_thread_post_like_id" (show x0)
+  qp (ByThreadPostLikesIds x0) = Tuple "by_thread_post_likes_ids" (show x0)
+  qp (ByThreadPostStarId x0) = Tuple "by_thread_post_star_id" (show x0)
+  qp (ByThreadPostStarsIds x0) = Tuple "by_thread_post_stars_ids" (show x0)
+  qp (ByBucketId x0) = Tuple "by_bucket_id" (show x0)
+  qp (ByResourceId x0) = Tuple "by_resource_id" (show x0)
+  qp (ByResourcesIds x0) = Tuple "by_resources_ids" (show x0)
+  qp (ByResourceName x0) = Tuple "by_resource_name" x0
+  qp (ByLeuronId x0) = Tuple "by_leuron_id" (show x0)
+  qp (ByLeuronsIds x0) = Tuple "by_leurons_ids" (show x0)
+  qp (ByPmId x0) = Tuple "by_pm_id" (show x0)
+  qp (ByPmsIds x0) = Tuple "by_pms_ids" (show x0)
+  qp (ByReminderId x0) = Tuple "by_reminder_id" (show x0)
+  qp (ByReminderFolderId x0) = Tuple "by_reminder_folder_id" (show x0)
+  qp (ByParentId x0) = Tuple "by_parent_id" (show x0)
+  qp (ByParentsIds x0) = Tuple "by_parents_ids" (show x0)
+  qp (ByParentName x0) = Tuple "by_parent_name" x0
+  qp (BySelf x0) = Tuple "by_self" (show x0)
+  qp (Timestamp x0) = Tuple "timestamp" (show x0)
+  qp (UnixTimestamp x0) = Tuple "unix_timestamp" (show x0)
+  qp (CreatedAtTimestamp x0) = Tuple "created_at_timestamp" (show x0)
+  qp (CreatedAtUnixTimestamp x0) = Tuple "created_at_unix_timestamp" (show x0)
+  qp (RealIP x0) = Tuple "real_ip" x0
+  qp (IP x0) = Tuple "ip" x0
+  qp (WithOrganization x0) = Tuple "with_organization" (show x0)
+  qp (WithForum x0) = Tuple "with_forum" (show x0)
+  qp (WithBoard x0) = Tuple "with_board" (show x0)
+  qp (WithThread x0) = Tuple "with_thread" (show x0)
+  qp (WithResource x0) = Tuple "with_resource" (show x0)
+
+
 data ParamTag
   = ParamTag_Limit 
   | ParamTag_Offset 
@@ -11152,6 +11341,204 @@ instance paramTagIsForeign :: IsForeign ParamTag where
 
 
 
+instance paramTagEq :: Eq ParamTag where
+  eq ParamTag_Limit ParamTag_Limit = true
+  eq ParamTag_Offset ParamTag_Offset = true
+  eq ParamTag_SortOrder ParamTag_SortOrder = true
+  eq ParamTag_Order ParamTag_Order = true
+  eq ParamTag_ByOrganizationId ParamTag_ByOrganizationId = true
+  eq ParamTag_ByOrganizationsIds ParamTag_ByOrganizationsIds = true
+  eq ParamTag_ByOrganizationName ParamTag_ByOrganizationName = true
+  eq ParamTag_ByTeamId ParamTag_ByTeamId = true
+  eq ParamTag_ByTeamsIds ParamTag_ByTeamsIds = true
+  eq ParamTag_ByTeamName ParamTag_ByTeamName = true
+  eq ParamTag_ByTeamMemberId ParamTag_ByTeamMemberId = true
+  eq ParamTag_ByTeamMembersIds ParamTag_ByTeamMembersIds = true
+  eq ParamTag_ByUserId ParamTag_ByUserId = true
+  eq ParamTag_ByUsersIds ParamTag_ByUsersIds = true
+  eq ParamTag_ByUserNick ParamTag_ByUserNick = true
+  eq ParamTag_ByUsersNicks ParamTag_ByUsersNicks = true
+  eq ParamTag_ByGlobalGroupId ParamTag_ByGlobalGroupId = true
+  eq ParamTag_ByGlobalGroupsIds ParamTag_ByGlobalGroupsIds = true
+  eq ParamTag_ByGroupId ParamTag_ByGroupId = true
+  eq ParamTag_ByGroupsIds ParamTag_ByGroupsIds = true
+  eq ParamTag_ByGroupMemberId ParamTag_ByGroupMemberId = true
+  eq ParamTag_ByGroupMembersIds ParamTag_ByGroupMembersIds = true
+  eq ParamTag_ByForumId ParamTag_ByForumId = true
+  eq ParamTag_ByForumsIds ParamTag_ByForumsIds = true
+  eq ParamTag_ByForumName ParamTag_ByForumName = true
+  eq ParamTag_ByBoardId ParamTag_ByBoardId = true
+  eq ParamTag_ByBoardsIds ParamTag_ByBoardsIds = true
+  eq ParamTag_ByBoardName ParamTag_ByBoardName = true
+  eq ParamTag_ByThreadId ParamTag_ByThreadId = true
+  eq ParamTag_ByThreadsIds ParamTag_ByThreadsIds = true
+  eq ParamTag_ByThreadName ParamTag_ByThreadName = true
+  eq ParamTag_ByThreadPostId ParamTag_ByThreadPostId = true
+  eq ParamTag_ByThreadPostsIds ParamTag_ByThreadPostsIds = true
+  eq ParamTag_ByThreadPostName ParamTag_ByThreadPostName = true
+  eq ParamTag_ByThreadPostLikeId ParamTag_ByThreadPostLikeId = true
+  eq ParamTag_ByThreadPostLikesIds ParamTag_ByThreadPostLikesIds = true
+  eq ParamTag_ByThreadPostStarId ParamTag_ByThreadPostStarId = true
+  eq ParamTag_ByThreadPostStarsIds ParamTag_ByThreadPostStarsIds = true
+  eq ParamTag_ByBucketId ParamTag_ByBucketId = true
+  eq ParamTag_ByResourceId ParamTag_ByResourceId = true
+  eq ParamTag_ByResourcesIds ParamTag_ByResourcesIds = true
+  eq ParamTag_ByResourceName ParamTag_ByResourceName = true
+  eq ParamTag_ByLeuronId ParamTag_ByLeuronId = true
+  eq ParamTag_ByLeuronsIds ParamTag_ByLeuronsIds = true
+  eq ParamTag_ByPmId ParamTag_ByPmId = true
+  eq ParamTag_ByPmsIds ParamTag_ByPmsIds = true
+  eq ParamTag_ByReminderId ParamTag_ByReminderId = true
+  eq ParamTag_ByReminderFolderId ParamTag_ByReminderFolderId = true
+  eq ParamTag_ByParentId ParamTag_ByParentId = true
+  eq ParamTag_ByParentsIds ParamTag_ByParentsIds = true
+  eq ParamTag_ByParentName ParamTag_ByParentName = true
+  eq ParamTag_BySelf ParamTag_BySelf = true
+  eq ParamTag_Timestamp ParamTag_Timestamp = true
+  eq ParamTag_UnixTimestamp ParamTag_UnixTimestamp = true
+  eq ParamTag_CreatedAtTimestamp ParamTag_CreatedAtTimestamp = true
+  eq ParamTag_CreatedAtUnixTimestamp ParamTag_CreatedAtUnixTimestamp = true
+  eq ParamTag_RealIP ParamTag_RealIP = true
+  eq ParamTag_IP ParamTag_IP = true
+  eq ParamTag_WithOrganization ParamTag_WithOrganization = true
+  eq ParamTag_WithForum ParamTag_WithForum = true
+  eq ParamTag_WithBoard ParamTag_WithBoard = true
+  eq ParamTag_WithThread ParamTag_WithThread = true
+  eq ParamTag_WithResource ParamTag_WithResource = true
+  eq _ _ = false
+
+instance paramTagShow :: Show ParamTag where
+  show ParamTag_Limit = "limit"
+  show ParamTag_Offset = "offset"
+  show ParamTag_SortOrder = "sort_order"
+  show ParamTag_Order = "order"
+  show ParamTag_ByOrganizationId = "by_organization_id"
+  show ParamTag_ByOrganizationsIds = "by_organizations_ids"
+  show ParamTag_ByOrganizationName = "by_organization_name"
+  show ParamTag_ByTeamId = "by_team_id"
+  show ParamTag_ByTeamsIds = "by_teams_ids"
+  show ParamTag_ByTeamName = "by_team_name"
+  show ParamTag_ByTeamMemberId = "by_team_member_id"
+  show ParamTag_ByTeamMembersIds = "by_team_members_ids"
+  show ParamTag_ByUserId = "by_user_id"
+  show ParamTag_ByUsersIds = "by_users_ids"
+  show ParamTag_ByUserNick = "by_user_nick"
+  show ParamTag_ByUsersNicks = "by_users_nicks"
+  show ParamTag_ByGlobalGroupId = "by_global_group_id"
+  show ParamTag_ByGlobalGroupsIds = "by_global_groups_ids"
+  show ParamTag_ByGroupId = "by_group_id"
+  show ParamTag_ByGroupsIds = "by_groups_ids"
+  show ParamTag_ByGroupMemberId = "by_group_member_id"
+  show ParamTag_ByGroupMembersIds = "by_group_members_ids"
+  show ParamTag_ByForumId = "by_forum_id"
+  show ParamTag_ByForumsIds = "by_forums_ids"
+  show ParamTag_ByForumName = "by_forum_name"
+  show ParamTag_ByBoardId = "by_board_id"
+  show ParamTag_ByBoardsIds = "by_boards_ids"
+  show ParamTag_ByBoardName = "by_board_name"
+  show ParamTag_ByThreadId = "by_thread_id"
+  show ParamTag_ByThreadsIds = "by_threads_ids"
+  show ParamTag_ByThreadName = "by_thread_name"
+  show ParamTag_ByThreadPostId = "by_thread_post_id"
+  show ParamTag_ByThreadPostsIds = "by_thread_posts_ids"
+  show ParamTag_ByThreadPostName = "by_thread_post_name"
+  show ParamTag_ByThreadPostLikeId = "by_thread_post_like_id"
+  show ParamTag_ByThreadPostLikesIds = "by_thread_post_likes_ids"
+  show ParamTag_ByThreadPostStarId = "by_thread_post_star_id"
+  show ParamTag_ByThreadPostStarsIds = "by_thread_post_stars_ids"
+  show ParamTag_ByBucketId = "by_bucket_id"
+  show ParamTag_ByResourceId = "by_resource_id"
+  show ParamTag_ByResourcesIds = "by_resources_ids"
+  show ParamTag_ByResourceName = "by_resource_name"
+  show ParamTag_ByLeuronId = "by_leuron_id"
+  show ParamTag_ByLeuronsIds = "by_leurons_ids"
+  show ParamTag_ByPmId = "by_pm_id"
+  show ParamTag_ByPmsIds = "by_pms_ids"
+  show ParamTag_ByReminderId = "by_reminder_id"
+  show ParamTag_ByReminderFolderId = "by_reminder_folder_id"
+  show ParamTag_ByParentId = "by_parent_id"
+  show ParamTag_ByParentsIds = "by_parents_ids"
+  show ParamTag_ByParentName = "by_parent_name"
+  show ParamTag_BySelf = "by_self"
+  show ParamTag_Timestamp = "timestamp"
+  show ParamTag_UnixTimestamp = "unix_timestamp"
+  show ParamTag_CreatedAtTimestamp = "created_at_timestamp"
+  show ParamTag_CreatedAtUnixTimestamp = "created_at_unix_timestamp"
+  show ParamTag_RealIP = "real_ip"
+  show ParamTag_IP = "ip"
+  show ParamTag_WithOrganization = "with_organization"
+  show ParamTag_WithForum = "with_forum"
+  show ParamTag_WithBoard = "with_board"
+  show ParamTag_WithThread = "with_thread"
+  show ParamTag_WithResource = "with_resource"
+
+
+readParamTag :: String -> Maybe ParamTag
+readParamTag "limit" = Just ParamTag_Limit
+readParamTag "offset" = Just ParamTag_Offset
+readParamTag "sort_order" = Just ParamTag_SortOrder
+readParamTag "order" = Just ParamTag_Order
+readParamTag "by_organization_id" = Just ParamTag_ByOrganizationId
+readParamTag "by_organizations_ids" = Just ParamTag_ByOrganizationsIds
+readParamTag "by_organization_name" = Just ParamTag_ByOrganizationName
+readParamTag "by_team_id" = Just ParamTag_ByTeamId
+readParamTag "by_teams_ids" = Just ParamTag_ByTeamsIds
+readParamTag "by_team_name" = Just ParamTag_ByTeamName
+readParamTag "by_team_member_id" = Just ParamTag_ByTeamMemberId
+readParamTag "by_team_members_ids" = Just ParamTag_ByTeamMembersIds
+readParamTag "by_user_id" = Just ParamTag_ByUserId
+readParamTag "by_users_ids" = Just ParamTag_ByUsersIds
+readParamTag "by_user_nick" = Just ParamTag_ByUserNick
+readParamTag "by_users_nicks" = Just ParamTag_ByUsersNicks
+readParamTag "by_global_group_id" = Just ParamTag_ByGlobalGroupId
+readParamTag "by_global_groups_ids" = Just ParamTag_ByGlobalGroupsIds
+readParamTag "by_group_id" = Just ParamTag_ByGroupId
+readParamTag "by_groups_ids" = Just ParamTag_ByGroupsIds
+readParamTag "by_group_member_id" = Just ParamTag_ByGroupMemberId
+readParamTag "by_group_members_ids" = Just ParamTag_ByGroupMembersIds
+readParamTag "by_forum_id" = Just ParamTag_ByForumId
+readParamTag "by_forums_ids" = Just ParamTag_ByForumsIds
+readParamTag "by_forum_name" = Just ParamTag_ByForumName
+readParamTag "by_board_id" = Just ParamTag_ByBoardId
+readParamTag "by_boards_ids" = Just ParamTag_ByBoardsIds
+readParamTag "by_board_name" = Just ParamTag_ByBoardName
+readParamTag "by_thread_id" = Just ParamTag_ByThreadId
+readParamTag "by_threads_ids" = Just ParamTag_ByThreadsIds
+readParamTag "by_thread_name" = Just ParamTag_ByThreadName
+readParamTag "by_thread_post_id" = Just ParamTag_ByThreadPostId
+readParamTag "by_thread_posts_ids" = Just ParamTag_ByThreadPostsIds
+readParamTag "by_thread_post_name" = Just ParamTag_ByThreadPostName
+readParamTag "by_thread_post_like_id" = Just ParamTag_ByThreadPostLikeId
+readParamTag "by_thread_post_likes_ids" = Just ParamTag_ByThreadPostLikesIds
+readParamTag "by_thread_post_star_id" = Just ParamTag_ByThreadPostStarId
+readParamTag "by_thread_post_stars_ids" = Just ParamTag_ByThreadPostStarsIds
+readParamTag "by_bucket_id" = Just ParamTag_ByBucketId
+readParamTag "by_resource_id" = Just ParamTag_ByResourceId
+readParamTag "by_resources_ids" = Just ParamTag_ByResourcesIds
+readParamTag "by_resource_name" = Just ParamTag_ByResourceName
+readParamTag "by_leuron_id" = Just ParamTag_ByLeuronId
+readParamTag "by_leurons_ids" = Just ParamTag_ByLeuronsIds
+readParamTag "by_pm_id" = Just ParamTag_ByPmId
+readParamTag "by_pms_ids" = Just ParamTag_ByPmsIds
+readParamTag "by_reminder_id" = Just ParamTag_ByReminderId
+readParamTag "by_reminder_folder_id" = Just ParamTag_ByReminderFolderId
+readParamTag "by_parent_id" = Just ParamTag_ByParentId
+readParamTag "by_parents_ids" = Just ParamTag_ByParentsIds
+readParamTag "by_parent_name" = Just ParamTag_ByParentName
+readParamTag "by_self" = Just ParamTag_BySelf
+readParamTag "timestamp" = Just ParamTag_Timestamp
+readParamTag "unix_timestamp" = Just ParamTag_UnixTimestamp
+readParamTag "created_at_timestamp" = Just ParamTag_CreatedAtTimestamp
+readParamTag "created_at_unix_timestamp" = Just ParamTag_CreatedAtUnixTimestamp
+readParamTag "real_ip" = Just ParamTag_RealIP
+readParamTag "ip" = Just ParamTag_IP
+readParamTag "with_organization" = Just ParamTag_WithOrganization
+readParamTag "with_forum" = Just ParamTag_WithForum
+readParamTag "with_board" = Just ParamTag_WithBoard
+readParamTag "with_thread" = Just ParamTag_WithThread
+readParamTag "with_resource" = Just ParamTag_WithResource
+readParamTag _ = Nothing
+
 data SortOrderBy
   = SortOrderBy_Asc 
   | SortOrderBy_Dsc 
@@ -11247,6 +11634,27 @@ instance sortOrderByIsForeign :: IsForeign SortOrderBy where
       _ -> Left $ TypeMismatch "SortOrderBy" "IsForeign"
 
 
+
+instance sortOrderByEq :: Eq SortOrderBy where
+  eq SortOrderBy_Asc SortOrderBy_Asc = true
+  eq SortOrderBy_Dsc SortOrderBy_Dsc = true
+  eq SortOrderBy_Rnd SortOrderBy_Rnd = true
+  eq SortOrderBy_None SortOrderBy_None = true
+  eq _ _ = false
+
+instance sortOrderByShow :: Show SortOrderBy where
+  show SortOrderBy_Asc = "asc"
+  show SortOrderBy_Dsc = "dsc"
+  show SortOrderBy_Rnd = "rnd"
+  show SortOrderBy_None = "none"
+
+
+readSortOrderBy :: String -> Maybe SortOrderBy
+readSortOrderBy "asc" = Just SortOrderBy_Asc
+readSortOrderBy "dsc" = Just SortOrderBy_Dsc
+readSortOrderBy "rnd" = Just SortOrderBy_Rnd
+readSortOrderBy "none" = Just SortOrderBy_None
+readSortOrderBy _ = Nothing
 
 data OrderBy
   = OrderBy_UserId 
@@ -11456,6 +11864,51 @@ instance orderByIsForeign :: IsForeign OrderBy where
 
 
 
+instance orderByEq :: Eq OrderBy where
+  eq OrderBy_UserId OrderBy_UserId = true
+  eq OrderBy_CreatedAt OrderBy_CreatedAt = true
+  eq OrderBy_ModifiedAt OrderBy_ModifiedAt = true
+  eq OrderBy_ModifiedBy OrderBy_ModifiedBy = true
+  eq OrderBy_ActivityAt OrderBy_ActivityAt = true
+  eq OrderBy_OrganizationId OrderBy_OrganizationId = true
+  eq OrderBy_TeamId OrderBy_TeamId = true
+  eq OrderBy_ForumId OrderBy_ForumId = true
+  eq OrderBy_BoardId OrderBy_BoardId = true
+  eq OrderBy_ThreadId OrderBy_ThreadId = true
+  eq OrderBy_Id OrderBy_Id = true
+  eq OrderBy_None OrderBy_None = true
+  eq _ _ = false
+
+instance orderByShow :: Show OrderBy where
+  show OrderBy_UserId = "user_id"
+  show OrderBy_CreatedAt = "created_at"
+  show OrderBy_ModifiedAt = "modified_at"
+  show OrderBy_ModifiedBy = "modified_by"
+  show OrderBy_ActivityAt = "activity_at"
+  show OrderBy_OrganizationId = "organization_id"
+  show OrderBy_TeamId = "team_id"
+  show OrderBy_ForumId = "forum_id"
+  show OrderBy_BoardId = "board_id"
+  show OrderBy_ThreadId = "thread_id"
+  show OrderBy_Id = "id"
+  show OrderBy_None = "none"
+
+
+readOrderBy :: String -> Maybe OrderBy
+readOrderBy "user_id" = Just OrderBy_UserId
+readOrderBy "created_at" = Just OrderBy_CreatedAt
+readOrderBy "modified_at" = Just OrderBy_ModifiedAt
+readOrderBy "modified_by" = Just OrderBy_ModifiedBy
+readOrderBy "activity_at" = Just OrderBy_ActivityAt
+readOrderBy "organization_id" = Just OrderBy_OrganizationId
+readOrderBy "team_id" = Just OrderBy_TeamId
+readOrderBy "forum_id" = Just OrderBy_ForumId
+readOrderBy "board_id" = Just OrderBy_BoardId
+readOrderBy "thread_id" = Just OrderBy_ThreadId
+readOrderBy "id" = Just OrderBy_Id
+readOrderBy "none" = Just OrderBy_None
+readOrderBy _ = Nothing
+
 data Permission
   = Perm_Create 
   | Perm_Read 
@@ -11566,20 +12019,12 @@ instance permissionIsForeign :: IsForeign Permission where
 
 
 
-instance permissionShow :: Show Permission where
-  show (Perm_Create) = "Perm_Create"
-  show (Perm_Read) = "Perm_Read"
-  show (Perm_Update) = "Perm_Update"
-  show (Perm_Delete) = "Perm_Delete"
-  show (Perm_Execute) = "Perm_Execute"
-
-
 instance permissionEq :: Eq Permission where
-  eq (Perm_Create) (Perm_Create) = true
-  eq (Perm_Read) (Perm_Read) = true
-  eq (Perm_Update) (Perm_Update) = true
-  eq (Perm_Delete) (Perm_Delete) = true
-  eq (Perm_Execute) (Perm_Execute) = true
+  eq Perm_Create Perm_Create = true
+  eq Perm_Read Perm_Read = true
+  eq Perm_Update Perm_Update = true
+  eq Perm_Delete Perm_Delete = true
+  eq Perm_Execute Perm_Execute = true
   eq _ _ = false
 
 type Permissions  = (Array Permission)
@@ -11664,9 +12109,6 @@ instance pmRequestIsForeign :: IsForeign PmRequest where
       <*> readProp "body" json
       <*> readProp "guard" json
 
-
-instance pmRequestShow :: Show PmRequest where
-    show (PmRequest o) = show "subject: " <> show o.subject <> ", " <> show "body: " <> show o.body <> ", " <> show "guard: " <> show o.guard
 
 newtype PmResponse = PmResponse {
   id :: Int,
@@ -11811,9 +12253,6 @@ instance pmResponseIsForeign :: IsForeign PmResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance pmResponseShow :: Show PmResponse where
-    show (PmResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "toUserId: " <> show o.toUserId <> ", " <> show "subject: " <> show o.subject <> ", " <> show "body: " <> show o.body <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype PmResponses = PmResponses {
   pmResponses :: (Array PmResponse)
 }
@@ -11875,9 +12314,6 @@ instance pmResponsesIsForeign :: IsForeign PmResponses where
       mkPmResponses
       <$> readProp "pm_responses" json
 
-
-instance pmResponsesShow :: Show PmResponses where
-    show (PmResponses o) = show "pmResponses: " <> show o.pmResponses
 
 newtype PmInRequest = PmInRequest {
   label :: (Maybe String),
@@ -11967,9 +12403,6 @@ instance pmInRequestIsForeign :: IsForeign PmInRequest where
       <*> readProp "is_starred" json
       <*> readProp "guard" json
 
-
-instance pmInRequestShow :: Show PmInRequest where
-    show (PmInRequest o) = show "label: " <> show o.label <> ", " <> show "isRead: " <> show o.isRead <> ", " <> show "isStarred: " <> show o.isStarred <> ", " <> show "guard: " <> show o.guard
 
 newtype PmInResponse = PmInResponse {
   id :: Int,
@@ -12132,9 +12565,6 @@ instance pmInResponseIsForeign :: IsForeign PmInResponse where
       <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
-instance pmInResponseShow :: Show PmInResponse where
-    show (PmInResponse o) = show "id: " <> show o.id <> ", " <> show "pmId: " <> show o.pmId <> ", " <> show "userId: " <> show o.userId <> ", " <> show "label: " <> show o.label <> ", " <> show "isRead: " <> show o.isRead <> ", " <> show "isStarred: " <> show o.isStarred <> ", " <> show "isNew: " <> show o.isNew <> ", " <> show "isSaved: " <> show o.isSaved <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
-
 newtype PmInResponses = PmInResponses {
   pmInResponses :: (Array PmInResponse)
 }
@@ -12196,9 +12626,6 @@ instance pmInResponsesIsForeign :: IsForeign PmInResponses where
       mkPmInResponses
       <$> readProp "pm_in_responses" json
 
-
-instance pmInResponsesShow :: Show PmInResponses where
-    show (PmInResponses o) = show "pmInResponses: " <> show o.pmInResponses
 
 newtype PmOutRequest = PmOutRequest {
   label :: (Maybe String),
@@ -12270,9 +12697,6 @@ instance pmOutRequestIsForeign :: IsForeign PmOutRequest where
       <$> (unNullOrUndefined <$> readProp "label" json)
       <*> readProp "guard" json
 
-
-instance pmOutRequestShow :: Show PmOutRequest where
-    show (PmOutRequest o) = show "label: " <> show o.label <> ", " <> show "guard: " <> show o.guard
 
 newtype PmOutResponse = PmOutResponse {
   id :: Int,
@@ -12408,9 +12832,6 @@ instance pmOutResponseIsForeign :: IsForeign PmOutResponse where
       <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
-instance pmOutResponseShow :: Show PmOutResponse where
-    show (PmOutResponse o) = show "id: " <> show o.id <> ", " <> show "pmId: " <> show o.pmId <> ", " <> show "userId: " <> show o.userId <> ", " <> show "label: " <> show o.label <> ", " <> show "isSaved: " <> show o.isSaved <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
-
 newtype PmOutResponses = PmOutResponses {
   pmOutResponses :: (Array PmOutResponse)
 }
@@ -12472,9 +12893,6 @@ instance pmOutResponsesIsForeign :: IsForeign PmOutResponses where
       mkPmOutResponses
       <$> readProp "pm_out_responses" json
 
-
-instance pmOutResponsesShow :: Show PmOutResponses where
-    show (PmOutResponses o) = show "pmOutResponses: " <> show o.pmOutResponses
 
 newtype ProfileX = ProfileX {
   profileLogin :: String,
@@ -12555,9 +12973,6 @@ instance profileXIsForeign :: IsForeign ProfileX where
       <*> readProp "profile_name" json
       <*> readProp "profile_email" json
 
-
-instance profileXShow :: Show ProfileX where
-    show (ProfileX o) = show "profileLogin: " <> show o.profileLogin <> ", " <> show "profileName: " <> show o.profileName <> ", " <> show "profileEmail: " <> show o.profileEmail
 
 data ProfileGender
   = GenderMale 
@@ -12641,16 +13056,10 @@ instance profileGenderIsForeign :: IsForeign ProfileGender where
 
 
 
-instance profileGenderShow :: Show ProfileGender where
-  show (GenderMale) = "GenderMale"
-  show (GenderFemale) = "GenderFemale"
-  show (GenderUnknown) = "GenderUnknown"
-
-
 instance profileGenderEq :: Eq ProfileGender where
-  eq (GenderMale) (GenderMale) = true
-  eq (GenderFemale) (GenderFemale) = true
-  eq (GenderUnknown) (GenderUnknown) = true
+  eq GenderMale GenderMale = true
+  eq GenderFemale GenderFemale = true
+  eq GenderUnknown GenderUnknown = true
   eq _ _ = false
 
 newtype ProfileRequest = ProfileRequest {
@@ -12768,9 +13177,6 @@ instance profileRequestIsForeign :: IsForeign ProfileRequest where
       <*> readProp "debug" json
       <*> readProp "guard" json
 
-
-instance profileRequestShow :: Show ProfileRequest where
-    show (ProfileRequest o) = show "gender: " <> show o.gender <> ", " <> show "birthdate: " <> show o.birthdate <> ", " <> show "website: " <> show o.website <> ", " <> show "location: " <> show o.location <> ", " <> show "signature: " <> show o.signature <> ", " <> show "debug: " <> show o.debug <> ", " <> show "guard: " <> show o.guard
 
 newtype ProfileResponse = ProfileResponse {
   id :: Int,
@@ -12951,9 +13357,6 @@ instance profileResponseIsForeign :: IsForeign ProfileResponse where
       <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
-instance profileResponseShow :: Show ProfileResponse where
-    show (ProfileResponse o) = show "id: " <> show o.id <> ", " <> show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "gender: " <> show o.gender <> ", " <> show "birthdate: " <> show o.birthdate <> ", " <> show "website: " <> show o.website <> ", " <> show "location: " <> show o.location <> ", " <> show "signature: " <> show o.signature <> ", " <> show "debug: " <> show o.debug <> ", " <> show "karmaGood: " <> show o.karmaGood <> ", " <> show "karmaBad: " <> show o.karmaBad <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
-
 newtype ProfileResponses = ProfileResponses {
   profileResponses :: (Array ProfileResponse)
 }
@@ -13015,9 +13418,6 @@ instance profileResponsesIsForeign :: IsForeign ProfileResponses where
       mkProfileResponses
       <$> readProp "profile_responses" json
 
-
-instance profileResponsesShow :: Show ProfileResponses where
-    show (ProfileResponses o) = show "profileResponses: " <> show o.profileResponses
 
 newtype ReminderRequest = ReminderRequest {
   dataP :: String,
@@ -13089,9 +13489,6 @@ instance reminderRequestIsForeign :: IsForeign ReminderRequest where
       <$> readProp "data" json
       <*> readProp "guard" json
 
-
-instance reminderRequestShow :: Show ReminderRequest where
-    show (ReminderRequest o) = show "dataP: " <> show o.dataP <> ", " <> show "guard: " <> show o.guard
 
 newtype ReminderResponse = ReminderResponse {
   id :: Int,
@@ -13227,9 +13624,6 @@ instance reminderResponseIsForeign :: IsForeign ReminderResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance reminderResponseShow :: Show ReminderResponse where
-    show (ReminderResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "parentFolderId: " <> show o.parentFolderId <> ", " <> show "dataP: " <> show o.dataP <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype ReminderResponses = ReminderResponses {
   reminderResponses :: (Array ReminderResponse)
 }
@@ -13291,9 +13685,6 @@ instance reminderResponsesIsForeign :: IsForeign ReminderResponses where
       mkReminderResponses
       <$> readProp "reminder_responses" json
 
-
-instance reminderResponsesShow :: Show ReminderResponses where
-    show (ReminderResponses o) = show "reminderResponses: " <> show o.reminderResponses
 
 newtype ReminderFolderRequest = ReminderFolderRequest {
   displayName :: String,
@@ -13383,9 +13774,6 @@ instance reminderFolderRequestIsForeign :: IsForeign ReminderFolderRequest where
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
-
-instance reminderFolderRequestShow :: Show ReminderFolderRequest where
-    show (ReminderFolderRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype ReminderFolderResponse = ReminderFolderResponse {
   id :: Int,
@@ -13548,9 +13936,6 @@ instance reminderFolderResponseIsForeign :: IsForeign ReminderFolderResponse whe
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance reminderFolderResponseShow :: Show ReminderFolderResponse where
-    show (ReminderFolderResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "parentFolderId: " <> show o.parentFolderId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "description: " <> show o.description <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype ReminderFolderResponses = ReminderFolderResponses {
   reminderFolderResponses :: (Array ReminderFolderResponse)
 }
@@ -13612,9 +13997,6 @@ instance reminderFolderResponsesIsForeign :: IsForeign ReminderFolderResponses w
       mkReminderFolderResponses
       <$> readProp "reminder_folder_responses" json
 
-
-instance reminderFolderResponsesShow :: Show ReminderFolderResponses where
-    show (ReminderFolderResponses o) = show "reminderFolderResponses: " <> show o.reminderFolderResponses
 
 data ResourceType
   = ISBN13 String
@@ -13774,14 +14156,6 @@ instance resourceTypeIsForeign :: IsForeign ResourceType where
 
 
 
-instance resourceTypeShow :: Show ResourceType where
-  show (ISBN13 x0) = "ISBN13: " <> show x0
-  show (ISBN10 x0) = "ISBN10: " <> show x0
-  show (ISBN x0) = "ISBN: " <> show x0
-  show (URL x0) = "URL: " <> show x0
-  show (SourceNone) = "SourceNone"
-
-
 data TyResourceType
   = TyISBN13 
   | TyISBN10 
@@ -13892,20 +14266,12 @@ instance tyResourceTypeIsForeign :: IsForeign TyResourceType where
 
 
 
-instance tyResourceTypeShow :: Show TyResourceType where
-  show (TyISBN13) = "TyISBN13"
-  show (TyISBN10) = "TyISBN10"
-  show (TyISBN) = "TyISBN"
-  show (TyURL) = "TyURL"
-  show (TySourceNone) = "TySourceNone"
-
-
 instance tyResourceTypeEq :: Eq TyResourceType where
-  eq (TyISBN13) (TyISBN13) = true
-  eq (TyISBN10) (TyISBN10) = true
-  eq (TyISBN) (TyISBN) = true
-  eq (TyURL) (TyURL) = true
-  eq (TySourceNone) (TySourceNone) = true
+  eq TyISBN13 TyISBN13 = true
+  eq TyISBN10 TyISBN10 = true
+  eq TyISBN TyISBN = true
+  eq TyURL TyURL = true
+  eq TySourceNone TySourceNone = true
   eq _ _ = false
 
 newtype ResourceRequest = ResourceRequest {
@@ -14077,9 +14443,6 @@ instance resourceRequestIsForeign :: IsForeign ResourceRequest where
       <*> readProp "tags" json
       <*> readProp "guard" json
 
-
-instance resourceRequestShow :: Show ResourceRequest where
-    show (ResourceRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "source: " <> show o.source <> ", " <> show "author: " <> show o.author <> ", " <> show "prerequisites: " <> show o.prerequisites <> ", " <> show "categories: " <> show o.categories <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "counter: " <> show o.counter <> ", " <> show "version: " <> show o.version <> ", " <> show "urls: " <> show o.urls <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "guard: " <> show o.guard
 
 newtype ResourceResponse = ResourceResponse {
   id :: Int,
@@ -14314,9 +14677,6 @@ instance resourceResponseIsForeign :: IsForeign ResourceResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance resourceResponseShow :: Show ResourceResponse where
-    show (ResourceResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "source: " <> show o.source <> ", " <> show "author: " <> show o.author <> ", " <> show "prerequisites: " <> show o.prerequisites <> ", " <> show "categories: " <> show o.categories <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "counter: " <> show o.counter <> ", " <> show "version: " <> show o.version <> ", " <> show "urls: " <> show o.urls <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype ResourceResponses = ResourceResponses {
   resourceResponses :: (Array ResourceResponse)
 }
@@ -14378,9 +14738,6 @@ instance resourceResponsesIsForeign :: IsForeign ResourceResponses where
       mkResourceResponses
       <$> readProp "resource_responses" json
 
-
-instance resourceResponsesShow :: Show ResourceResponses where
-    show (ResourceResponses o) = show "resourceResponses: " <> show o.resourceResponses
 
 newtype ResourceStatResponse = ResourceStatResponse {
   resourceId :: Int,
@@ -14498,9 +14855,6 @@ instance resourceStatResponseIsForeign :: IsForeign ResourceStatResponse where
       <*> readProp "views" json
 
 
-instance resourceStatResponseShow :: Show ResourceStatResponse where
-    show (ResourceStatResponse o) = show "resourceId: " <> show o.resourceId <> ", " <> show "leurons: " <> show o.leurons <> ", " <> show "likes: " <> show o.likes <> ", " <> show "neutral: " <> show o.neutral <> ", " <> show "dislikes: " <> show o.dislikes <> ", " <> show "stars: " <> show o.stars <> ", " <> show "views: " <> show o.views
-
 newtype ResourceStatResponses = ResourceStatResponses {
   resourceStatResponses :: (Array ResourceStatResponse)
 }
@@ -14562,9 +14916,6 @@ instance resourceStatResponsesIsForeign :: IsForeign ResourceStatResponses where
       mkResourceStatResponses
       <$> readProp "resource_stat_responses" json
 
-
-instance resourceStatResponsesShow :: Show ResourceStatResponses where
-    show (ResourceStatResponses o) = show "resourceStatResponses: " <> show o.resourceStatResponses
 
 data Size
   = XSmall 
@@ -14676,20 +15027,12 @@ instance sizeIsForeign :: IsForeign Size where
 
 
 
-instance sizeShow :: Show Size where
-  show (XSmall) = "XSmall"
-  show (Small) = "Small"
-  show (Medium) = "Medium"
-  show (Large) = "Large"
-  show (XLarge) = "XLarge"
-
-
 instance sizeEq :: Eq Size where
-  eq (XSmall) (XSmall) = true
-  eq (Small) (Small) = true
-  eq (Medium) (Medium) = true
-  eq (Large) (Large) = true
-  eq (XLarge) (XLarge) = true
+  eq XSmall XSmall = true
+  eq Small Small = true
+  eq Medium Medium = true
+  eq Large Large = true
+  eq XLarge XLarge = true
   eq _ _ = false
 
 data Splits
@@ -14772,11 +15115,6 @@ instance splitsIsForeign :: IsForeign Splits where
 
 
 
-instance splitsShow :: Show Splits where
-  show (SplitAt x0 x1 x2) = "SplitAt: " <> show x0 <> " " <> show x1 <> " " <> show x2
-  show (SplitNone) = "SplitNone"
-
-
 data TySplits
   = TySplitA 
   | TySplitNone 
@@ -14845,14 +15183,9 @@ instance tySplitsIsForeign :: IsForeign TySplits where
 
 
 
-instance tySplitsShow :: Show TySplits where
-  show (TySplitA) = "TySplitA"
-  show (TySplitNone) = "TySplitNone"
-
-
 instance tySplitsEq :: Eq TySplits where
-  eq (TySplitA) (TySplitA) = true
-  eq (TySplitNone) (TySplitNone) = true
+  eq TySplitA TySplitA = true
+  eq TySplitNone TySplitNone = true
   eq _ _ = false
 
 data Substitutions
@@ -14999,13 +15332,6 @@ instance substitutionsIsForeign :: IsForeign Substitutions where
 
 
 
-instance substitutionsShow :: Show Substitutions where
-  show (SubsExpr x0 x1) = "SubsExpr: " <> show x0 <> " " <> show x1
-  show (SubsOneOf x0) = "SubsOneOf: " <> show x0
-  show (SubsAllOf x0) = "SubsAllOf: " <> show x0
-  show (SubsBoth x0 x1) = "SubsBoth: " <> show x0 <> " " <> show x1
-
-
 data TySubstitutions
   = TySubsExpr 
   | TySubsOneOf 
@@ -15102,18 +15428,11 @@ instance tySubstitutionsIsForeign :: IsForeign TySubstitutions where
 
 
 
-instance tySubstitutionsShow :: Show TySubstitutions where
-  show (TySubsExpr) = "TySubsExpr"
-  show (TySubsOneOf) = "TySubsOneOf"
-  show (TySubsAllOf) = "TySubsAllOf"
-  show (TySubsBoth) = "TySubsBoth"
-
-
 instance tySubstitutionsEq :: Eq TySubstitutions where
-  eq (TySubsExpr) (TySubsExpr) = true
-  eq (TySubsOneOf) (TySubsOneOf) = true
-  eq (TySubsAllOf) (TySubsAllOf) = true
-  eq (TySubsBoth) (TySubsBoth) = true
+  eq TySubsExpr TySubsExpr = true
+  eq TySubsOneOf TySubsOneOf = true
+  eq TySubsAllOf TySubsAllOf = true
+  eq TySubsBoth TySubsBoth = true
   eq _ _ = false
 
 newtype StarRequest = StarRequest {
@@ -15186,9 +15505,6 @@ instance starRequestIsForeign :: IsForeign StarRequest where
       <$> (unNullOrUndefined <$> readProp "reason" json)
       <*> readProp "guard" json
 
-
-instance starRequestShow :: Show StarRequest where
-    show (StarRequest o) = show "reason: " <> show o.reason <> ", " <> show "guard: " <> show o.guard
 
 newtype StarResponse = StarResponse {
   id :: Int,
@@ -15324,9 +15640,6 @@ instance starResponseIsForeign :: IsForeign StarResponse where
       <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
-instance starResponseShow :: Show StarResponse where
-    show (StarResponse o) = show "id: " <> show o.id <> ", " <> show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "userId: " <> show o.userId <> ", " <> show "reason: " <> show o.reason <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
-
 newtype StarResponses = StarResponses {
   starResponses :: (Array StarResponse)
 }
@@ -15388,9 +15701,6 @@ instance starResponsesIsForeign :: IsForeign StarResponses where
       mkStarResponses
       <$> readProp "star_responses" json
 
-
-instance starResponsesShow :: Show StarResponses where
-    show (StarResponses o) = show "starResponses: " <> show o.starResponses
 
 newtype StarStatResponse = StarStatResponse {
   ent :: Ent,
@@ -15472,9 +15782,6 @@ instance starStatResponseIsForeign :: IsForeign StarStatResponse where
       <*> readProp "stars" json
 
 
-instance starStatResponseShow :: Show StarStatResponse where
-    show (StarStatResponse o) = show "ent: " <> show o.ent <> ", " <> show "entId: " <> show o.entId <> ", " <> show "stars: " <> show o.stars
-
 newtype StarStatResponses = StarStatResponses {
   starStatResponses :: (Array StarStatResponse)
 }
@@ -15536,9 +15843,6 @@ instance starStatResponsesIsForeign :: IsForeign StarStatResponses where
       mkStarStatResponses
       <$> readProp "star_stat_responses" json
 
-
-instance starStatResponsesShow :: Show StarStatResponses where
-    show (StarStatResponses o) = show "starStatResponses: " <> show o.starStatResponses
 
 data SystemTeam
   = Team_Owners 
@@ -15608,14 +15912,9 @@ instance systemTeamIsForeign :: IsForeign SystemTeam where
 
 
 
-instance systemTeamShow :: Show SystemTeam where
-  show (Team_Owners) = "Team_Owners"
-  show (Team_Members) = "Team_Members"
-
-
 instance systemTeamEq :: Eq SystemTeam where
-  eq (Team_Owners) (Team_Owners) = true
-  eq (Team_Members) (Team_Members) = true
+  eq Team_Owners Team_Owners = true
+  eq Team_Members Team_Members = true
   eq _ _ = false
 
 newtype TeamRequest = TeamRequest {
@@ -15715,9 +16014,6 @@ instance teamRequestIsForeign :: IsForeign TeamRequest where
       <*> readProp "visibility" json
       <*> readProp "guard" json
 
-
-instance teamRequestShow :: Show TeamRequest where
-    show (TeamRequest o) = show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "guard: " <> show o.guard
 
 newtype TeamResponse = TeamResponse {
   id :: Int,
@@ -15898,9 +16194,6 @@ instance teamResponseIsForeign :: IsForeign TeamResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance teamResponseShow :: Show TeamResponse where
-    show (TeamResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "system: " <> show o.system <> ", " <> show "membership: " <> show o.membership <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "visibility: " <> show o.visibility <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype TeamResponses = TeamResponses {
   teamResponses :: (Array TeamResponse)
 }
@@ -15962,9 +16255,6 @@ instance teamResponsesIsForeign :: IsForeign TeamResponses where
       mkTeamResponses
       <$> readProp "team_responses" json
 
-
-instance teamResponsesShow :: Show TeamResponses where
-    show (TeamResponses o) = show "teamResponses: " <> show o.teamResponses
 
 newtype TeamStatResponse = TeamStatResponse {
   members :: Int
@@ -16028,9 +16318,6 @@ instance teamStatResponseIsForeign :: IsForeign TeamStatResponse where
       <$> readProp "members" json
 
 
-instance teamStatResponseShow :: Show TeamStatResponse where
-    show (TeamStatResponse o) = show "members: " <> show o.members
-
 newtype TeamStatResponses = TeamStatResponses {
   teamStatResponses :: (Array TeamStatResponse)
 }
@@ -16093,9 +16380,6 @@ instance teamStatResponsesIsForeign :: IsForeign TeamStatResponses where
       <$> readProp "team_stat_responses" json
 
 
-instance teamStatResponsesShow :: Show TeamStatResponses where
-    show (TeamStatResponses o) = show "teamStatResponses: " <> show o.teamStatResponses
-
 newtype TeamMemberRequest = TeamMemberRequest {
   guard :: Int
 }
@@ -16157,9 +16441,6 @@ instance teamMemberRequestIsForeign :: IsForeign TeamMemberRequest where
       mkTeamMemberRequest
       <$> readProp "guard" json
 
-
-instance teamMemberRequestShow :: Show TeamMemberRequest where
-    show (TeamMemberRequest o) = show "guard: " <> show o.guard
 
 newtype TeamMemberResponse = TeamMemberResponse {
   id :: Int,
@@ -16340,9 +16621,6 @@ instance teamMemberResponseIsForeign :: IsForeign TeamMemberResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance teamMemberResponseShow :: Show TeamMemberResponse where
-    show (TeamMemberResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "teamId: " <> show o.teamId <> ", " <> show "isAccepted: " <> show o.isAccepted <> ", " <> show "acceptedAt: " <> show o.acceptedAt <> ", " <> show "isBlocked: " <> show o.isBlocked <> ", " <> show "blockedAt: " <> show o.blockedAt <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype TeamMemberResponses = TeamMemberResponses {
   teamMemberResponses :: (Array TeamMemberResponse)
 }
@@ -16405,9 +16683,6 @@ instance teamMemberResponsesIsForeign :: IsForeign TeamMemberResponses where
       <$> readProp "team_member_responses" json
 
 
-instance teamMemberResponsesShow :: Show TeamMemberResponses where
-    show (TeamMemberResponses o) = show "teamMemberResponses: " <> show o.teamMemberResponses
-
 data TeamMemberStatResponse
   = TeamMemberStatResponse 
 
@@ -16460,10 +16735,6 @@ instance teamMemberStatResponseIsForeign :: IsForeign TeamMemberStatResponse whe
 
       _ -> Left $ TypeMismatch "TeamMemberStatResponse" "IsForeign"
 
-
-
-instance teamMemberStatResponseShow :: Show TeamMemberStatResponse where
-  show (TeamMemberStatResponse) = "TeamMemberStatResponse"
 
 
 newtype TeamMemberStatResponses = TeamMemberStatResponses {
@@ -16528,9 +16799,6 @@ instance teamMemberStatResponsesIsForeign :: IsForeign TeamMemberStatResponses w
       <$> readProp "team_member_stat_responses" json
 
 
-instance teamMemberStatResponsesShow :: Show TeamMemberStatResponses where
-    show (TeamMemberStatResponses o) = show "teamMemberStatResponses: " <> show o.teamMemberStatResponses
-
 newtype TestRequest = TestRequest {
   msg :: String
 }
@@ -16592,9 +16860,6 @@ instance testRequestIsForeign :: IsForeign TestRequest where
       mkTestRequest
       <$> readProp "msg" json
 
-
-instance testRequestShow :: Show TestRequest where
-    show (TestRequest o) = show "msg: " <> show o.msg
 
 newtype TestResponse = TestResponse {
   id :: Int,
@@ -16694,9 +16959,6 @@ instance testResponseIsForeign :: IsForeign TestResponse where
       <*> (unNullOrUndefined <$> readProp "modified_at" json)
 
 
-instance testResponseShow :: Show TestResponse where
-    show (TestResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "msg: " <> show o.msg <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt
-
 newtype TestResponses = TestResponses {
   testResponses :: (Array TestResponse)
 }
@@ -16758,9 +17020,6 @@ instance testResponsesIsForeign :: IsForeign TestResponses where
       mkTestResponses
       <$> readProp "test_responses" json
 
-
-instance testResponsesShow :: Show TestResponses where
-    show (TestResponses o) = show "testResponses: " <> show o.testResponses
 
 newtype ThreadRequest = ThreadRequest {
   displayName :: String,
@@ -16886,9 +17145,6 @@ instance threadRequestIsForeign :: IsForeign ThreadRequest where
       <*> readProp "tags" json
       <*> readProp "guard" json
 
-
-instance threadRequestShow :: Show ThreadRequest where
-    show (ThreadRequest o) = show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "sticky: " <> show o.sticky <> ", " <> show "locked: " <> show o.locked <> ", " <> show "poll: " <> show o.poll <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "guard: " <> show o.guard
 
 newtype ThreadResponse = ThreadResponse {
   id :: Int,
@@ -17114,9 +17370,6 @@ instance threadResponseIsForeign :: IsForeign ThreadResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance threadResponseShow :: Show ThreadResponse where
-    show (ThreadResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "forumId: " <> show o.forumId <> ", " <> show "boardId: " <> show o.boardId <> ", " <> show "name: " <> show o.name <> ", " <> show "displayName: " <> show o.displayName <> ", " <> show "description: " <> show o.description <> ", " <> show "sticky: " <> show o.sticky <> ", " <> show "locked: " <> show o.locked <> ", " <> show "poll: " <> show o.poll <> ", " <> show "icon: " <> show o.icon <> ", " <> show "tags: " <> show o.tags <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype ThreadResponses = ThreadResponses {
   threadResponses :: (Array ThreadResponse)
 }
@@ -17178,9 +17431,6 @@ instance threadResponsesIsForeign :: IsForeign ThreadResponses where
       mkThreadResponses
       <$> readProp "thread_responses" json
 
-
-instance threadResponsesShow :: Show ThreadResponses where
-    show (ThreadResponses o) = show "threadResponses: " <> show o.threadResponses
 
 newtype ThreadStatResponse = ThreadStatResponse {
   threadId :: Int,
@@ -17262,9 +17512,6 @@ instance threadStatResponseIsForeign :: IsForeign ThreadStatResponse where
       <*> readProp "views" json
 
 
-instance threadStatResponseShow :: Show ThreadStatResponse where
-    show (ThreadStatResponse o) = show "threadId: " <> show o.threadId <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "views: " <> show o.views
-
 newtype ThreadStatResponses = ThreadStatResponses {
   threadStatResponses :: (Array ThreadStatResponse)
 }
@@ -17326,9 +17573,6 @@ instance threadStatResponsesIsForeign :: IsForeign ThreadStatResponses where
       mkThreadStatResponses
       <$> readProp "thread_stat_responses" json
 
-
-instance threadStatResponsesShow :: Show ThreadStatResponses where
-    show (ThreadStatResponses o) = show "threadStatResponses: " <> show o.threadStatResponses
 
 data PostData
   = PostDataRaw String
@@ -17514,14 +17758,14 @@ instance postDataIsForeign :: IsForeign PostData where
 
 
 
-instance postDataShow :: Show PostData where
-  show (PostDataRaw x0) = "PostDataRaw: " <> show x0
-  show (PostDataMarkdown x0) = "PostDataMarkdown: " <> show x0
-  show (PostDataBBCode x0) = "PostDataBBCode: " <> show x0
-  show (PostDataCode x0 x1) = "PostDataCode: " <> show x0 <> " " <> show x1
-  show (PostDataOther x0 x1) = "PostDataOther: " <> show x0 <> " " <> show x1
-  show (PostDataEmpty) = "PostDataEmpty"
-
+instance postDataEq :: Eq PostData where
+  eq (PostDataRaw x0a) (PostDataRaw x0b) = x0a == x0b
+  eq (PostDataMarkdown x0a) (PostDataMarkdown x0b) = x0a == x0b
+  eq (PostDataBBCode x0a) (PostDataBBCode x0b) = x0a == x0b
+  eq (PostDataCode x0a x1a) (PostDataCode x0b x1b) = x0a == x0b && x1a == x1b
+  eq (PostDataOther x0a x1a) (PostDataOther x0b x1b) = x0a == x0b && x1a == x1b
+  eq PostDataEmpty PostDataEmpty = true
+  eq _ _ = false
 
 newtype ThreadPostRequest = ThreadPostRequest {
   title :: (Maybe String),
@@ -17620,9 +17864,6 @@ instance threadPostRequestIsForeign :: IsForeign ThreadPostRequest where
       <*> readProp "private_tags" json
       <*> readProp "guard" json
 
-
-instance threadPostRequestShow :: Show ThreadPostRequest where
-    show (ThreadPostRequest o) = show "title: " <> show o.title <> ", " <> show "body: " <> show o.body <> ", " <> show "tags: " <> show o.tags <> ", " <> show "privateTags: " <> show o.privateTags <> ", " <> show "guard: " <> show o.guard
 
 newtype ThreadPostResponse = ThreadPostResponse {
   id :: Int,
@@ -17830,9 +18071,6 @@ instance threadPostResponseIsForeign :: IsForeign ThreadPostResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance threadPostResponseShow :: Show ThreadPostResponse where
-    show (ThreadPostResponse o) = show "id: " <> show o.id <> ", " <> show "userId: " <> show o.userId <> ", " <> show "orgId: " <> show o.orgId <> ", " <> show "forumId: " <> show o.forumId <> ", " <> show "boardId: " <> show o.boardId <> ", " <> show "threadId: " <> show o.threadId <> ", " <> show "parentId: " <> show o.parentId <> ", " <> show "title: " <> show o.title <> ", " <> show "body: " <> show o.body <> ", " <> show "tags: " <> show o.tags <> ", " <> show "privateTags: " <> show o.privateTags <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedBy: " <> show o.modifiedBy <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype ThreadPostResponses = ThreadPostResponses {
   threadPostResponses :: (Array ThreadPostResponse)
 }
@@ -17894,9 +18132,6 @@ instance threadPostResponsesIsForeign :: IsForeign ThreadPostResponses where
       mkThreadPostResponses
       <$> readProp "thread_post_responses" json
 
-
-instance threadPostResponsesShow :: Show ThreadPostResponses where
-    show (ThreadPostResponses o) = show "threadPostResponses: " <> show o.threadPostResponses
 
 newtype ThreadPostStatResponse = ThreadPostStatResponse {
   threadPostId :: Int,
@@ -18005,9 +18240,6 @@ instance threadPostStatResponseIsForeign :: IsForeign ThreadPostStatResponse whe
       <*> readProp "views" json
 
 
-instance threadPostStatResponseShow :: Show ThreadPostStatResponse where
-    show (ThreadPostStatResponse o) = show "threadPostId: " <> show o.threadPostId <> ", " <> show "likes: " <> show o.likes <> ", " <> show "neutral: " <> show o.neutral <> ", " <> show "dislikes: " <> show o.dislikes <> ", " <> show "stars: " <> show o.stars <> ", " <> show "views: " <> show o.views
-
 newtype ThreadPostStatResponses = ThreadPostStatResponses {
   threadPostStatResponses :: (Array ThreadPostStatResponse)
 }
@@ -18069,9 +18301,6 @@ instance threadPostStatResponsesIsForeign :: IsForeign ThreadPostStatResponses w
       mkThreadPostStatResponses
       <$> readProp "thread_post_stat_responses" json
 
-
-instance threadPostStatResponsesShow :: Show ThreadPostStatResponses where
-    show (ThreadPostStatResponses o) = show "threadPostStatResponses: " <> show o.threadPostStatResponses
 
 newtype UserRequest = UserRequest {
   displayNick :: String,
@@ -18179,9 +18408,6 @@ instance userRequestIsForeign :: IsForeign UserRequest where
       <*> readProp "ident" json
       <*> (unNullOrUndefined <$> readProp "accept_tos" json)
 
-
-instance userRequestShow :: Show UserRequest where
-    show (UserRequest o) = show "displayNick: " <> show o.displayNick <> ", " <> show "name: " <> show o.name <> ", " <> show "email: " <> show o.email <> ", " <> show "plugin: " <> show o.plugin <> ", " <> show "ident: " <> show o.ident <> ", " <> show "acceptTOS: " <> show o.acceptTOS
 
 newtype UserResponse = UserResponse {
   id :: Int,
@@ -18371,9 +18597,6 @@ instance userResponseIsForeign :: IsForeign UserResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance userResponseShow :: Show UserResponse where
-    show (UserResponse o) = show "id: " <> show o.id <> ", " <> show "nick: " <> show o.nick <> ", " <> show "displayNick: " <> show o.displayNick <> ", " <> show "name: " <> show o.name <> ", " <> show "email: " <> show o.email <> ", " <> show "emailMD5: " <> show o.emailMD5 <> ", " <> show "plugin: " <> show o.plugin <> ", " <> show "ident: " <> show o.ident <> ", " <> show "acceptTOS: " <> show o.acceptTOS <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "modifiedAt: " <> show o.modifiedAt <> ", " <> show "deactivatedAt: " <> show o.deactivatedAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype UserResponses = UserResponses {
   userResponses :: (Array UserResponse)
 }
@@ -18435,9 +18658,6 @@ instance userResponsesIsForeign :: IsForeign UserResponses where
       mkUserResponses
       <$> readProp "user_responses" json
 
-
-instance userResponsesShow :: Show UserResponses where
-    show (UserResponses o) = show "userResponses: " <> show o.userResponses
 
 newtype UserSanitizedResponse = UserSanitizedResponse {
   id :: Int,
@@ -18564,9 +18784,6 @@ instance userSanitizedResponseIsForeign :: IsForeign UserSanitizedResponse where
       <*> (unNullOrUndefined <$> readProp "activity_at" json)
 
 
-instance userSanitizedResponseShow :: Show UserSanitizedResponse where
-    show (UserSanitizedResponse o) = show "id: " <> show o.id <> ", " <> show "nick: " <> show o.nick <> ", " <> show "displayNick: " <> show o.displayNick <> ", " <> show "emailMD5: " <> show o.emailMD5 <> ", " <> show "active: " <> show o.active <> ", " <> show "guard: " <> show o.guard <> ", " <> show "createdAt: " <> show o.createdAt <> ", " <> show "activityAt: " <> show o.activityAt
-
 newtype UserSanitizedResponses = UserSanitizedResponses {
   userSanitizedResponses :: (Array UserSanitizedResponse)
 }
@@ -18628,9 +18845,6 @@ instance userSanitizedResponsesIsForeign :: IsForeign UserSanitizedResponses whe
       mkUserSanitizedResponses
       <$> readProp "user_sanitized_responses" json
 
-
-instance userSanitizedResponsesShow :: Show UserSanitizedResponses where
-    show (UserSanitizedResponses o) = show "userSanitizedResponses: " <> show o.userSanitizedResponses
 
 newtype UserSanitizedStatResponse = UserSanitizedStatResponse {
   userId :: Int,
@@ -18748,9 +18962,6 @@ instance userSanitizedStatResponseIsForeign :: IsForeign UserSanitizedStatRespon
       <*> readProp "workouts" json
 
 
-instance userSanitizedStatResponseShow :: Show UserSanitizedStatResponse where
-    show (UserSanitizedStatResponse o) = show "userId: " <> show o.userId <> ", " <> show "threads: " <> show o.threads <> ", " <> show "threadPosts: " <> show o.threadPosts <> ", " <> show "respect: " <> show o.respect <> ", " <> show "resources: " <> show o.resources <> ", " <> show "leurons: " <> show o.leurons <> ", " <> show "workouts: " <> show o.workouts
-
 newtype UserSanitizedStatResponses = UserSanitizedStatResponses {
   userSanitizedStatResponses :: (Array UserSanitizedStatResponse)
 }
@@ -18812,9 +19023,6 @@ instance userSanitizedStatResponsesIsForeign :: IsForeign UserSanitizedStatRespo
       mkUserSanitizedStatResponses
       <$> readProp "user_sanitized_stat_responses" json
 
-
-instance userSanitizedStatResponsesShow :: Show UserSanitizedStatResponses where
-    show (UserSanitizedStatResponses o) = show "userSanitizedStatResponses: " <> show o.userSanitizedStatResponses
 
 data Visibility
   = Public 
@@ -18884,14 +19092,9 @@ instance visibilityIsForeign :: IsForeign Visibility where
 
 
 
-instance visibilityShow :: Show Visibility where
-  show (Public) = "Public"
-  show (Private) = "Private"
-
-
 instance visibilityEq :: Eq Visibility where
-  eq (Public) (Public) = true
-  eq (Private) (Private) = true
+  eq Public Public = true
+  eq Private Private = true
   eq _ _ = false
 
 newtype OrganizationPackResponse = OrganizationPackResponse {
@@ -19028,9 +19231,6 @@ instance organizationPackResponseIsForeign :: IsForeign OrganizationPackResponse
       <*> readProp "teams" json
 
 
-instance organizationPackResponseShow :: Show OrganizationPackResponse where
-    show (OrganizationPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "organization: " <> show o.organization <> ", " <> show "organizationId: " <> show o.organizationId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "permissions: " <> show o.permissions <> ", " <> show "teams: " <> show o.teams
-
 newtype OrganizationPackResponses = OrganizationPackResponses {
   organizationPackResponses :: (Array OrganizationPackResponse)
 }
@@ -19092,9 +19292,6 @@ instance organizationPackResponsesIsForeign :: IsForeign OrganizationPackRespons
       mkOrganizationPackResponses
       <$> readProp "organization_pack_responses" json
 
-
-instance organizationPackResponsesShow :: Show OrganizationPackResponses where
-    show (OrganizationPackResponses o) = show "organizationPackResponses: " <> show o.organizationPackResponses
 
 newtype TeamPackResponse = TeamPackResponse {
   user :: UserSanitizedResponse,
@@ -19203,9 +19400,6 @@ instance teamPackResponseIsForeign :: IsForeign TeamPackResponse where
       <*> readProp "permissions" json
 
 
-instance teamPackResponseShow :: Show TeamPackResponse where
-    show (TeamPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "team: " <> show o.team <> ", " <> show "teamId: " <> show o.teamId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "permissions: " <> show o.permissions
-
 newtype TeamPackResponses = TeamPackResponses {
   teamPackResponses :: (Array TeamPackResponse)
 }
@@ -19267,9 +19461,6 @@ instance teamPackResponsesIsForeign :: IsForeign TeamPackResponses where
       mkTeamPackResponses
       <$> readProp "team_pack_responses" json
 
-
-instance teamPackResponsesShow :: Show TeamPackResponses where
-    show (TeamPackResponses o) = show "teamPackResponses: " <> show o.teamPackResponses
 
 newtype TeamMemberPackResponse = TeamMemberPackResponse {
   user :: UserSanitizedResponse,
@@ -19369,9 +19560,6 @@ instance teamMemberPackResponseIsForeign :: IsForeign TeamMemberPackResponse whe
       <*> readProp "permissions" json
 
 
-instance teamMemberPackResponseShow :: Show TeamMemberPackResponse where
-    show (TeamMemberPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "teamMember: " <> show o.teamMember <> ", " <> show "teamMemberId: " <> show o.teamMemberId <> ", " <> show "permissions: " <> show o.permissions
-
 newtype TeamMemberPackResponses = TeamMemberPackResponses {
   teamMemberPackResponses :: (Array TeamMemberPackResponse)
 }
@@ -19433,9 +19621,6 @@ instance teamMemberPackResponsesIsForeign :: IsForeign TeamMemberPackResponses w
       mkTeamMemberPackResponses
       <$> readProp "team_member_pack_responses" json
 
-
-instance teamMemberPackResponsesShow :: Show TeamMemberPackResponses where
-    show (TeamMemberPackResponses o) = show "teamMemberPackResponses: " <> show o.teamMemberPackResponses
 
 newtype UserPackResponse = UserPackResponse {
   user :: UserResponse,
@@ -19535,9 +19720,6 @@ instance userPackResponseIsForeign :: IsForeign UserPackResponse where
       <*> readProp "profile_id" json
 
 
-instance userPackResponseShow :: Show UserPackResponse where
-    show (UserPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "profile: " <> show o.profile <> ", " <> show "profileId: " <> show o.profileId
-
 newtype UserPackResponses = UserPackResponses {
   userPackResponses :: (Array UserPackResponse)
 }
@@ -19599,9 +19781,6 @@ instance userPackResponsesIsForeign :: IsForeign UserPackResponses where
       mkUserPackResponses
       <$> readProp "user_pack_responses" json
 
-
-instance userPackResponsesShow :: Show UserPackResponses where
-    show (UserPackResponses o) = show "userPackResponses: " <> show o.userPackResponses
 
 newtype UserSanitizedPackResponse = UserSanitizedPackResponse {
   user :: UserSanitizedResponse,
@@ -19719,9 +19898,6 @@ instance userSanitizedPackResponseIsForeign :: IsForeign UserSanitizedPackRespon
       <*> (unNullOrUndefined <$> readProp "star" json)
 
 
-instance userSanitizedPackResponseShow :: Show UserSanitizedPackResponse where
-    show (UserSanitizedPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "profile: " <> show o.profile <> ", " <> show "profileId: " <> show o.profileId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star
-
 newtype UserSanitizedPackResponses = UserSanitizedPackResponses {
   userSanitizedPackResponses :: (Array UserSanitizedPackResponse)
 }
@@ -19783,9 +19959,6 @@ instance userSanitizedPackResponsesIsForeign :: IsForeign UserSanitizedPackRespo
       mkUserSanitizedPackResponses
       <$> readProp "user_sanitized_pack_responses" json
 
-
-instance userSanitizedPackResponsesShow :: Show UserSanitizedPackResponses where
-    show (UserSanitizedPackResponses o) = show "userSanitizedPackResponses: " <> show o.userSanitizedPackResponses
 
 newtype GlobalGroupPackResponse = GlobalGroupPackResponse {
   user :: UserSanitizedResponse,
@@ -19894,9 +20067,6 @@ instance globalGroupPackResponseIsForeign :: IsForeign GlobalGroupPackResponse w
       <*> readProp "permissions" json
 
 
-instance globalGroupPackResponseShow :: Show GlobalGroupPackResponse where
-    show (GlobalGroupPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "globalGroup: " <> show o.globalGroup <> ", " <> show "globalGroupId: " <> show o.globalGroupId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "permissions: " <> show o.permissions
-
 newtype GlobalGroupPackResponses = GlobalGroupPackResponses {
   globalGroupPackResponses :: (Array GlobalGroupPackResponse)
 }
@@ -19958,9 +20128,6 @@ instance globalGroupPackResponsesIsForeign :: IsForeign GlobalGroupPackResponses
       mkGlobalGroupPackResponses
       <$> readProp "global_group_pack_responses" json
 
-
-instance globalGroupPackResponsesShow :: Show GlobalGroupPackResponses where
-    show (GlobalGroupPackResponses o) = show "globalGroupPackResponses: " <> show o.globalGroupPackResponses
 
 newtype GroupPackResponse = GroupPackResponse {
   user :: UserSanitizedResponse,
@@ -20087,9 +20254,6 @@ instance groupPackResponseIsForeign :: IsForeign GroupPackResponse where
       <*> readProp "permissions" json
 
 
-instance groupPackResponseShow :: Show GroupPackResponse where
-    show (GroupPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "group: " <> show o.group <> ", " <> show "groupId: " <> show o.groupId <> ", " <> show "organization: " <> show o.organization <> ", " <> show "organizationId: " <> show o.organizationId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "permissions: " <> show o.permissions
-
 newtype GroupPackResponses = GroupPackResponses {
   groupPackResponses :: (Array GroupPackResponse)
 }
@@ -20151,9 +20315,6 @@ instance groupPackResponsesIsForeign :: IsForeign GroupPackResponses where
       mkGroupPackResponses
       <$> readProp "group_pack_responses" json
 
-
-instance groupPackResponsesShow :: Show GroupPackResponses where
-    show (GroupPackResponses o) = show "groupPackResponses: " <> show o.groupPackResponses
 
 newtype GroupMemberPackResponse = GroupMemberPackResponse {
   user :: UserSanitizedResponse,
@@ -20253,9 +20414,6 @@ instance groupMemberPackResponseIsForeign :: IsForeign GroupMemberPackResponse w
       <*> readProp "is_owner" json
 
 
-instance groupMemberPackResponseShow :: Show GroupMemberPackResponse where
-    show (GroupMemberPackResponse o) = show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "groupMember: " <> show o.groupMember <> ", " <> show "groupMemberId: " <> show o.groupMemberId <> ", " <> show "isOwner: " <> show o.isOwner
-
 newtype GroupMemberPackResponses = GroupMemberPackResponses {
   groupMemberPackResponses :: (Array GroupMemberPackResponse)
 }
@@ -20317,9 +20475,6 @@ instance groupMemberPackResponsesIsForeign :: IsForeign GroupMemberPackResponses
       mkGroupMemberPackResponses
       <$> readProp "group_member_pack_responses" json
 
-
-instance groupMemberPackResponsesShow :: Show GroupMemberPackResponses where
-    show (GroupMemberPackResponses o) = show "groupMemberPackResponses: " <> show o.groupMemberPackResponses
 
 newtype ForumPackResponse = ForumPackResponse {
   forum :: ForumResponse,
@@ -20437,9 +20592,6 @@ instance forumPackResponseIsForeign :: IsForeign ForumPackResponse where
       <*> readProp "permissions" json
 
 
-instance forumPackResponseShow :: Show ForumPackResponse where
-    show (ForumPackResponse o) = show "forum: " <> show o.forum <> ", " <> show "forumId: " <> show o.forumId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "withOrganization: " <> show o.withOrganization <> ", " <> show "permissions: " <> show o.permissions
-
 newtype ForumPackResponses = ForumPackResponses {
   forumPackResponses :: (Array ForumPackResponse)
 }
@@ -20501,9 +20653,6 @@ instance forumPackResponsesIsForeign :: IsForeign ForumPackResponses where
       mkForumPackResponses
       <$> readProp "forum_pack_responses" json
 
-
-instance forumPackResponsesShow :: Show ForumPackResponses where
-    show (ForumPackResponses o) = show "forumPackResponses: " <> show o.forumPackResponses
 
 newtype BoardPackResponse = BoardPackResponse {
   board :: BoardResponse,
@@ -20657,9 +20806,6 @@ instance boardPackResponseIsForeign :: IsForeign BoardPackResponse where
       <*> readProp "permissions" json
 
 
-instance boardPackResponseShow :: Show BoardPackResponse where
-    show (BoardPackResponse o) = show "board: " <> show o.board <> ", " <> show "boardId: " <> show o.boardId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "latestThread: " <> show o.latestThread <> ", " <> show "latestThreadPost: " <> show o.latestThreadPost <> ", " <> show "latestThreadPostUser: " <> show o.latestThreadPostUser <> ", " <> show "withOrganization: " <> show o.withOrganization <> ", " <> show "withForum: " <> show o.withForum <> ", " <> show "permissions: " <> show o.permissions
-
 newtype BoardPackResponses = BoardPackResponses {
   boardPackResponses :: (Array BoardPackResponse)
 }
@@ -20721,9 +20867,6 @@ instance boardPackResponsesIsForeign :: IsForeign BoardPackResponses where
       mkBoardPackResponses
       <$> readProp "board_pack_responses" json
 
-
-instance boardPackResponsesShow :: Show BoardPackResponses where
-    show (BoardPackResponses o) = show "boardPackResponses: " <> show o.boardPackResponses
 
 newtype ThreadPackResponse = ThreadPackResponse {
   thread :: ThreadResponse,
@@ -20895,9 +21038,6 @@ instance threadPackResponseIsForeign :: IsForeign ThreadPackResponse where
       <*> readProp "permissions" json
 
 
-instance threadPackResponseShow :: Show ThreadPackResponse where
-    show (ThreadPackResponse o) = show "thread: " <> show o.thread <> ", " <> show "threadId: " <> show o.threadId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "latestThreadPost: " <> show o.latestThreadPost <> ", " <> show "latestThreadPostUser: " <> show o.latestThreadPostUser <> ", " <> show "withOrganization: " <> show o.withOrganization <> ", " <> show "withForum: " <> show o.withForum <> ", " <> show "withBoard: " <> show o.withBoard <> ", " <> show "permissions: " <> show o.permissions
-
 newtype ThreadPackResponses = ThreadPackResponses {
   threadPackResponses :: (Array ThreadPackResponse)
 }
@@ -20959,9 +21099,6 @@ instance threadPackResponsesIsForeign :: IsForeign ThreadPackResponses where
       mkThreadPackResponses
       <$> readProp "thread_pack_responses" json
 
-
-instance threadPackResponsesShow :: Show ThreadPackResponses where
-    show (ThreadPackResponses o) = show "threadPackResponses: " <> show o.threadPackResponses
 
 newtype ThreadPostPackResponse = ThreadPostPackResponse {
   threadPost :: ThreadPostResponse,
@@ -21124,9 +21261,6 @@ instance threadPostPackResponseIsForeign :: IsForeign ThreadPostPackResponse whe
       <*> readProp "permissions" json
 
 
-instance threadPostPackResponseShow :: Show ThreadPostPackResponse where
-    show (ThreadPostPackResponse o) = show "threadPost: " <> show o.threadPost <> ", " <> show "threadPostId: " <> show o.threadPostId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "withOrganization: " <> show o.withOrganization <> ", " <> show "withForum: " <> show o.withForum <> ", " <> show "withBoard: " <> show o.withBoard <> ", " <> show "withThread: " <> show o.withThread <> ", " <> show "permissions: " <> show o.permissions
-
 newtype ThreadPostPackResponses = ThreadPostPackResponses {
   threadPostPackResponses :: (Array ThreadPostPackResponse)
 }
@@ -21188,9 +21322,6 @@ instance threadPostPackResponsesIsForeign :: IsForeign ThreadPostPackResponses w
       mkThreadPostPackResponses
       <$> readProp "thread_post_pack_responses" json
 
-
-instance threadPostPackResponsesShow :: Show ThreadPostPackResponses where
-    show (ThreadPostPackResponses o) = show "threadPostPackResponses: " <> show o.threadPostPackResponses
 
 newtype ResourcePackResponse = ResourcePackResponse {
   resource :: ResourceResponse,
@@ -21317,9 +21448,6 @@ instance resourcePackResponseIsForeign :: IsForeign ResourcePackResponse where
       <*> readProp "permissions" json
 
 
-instance resourcePackResponseShow :: Show ResourcePackResponse where
-    show (ResourcePackResponse o) = show "resource: " <> show o.resource <> ", " <> show "resourceId: " <> show o.resourceId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "permissions: " <> show o.permissions
-
 newtype ResourcePackResponses = ResourcePackResponses {
   resourcePackResponses :: (Array ResourcePackResponse)
 }
@@ -21381,9 +21509,6 @@ instance resourcePackResponsesIsForeign :: IsForeign ResourcePackResponses where
       mkResourcePackResponses
       <$> readProp "resource_pack_responses" json
 
-
-instance resourcePackResponsesShow :: Show ResourcePackResponses where
-    show (ResourcePackResponses o) = show "resourcePackResponses: " <> show o.resourcePackResponses
 
 newtype LeuronPackResponse = LeuronPackResponse {
   leuron :: LeuronResponse,
@@ -21519,9 +21644,6 @@ instance leuronPackResponseIsForeign :: IsForeign LeuronPackResponse where
       <*> readProp "permissions" json
 
 
-instance leuronPackResponseShow :: Show LeuronPackResponse where
-    show (LeuronPackResponse o) = show "leuron: " <> show o.leuron <> ", " <> show "leuronId: " <> show o.leuronId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId <> ", " <> show "training: " <> show o.training <> ", " <> show "stat: " <> show o.stat <> ", " <> show "like: " <> show o.like <> ", " <> show "star: " <> show o.star <> ", " <> show "permissions: " <> show o.permissions
-
 newtype LeuronPackResponses = LeuronPackResponses {
   leuronPackResponses :: (Array LeuronPackResponse)
 }
@@ -21583,9 +21705,6 @@ instance leuronPackResponsesIsForeign :: IsForeign LeuronPackResponses where
       mkLeuronPackResponses
       <$> readProp "leuron_pack_responses" json
 
-
-instance leuronPackResponsesShow :: Show LeuronPackResponses where
-    show (LeuronPackResponses o) = show "leuronPackResponses: " <> show o.leuronPackResponses
 
 newtype PmInPackResponse = PmInPackResponse {
   pmIn :: PmInResponse,
@@ -21676,9 +21795,6 @@ instance pmInPackResponseIsForeign :: IsForeign PmInPackResponse where
       <*> readProp "user_id" json
 
 
-instance pmInPackResponseShow :: Show PmInPackResponse where
-    show (PmInPackResponse o) = show "pmIn: " <> show o.pmIn <> ", " <> show "pmInId: " <> show o.pmInId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId
-
 newtype PmInPackResponses = PmInPackResponses {
   pmInPackResponses :: (Array PmInPackResponse)
 }
@@ -21740,9 +21856,6 @@ instance pmInPackResponsesIsForeign :: IsForeign PmInPackResponses where
       mkPmInPackResponses
       <$> readProp "pm_in_pack_responses" json
 
-
-instance pmInPackResponsesShow :: Show PmInPackResponses where
-    show (PmInPackResponses o) = show "pmInPackResponses: " <> show o.pmInPackResponses
 
 newtype PmOutPackResponse = PmOutPackResponse {
   pmOut :: PmOutResponse,
@@ -21833,9 +21946,6 @@ instance pmOutPackResponseIsForeign :: IsForeign PmOutPackResponse where
       <*> readProp "user_id" json
 
 
-instance pmOutPackResponseShow :: Show PmOutPackResponse where
-    show (PmOutPackResponse o) = show "pmOut: " <> show o.pmOut <> ", " <> show "pmOutId: " <> show o.pmOutId <> ", " <> show "user: " <> show o.user <> ", " <> show "userId: " <> show o.userId
-
 newtype PmOutPackResponses = PmOutPackResponses {
   pmOutPackResponses :: (Array PmOutPackResponse)
 }
@@ -21897,9 +22007,6 @@ instance pmOutPackResponsesIsForeign :: IsForeign PmOutPackResponses where
       mkPmOutPackResponses
       <$> readProp "pm_out_pack_responses" json
 
-
-instance pmOutPackResponsesShow :: Show PmOutPackResponses where
-    show (PmOutPackResponses o) = show "pmOutPackResponses: " <> show o.pmOutPackResponses
 
 a_ :: forall b a r. Lens { a :: a | r } { a :: b | r } a b
 a_ f o = o { a = _ } <$> f o.a
@@ -22849,160 +22956,3 @@ workouts_ :: forall b a r. Lens { workouts :: a | r } { workouts :: b | r } a b
 workouts_ f o = o { workouts = _ } <$> f o.workouts
 
 -- footer
-
-
-instance paramQueryParam :: QueryParam Param where
-  qp (Limit limit)                       = Tuple "limit" (show limit)
-  qp (Offset offset)                     = Tuple "offset" (show offset)
-  qp (SortOrder sort_order_by)           = Tuple "sort_order" (show sort_order_by)
-  qp (Order order_by)                    = Tuple "order" (show order_by)
-  qp (ByOrganizationId org_id)           = Tuple "organization_id" (show org_id)
-  qp (ByOrganizationsIds orgs_ids)       = Tuple "organizations_ids" (show orgs_ids)
-  qp (ByOrganizationName org_name)       = Tuple "organization_name" (org_name)
-  qp (ByTeamId team_id)                  = Tuple "team_id" (show team_id)
-  qp (ByTeamsIds teams_ids)              = Tuple "teams_ids" (show teams_ids)
-  qp (ByTeamName team_name)              = Tuple "team_name" (team_name)
-  qp (ByTeamMemberId team_member_id)     = Tuple "team_id" (show team_member_id)
-  qp (ByTeamMembersIds team_members_ids) = Tuple "teams_ids" (show team_members_ids)
-  qp (ByUserId user_id)                  = Tuple "user_id" (show user_id)
-  qp (ByUsersIds users_ids)              = Tuple "users_ids" (show users_ids)
-  qp (ByUserNick nick)                   = Tuple "user_nick" (show nick)
-  qp (ByUsersNicks nicks)                = Tuple "users_nicks" (show nicks)
-  qp (ByGlobalGroupId group_id)          = Tuple "group_id" (show group_id)
-  qp (ByGlobalGroupsIds groups_ids)      = Tuple "groups_ids" (show groups_ids)
-  qp (ByGroupId group_id)                = Tuple "group_id" (show group_id)
-  qp (ByGroupsIds groups_ids)            = Tuple "groups_ids" (show groups_ids)
-  qp (ByGroupMemberId group_member_id)   = Tuple "group_id" (show group_member_id)
-  qp (ByGroupMembersIds group_members_ids) = Tuple "groups_ids" (show group_members_ids)
-  qp (ByForumId forum_id)                = Tuple "forum_id" (show forum_id)
-  qp (ByForumsIds forums_ids)            = Tuple "forums_ids" (show forums_ids)
-  qp (ByForumName forum_name)            = Tuple "forum_name" (forum_name)
-  qp (ByBoardId board_id)                = Tuple "board_id" (show board_id)
-  qp (ByBoardsIds boards_ids)            = Tuple "boards_ids" (show boards_ids)
-  qp (ByBoardName board_name)            = Tuple "board_name" (board_name)
-  qp (ByThreadId thread_id)              = Tuple "thread_id" (show thread_id)
-  qp (ByThreadsIds threads_ids)          = Tuple "threads_ids" (show threads_ids)
-  qp (ByThreadName thread_name)          = Tuple "thread_name" (thread_name)
-  qp (ByThreadPostId thread_post_id)     = Tuple "thread_post_id" (show thread_post_id)
-  qp (ByThreadPostsIds thread_posts_ids) = Tuple "thread_posts_ids" (show thread_posts_ids)
-  qp (ByThreadPostName thread_post_name) = Tuple "thread_post_name" (thread_post_name)
-  qp (ByThreadPostLikeId like_id)        = Tuple "thread_post_like_id" (show like_id)
-  qp (ByThreadPostLikesIds likes_ids)    = Tuple "thread_post_likes_ids" (show likes_ids)
-  qp (ByThreadPostStarId star_id)        = Tuple "thread_post_star_id" (show star_id)
-  qp (ByThreadPostStarsIds stars_ids)    = Tuple "thread_post_stars_ids" (show stars_ids)
-  qp (ByBucketId bucket_id)              = Tuple "bucket_id" (show bucket_id)
-  qp (ByResourceId resource_id)          = Tuple "resource_id" (show resource_id)
-  qp (ByResourcesIds resources_ids)      = Tuple "resources_ids" (show resources_ids)
-  qp (ByResourceName resource_name)      = Tuple "resource_name" (resource_name)
-  qp (ByLeuronId leuron_id)              = Tuple "leuron_id" (show leuron_id)
-  qp (ByLeuronsIds leurons_ids)          = Tuple "leurons_ids" (show leurons_ids)
-  qp (ByPmId pm_id)                      = Tuple "pm_id" (show pm_id)
-  qp (ByPmsIds pms_ids)                  = Tuple "pms_ids" (show pms_ids)
-  qp (ByReminderId reminder_id)          = Tuple "reminder_id" (show reminder_id)
-  qp (ByReminderFolderId reminder_folder)= Tuple "reminder_folder_id" (show reminder_folder)
-  qp (ByParentId parent_id)              = Tuple "parent_id" (show parent_id)
-  qp (ByParentsIds parents_ids)          = Tuple "parents_ids" (show parents_ids)
-  qp (ByParentName parent_name)          = Tuple "parent_name" (parent_name)
-  qp (BySelf b)                          = Tuple "self" (show b)
-  qp (Timestamp ts)                      = Tuple "ts" (show ts)
-  qp (UnixTimestamp unix_ts)             = Tuple "unix_ts" (show unix_ts)
-  qp (CreatedAtTimestamp created_at)     = Tuple "created_at_ts" (show created_at)
-  qp (CreatedAtUnixTimestamp created_at) = Tuple "created_at_unix_ts" (show created_at)
-  qp (RealIP real_ip)                    = Tuple "real_ip" (real_ip)
-  qp (IP ip)                             = Tuple "ip" (ip)
-  qp (WithOrganization b)                = Tuple "with_organization" (show b)
-  qp (WithForum b)                       = Tuple "with_forum" (show b)
-  qp (WithBoard b)                       = Tuple "with_board" (show b)
-  qp (WithThread b)                      = Tuple "with_thread" (show b)
-  qp (WithResource b)                    = Tuple "with_resource" (show b)
-
-
-
-instance paramTagShow :: Show ParamTag where
-  show ParamTag_Limit                  = "limit"
-  show ParamTag_Offset                 = "offset"
-  show ParamTag_SortOrder              = "sort_order"
-  show ParamTag_Order                  = "order"
-  show ParamTag_ByOrganizationId       = "organization_id"
-  show ParamTag_ByOrganizationsIds     = "organizations_ids"
-  show ParamTag_ByOrganizationName     = "organization_name"
-  show ParamTag_ByTeamId               = "team_id"
-  show ParamTag_ByTeamsIds             = "teams_ids"
-  show ParamTag_ByTeamName             = "team_name"
-  show ParamTag_ByTeamMemberId         = "team_member_id"
-  show ParamTag_ByTeamMembersIds       = "teams_member_ids"
-  show ParamTag_ByUserId               = "user_id"
-  show ParamTag_ByUsersIds             = "users_ids"
-  show ParamTag_ByUserNick             = "user_nick"
-  show ParamTag_ByUsersNicks           = "users_nicks"
-  show ParamTag_ByGlobalGroupId        = "global_group_id"
-  show ParamTag_ByGlobalGroupsIds      = "global_groups_ids"
-  show ParamTag_ByGroupId              = "group_id"
-  show ParamTag_ByGroupsIds            = "groups_ids"
-  show ParamTag_ByGroupMemberId        = "group_member_id"
-  show ParamTag_ByGroupMembersIds      = "groups_member_ids"
-  show ParamTag_ByForumId              = "forum_id"
-  show ParamTag_ByForumsIds            = "forums_ids"
-  show ParamTag_ByForumName            = "forum_name"
-  show ParamTag_ByBoardId              = "board_id"
-  show ParamTag_ByBoardsIds            = "boards_ids"
-  show ParamTag_ByBoardName            = "board_name"
-  show ParamTag_ByThreadId             = "thread_id"
-  show ParamTag_ByThreadsIds           = "threads_ids"
-  show ParamTag_ByThreadName           = "thread_name"
-  show ParamTag_ByThreadPostId         = "thread_post_id"
-  show ParamTag_ByThreadPostsIds       = "thread_posts_ids"
-  show ParamTag_ByThreadPostName       = "thread_post_name"
-  show ParamTag_ByThreadPostLikeId     = "thread_post_like_id"
-  show ParamTag_ByThreadPostLikesIds   = "thread_post_likes_ids"
-  show ParamTag_ByThreadPostStarId     = "thread_post_star_id"
-  show ParamTag_ByThreadPostStarsIds   = "thread_post_stars_ids"
-  show ParamTag_ByBucketId             = "bucket_id"
-  show ParamTag_ByResourceId           = "resource_id"
-  show ParamTag_ByResourcesIds         = "resources_ids"
-  show ParamTag_ByResourceName         = "resource_name"
-  show ParamTag_ByLeuronId             = "leuron_id"
-  show ParamTag_ByLeuronsIds           = "leurons_ids"
-  show ParamTag_ByPmId                 = "pm_id"
-  show ParamTag_ByPmsIds               = "pms_ids"
-  show ParamTag_ByReminderId           = "reminder_id"
-  show ParamTag_ByReminderFolderId     = "reminder_folder_id"
-  show ParamTag_ByParentId             = "parent_id"
-  show ParamTag_ByParentsIds           = "parents_ids"
-  show ParamTag_ByParentName           = "parent_name"
-  show ParamTag_BySelf                 = "self"
-  show ParamTag_Timestamp              = "ts"
-  show ParamTag_UnixTimestamp          = "unix_ts"
-  show ParamTag_CreatedAtTimestamp     = "created_at_ts"
-  show ParamTag_CreatedAtUnixTimestamp = "created_at_unix_ts"
-  show ParamTag_RealIP                 = "real_ip"
-  show ParamTag_IP                     = "ip"
-  show ParamTag_WithOrganization       = "with_organization"
-  show ParamTag_WithForum              = "with_forum"
-  show ParamTag_WithBoard              = "with_board"
-  show ParamTag_WithThread             = "with_thread"
-  show ParamTag_WithResource           = "with_resource"
-
-
-
-instance sortOrderByShow :: Show SortOrderBy where
-  show SortOrderBy_Asc  = "asc"
-  show SortOrderBy_Dsc  = "dsc"
-  show SortOrderBy_Rnd  = "rnd"
-  show SortOrderBy_None = "none"
-
-
-
-instance orderByShow :: Show OrderBy where
-  show OrderBy_UserId     = "user_id"
-  show OrderBy_CreatedAt  = "created_at"
-  show OrderBy_ModifiedAt = "modified_at"
-  show OrderBy_ModifiedBy = "modified_by"
-  show OrderBy_ActivityAt = "activity_at"
-  show OrderBy_OrganizationId = "org_id"
-  show OrderBy_TeamId     = "team_id"
-  show OrderBy_ForumId    = "forum_id"
-  show OrderBy_BoardId    = "board_id"
-  show OrderBy_ThreadId   = "thread_id"
-  show OrderBy_Id         = "id"
-  show OrderBy_None       = "none"
