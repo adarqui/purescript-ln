@@ -2061,6 +2061,31 @@ instance entEq :: Eq Ent where
   eq Ent_None Ent_None = true
   eq _ _ = false
 
+readEnt :: String -> Maybe Ent
+readEnt "organization" = Just Ent_Organization
+readEnt "team" = Just Ent_Team
+readEnt "team_member" = Just Ent_TeamMember
+readEnt "global_group" = Just Ent_GlobalGroup
+readEnt "group" = Just Ent_Group
+readEnt "group_member" = Just Ent_GroupMember
+readEnt "user" = Just Ent_User
+readEnt "user_sanitized" = Just Ent_UserSanitized
+readEnt "forum" = Just Ent_Forum
+readEnt "board" = Just Ent_Board
+readEnt "thread" = Just Ent_Thread
+readEnt "thread_post" = Just Ent_ThreadPost
+readEnt "blog" = Just Ent_Blog
+readEnt "blog_post" = Just Ent_BlogPost
+readEnt "blog_comment" = Just Ent_BlogComment
+readEnt "resource" = Just Ent_Resource
+readEnt "leuron" = Just Ent_Leuron
+readEnt "comment" = Just Ent_Comment
+readEnt "api" = Just Ent_Api
+readEnt "like" = Just Ent_Like
+readEnt "star" = Just Ent_Star
+readEnt "none" = Just Ent_None
+readEnt _ = Nothing
+
 data ApplicationError
   = Error_Unknown 
   | Error_NotFound 
@@ -5161,6 +5186,26 @@ instance leuronTrainingSummaryIsForeign :: IsForeign LeuronTrainingSummary where
 
 
 
+instance leuronTrainingSummaryEq :: Eq LeuronTrainingSummary where
+  eq LTS_View LTS_View = true
+  eq LTS_Skip LTS_Skip = true
+  eq LTS_Know LTS_Know = true
+  eq LTS_DontKnow LTS_DontKnow = true
+  eq LTS_DontUnderstand LTS_DontUnderstand = true
+  eq LTS_DontCare LTS_DontCare = true
+  eq LTS_Protest LTS_Protest = true
+  eq _ _ = false
+
+readLeuronTrainingSummary :: String -> Maybe LeuronTrainingSummary
+readLeuronTrainingSummary "lts_view" = Just LTS_View
+readLeuronTrainingSummary "lts_skip" = Just LTS_Skip
+readLeuronTrainingSummary "lts_know" = Just LTS_Know
+readLeuronTrainingSummary "lts_dont_know" = Just LTS_DontKnow
+readLeuronTrainingSummary "lts_dont_understand" = Just LTS_DontUnderstand
+readLeuronTrainingSummary "lts_dont_care" = Just LTS_DontCare
+readLeuronTrainingSummary "lts_protest" = Just LTS_Protest
+readLeuronTrainingSummary _ = Nothing
+
 newtype LeuronTrainingRequest = LeuronTrainingRequest {
   summary :: LeuronTrainingSummary,
   guard :: Int
@@ -5621,6 +5666,12 @@ instance likeOptEq :: Eq LikeOpt where
   eq Neutral Neutral = true
   eq Dislike Dislike = true
   eq _ _ = false
+
+readLikeOpt :: String -> Maybe LikeOpt
+readLikeOpt "like" = Just Like
+readLikeOpt "neutral" = Just Neutral
+readLikeOpt "dislike" = Just Dislike
+readLikeOpt _ = Nothing
 
 newtype LikeRequest = LikeRequest {
   opt :: LikeOpt,
@@ -7926,6 +7977,13 @@ instance membershipEq :: Eq Membership where
   eq Membership_Join Membership_Join = true
   eq Membership_Locked Membership_Locked = true
   eq _ _ = false
+
+readMembership :: String -> Maybe Membership
+readMembership "invite_only" = Just Membership_InviteOnly
+readMembership "request_invite" = Just Membership_RequestInvite
+readMembership "join" = Just Membership_Join
+readMembership "locked" = Just Membership_Locked
+readMembership _ = Nothing
 
 newtype OrganizationRequest = OrganizationRequest {
   displayName :: String,
@@ -13062,6 +13120,12 @@ instance profileGenderEq :: Eq ProfileGender where
   eq GenderUnknown GenderUnknown = true
   eq _ _ = false
 
+readProfileGender :: String -> Maybe ProfileGender
+readProfileGender "gender_male" = Just GenderMale
+readProfileGender "gender_female" = Just GenderFemale
+readProfileGender "gender_unknown" = Just GenderUnknown
+readProfileGender _ = Nothing
+
 newtype ProfileRequest = ProfileRequest {
   gender :: ProfileGender,
   birthdate :: Date,
@@ -15916,6 +15980,11 @@ instance systemTeamEq :: Eq SystemTeam where
   eq Team_Owners Team_Owners = true
   eq Team_Members Team_Members = true
   eq _ _ = false
+
+readSystemTeam :: String -> Maybe SystemTeam
+readSystemTeam "team_owners" = Just Team_Owners
+readSystemTeam "team_members" = Just Team_Members
+readSystemTeam _ = Nothing
 
 newtype TeamRequest = TeamRequest {
   membership :: Membership,
@@ -19096,6 +19165,11 @@ instance visibilityEq :: Eq Visibility where
   eq Public Public = true
   eq Private Private = true
   eq _ _ = false
+
+readVisibility :: String -> Maybe Visibility
+readVisibility "public" = Just Public
+readVisibility "private" = Just Private
+readVisibility _ = Nothing
 
 newtype OrganizationPackResponse = OrganizationPackResponse {
   user :: UserSanitizedResponse,
