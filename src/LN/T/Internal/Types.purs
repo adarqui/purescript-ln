@@ -8616,8 +8616,8 @@ data Param
   | ByTeamMembersIds (Array Int)
   | ByUserId Int
   | ByUsersIds (Array Int)
-  | ByUserNick String
-  | ByUsersNicks (Array String)
+  | ByUserName String
+  | ByUsersNames (Array String)
   | ByGlobalGroupId Int
   | ByGlobalGroupsIds (Array Int)
   | ByGroupId Int
@@ -8725,12 +8725,12 @@ instance paramEncodeJson :: EncodeJson Param where
        "tag" := "ByUsersIds"
     ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
-  encodeJson (ByUserNick x0) =
-       "tag" := "ByUserNick"
+  encodeJson (ByUserName x0) =
+       "tag" := "ByUserName"
     ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
-  encodeJson (ByUsersNicks x0) =
-       "tag" := "ByUsersNicks"
+  encodeJson (ByUsersNames x0) =
+       "tag" := "ByUsersNames"
     ~> "contents" := [encodeJson x0]
     ~> jsonEmptyObject
   encodeJson (ByGlobalGroupId x0) =
@@ -9026,18 +9026,18 @@ instance paramDecodeJson :: DecodeJson Param where
           _ -> Left $ "DecodeJson TypeMismatch for ByUsersIds"
 
 
-      "ByUserNick" -> do
+      "ByUserName" -> do
         r <- obj .? "contents"
         case r of
-          [x0] -> ByUserNick <$> decodeJson x0
-          _ -> Left $ "DecodeJson TypeMismatch for ByUserNick"
+          [x0] -> ByUserName <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByUserName"
 
 
-      "ByUsersNicks" -> do
+      "ByUsersNames" -> do
         r <- obj .? "contents"
         case r of
-          [x0] -> ByUsersNicks <$> decodeJson x0
-          _ -> Left $ "DecodeJson TypeMismatch for ByUsersNicks"
+          [x0] -> ByUsersNames <$> decodeJson x0
+          _ -> Left $ "DecodeJson TypeMismatch for ByUsersNames"
 
 
       "ByGlobalGroupId" -> do
@@ -9483,18 +9483,18 @@ instance paramRespondable :: Respondable Param where
           _ -> Left $ TypeMismatch "ByUsersIds" "Respondable"
 
 
-      "ByUserNick" -> do
+      "ByUserName" -> do
         r <- readProp "contents" json
         case r of
-          [x0] -> ByUserNick <$> read x0
-          _ -> Left $ TypeMismatch "ByUserNick" "Respondable"
+          [x0] -> ByUserName <$> read x0
+          _ -> Left $ TypeMismatch "ByUserName" "Respondable"
 
 
-      "ByUsersNicks" -> do
+      "ByUsersNames" -> do
         r <- readProp "contents" json
         case r of
-          [x0] -> ByUsersNicks <$> read x0
-          _ -> Left $ TypeMismatch "ByUsersNicks" "Respondable"
+          [x0] -> ByUsersNames <$> read x0
+          _ -> Left $ TypeMismatch "ByUsersNames" "Respondable"
 
 
       "ByGlobalGroupId" -> do
@@ -9932,18 +9932,18 @@ instance paramIsForeign :: IsForeign Param where
           _ -> Left $ TypeMismatch "ByUsersIds" "IsForeign"
 
 
-      "ByUserNick" -> do
+      "ByUserName" -> do
         r <- readProp "contents" json
         case r of
-          [x0] -> ByUserNick <$> read x0
-          _ -> Left $ TypeMismatch "ByUserNick" "IsForeign"
+          [x0] -> ByUserName <$> read x0
+          _ -> Left $ TypeMismatch "ByUserName" "IsForeign"
 
 
-      "ByUsersNicks" -> do
+      "ByUsersNames" -> do
         r <- readProp "contents" json
         case r of
-          [x0] -> ByUsersNicks <$> read x0
-          _ -> Left $ TypeMismatch "ByUsersNicks" "IsForeign"
+          [x0] -> ByUsersNames <$> read x0
+          _ -> Left $ TypeMismatch "ByUsersNames" "IsForeign"
 
 
       "ByGlobalGroupId" -> do
@@ -10294,8 +10294,8 @@ instance paramEq :: Eq Param where
   eq (ByTeamMembersIds x0a) (ByTeamMembersIds x0b) = x0a == x0b
   eq (ByUserId x0a) (ByUserId x0b) = x0a == x0b
   eq (ByUsersIds x0a) (ByUsersIds x0b) = x0a == x0b
-  eq (ByUserNick x0a) (ByUserNick x0b) = x0a == x0b
-  eq (ByUsersNicks x0a) (ByUsersNicks x0b) = x0a == x0b
+  eq (ByUserName x0a) (ByUserName x0b) = x0a == x0b
+  eq (ByUsersNames x0a) (ByUsersNames x0b) = x0a == x0b
   eq (ByGlobalGroupId x0a) (ByGlobalGroupId x0b) = x0a == x0b
   eq (ByGlobalGroupsIds x0a) (ByGlobalGroupsIds x0b) = x0a == x0b
   eq (ByGroupId x0a) (ByGroupId x0b) = x0a == x0b
@@ -10360,8 +10360,8 @@ instance paramShow :: Show Param where
   show (ByTeamMembersIds x0) = "ByTeamMembersIds: " <> show x0
   show (ByUserId x0) = "ByUserId: " <> show x0
   show (ByUsersIds x0) = "ByUsersIds: " <> show x0
-  show (ByUserNick x0) = "ByUserNick: " <> show x0
-  show (ByUsersNicks x0) = "ByUsersNicks: " <> show x0
+  show (ByUserName x0) = "ByUserName: " <> show x0
+  show (ByUsersNames x0) = "ByUsersNames: " <> show x0
   show (ByGlobalGroupId x0) = "ByGlobalGroupId: " <> show x0
   show (ByGlobalGroupsIds x0) = "ByGlobalGroupsIds: " <> show x0
   show (ByGroupId x0) = "ByGroupId: " <> show x0
@@ -10426,8 +10426,8 @@ instance paramQueryParam :: QueryParam Param where
   qp (ByTeamMembersIds x0) = Tuple "by_team_members_ids" (show x0)
   qp (ByUserId x0) = Tuple "by_user_id" (show x0)
   qp (ByUsersIds x0) = Tuple "by_users_ids" (show x0)
-  qp (ByUserNick x0) = Tuple "by_user_nick" x0
-  qp (ByUsersNicks x0) = Tuple "by_users_nicks" (show x0)
+  qp (ByUserName x0) = Tuple "by_user_name" x0
+  qp (ByUsersNames x0) = Tuple "by_users_names" (show x0)
   qp (ByGlobalGroupId x0) = Tuple "by_global_group_id" (show x0)
   qp (ByGlobalGroupsIds x0) = Tuple "by_global_groups_ids" (show x0)
   qp (ByGroupId x0) = Tuple "by_group_id" (show x0)
@@ -10492,8 +10492,8 @@ data ParamTag
   | ParamTag_ByTeamMembersIds 
   | ParamTag_ByUserId 
   | ParamTag_ByUsersIds 
-  | ParamTag_ByUserNick 
-  | ParamTag_ByUsersNicks 
+  | ParamTag_ByUserName 
+  | ParamTag_ByUsersNames 
   | ParamTag_ByGlobalGroupId 
   | ParamTag_ByGlobalGroupsIds 
   | ParamTag_ByGroupId 
@@ -10601,12 +10601,12 @@ instance paramTagEncodeJson :: EncodeJson ParamTag where
        "tag" := "ParamTag_ByUsersIds"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
-  encodeJson (ParamTag_ByUserNick ) =
-       "tag" := "ParamTag_ByUserNick"
+  encodeJson (ParamTag_ByUserName ) =
+       "tag" := "ParamTag_ByUserName"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
-  encodeJson (ParamTag_ByUsersNicks ) =
-       "tag" := "ParamTag_ByUsersNicks"
+  encodeJson (ParamTag_ByUsersNames ) =
+       "tag" := "ParamTag_ByUsersNames"
     ~> "contents" := ([] :: Array String)
     ~> jsonEmptyObject
   encodeJson (ParamTag_ByGlobalGroupId ) =
@@ -10846,11 +10846,11 @@ instance paramTagDecodeJson :: DecodeJson ParamTag where
       "ParamTag_ByUsersIds" -> do
         pure ParamTag_ByUsersIds
 
-      "ParamTag_ByUserNick" -> do
-        pure ParamTag_ByUserNick
+      "ParamTag_ByUserName" -> do
+        pure ParamTag_ByUserName
 
-      "ParamTag_ByUsersNicks" -> do
-        pure ParamTag_ByUsersNicks
+      "ParamTag_ByUsersNames" -> do
+        pure ParamTag_ByUsersNames
 
       "ParamTag_ByGlobalGroupId" -> do
         pure ParamTag_ByGlobalGroupId
@@ -11051,11 +11051,11 @@ instance paramTagRespondable :: Respondable ParamTag where
       "ParamTag_ByUsersIds" -> do
         pure ParamTag_ByUsersIds
 
-      "ParamTag_ByUserNick" -> do
-        pure ParamTag_ByUserNick
+      "ParamTag_ByUserName" -> do
+        pure ParamTag_ByUserName
 
-      "ParamTag_ByUsersNicks" -> do
-        pure ParamTag_ByUsersNicks
+      "ParamTag_ByUsersNames" -> do
+        pure ParamTag_ByUsersNames
 
       "ParamTag_ByGlobalGroupId" -> do
         pure ParamTag_ByGlobalGroupId
@@ -11248,11 +11248,11 @@ instance paramTagIsForeign :: IsForeign ParamTag where
       "ParamTag_ByUsersIds" -> do
         pure ParamTag_ByUsersIds
 
-      "ParamTag_ByUserNick" -> do
-        pure ParamTag_ByUserNick
+      "ParamTag_ByUserName" -> do
+        pure ParamTag_ByUserName
 
-      "ParamTag_ByUsersNicks" -> do
-        pure ParamTag_ByUsersNicks
+      "ParamTag_ByUsersNames" -> do
+        pure ParamTag_ByUsersNames
 
       "ParamTag_ByGlobalGroupId" -> do
         pure ParamTag_ByGlobalGroupId
@@ -11414,8 +11414,8 @@ instance paramTagEq :: Eq ParamTag where
   eq ParamTag_ByTeamMembersIds ParamTag_ByTeamMembersIds = true
   eq ParamTag_ByUserId ParamTag_ByUserId = true
   eq ParamTag_ByUsersIds ParamTag_ByUsersIds = true
-  eq ParamTag_ByUserNick ParamTag_ByUserNick = true
-  eq ParamTag_ByUsersNicks ParamTag_ByUsersNicks = true
+  eq ParamTag_ByUserName ParamTag_ByUserName = true
+  eq ParamTag_ByUsersNames ParamTag_ByUsersNames = true
   eq ParamTag_ByGlobalGroupId ParamTag_ByGlobalGroupId = true
   eq ParamTag_ByGlobalGroupsIds ParamTag_ByGlobalGroupsIds = true
   eq ParamTag_ByGroupId ParamTag_ByGroupId = true
@@ -11480,8 +11480,8 @@ instance paramTagShow :: Show ParamTag where
   show ParamTag_ByTeamMembersIds = "by_team_members_ids"
   show ParamTag_ByUserId = "by_user_id"
   show ParamTag_ByUsersIds = "by_users_ids"
-  show ParamTag_ByUserNick = "by_user_nick"
-  show ParamTag_ByUsersNicks = "by_users_nicks"
+  show ParamTag_ByUserName = "by_user_name"
+  show ParamTag_ByUsersNames = "by_users_names"
   show ParamTag_ByGlobalGroupId = "by_global_group_id"
   show ParamTag_ByGlobalGroupsIds = "by_global_groups_ids"
   show ParamTag_ByGroupId = "by_group_id"
@@ -11546,8 +11546,8 @@ readParamTag "by_team_member_id" = Just ParamTag_ByTeamMemberId
 readParamTag "by_team_members_ids" = Just ParamTag_ByTeamMembersIds
 readParamTag "by_user_id" = Just ParamTag_ByUserId
 readParamTag "by_users_ids" = Just ParamTag_ByUsersIds
-readParamTag "by_user_nick" = Just ParamTag_ByUserNick
-readParamTag "by_users_nicks" = Just ParamTag_ByUsersNicks
+readParamTag "by_user_name" = Just ParamTag_ByUserName
+readParamTag "by_users_names" = Just ParamTag_ByUsersNames
 readParamTag "by_global_group_id" = Just ParamTag_ByGlobalGroupId
 readParamTag "by_global_groups_ids" = Just ParamTag_ByGlobalGroupsIds
 readParamTag "by_group_id" = Just ParamTag_ByGroupId
