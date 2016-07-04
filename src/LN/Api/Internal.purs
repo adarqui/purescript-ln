@@ -1087,6 +1087,12 @@ getUserProfiles params = handleError <$> getAt params ["user_profiles"]
 getUserProfiles' :: ApiEff (Either (ApiError ApplicationError) ProfileResponses)
 getUserProfiles'  = handleError <$> getAt ([] :: Array Boolean) ["user_profiles"]
 
+getUserProfiles_ByUserId :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either (ApiError ApplicationError) ProfileResponses)
+getUserProfiles_ByUserId params _ByUserId = handleError <$> getAt (map qp params <> map qp [ByUserId _ByUserId]) ["user_profiles"]
+
+getUserProfiles_ByUserId' :: Int -> ApiEff (Either (ApiError ApplicationError) ProfileResponses)
+getUserProfiles_ByUserId' _ByUserId = handleError <$> getAt [ByUserId _ByUserId] ["user_profiles"]
+
 getUserProfiles_ByUsersIds :: forall qp. QueryParam qp => Array qp -> (Array Int) -> ApiEff (Either (ApiError ApplicationError) ProfileResponses)
 getUserProfiles_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params <> map qp [ByUsersIds _ByUsersIds]) ["user_profiles"]
 
