@@ -8,10 +8,10 @@ import Purescript.Api.Helpers (class QueryParam, ApiError, ApiEff, getAt, handle
 import LN.T.Internal.Types
 
 getUserSanitizedPack :: forall qp. QueryParam qp => Array qp -> String -> ApiEff (Either (ApiError ApplicationError) UserSanitizedPackResponse)
-getUserSanitizedPack params user_nick = handleError <$> getAt params ["user_sanitized_pack", user_nick]
+getUserSanitizedPack params user_name = handleError <$> getAt params ["user_sanitized_pack", user_name]
 
 getUserSanitizedPack' :: String -> ApiEff (Either (ApiError ApplicationError) UserSanitizedPackResponse)
-getUserSanitizedPack' user_nick = handleError <$> getAt ([] :: Array Boolean) ["user_sanitized_pack", user_nick]
+getUserSanitizedPack' user_name = handleError <$> getAt ([] :: Array Boolean) ["user_sanitized_pack", user_name]
 
 getOrganization :: forall qp. QueryParam qp => Array qp -> String -> ApiEff (Either (ApiError ApplicationError) OrganizationResponse)
 getOrganization params organization_name = handleError <$> getAt params ["organization", organization_name]

@@ -1051,11 +1051,11 @@ getUsers_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp params <>
 getUsers_ByUsersIds' :: (Array Int) -> ApiEff (Either (ApiError ApplicationError) UserResponses)
 getUsers_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["users"]
 
-getUsers_ByUsersNicks :: forall qp. QueryParam qp => Array qp -> (Array String) -> ApiEff (Either (ApiError ApplicationError) UserResponses)
-getUsers_ByUsersNicks params _ByUsersNicks = handleError <$> getAt (map qp params <> map qp [ByUsersNicks _ByUsersNicks]) ["users"]
+getUsers_ByUsersNames :: forall qp. QueryParam qp => Array qp -> (Array String) -> ApiEff (Either (ApiError ApplicationError) UserResponses)
+getUsers_ByUsersNames params _ByUsersNames = handleError <$> getAt (map qp params <> map qp [ByUsersNames _ByUsersNames]) ["users"]
 
-getUsers_ByUsersNicks' :: (Array String) -> ApiEff (Either (ApiError ApplicationError) UserResponses)
-getUsers_ByUsersNicks' _ByUsersNicks = handleError <$> getAt [ByUsersNicks _ByUsersNicks] ["users"]
+getUsers_ByUsersNames' :: (Array String) -> ApiEff (Either (ApiError ApplicationError) UserResponses)
+getUsers_ByUsersNames' _ByUsersNames = handleError <$> getAt [ByUsersNames _ByUsersNames] ["users"]
 
 postUser :: forall qp. QueryParam qp => Array qp -> UserRequest -> ApiEff (Either (ApiError ApplicationError) UserResponse)
 postUser params user_request = handleError <$> postAt params ["user"] user_request
@@ -1123,11 +1123,11 @@ getUsersSanitized_ByUsersIds params _ByUsersIds = handleError <$> getAt (map qp 
 getUsersSanitized_ByUsersIds' :: (Array Int) -> ApiEff (Either (ApiError ApplicationError) UserSanitizedResponses)
 getUsersSanitized_ByUsersIds' _ByUsersIds = handleError <$> getAt [ByUsersIds _ByUsersIds] ["users_sanitized"]
 
-getUsersSanitized_ByUsersNicks :: forall qp. QueryParam qp => Array qp -> (Array String) -> ApiEff (Either (ApiError ApplicationError) UserSanitizedResponses)
-getUsersSanitized_ByUsersNicks params _ByUsersNicks = handleError <$> getAt (map qp params <> map qp [ByUsersNicks _ByUsersNicks]) ["users_sanitized"]
+getUsersSanitized_ByUsersNames :: forall qp. QueryParam qp => Array qp -> (Array String) -> ApiEff (Either (ApiError ApplicationError) UserSanitizedResponses)
+getUsersSanitized_ByUsersNames params _ByUsersNames = handleError <$> getAt (map qp params <> map qp [ByUsersNames _ByUsersNames]) ["users_sanitized"]
 
-getUsersSanitized_ByUsersNicks' :: (Array String) -> ApiEff (Either (ApiError ApplicationError) UserSanitizedResponses)
-getUsersSanitized_ByUsersNicks' _ByUsersNicks = handleError <$> getAt [ByUsersNicks _ByUsersNicks] ["users_sanitized"]
+getUsersSanitized_ByUsersNames' :: (Array String) -> ApiEff (Either (ApiError ApplicationError) UserSanitizedResponses)
+getUsersSanitized_ByUsersNames' _ByUsersNames = handleError <$> getAt [ByUsersNames _ByUsersNames] ["users_sanitized"]
 
 getUserSanitized :: forall qp. QueryParam qp => Array qp -> Int -> ApiEff (Either (ApiError ApplicationError) UserSanitizedResponse)
 getUserSanitized params user_id = handleError <$> getAt params ["user_sanitized", show user_id]
