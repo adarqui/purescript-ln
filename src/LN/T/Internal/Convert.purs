@@ -632,12 +632,12 @@ threadPostResponseToThreadPostRequest  (ThreadPostResponse o) =
 
 
 userRequestToUserResponse :: Int -> String -> String -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> UserRequest -> UserResponse
-userRequestToUserResponse id nick emailMD5 active guard createdAt modifiedAt deactivatedAt activityAt (UserRequest o) =
+userRequestToUserResponse id name emailMD5 active guard createdAt modifiedAt deactivatedAt activityAt (UserRequest o) =
   UserResponse {
     id: id,
-    nick: nick,
-    displayNick: o.displayNick,
-    name: o.name,
+    name: name,
+    displayName: o.displayName,
+    fullName: o.fullName,
     email: o.email,
     emailMD5: emailMD5,
     plugin: o.plugin,
@@ -655,8 +655,8 @@ userRequestToUserResponse id nick emailMD5 active guard createdAt modifiedAt dea
 userResponseToUserRequest :: UserResponse -> UserRequest
 userResponseToUserRequest  (UserResponse o) =
   UserRequest {
-    displayNick: o.displayNick,
-    name: o.name,
+    displayName: o.displayName,
+    fullName: o.fullName,
     email: o.email,
     plugin: o.plugin,
     ident: o.ident,
@@ -665,11 +665,11 @@ userResponseToUserRequest  (UserResponse o) =
 
 
 userRequestToUserSanitizedResponse :: Int -> String -> String -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> UserRequest -> UserSanitizedResponse
-userRequestToUserSanitizedResponse id nick emailMD5 active guard createdAt activityAt (UserRequest o) =
+userRequestToUserSanitizedResponse id name emailMD5 active guard createdAt activityAt (UserRequest o) =
   UserSanitizedResponse {
     id: id,
-    nick: nick,
-    displayNick: o.displayNick,
+    name: name,
+    displayName: o.displayName,
     emailMD5: emailMD5,
     active: active,
     guard: guard,
@@ -679,10 +679,10 @@ userRequestToUserSanitizedResponse id nick emailMD5 active guard createdAt activ
 
 
 userSanitizedResponseToUserRequest :: String -> String -> String -> String -> (Maybe Date) -> UserSanitizedResponse -> UserRequest
-userSanitizedResponseToUserRequest name email plugin ident acceptTOS (UserSanitizedResponse o) =
+userSanitizedResponseToUserRequest fullName email plugin ident acceptTOS (UserSanitizedResponse o) =
   UserRequest {
-    displayNick: o.displayNick,
-    name: name,
+    displayName: o.displayName,
+    fullName: fullName,
     email: email,
     plugin: plugin,
     ident: ident,

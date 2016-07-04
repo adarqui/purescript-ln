@@ -18372,8 +18372,8 @@ instance threadPostStatResponsesIsForeign :: IsForeign ThreadPostStatResponses w
 
 
 newtype UserRequest = UserRequest {
-  displayNick :: String,
-  name :: String,
+  displayName :: String,
+  fullName :: String,
   email :: String,
   plugin :: String,
   ident :: String,
@@ -18382,8 +18382,8 @@ newtype UserRequest = UserRequest {
 
 
 type UserRequestR = {
-  displayNick :: String,
-  name :: String,
+  displayName :: String,
+  fullName :: String,
   email :: String,
   plugin :: String,
   ident :: String,
@@ -18392,8 +18392,8 @@ type UserRequestR = {
 
 
 _UserRequest :: Lens' UserRequest {
-  displayNick :: String,
-  name :: String,
+  displayName :: String,
+  fullName :: String,
   email :: String,
   plugin :: String,
   ident :: String,
@@ -18403,13 +18403,13 @@ _UserRequest f (UserRequest o) = UserRequest <$> f o
 
 
 mkUserRequest :: String -> String -> String -> String -> String -> (Maybe Date) -> UserRequest
-mkUserRequest displayNick name email plugin ident acceptTOS =
-  UserRequest{displayNick, name, email, plugin, ident, acceptTOS}
+mkUserRequest displayName fullName email plugin ident acceptTOS =
+  UserRequest{displayName, fullName, email, plugin, ident, acceptTOS}
 
 
 unwrapUserRequest :: UserRequest -> {
-  displayNick :: String,
-  name :: String,
+  displayName :: String,
+  fullName :: String,
   email :: String,
   plugin :: String,
   ident :: String,
@@ -18420,8 +18420,8 @@ unwrapUserRequest (UserRequest r) = r
 instance userRequestEncodeJson :: EncodeJson UserRequest where
   encodeJson (UserRequest o) =
        "tag" := "UserRequest"
-    ~> "display_nick" := o.displayNick
-    ~> "name" := o.name
+    ~> "display_name" := o.displayName
+    ~> "full_name" := o.fullName
     ~> "email" := o.email
     ~> "plugin" := o.plugin
     ~> "ident" := o.ident
@@ -18432,15 +18432,15 @@ instance userRequestEncodeJson :: EncodeJson UserRequest where
 instance userRequestDecodeJson :: DecodeJson UserRequest where
   decodeJson o = do
     obj <- decodeJson o
-    displayNick <- obj .? "display_nick"
-    name <- obj .? "name"
+    displayName <- obj .? "display_name"
+    fullName <- obj .? "full_name"
     email <- obj .? "email"
     plugin <- obj .? "plugin"
     ident <- obj .? "ident"
     acceptTOS <- obj .? "accept_tos"
     pure $ UserRequest {
-      displayNick,
-      name,
+      displayName,
+      fullName,
       email,
       plugin,
       ident,
@@ -18459,8 +18459,8 @@ instance userRequestRespondable :: Respondable UserRequest where
     Tuple Nothing JSONResponse
   fromResponse json =
       mkUserRequest
-      <$> readProp "display_nick" json
-      <*> readProp "name" json
+      <$> readProp "display_name" json
+      <*> readProp "full_name" json
       <*> readProp "email" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
@@ -18470,8 +18470,8 @@ instance userRequestRespondable :: Respondable UserRequest where
 instance userRequestIsForeign :: IsForeign UserRequest where
   read json =
       mkUserRequest
-      <$> readProp "display_nick" json
-      <*> readProp "name" json
+      <$> readProp "display_name" json
+      <*> readProp "full_name" json
       <*> readProp "email" json
       <*> readProp "plugin" json
       <*> readProp "ident" json
@@ -18480,9 +18480,9 @@ instance userRequestIsForeign :: IsForeign UserRequest where
 
 newtype UserResponse = UserResponse {
   id :: Int,
-  nick :: String,
-  displayNick :: String,
   name :: String,
+  displayName :: String,
+  fullName :: String,
   email :: String,
   emailMD5 :: String,
   plugin :: String,
@@ -18499,9 +18499,9 @@ newtype UserResponse = UserResponse {
 
 type UserResponseR = {
   id :: Int,
-  nick :: String,
-  displayNick :: String,
   name :: String,
+  displayName :: String,
+  fullName :: String,
   email :: String,
   emailMD5 :: String,
   plugin :: String,
@@ -18518,9 +18518,9 @@ type UserResponseR = {
 
 _UserResponse :: Lens' UserResponse {
   id :: Int,
-  nick :: String,
-  displayNick :: String,
   name :: String,
+  displayName :: String,
+  fullName :: String,
   email :: String,
   emailMD5 :: String,
   plugin :: String,
@@ -18537,15 +18537,15 @@ _UserResponse f (UserResponse o) = UserResponse <$> f o
 
 
 mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> String -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> UserResponse
-mkUserResponse id nick displayNick name email emailMD5 plugin ident acceptTOS active guard createdAt modifiedAt deactivatedAt activityAt =
-  UserResponse{id, nick, displayNick, name, email, emailMD5, plugin, ident, acceptTOS, active, guard, createdAt, modifiedAt, deactivatedAt, activityAt}
+mkUserResponse id name displayName fullName email emailMD5 plugin ident acceptTOS active guard createdAt modifiedAt deactivatedAt activityAt =
+  UserResponse{id, name, displayName, fullName, email, emailMD5, plugin, ident, acceptTOS, active, guard, createdAt, modifiedAt, deactivatedAt, activityAt}
 
 
 unwrapUserResponse :: UserResponse -> {
   id :: Int,
-  nick :: String,
-  displayNick :: String,
   name :: String,
+  displayName :: String,
+  fullName :: String,
   email :: String,
   emailMD5 :: String,
   plugin :: String,
@@ -18564,9 +18564,9 @@ instance userResponseEncodeJson :: EncodeJson UserResponse where
   encodeJson (UserResponse o) =
        "tag" := "UserResponse"
     ~> "id" := o.id
-    ~> "nick" := o.nick
-    ~> "display_nick" := o.displayNick
     ~> "name" := o.name
+    ~> "display_name" := o.displayName
+    ~> "full_name" := o.fullName
     ~> "email" := o.email
     ~> "email_md5" := o.emailMD5
     ~> "plugin" := o.plugin
@@ -18585,9 +18585,9 @@ instance userResponseDecodeJson :: DecodeJson UserResponse where
   decodeJson o = do
     obj <- decodeJson o
     id <- obj .? "id"
-    nick <- obj .? "nick"
-    displayNick <- obj .? "display_nick"
     name <- obj .? "name"
+    displayName <- obj .? "display_name"
+    fullName <- obj .? "full_name"
     email <- obj .? "email"
     emailMD5 <- obj .? "email_md5"
     plugin <- obj .? "plugin"
@@ -18601,9 +18601,9 @@ instance userResponseDecodeJson :: DecodeJson UserResponse where
     activityAt <- obj .? "activity_at"
     pure $ UserResponse {
       id,
-      nick,
-      displayNick,
       name,
+      displayName,
+      fullName,
       email,
       emailMD5,
       plugin,
@@ -18630,9 +18630,9 @@ instance userResponseRespondable :: Respondable UserResponse where
   fromResponse json =
       mkUserResponse
       <$> readProp "id" json
-      <*> readProp "nick" json
-      <*> readProp "display_nick" json
       <*> readProp "name" json
+      <*> readProp "display_name" json
+      <*> readProp "full_name" json
       <*> readProp "email" json
       <*> readProp "email_md5" json
       <*> readProp "plugin" json
@@ -18650,9 +18650,9 @@ instance userResponseIsForeign :: IsForeign UserResponse where
   read json =
       mkUserResponse
       <$> readProp "id" json
-      <*> readProp "nick" json
-      <*> readProp "display_nick" json
       <*> readProp "name" json
+      <*> readProp "display_name" json
+      <*> readProp "full_name" json
       <*> readProp "email" json
       <*> readProp "email_md5" json
       <*> readProp "plugin" json
@@ -18730,8 +18730,8 @@ instance userResponsesIsForeign :: IsForeign UserResponses where
 
 newtype UserSanitizedResponse = UserSanitizedResponse {
   id :: Int,
-  nick :: String,
-  displayNick :: String,
+  name :: String,
+  displayName :: String,
   emailMD5 :: String,
   active :: Boolean,
   guard :: Int,
@@ -18742,8 +18742,8 @@ newtype UserSanitizedResponse = UserSanitizedResponse {
 
 type UserSanitizedResponseR = {
   id :: Int,
-  nick :: String,
-  displayNick :: String,
+  name :: String,
+  displayName :: String,
   emailMD5 :: String,
   active :: Boolean,
   guard :: Int,
@@ -18754,8 +18754,8 @@ type UserSanitizedResponseR = {
 
 _UserSanitizedResponse :: Lens' UserSanitizedResponse {
   id :: Int,
-  nick :: String,
-  displayNick :: String,
+  name :: String,
+  displayName :: String,
   emailMD5 :: String,
   active :: Boolean,
   guard :: Int,
@@ -18766,14 +18766,14 @@ _UserSanitizedResponse f (UserSanitizedResponse o) = UserSanitizedResponse <$> f
 
 
 mkUserSanitizedResponse :: Int -> String -> String -> String -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> UserSanitizedResponse
-mkUserSanitizedResponse id nick displayNick emailMD5 active guard createdAt activityAt =
-  UserSanitizedResponse{id, nick, displayNick, emailMD5, active, guard, createdAt, activityAt}
+mkUserSanitizedResponse id name displayName emailMD5 active guard createdAt activityAt =
+  UserSanitizedResponse{id, name, displayName, emailMD5, active, guard, createdAt, activityAt}
 
 
 unwrapUserSanitizedResponse :: UserSanitizedResponse -> {
   id :: Int,
-  nick :: String,
-  displayNick :: String,
+  name :: String,
+  displayName :: String,
   emailMD5 :: String,
   active :: Boolean,
   guard :: Int,
@@ -18786,8 +18786,8 @@ instance userSanitizedResponseEncodeJson :: EncodeJson UserSanitizedResponse whe
   encodeJson (UserSanitizedResponse o) =
        "tag" := "UserSanitizedResponse"
     ~> "id" := o.id
-    ~> "nick" := o.nick
-    ~> "display_nick" := o.displayNick
+    ~> "name" := o.name
+    ~> "display_name" := o.displayName
     ~> "email_md5" := o.emailMD5
     ~> "active" := o.active
     ~> "guard" := o.guard
@@ -18800,8 +18800,8 @@ instance userSanitizedResponseDecodeJson :: DecodeJson UserSanitizedResponse whe
   decodeJson o = do
     obj <- decodeJson o
     id <- obj .? "id"
-    nick <- obj .? "nick"
-    displayNick <- obj .? "display_nick"
+    name <- obj .? "name"
+    displayName <- obj .? "display_name"
     emailMD5 <- obj .? "email_md5"
     active <- obj .? "active"
     guard <- obj .? "guard"
@@ -18809,8 +18809,8 @@ instance userSanitizedResponseDecodeJson :: DecodeJson UserSanitizedResponse whe
     activityAt <- obj .? "activity_at"
     pure $ UserSanitizedResponse {
       id,
-      nick,
-      displayNick,
+      name,
+      displayName,
       emailMD5,
       active,
       guard,
@@ -18831,8 +18831,8 @@ instance userSanitizedResponseRespondable :: Respondable UserSanitizedResponse w
   fromResponse json =
       mkUserSanitizedResponse
       <$> readProp "id" json
-      <*> readProp "nick" json
-      <*> readProp "display_nick" json
+      <*> readProp "name" json
+      <*> readProp "display_name" json
       <*> readProp "email_md5" json
       <*> readProp "active" json
       <*> readProp "guard" json
@@ -18844,8 +18844,8 @@ instance userSanitizedResponseIsForeign :: IsForeign UserSanitizedResponse where
   read json =
       mkUserSanitizedResponse
       <$> readProp "id" json
-      <*> readProp "nick" json
-      <*> readProp "display_nick" json
+      <*> readProp "name" json
+      <*> readProp "display_name" json
       <*> readProp "email_md5" json
       <*> readProp "active" json
       <*> readProp "guard" json
@@ -22246,10 +22246,6 @@ displayName_ :: forall b a r. Lens { displayName :: a | r } { displayName :: b |
 displayName_ f o = o { displayName = _ } <$> f o.displayName
 
 
-displayNick_ :: forall b a r. Lens { displayNick :: a | r } { displayNick :: b | r } a b
-displayNick_ f o = o { displayNick = _ } <$> f o.displayNick
-
-
 email_ :: forall b a r. Lens { email :: a | r } { email :: b | r } a b
 email_ f o = o { email = _ } <$> f o.email
 
@@ -22308,6 +22304,10 @@ forums_ f o = o { forums = _ } <$> f o.forums
 
 front_ :: forall b a r. Lens { front :: a | r } { front :: b | r } a b
 front_ f o = o { front = _ } <$> f o.front
+
+
+fullName_ :: forall b a r. Lens { fullName :: a | r } { fullName :: b | r } a b
+fullName_ f o = o { fullName = _ } <$> f o.fullName
 
 
 gender_ :: forall b a r. Lens { gender :: a | r } { gender :: b | r } a b
@@ -22556,10 +22556,6 @@ name_ f o = o { name = _ } <$> f o.name
 
 neutral_ :: forall b a r. Lens { neutral :: a | r } { neutral :: b | r } a b
 neutral_ f o = o { neutral = _ } <$> f o.neutral
-
-
-nick_ :: forall b a r. Lens { nick :: a | r } { nick :: b | r } a b
-nick_ f o = o { nick = _ } <$> f o.nick
 
 
 opt_ :: forall b a r. Lens { opt :: a | r } { opt :: b | r } a b
