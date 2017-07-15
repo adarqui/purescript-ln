@@ -9,7 +9,7 @@ import Data.Argonaut.Encode.Combinators ((~>), (:=))
 import Data.Argonaut.Printer            (printJson)
 import Data.Date.Helpers                (Date)
 import Data.Either                      (Either(..))
-import Data.Foreign                     (ForeignError(..))
+import Data.Foreign                     (ForeignError(..), fail)
 import Data.Foreign.NullOrUndefined     (unNullOrUndefined)
 import Data.Foreign.Class               (class IsForeign, read, readProp)
 import Data.Maybe                       (Maybe(..))
@@ -120,13 +120,6 @@ type ApiRequestR = {
 }
 
 
-_ApiRequest :: Lens' ApiRequest {
-  comment :: (Maybe String),
-  guard :: Int
-}
-_ApiRequest f (ApiRequest o) = ApiRequest <$> f o
-
-
 mkApiRequest :: (Maybe String) -> Int -> ApiRequest
 mkApiRequest comment guard =
   ApiRequest{comment, guard}
@@ -199,18 +192,6 @@ type ApiResponseR = {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
-
-
-_ApiResponse :: Lens' ApiResponse {
-  id :: Int,
-  userId :: Int,
-  key :: String,
-  comment :: (Maybe String),
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_ApiResponse f (ApiResponse o) = ApiResponse <$> f o
 
 
 mkApiResponse :: Int -> Int -> String -> (Maybe String) -> Int -> (Maybe Date) -> (Maybe Date) -> ApiResponse
@@ -305,12 +286,6 @@ type ApiResponsesR = {
 }
 
 
-_ApiResponses :: Lens' ApiResponses {
-  apiResponses :: (Array ApiResponse)
-}
-_ApiResponses f (ApiResponses o) = ApiResponses <$> f o
-
-
 mkApiResponses :: (Array ApiResponse) -> ApiResponses
 mkApiResponses apiResponses =
   ApiResponses{apiResponses}
@@ -381,20 +356,6 @@ type BoardRequestR = {
   tags :: (Array String),
   guard :: Int
 }
-
-
-_BoardRequest :: Lens' BoardRequest {
-  displayName :: String,
-  description :: (Maybe String),
-  isAnonymous :: Boolean,
-  canCreateSubBoards :: Boolean,
-  canCreateThreads :: Boolean,
-  suggestedTags :: (Array String),
-  icon :: (Maybe String),
-  tags :: (Array String),
-  guard :: Int
-}
-_BoardRequest f (BoardRequest o) = BoardRequest <$> f o
 
 
 mkBoardRequest :: String -> (Maybe String) -> Boolean -> Boolean -> Boolean -> (Array String) -> (Maybe String) -> (Array String) -> Int -> BoardRequest
@@ -537,31 +498,6 @@ type BoardResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_BoardResponse :: Lens' BoardResponse {
-  id :: Int,
-  userId :: Int,
-  orgId :: Int,
-  forumId :: Int,
-  parentId :: (Maybe Int),
-  name :: String,
-  displayName :: String,
-  description :: (Maybe String),
-  isAnonymous :: Boolean,
-  canCreateSubBoards :: Boolean,
-  canCreateThreads :: Boolean,
-  suggestedTags :: (Array String),
-  icon :: (Maybe String),
-  tags :: (Array String),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_BoardResponse f (BoardResponse o) = BoardResponse <$> f o
 
 
 mkBoardResponse :: Int -> Int -> Int -> Int -> (Maybe Int) -> String -> String -> (Maybe String) -> Boolean -> Boolean -> Boolean -> (Array String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> BoardResponse
@@ -734,12 +670,6 @@ type BoardResponsesR = {
 }
 
 
-_BoardResponses :: Lens' BoardResponses {
-  boardResponses :: (Array BoardResponse)
-}
-_BoardResponses f (BoardResponses o) = BoardResponses <$> f o
-
-
 mkBoardResponses :: (Array BoardResponse) -> BoardResponses
 mkBoardResponses boardResponses =
   BoardResponses{boardResponses}
@@ -800,15 +730,6 @@ type BoardStatResponseR = {
   threadPosts :: Int,
   views :: Int
 }
-
-
-_BoardStatResponse :: Lens' BoardStatResponse {
-  boardId :: Int,
-  threads :: Int,
-  threadPosts :: Int,
-  views :: Int
-}
-_BoardStatResponse f (BoardStatResponse o) = BoardStatResponse <$> f o
 
 
 mkBoardStatResponse :: Int -> Int -> Int -> Int -> BoardStatResponse
@@ -885,12 +806,6 @@ type BoardStatResponsesR = {
 }
 
 
-_BoardStatResponses :: Lens' BoardStatResponses {
-  boardStatResponses :: (Array BoardStatResponse)
-}
-_BoardStatResponses f (BoardStatResponses o) = BoardStatResponses <$> f o
-
-
 mkBoardStatResponses :: (Array BoardStatResponse) -> BoardStatResponses
 mkBoardStatResponses boardStatResponses =
   BoardStatResponses{boardStatResponses}
@@ -961,20 +876,6 @@ type BucketRequestR = {
   filters :: (Array Int),
   guard :: Int
 }
-
-
-_BucketRequest :: Lens' BucketRequest {
-  displayName :: String,
-  description :: (Maybe String),
-  scoreLo :: Int,
-  scoreHi :: Int,
-  leurons :: (Array Int),
-  resources :: (Array Int),
-  categories :: (Array String),
-  filters :: (Array Int),
-  guard :: Int
-}
-_BucketRequest f (BucketRequest o) = BucketRequest <$> f o
 
 
 mkBucketRequest :: String -> (Maybe String) -> Int -> Int -> (Array Int) -> (Array Int) -> (Array String) -> (Array Int) -> Int -> BucketRequest
@@ -1109,27 +1010,6 @@ type BucketResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_BucketResponse :: Lens' BucketResponse {
-  id :: Int,
-  userId :: Int,
-  name :: String,
-  displayName :: String,
-  description :: (Maybe String),
-  scoreLo :: Int,
-  scoreHi :: Int,
-  leurons :: (Array Int),
-  resources :: (Array Int),
-  categories :: (Array String),
-  filters :: (Array Int),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_BucketResponse f (BucketResponse o) = BucketResponse <$> f o
 
 
 mkBucketResponse :: Int -> Int -> String -> String -> (Maybe String) -> Int -> Int -> (Array Int) -> (Array Int) -> (Array String) -> (Array Int) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> BucketResponse
@@ -1278,12 +1158,6 @@ type BucketResponsesR = {
 }
 
 
-_BucketResponses :: Lens' BucketResponses {
-  bucketResponses :: (Array BucketResponse)
-}
-_BucketResponses f (BucketResponses o) = BucketResponses <$> f o
-
-
 mkBucketResponses :: (Array BucketResponse) -> BucketResponses
 mkBucketResponses bucketResponses =
   BucketResponses{bucketResponses}
@@ -1340,13 +1214,6 @@ type CountResponseR = {
   id :: Int,
   n :: Int
 }
-
-
-_CountResponse :: Lens' CountResponse {
-  id :: Int,
-  n :: Int
-}
-_CountResponse f (CountResponse o) = CountResponse <$> f o
 
 
 mkCountResponse :: Int -> Int -> CountResponse
@@ -1411,12 +1278,6 @@ type CountResponsesR = {
 }
 
 
-_CountResponses :: Lens' CountResponses {
-  countResponses :: (Array CountResponse)
-}
-_CountResponses f (CountResponses o) = CountResponses <$> f o
-
-
 mkCountResponses :: (Array CountResponse) -> CountResponses
 mkCountResponses countResponses =
   CountResponses{countResponses}
@@ -1474,12 +1335,6 @@ newtype EmptyRequest = EmptyRequest {
 type EmptyRequestR = {
   value :: Boolean
 }
-
-
-_EmptyRequest :: Lens' EmptyRequest {
-  value :: Boolean
-}
-_EmptyRequest f (EmptyRequest o) = EmptyRequest <$> f o
 
 
 mkEmptyRequest :: Boolean -> EmptyRequest
@@ -1544,16 +1399,6 @@ type EmptyResponseR = {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
-
-
-_EmptyResponse :: Lens' EmptyResponse {
-  id :: Int,
-  userId :: Int,
-  value :: Boolean,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_EmptyResponse f (EmptyResponse o) = EmptyResponse <$> f o
 
 
 mkEmptyResponse :: Int -> Int -> Boolean -> (Maybe Date) -> (Maybe Date) -> EmptyResponse
@@ -1634,12 +1479,6 @@ newtype EmptyResponses = EmptyResponses {
 type EmptyResponsesR = {
   emptyResponses :: (Array EmptyResponse)
 }
-
-
-_EmptyResponses :: Lens' EmptyResponses {
-  emptyResponses :: (Array EmptyResponse)
-}
-_EmptyResponses f (EmptyResponses o) = EmptyResponses <$> f o
 
 
 mkEmptyResponses :: (Array EmptyResponse) -> EmptyResponses
@@ -2608,22 +2447,6 @@ type ForumRequestR = {
 }
 
 
-_ForumRequest :: Lens' ForumRequest {
-  displayName :: String,
-  description :: (Maybe String),
-  threadsPerBoard :: Int,
-  threadPostsPerThread :: Int,
-  recentThreadsLimit :: Int,
-  recentPostsLimit :: Int,
-  motwLimit :: Int,
-  icon :: (Maybe String),
-  tags :: (Array String),
-  visibility :: Visibility,
-  guard :: Int
-}
-_ForumRequest f (ForumRequest o) = ForumRequest <$> f o
-
-
 mkForumRequest :: String -> (Maybe String) -> Int -> Int -> Int -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Int -> ForumRequest
 mkForumRequest displayName description threadsPerBoard threadPostsPerThread recentThreadsLimit recentPostsLimit motwLimit icon tags visibility guard =
   ForumRequest{displayName, description, threadsPerBoard, threadPostsPerThread, recentThreadsLimit, recentPostsLimit, motwLimit, icon, tags, visibility, guard}
@@ -2776,31 +2599,6 @@ type ForumResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_ForumResponse :: Lens' ForumResponse {
-  id :: Int,
-  userId :: Int,
-  orgId :: Int,
-  name :: String,
-  displayName :: String,
-  description :: (Maybe String),
-  threadsPerBoard :: Int,
-  threadPostsPerThread :: Int,
-  recentThreadsLimit :: Int,
-  recentPostsLimit :: Int,
-  motwLimit :: Int,
-  icon :: (Maybe String),
-  tags :: (Array String),
-  visibility :: Visibility,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_ForumResponse f (ForumResponse o) = ForumResponse <$> f o
 
 
 mkForumResponse :: Int -> Int -> Int -> String -> String -> (Maybe String) -> Int -> Int -> Int -> Int -> Int -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ForumResponse
@@ -2973,12 +2771,6 @@ type ForumResponsesR = {
 }
 
 
-_ForumResponses :: Lens' ForumResponses {
-  forumResponses :: (Array ForumResponse)
-}
-_ForumResponses f (ForumResponses o) = ForumResponses <$> f o
-
-
 mkForumResponses :: (Array ForumResponse) -> ForumResponses
 mkForumResponses forumResponses =
   ForumResponses{forumResponses}
@@ -3041,16 +2833,6 @@ type ForumStatResponseR = {
   threadPosts :: Int,
   views :: Int
 }
-
-
-_ForumStatResponse :: Lens' ForumStatResponse {
-  forumId :: Int,
-  boards :: Int,
-  threads :: Int,
-  threadPosts :: Int,
-  views :: Int
-}
-_ForumStatResponse f (ForumStatResponse o) = ForumStatResponse <$> f o
 
 
 mkForumStatResponse :: Int -> Int -> Int -> Int -> Int -> ForumStatResponse
@@ -3133,12 +2915,6 @@ type ForumStatResponsesR = {
 }
 
 
-_ForumStatResponses :: Lens' ForumStatResponses {
-  forumStatResponses :: (Array ForumStatResponse)
-}
-_ForumStatResponses f (ForumStatResponses o) = ForumStatResponses <$> f o
-
-
 mkForumStatResponses :: (Array ForumStatResponse) -> ForumStatResponses
 mkForumStatResponses forumStatResponses =
   ForumStatResponses{forumStatResponses}
@@ -3205,18 +2981,6 @@ type GlobalGroupRequestR = {
   visibility :: Visibility,
   guard :: Int
 }
-
-
-_GlobalGroupRequest :: Lens' GlobalGroupRequest {
-  displayName :: String,
-  description :: (Maybe String),
-  membership :: Membership,
-  icon :: (Maybe String),
-  tags :: (Array String),
-  visibility :: Visibility,
-  guard :: Int
-}
-_GlobalGroupRequest f (GlobalGroupRequest o) = GlobalGroupRequest <$> f o
 
 
 mkGlobalGroupRequest :: String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Int -> GlobalGroupRequest
@@ -3337,26 +3101,6 @@ type GlobalGroupResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_GlobalGroupResponse :: Lens' GlobalGroupResponse {
-  id :: Int,
-  userId :: Int,
-  name :: String,
-  displayName :: String,
-  description :: (Maybe String),
-  membership :: Membership,
-  icon :: (Maybe String),
-  tags :: (Array String),
-  visibility :: Visibility,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_GlobalGroupResponse f (GlobalGroupResponse o) = GlobalGroupResponse <$> f o
 
 
 mkGlobalGroupResponse :: Int -> Int -> String -> String -> (Maybe String) -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> GlobalGroupResponse
@@ -3499,12 +3243,6 @@ type GlobalGroupResponsesR = {
 }
 
 
-_GlobalGroupResponses :: Lens' GlobalGroupResponses {
-  globalGroupResponses :: (Array GlobalGroupResponse)
-}
-_GlobalGroupResponses f (GlobalGroupResponses o) = GlobalGroupResponses <$> f o
-
-
 mkGlobalGroupResponses :: (Array GlobalGroupResponse) -> GlobalGroupResponses
 mkGlobalGroupResponses globalGroupResponses =
   GlobalGroupResponses{globalGroupResponses}
@@ -3559,12 +3297,6 @@ newtype GlobalGroupStatResponse = GlobalGroupStatResponse {
 type GlobalGroupStatResponseR = {
   groups :: Int
 }
-
-
-_GlobalGroupStatResponse :: Lens' GlobalGroupStatResponse {
-  groups :: Int
-}
-_GlobalGroupStatResponse f (GlobalGroupStatResponse o) = GlobalGroupStatResponse <$> f o
 
 
 mkGlobalGroupStatResponse :: Int -> GlobalGroupStatResponse
@@ -3623,12 +3355,6 @@ type GlobalGroupStatResponsesR = {
 }
 
 
-_GlobalGroupStatResponses :: Lens' GlobalGroupStatResponses {
-  globalGroupStatResponses :: (Array GlobalGroupStatResponse)
-}
-_GlobalGroupStatResponses f (GlobalGroupStatResponses o) = GlobalGroupStatResponses <$> f o
-
-
 mkGlobalGroupStatResponses :: (Array GlobalGroupStatResponse) -> GlobalGroupStatResponses
 mkGlobalGroupStatResponses globalGroupStatResponses =
   GlobalGroupStatResponses{globalGroupStatResponses}
@@ -3683,12 +3409,6 @@ newtype GroupRequest = GroupRequest {
 type GroupRequestR = {
   guard :: Int
 }
-
-
-_GroupRequest :: Lens' GroupRequest {
-  guard :: Int
-}
-_GroupRequest f (GroupRequest o) = GroupRequest <$> f o
 
 
 mkGroupRequest :: Int -> GroupRequest
@@ -3763,21 +3483,6 @@ type GroupResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_GroupResponse :: Lens' GroupResponse {
-  id :: Int,
-  userId :: Int,
-  globalGroupId :: Int,
-  organizationId :: Int,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_GroupResponse f (GroupResponse o) = GroupResponse <$> f o
 
 
 mkGroupResponse :: Int -> Int -> Int -> Int -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> GroupResponse
@@ -3890,12 +3595,6 @@ type GroupResponsesR = {
 }
 
 
-_GroupResponses :: Lens' GroupResponses {
-  groupResponses :: (Array GroupResponse)
-}
-_GroupResponses f (GroupResponses o) = GroupResponses <$> f o
-
-
 mkGroupResponses :: (Array GroupResponse) -> GroupResponses
 mkGroupResponses groupResponses =
   GroupResponses{groupResponses}
@@ -3950,12 +3649,6 @@ newtype GroupStatResponse = GroupStatResponse {
 type GroupStatResponseR = {
   members :: Int
 }
-
-
-_GroupStatResponse :: Lens' GroupStatResponse {
-  members :: Int
-}
-_GroupStatResponse f (GroupStatResponse o) = GroupStatResponse <$> f o
 
 
 mkGroupStatResponse :: Int -> GroupStatResponse
@@ -4014,12 +3707,6 @@ type GroupStatResponsesR = {
 }
 
 
-_GroupStatResponses :: Lens' GroupStatResponses {
-  groupStatResponses :: (Array GroupStatResponse)
-}
-_GroupStatResponses f (GroupStatResponses o) = GroupStatResponses <$> f o
-
-
 mkGroupStatResponses :: (Array GroupStatResponse) -> GroupStatResponses
 mkGroupStatResponses groupStatResponses =
   GroupStatResponses{groupStatResponses}
@@ -4074,12 +3761,6 @@ newtype GroupMemberRequest = GroupMemberRequest {
 type GroupMemberRequestR = {
   guard :: Int
 }
-
-
-_GroupMemberRequest :: Lens' GroupMemberRequest {
-  guard :: Int
-}
-_GroupMemberRequest f (GroupMemberRequest o) = GroupMemberRequest <$> f o
 
 
 mkGroupMemberRequest :: Int -> GroupMemberRequest
@@ -4148,18 +3829,6 @@ type GroupMemberResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_GroupMemberResponse :: Lens' GroupMemberResponse {
-  id :: Int,
-  userId :: Int,
-  globalGroupId :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_GroupMemberResponse f (GroupMemberResponse o) = GroupMemberResponse <$> f o
 
 
 mkGroupMemberResponse :: Int -> Int -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> GroupMemberResponse
@@ -4252,12 +3921,6 @@ newtype GroupMemberResponses = GroupMemberResponses {
 type GroupMemberResponsesR = {
   groupMemberResponses :: (Array GroupMemberResponse)
 }
-
-
-_GroupMemberResponses :: Lens' GroupMemberResponses {
-  groupMemberResponses :: (Array GroupMemberResponse)
-}
-_GroupMemberResponses f (GroupMemberResponses o) = GroupMemberResponses <$> f o
 
 
 mkGroupMemberResponses :: (Array GroupMemberResponse) -> GroupMemberResponses
@@ -4448,24 +4111,6 @@ type LeuronRequestR = {
 }
 
 
-_LeuronRequest :: Lens' LeuronRequest {
-  dataP :: LeuronData,
-  title :: (Maybe String),
-  description :: (Maybe String),
-  section :: (Maybe String),
-  page :: (Maybe String),
-  examples :: (Maybe (Array String)),
-  strengths :: (Maybe (Array String)),
-  categories :: (DepList String),
-  splits :: (Maybe (Array Splits)),
-  substitutions :: (Maybe (Array Substitutions)),
-  tags :: (Array String),
-  style :: (Maybe (Array String)),
-  guard :: Int
-}
-_LeuronRequest f (LeuronRequest o) = LeuronRequest <$> f o
-
-
 mkLeuronRequest :: LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array String)) -> (Maybe (Array String)) -> (DepList String) -> (Maybe (Array Splits)) -> (Maybe (Array Substitutions)) -> (Array String) -> (Maybe (Array String)) -> Int -> LeuronRequest
 mkLeuronRequest dataP title description section page examples strengths categories splits substitutions tags style guard =
   LeuronRequest{dataP, title, description, section, page, examples, strengths, categories, splits, substitutions, tags, style, guard}
@@ -4630,31 +4275,6 @@ type LeuronResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_LeuronResponse :: Lens' LeuronResponse {
-  id :: Int,
-  userId :: Int,
-  resourceId :: Int,
-  dataP :: LeuronData,
-  title :: (Maybe String),
-  description :: (Maybe String),
-  section :: (Maybe String),
-  page :: (Maybe String),
-  examples :: (Maybe (Array String)),
-  strengths :: (Maybe (Array String)),
-  categories :: (DepList String),
-  splits :: (Maybe (Array Splits)),
-  substitutions :: (Maybe (Array Substitutions)),
-  tags :: (Array String),
-  style :: (Maybe (Array String)),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_LeuronResponse f (LeuronResponse o) = LeuronResponse <$> f o
 
 
 mkLeuronResponse :: Int -> Int -> Int -> LeuronData -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe String) -> (Maybe (Array String)) -> (Maybe (Array String)) -> (DepList String) -> (Maybe (Array Splits)) -> (Maybe (Array Substitutions)) -> (Array String) -> (Maybe (Array String)) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> LeuronResponse
@@ -4827,12 +4447,6 @@ type LeuronResponsesR = {
 }
 
 
-_LeuronResponses :: Lens' LeuronResponses {
-  leuronResponses :: (Array LeuronResponse)
-}
-_LeuronResponses f (LeuronResponses o) = LeuronResponses <$> f o
-
-
 mkLeuronResponses :: (Array LeuronResponse) -> LeuronResponses
 mkLeuronResponses leuronResponses =
   LeuronResponses{leuronResponses}
@@ -4897,17 +4511,6 @@ type LeuronStatResponseR = {
   stars :: Int,
   views :: Int
 }
-
-
-_LeuronStatResponse :: Lens' LeuronStatResponse {
-  leuronId :: Int,
-  likes :: Int,
-  neutral :: Int,
-  dislikes :: Int,
-  stars :: Int,
-  views :: Int
-}
-_LeuronStatResponse f (LeuronStatResponse o) = LeuronStatResponse <$> f o
 
 
 mkLeuronStatResponse :: Int -> Int -> Int -> Int -> Int -> Int -> LeuronStatResponse
@@ -4994,12 +4597,6 @@ newtype LeuronStatResponses = LeuronStatResponses {
 type LeuronStatResponsesR = {
   leuronStatResponses :: (Array LeuronStatResponse)
 }
-
-
-_LeuronStatResponses :: Lens' LeuronStatResponses {
-  leuronStatResponses :: (Array LeuronStatResponse)
-}
-_LeuronStatResponses f (LeuronStatResponses o) = LeuronStatResponses <$> f o
 
 
 mkLeuronStatResponses :: (Array LeuronStatResponse) -> LeuronStatResponses
@@ -5218,13 +4815,6 @@ type LeuronTrainingRequestR = {
 }
 
 
-_LeuronTrainingRequest :: Lens' LeuronTrainingRequest {
-  summary :: LeuronTrainingSummary,
-  guard :: Int
-}
-_LeuronTrainingRequest f (LeuronTrainingRequest o) = LeuronTrainingRequest <$> f o
-
-
 mkLeuronTrainingRequest :: LeuronTrainingSummary -> Int -> LeuronTrainingRequest
 mkLeuronTrainingRequest summary guard =
   LeuronTrainingRequest{summary, guard}
@@ -5297,18 +4887,6 @@ type LeuronTrainingResponseR = {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
-
-
-_LeuronTrainingResponse :: Lens' LeuronTrainingResponse {
-  id :: Int,
-  userId :: Int,
-  leuronId :: Int,
-  summary :: LeuronTrainingSummary,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_LeuronTrainingResponse f (LeuronTrainingResponse o) = LeuronTrainingResponse <$> f o
 
 
 mkLeuronTrainingResponse :: Int -> Int -> Int -> LeuronTrainingSummary -> Int -> (Maybe Date) -> (Maybe Date) -> LeuronTrainingResponse
@@ -5403,12 +4981,6 @@ type LeuronTrainingResponsesR = {
 }
 
 
-_LeuronTrainingResponses :: Lens' LeuronTrainingResponses {
-  leuronTrainingResponses :: (Array LeuronTrainingResponse)
-}
-_LeuronTrainingResponses f (LeuronTrainingResponses o) = LeuronTrainingResponses <$> f o
-
-
 mkLeuronTrainingResponses :: (Array LeuronTrainingResponse) -> LeuronTrainingResponses
 mkLeuronTrainingResponses leuronTrainingResponses =
   LeuronTrainingResponses{leuronTrainingResponses}
@@ -5465,12 +5037,6 @@ type LeuronTrainingStatResponseR = {
 }
 
 
-_LeuronTrainingStatResponse :: Lens' LeuronTrainingStatResponse {
-  leuronTrainingId :: Int
-}
-_LeuronTrainingStatResponse f (LeuronTrainingStatResponse o) = LeuronTrainingStatResponse <$> f o
-
-
 mkLeuronTrainingStatResponse :: Int -> LeuronTrainingStatResponse
 mkLeuronTrainingStatResponse leuronTrainingId =
   LeuronTrainingStatResponse{leuronTrainingId}
@@ -5525,12 +5091,6 @@ newtype LeuronTrainingStatResponses = LeuronTrainingStatResponses {
 type LeuronTrainingStatResponsesR = {
   leuronTrainingStatResponses :: (Array LeuronTrainingStatResponse)
 }
-
-
-_LeuronTrainingStatResponses :: Lens' LeuronTrainingStatResponses {
-  leuronTrainingStatResponses :: (Array LeuronTrainingStatResponse)
-}
-_LeuronTrainingStatResponses f (LeuronTrainingStatResponses o) = LeuronTrainingStatResponses <$> f o
 
 
 mkLeuronTrainingStatResponses :: (Array LeuronTrainingStatResponse) -> LeuronTrainingStatResponses
@@ -5687,14 +5247,6 @@ type LikeRequestR = {
 }
 
 
-_LikeRequest :: Lens' LikeRequest {
-  opt :: LikeOpt,
-  reason :: (Maybe String),
-  guard :: Int
-}
-_LikeRequest f (LikeRequest o) = LikeRequest <$> f o
-
-
 mkLikeRequest :: LikeOpt -> (Maybe String) -> Int -> LikeRequest
 mkLikeRequest opt reason guard =
   LikeRequest{opt, reason, guard}
@@ -5781,22 +5333,6 @@ type LikeResponseR = {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
-
-
-_LikeResponse :: Lens' LikeResponse {
-  id :: Int,
-  ent :: Ent,
-  entId :: Int,
-  userId :: Int,
-  opt :: LikeOpt,
-  score :: Int,
-  reason :: (Maybe String),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_LikeResponse f (LikeResponse o) = LikeResponse <$> f o
 
 
 mkLikeResponse :: Int -> Ent -> Int -> Int -> LikeOpt -> Int -> (Maybe String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> LikeResponse
@@ -5915,12 +5451,6 @@ type LikeResponsesR = {
 }
 
 
-_LikeResponses :: Lens' LikeResponses {
-  likeResponses :: (Array LikeResponse)
-}
-_LikeResponses f (LikeResponses o) = LikeResponses <$> f o
-
-
 mkLikeResponses :: (Array LikeResponse) -> LikeResponses
 mkLikeResponses likeResponses =
   LikeResponses{likeResponses}
@@ -5985,17 +5515,6 @@ type LikeStatResponseR = {
   neutral :: Int,
   dislike :: Int
 }
-
-
-_LikeStatResponse :: Lens' LikeStatResponse {
-  ent :: Ent,
-  entId :: Int,
-  score :: Int,
-  like :: Int,
-  neutral :: Int,
-  dislike :: Int
-}
-_LikeStatResponse f (LikeStatResponse o) = LikeStatResponse <$> f o
 
 
 mkLikeStatResponse :: Ent -> Int -> Int -> Int -> Int -> Int -> LikeStatResponse
@@ -6082,12 +5601,6 @@ newtype LikeStatResponses = LikeStatResponses {
 type LikeStatResponsesR = {
   likeStatResponses :: (Array LikeStatResponse)
 }
-
-
-_LikeStatResponses :: Lens' LikeStatResponses {
-  likeStatResponses :: (Array LikeStatResponse)
-}
-_LikeStatResponses f (LikeStatResponses o) = LikeStatResponses <$> f o
 
 
 mkLikeStatResponses :: (Array LikeStatResponse) -> LikeStatResponses
@@ -6861,12 +6374,6 @@ type FactR = {
 }
 
 
-_Fact :: Lens' Fact {
-  text :: String
-}
-_Fact f (Fact o) = Fact <$> f o
-
-
 mkFact :: String -> Fact
 mkFact text =
   Fact{text}
@@ -6923,13 +6430,6 @@ type FactListR = {
   fact :: String,
   list :: (Array String)
 }
-
-
-_FactList :: Lens' FactList {
-  fact :: String,
-  list :: (Array String)
-}
-_FactList f (FactList o) = FactList <$> f o
 
 
 mkFactList :: String -> (Array String) -> FactList
@@ -6996,13 +6496,6 @@ type CardR = {
 }
 
 
-_Card :: Lens' Card {
-  front :: String,
-  back :: String
-}
-_Card f (Card o) = Card <$> f o
-
-
 mkCard :: String -> String -> Card
 mkCard front back =
   Card{front, back}
@@ -7065,13 +6558,6 @@ type DCardR = {
   front :: String,
   back :: String
 }
-
-
-_DCard :: Lens' DCard {
-  front :: String,
-  back :: String
-}
-_DCard f (DCard o) = DCard <$> f o
 
 
 mkDCard :: String -> String -> DCard
@@ -7138,13 +6624,6 @@ type DCardXR = {
 }
 
 
-_DCardX :: Lens' DCardX {
-  front :: (Array String),
-  back :: (Array String)
-}
-_DCardX f (DCardX o) = DCardX <$> f o
-
-
 mkDCardX :: (Array String) -> (Array String) -> DCardX
 mkDCardX front back =
   DCardX{front, back}
@@ -7207,13 +6686,6 @@ type AcronymR = {
   abbreviation :: String,
   meaning :: String
 }
-
-
-_Acronym :: Lens' Acronym {
-  abbreviation :: String,
-  meaning :: String
-}
-_Acronym f (Acronym o) = Acronym <$> f o
 
 
 mkAcronym :: String -> String -> Acronym
@@ -7280,13 +6752,6 @@ type SynonymR = {
 }
 
 
-_Synonym :: Lens' Synonym {
-  a :: String,
-  b :: String
-}
-_Synonym f (Synonym o) = Synonym <$> f o
-
-
 mkSynonym :: String -> String -> Synonym
 mkSynonym a b =
   Synonym{a, b}
@@ -7351,13 +6816,6 @@ type AntonymR = {
 }
 
 
-_Antonym :: Lens' Antonym {
-  a :: String,
-  b :: String
-}
-_Antonym f (Antonym o) = Antonym <$> f o
-
-
 mkAntonym :: String -> String -> Antonym
 mkAntonym a b =
   Antonym{a, b}
@@ -7420,13 +6878,6 @@ type TemplateR = {
   template :: String,
   values :: (Array TemplateValue)
 }
-
-
-_Template :: Lens' Template {
-  template :: String,
-  values :: (Array TemplateValue)
-}
-_Template f (Template o) = Template <$> f o
 
 
 mkTemplate :: String -> (Array TemplateValue) -> Template
@@ -7496,14 +6947,6 @@ type ImageAssociationR = {
   assocBy :: (Array String),
   assocResult :: (Array String)
 }
-
-
-_ImageAssociation :: Lens' ImageAssociation {
-  imageUrl :: (Array String),
-  assocBy :: (Array String),
-  assocResult :: (Array String)
-}
-_ImageAssociation f (ImageAssociation o) = ImageAssociation <$> f o
 
 
 mkImageAssociation :: (Array String) -> (Array String) -> (Array String) -> ImageAssociation
@@ -7576,14 +7019,6 @@ type ScriptR = {
   desc :: String,
   url :: String
 }
-
-
-_Script :: Lens' Script {
-  title :: String,
-  desc :: String,
-  url :: String
-}
-_Script f (Script o) = Script <$> f o
 
 
 mkScript :: String -> String -> String -> Script
@@ -7665,13 +7100,6 @@ type LinearDemoR = {
 }
 
 
-_LinearDemo :: Lens' LinearDemo {
-  label :: String,
-  content :: (Array LinearDemoNode)
-}
-_LinearDemo f (LinearDemo o) = LinearDemo <$> f o
-
-
 mkLinearDemo :: String -> (Array LinearDemoNode) -> LinearDemo
 mkLinearDemo label content =
   LinearDemo{label, content}
@@ -7734,13 +7162,6 @@ type QAR = {
   question :: String,
   answer :: String
 }
-
-
-_QA :: Lens' QA {
-  question :: String,
-  answer :: String
-}
-_QA f (QA o) = QA <$> f o
 
 
 mkQA :: String -> String -> QA
@@ -7807,14 +7228,6 @@ type TableR = {
   columns :: (Array String),
   rows :: (Array (Array (Maybe String)))
 }
-
-
-_Table :: Lens' Table {
-  title :: String,
-  columns :: (Array String),
-  rows :: (Array (Array (Maybe String)))
-}
-_Table f (Table o) = Table <$> f o
 
 
 mkTable :: String -> (Array String) -> (Array (Array (Maybe String))) -> Table
@@ -8013,21 +7426,6 @@ type OrganizationRequestR = {
 }
 
 
-_OrganizationRequest :: Lens' OrganizationRequest {
-  displayName :: String,
-  description :: (Maybe String),
-  company :: String,
-  location :: String,
-  email :: String,
-  membership :: Membership,
-  tags :: (Array String),
-  icon :: (Maybe String),
-  visibility :: Visibility,
-  guard :: Int
-}
-_OrganizationRequest f (OrganizationRequest o) = OrganizationRequest <$> f o
-
-
 mkOrganizationRequest :: String -> (Maybe String) -> String -> String -> String -> Membership -> (Array String) -> (Maybe String) -> Visibility -> Int -> OrganizationRequest
 mkOrganizationRequest displayName description company location email membership tags icon visibility guard =
   OrganizationRequest{displayName, description, company, location, email, membership, tags, icon, visibility, guard}
@@ -8172,30 +7570,6 @@ type OrganizationResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_OrganizationResponse :: Lens' OrganizationResponse {
-  id :: Int,
-  userId :: Int,
-  name :: String,
-  displayName :: String,
-  description :: (Maybe String),
-  company :: String,
-  location :: String,
-  email :: String,
-  emailMD5 :: String,
-  membership :: Membership,
-  icon :: (Maybe String),
-  tags :: (Array String),
-  visibility :: Visibility,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_OrganizationResponse f (OrganizationResponse o) = OrganizationResponse <$> f o
 
 
 mkOrganizationResponse :: Int -> Int -> String -> String -> (Maybe String) -> String -> String -> String -> String -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> OrganizationResponse
@@ -8362,12 +7736,6 @@ type OrganizationResponsesR = {
 }
 
 
-_OrganizationResponses :: Lens' OrganizationResponses {
-  organizationResponses :: (Array OrganizationResponse)
-}
-_OrganizationResponses f (OrganizationResponses o) = OrganizationResponses <$> f o
-
-
 mkOrganizationResponses :: (Array OrganizationResponse) -> OrganizationResponses
 mkOrganizationResponses organizationResponses =
   OrganizationResponses{organizationResponses}
@@ -8436,19 +7804,6 @@ type OrganizationStatResponseR = {
   threadPosts :: Int,
   views :: Int
 }
-
-
-_OrganizationStatResponse :: Lens' OrganizationStatResponse {
-  organizationId :: Int,
-  teams :: Int,
-  members :: Int,
-  forums :: Int,
-  boards :: Int,
-  threads :: Int,
-  threadPosts :: Int,
-  views :: Int
-}
-_OrganizationStatResponse f (OrganizationStatResponse o) = OrganizationStatResponse <$> f o
 
 
 mkOrganizationStatResponse :: Int -> Int -> Int -> Int -> Int -> Int -> Int -> Int -> OrganizationStatResponse
@@ -8547,12 +7902,6 @@ newtype OrganizationStatResponses = OrganizationStatResponses {
 type OrganizationStatResponsesR = {
   organizationStatResponses :: (Array OrganizationStatResponse)
 }
-
-
-_OrganizationStatResponses :: Lens' OrganizationStatResponses {
-  organizationStatResponses :: (Array OrganizationStatResponse)
-}
-_OrganizationStatResponses f (OrganizationStatResponses o) = OrganizationStatResponses <$> f o
 
 
 mkOrganizationStatResponses :: (Array OrganizationStatResponse) -> OrganizationStatResponses
@@ -12102,14 +11451,6 @@ type PmRequestR = {
 }
 
 
-_PmRequest :: Lens' PmRequest {
-  subject :: String,
-  body :: String,
-  guard :: Int
-}
-_PmRequest f (PmRequest o) = PmRequest <$> f o
-
-
 mkPmRequest :: String -> String -> Int -> PmRequest
 mkPmRequest subject body guard =
   PmRequest{subject, body, guard}
@@ -12194,21 +11535,6 @@ type PmResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_PmResponse :: Lens' PmResponse {
-  id :: Int,
-  userId :: Int,
-  toUserId :: Int,
-  subject :: String,
-  body :: String,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_PmResponse f (PmResponse o) = PmResponse <$> f o
 
 
 mkPmResponse :: Int -> Int -> Int -> String -> String -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> PmResponse
@@ -12321,12 +11647,6 @@ type PmResponsesR = {
 }
 
 
-_PmResponses :: Lens' PmResponses {
-  pmResponses :: (Array PmResponse)
-}
-_PmResponses f (PmResponses o) = PmResponses <$> f o
-
-
 mkPmResponses :: (Array PmResponse) -> PmResponses
 mkPmResponses pmResponses =
   PmResponses{pmResponses}
@@ -12387,15 +11707,6 @@ type PmInRequestR = {
   isStarred :: Boolean,
   guard :: Int
 }
-
-
-_PmInRequest :: Lens' PmInRequest {
-  label :: (Maybe String),
-  isRead :: Boolean,
-  isStarred :: Boolean,
-  guard :: Int
-}
-_PmInRequest f (PmInRequest o) = PmInRequest <$> f o
 
 
 mkPmInRequest :: (Maybe String) -> Boolean -> Boolean -> Int -> PmInRequest
@@ -12492,23 +11803,6 @@ type PmInResponseR = {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
-
-
-_PmInResponse :: Lens' PmInResponse {
-  id :: Int,
-  pmId :: Int,
-  userId :: Int,
-  label :: (Maybe String),
-  isRead :: Boolean,
-  isStarred :: Boolean,
-  isNew :: Boolean,
-  isSaved :: Boolean,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_PmInResponse f (PmInResponse o) = PmInResponse <$> f o
 
 
 mkPmInResponse :: Int -> Int -> Int -> (Maybe String) -> Boolean -> Boolean -> Boolean -> Boolean -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> PmInResponse
@@ -12633,12 +11927,6 @@ type PmInResponsesR = {
 }
 
 
-_PmInResponses :: Lens' PmInResponses {
-  pmInResponses :: (Array PmInResponse)
-}
-_PmInResponses f (PmInResponses o) = PmInResponses <$> f o
-
-
 mkPmInResponses :: (Array PmInResponse) -> PmInResponses
 mkPmInResponses pmInResponses =
   PmInResponses{pmInResponses}
@@ -12695,13 +11983,6 @@ type PmOutRequestR = {
   label :: (Maybe String),
   guard :: Int
 }
-
-
-_PmOutRequest :: Lens' PmOutRequest {
-  label :: (Maybe String),
-  guard :: Int
-}
-_PmOutRequest f (PmOutRequest o) = PmOutRequest <$> f o
 
 
 mkPmOutRequest :: (Maybe String) -> Int -> PmOutRequest
@@ -12780,20 +12061,6 @@ type PmOutResponseR = {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
-
-
-_PmOutResponse :: Lens' PmOutResponse {
-  id :: Int,
-  pmId :: Int,
-  userId :: Int,
-  label :: (Maybe String),
-  isSaved :: Boolean,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_PmOutResponse f (PmOutResponse o) = PmOutResponse <$> f o
 
 
 mkPmOutResponse :: Int -> Int -> Int -> (Maybe String) -> Boolean -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> PmOutResponse
@@ -12900,12 +12167,6 @@ type PmOutResponsesR = {
 }
 
 
-_PmOutResponses :: Lens' PmOutResponses {
-  pmOutResponses :: (Array PmOutResponse)
-}
-_PmOutResponses f (PmOutResponses o) = PmOutResponses <$> f o
-
-
 mkPmOutResponses :: (Array PmOutResponse) -> PmOutResponses
 mkPmOutResponses pmOutResponses =
   PmOutResponses{pmOutResponses}
@@ -12964,14 +12225,6 @@ type ProfileXR = {
   profileName :: String,
   profileEmail :: String
 }
-
-
-_ProfileX :: Lens' ProfileX {
-  profileLogin :: String,
-  profileName :: String,
-  profileEmail :: String
-}
-_ProfileX f (ProfileX o) = ProfileX <$> f o
 
 
 mkProfileX :: String -> String -> String -> ProfileX
@@ -13148,18 +12401,6 @@ type ProfileRequestR = {
 }
 
 
-_ProfileRequest :: Lens' ProfileRequest {
-  gender :: ProfileGender,
-  birthdate :: Date,
-  website :: (Maybe String),
-  location :: (Maybe String),
-  signature :: (Maybe String),
-  debug :: Boolean,
-  guard :: Int
-}
-_ProfileRequest f (ProfileRequest o) = ProfileRequest <$> f o
-
-
 mkProfileRequest :: ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Boolean -> Int -> ProfileRequest
 mkProfileRequest gender birthdate website location signature debug guard =
   ProfileRequest{gender, birthdate, website, location, signature, debug, guard}
@@ -13276,25 +12517,6 @@ type ProfileResponseR = {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
-
-
-_ProfileResponse :: Lens' ProfileResponse {
-  id :: Int,
-  ent :: Ent,
-  entId :: Int,
-  gender :: ProfileGender,
-  birthdate :: Date,
-  website :: (Maybe String),
-  location :: (Maybe String),
-  signature :: (Maybe String),
-  debug :: Boolean,
-  karmaGood :: Int,
-  karmaBad :: Int,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_ProfileResponse f (ProfileResponse o) = ProfileResponse <$> f o
 
 
 mkProfileResponse :: Int -> Ent -> Int -> ProfileGender -> Date -> (Maybe String) -> (Maybe String) -> (Maybe String) -> Boolean -> Int -> Int -> Int -> (Maybe Date) -> (Maybe Date) -> ProfileResponse
@@ -13431,12 +12653,6 @@ type ProfileResponsesR = {
 }
 
 
-_ProfileResponses :: Lens' ProfileResponses {
-  profileResponses :: (Array ProfileResponse)
-}
-_ProfileResponses f (ProfileResponses o) = ProfileResponses <$> f o
-
-
 mkProfileResponses :: (Array ProfileResponse) -> ProfileResponses
 mkProfileResponses profileResponses =
   ProfileResponses{profileResponses}
@@ -13493,13 +12709,6 @@ type ReminderRequestR = {
   dataP :: String,
   guard :: Int
 }
-
-
-_ReminderRequest :: Lens' ReminderRequest {
-  dataP :: String,
-  guard :: Int
-}
-_ReminderRequest f (ReminderRequest o) = ReminderRequest <$> f o
 
 
 mkReminderRequest :: String -> Int -> ReminderRequest
@@ -13578,20 +12787,6 @@ type ReminderResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_ReminderResponse :: Lens' ReminderResponse {
-  id :: Int,
-  userId :: Int,
-  parentFolderId :: Int,
-  dataP :: String,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_ReminderResponse f (ReminderResponse o) = ReminderResponse <$> f o
 
 
 mkReminderResponse :: Int -> Int -> Int -> String -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> ReminderResponse
@@ -13698,12 +12893,6 @@ type ReminderResponsesR = {
 }
 
 
-_ReminderResponses :: Lens' ReminderResponses {
-  reminderResponses :: (Array ReminderResponse)
-}
-_ReminderResponses f (ReminderResponses o) = ReminderResponses <$> f o
-
-
 mkReminderResponses :: (Array ReminderResponse) -> ReminderResponses
 mkReminderResponses reminderResponses =
   ReminderResponses{reminderResponses}
@@ -13764,15 +12953,6 @@ type ReminderFolderRequestR = {
   visibility :: Visibility,
   guard :: Int
 }
-
-
-_ReminderFolderRequest :: Lens' ReminderFolderRequest {
-  displayName :: String,
-  description :: (Maybe String),
-  visibility :: Visibility,
-  guard :: Int
-}
-_ReminderFolderRequest f (ReminderFolderRequest o) = ReminderFolderRequest <$> f o
 
 
 mkReminderFolderRequest :: String -> (Maybe String) -> Visibility -> Int -> ReminderFolderRequest
@@ -13869,23 +13049,6 @@ type ReminderFolderResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_ReminderFolderResponse :: Lens' ReminderFolderResponse {
-  id :: Int,
-  userId :: Int,
-  parentFolderId :: (Maybe Int),
-  name :: String,
-  displayName :: String,
-  visibility :: Visibility,
-  description :: (Maybe String),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_ReminderFolderResponse f (ReminderFolderResponse o) = ReminderFolderResponse <$> f o
 
 
 mkReminderFolderResponse :: Int -> Int -> (Maybe Int) -> String -> String -> Visibility -> (Maybe String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> ReminderFolderResponse
@@ -14008,12 +13171,6 @@ newtype ReminderFolderResponses = ReminderFolderResponses {
 type ReminderFolderResponsesR = {
   reminderFolderResponses :: (Array ReminderFolderResponse)
 }
-
-
-_ReminderFolderResponses :: Lens' ReminderFolderResponses {
-  reminderFolderResponses :: (Array ReminderFolderResponse)
-}
-_ReminderFolderResponses f (ReminderFolderResponses o) = ReminderFolderResponses <$> f o
 
 
 mkReminderFolderResponses :: (Array ReminderFolderResponse) -> ReminderFolderResponses
@@ -14372,24 +13529,6 @@ type ResourceRequestR = {
 }
 
 
-_ResourceRequest :: Lens' ResourceRequest {
-  displayName :: String,
-  description :: String,
-  source :: ResourceType,
-  author :: (Maybe (Array String)),
-  prerequisites :: (DepList String),
-  categories :: (DepList String),
-  visibility :: Visibility,
-  counter :: Int,
-  version :: (Maybe String),
-  urls :: (Maybe (Array String)),
-  icon :: (Maybe String),
-  tags :: (Array String),
-  guard :: Int
-}
-_ResourceRequest f (ResourceRequest o) = ResourceRequest <$> f o
-
-
 mkResourceRequest :: String -> String -> ResourceType -> (Maybe (Array String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array String)) -> (Maybe String) -> (Array String) -> Int -> ResourceRequest
 mkResourceRequest displayName description source author prerequisites categories visibility counter version urls icon tags guard =
   ResourceRequest{displayName, description, source, author, prerequisites, categories, visibility, counter, version, urls, icon, tags, guard}
@@ -14554,31 +13693,6 @@ type ResourceResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_ResourceResponse :: Lens' ResourceResponse {
-  id :: Int,
-  userId :: Int,
-  name :: String,
-  displayName :: String,
-  description :: String,
-  source :: ResourceType,
-  author :: (Maybe (Array String)),
-  prerequisites :: (DepList String),
-  categories :: (DepList String),
-  visibility :: Visibility,
-  counter :: Int,
-  version :: (Maybe String),
-  urls :: (Maybe (Array String)),
-  icon :: (Maybe String),
-  tags :: (Array String),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_ResourceResponse f (ResourceResponse o) = ResourceResponse <$> f o
 
 
 mkResourceResponse :: Int -> Int -> String -> String -> String -> ResourceType -> (Maybe (Array String)) -> (DepList String) -> (DepList String) -> Visibility -> Int -> (Maybe String) -> (Maybe (Array String)) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> ResourceResponse
@@ -14751,12 +13865,6 @@ type ResourceResponsesR = {
 }
 
 
-_ResourceResponses :: Lens' ResourceResponses {
-  resourceResponses :: (Array ResourceResponse)
-}
-_ResourceResponses f (ResourceResponses o) = ResourceResponses <$> f o
-
-
 mkResourceResponses :: (Array ResourceResponse) -> ResourceResponses
 mkResourceResponses resourceResponses =
   ResourceResponses{resourceResponses}
@@ -14823,18 +13931,6 @@ type ResourceStatResponseR = {
   stars :: Int,
   views :: Int
 }
-
-
-_ResourceStatResponse :: Lens' ResourceStatResponse {
-  resourceId :: Int,
-  leurons :: Int,
-  likes :: Int,
-  neutral :: Int,
-  dislikes :: Int,
-  stars :: Int,
-  views :: Int
-}
-_ResourceStatResponse f (ResourceStatResponse o) = ResourceStatResponse <$> f o
 
 
 mkResourceStatResponse :: Int -> Int -> Int -> Int -> Int -> Int -> Int -> ResourceStatResponse
@@ -14927,12 +14023,6 @@ newtype ResourceStatResponses = ResourceStatResponses {
 type ResourceStatResponsesR = {
   resourceStatResponses :: (Array ResourceStatResponse)
 }
-
-
-_ResourceStatResponses :: Lens' ResourceStatResponses {
-  resourceStatResponses :: (Array ResourceStatResponse)
-}
-_ResourceStatResponses f (ResourceStatResponses o) = ResourceStatResponses <$> f o
 
 
 mkResourceStatResponses :: (Array ResourceStatResponse) -> ResourceStatResponses
@@ -15511,13 +14601,6 @@ type StarRequestR = {
 }
 
 
-_StarRequest :: Lens' StarRequest {
-  reason :: (Maybe String),
-  guard :: Int
-}
-_StarRequest f (StarRequest o) = StarRequest <$> f o
-
-
 mkStarRequest :: (Maybe String) -> Int -> StarRequest
 mkStarRequest reason guard =
   StarRequest{reason, guard}
@@ -15594,20 +14677,6 @@ type StarResponseR = {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
-
-
-_StarResponse :: Lens' StarResponse {
-  id :: Int,
-  ent :: Ent,
-  entId :: Int,
-  userId :: Int,
-  reason :: (Maybe String),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_StarResponse f (StarResponse o) = StarResponse <$> f o
 
 
 mkStarResponse :: Int -> Ent -> Int -> Int -> (Maybe String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> StarResponse
@@ -15714,12 +14783,6 @@ type StarResponsesR = {
 }
 
 
-_StarResponses :: Lens' StarResponses {
-  starResponses :: (Array StarResponse)
-}
-_StarResponses f (StarResponses o) = StarResponses <$> f o
-
-
 mkStarResponses :: (Array StarResponse) -> StarResponses
 mkStarResponses starResponses =
   StarResponses{starResponses}
@@ -15778,14 +14841,6 @@ type StarStatResponseR = {
   entId :: Int,
   stars :: Int
 }
-
-
-_StarStatResponse :: Lens' StarStatResponse {
-  ent :: Ent,
-  entId :: Int,
-  stars :: Int
-}
-_StarStatResponse f (StarStatResponse o) = StarStatResponse <$> f o
 
 
 mkStarStatResponse :: Ent -> Int -> Int -> StarStatResponse
@@ -15854,12 +14909,6 @@ newtype StarStatResponses = StarStatResponses {
 type StarStatResponsesR = {
   starStatResponses :: (Array StarStatResponse)
 }
-
-
-_StarStatResponses :: Lens' StarStatResponses {
-  starStatResponses :: (Array StarStatResponse)
-}
-_StarStatResponses f (StarStatResponses o) = StarStatResponses <$> f o
 
 
 mkStarStatResponses :: (Array StarStatResponse) -> StarStatResponses
@@ -16004,16 +15053,6 @@ type TeamRequestR = {
 }
 
 
-_TeamRequest :: Lens' TeamRequest {
-  membership :: Membership,
-  icon :: (Maybe String),
-  tags :: (Array String),
-  visibility :: Visibility,
-  guard :: Int
-}
-_TeamRequest f (TeamRequest o) = TeamRequest <$> f o
-
-
 mkTeamRequest :: Membership -> (Maybe String) -> (Array String) -> Visibility -> Int -> TeamRequest
 mkTeamRequest membership icon tags visibility guard =
   TeamRequest{membership, icon, tags, visibility, guard}
@@ -16118,25 +15157,6 @@ type TeamResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_TeamResponse :: Lens' TeamResponse {
-  id :: Int,
-  userId :: Int,
-  orgId :: Int,
-  system :: SystemTeam,
-  membership :: Membership,
-  icon :: (Maybe String),
-  tags :: (Array String),
-  visibility :: Visibility,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_TeamResponse f (TeamResponse o) = TeamResponse <$> f o
 
 
 mkTeamResponse :: Int -> Int -> Int -> SystemTeam -> Membership -> (Maybe String) -> (Array String) -> Visibility -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamResponse
@@ -16273,12 +15293,6 @@ type TeamResponsesR = {
 }
 
 
-_TeamResponses :: Lens' TeamResponses {
-  teamResponses :: (Array TeamResponse)
-}
-_TeamResponses f (TeamResponses o) = TeamResponses <$> f o
-
-
 mkTeamResponses :: (Array TeamResponse) -> TeamResponses
 mkTeamResponses teamResponses =
   TeamResponses{teamResponses}
@@ -16333,12 +15347,6 @@ newtype TeamStatResponse = TeamStatResponse {
 type TeamStatResponseR = {
   members :: Int
 }
-
-
-_TeamStatResponse :: Lens' TeamStatResponse {
-  members :: Int
-}
-_TeamStatResponse f (TeamStatResponse o) = TeamStatResponse <$> f o
 
 
 mkTeamStatResponse :: Int -> TeamStatResponse
@@ -16397,12 +15405,6 @@ type TeamStatResponsesR = {
 }
 
 
-_TeamStatResponses :: Lens' TeamStatResponses {
-  teamStatResponses :: (Array TeamStatResponse)
-}
-_TeamStatResponses f (TeamStatResponses o) = TeamStatResponses <$> f o
-
-
 mkTeamStatResponses :: (Array TeamStatResponse) -> TeamStatResponses
 mkTeamStatResponses teamStatResponses =
   TeamStatResponses{teamStatResponses}
@@ -16457,12 +15459,6 @@ newtype TeamMemberRequest = TeamMemberRequest {
 type TeamMemberRequestR = {
   guard :: Int
 }
-
-
-_TeamMemberRequest :: Lens' TeamMemberRequest {
-  guard :: Int
-}
-_TeamMemberRequest f (TeamMemberRequest o) = TeamMemberRequest <$> f o
 
 
 mkTeamMemberRequest :: Int -> TeamMemberRequest
@@ -16545,25 +15541,6 @@ type TeamMemberResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_TeamMemberResponse :: Lens' TeamMemberResponse {
-  id :: Int,
-  userId :: Int,
-  orgId :: Int,
-  teamId :: Int,
-  isAccepted :: Boolean,
-  acceptedAt :: (Maybe Date),
-  isBlocked :: Boolean,
-  blockedAt :: (Maybe Date),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_TeamMemberResponse f (TeamMemberResponse o) = TeamMemberResponse <$> f o
 
 
 mkTeamMemberResponse :: Int -> Int -> Int -> Int -> Boolean -> (Maybe Date) -> Boolean -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> TeamMemberResponse
@@ -16700,12 +15677,6 @@ type TeamMemberResponsesR = {
 }
 
 
-_TeamMemberResponses :: Lens' TeamMemberResponses {
-  teamMemberResponses :: (Array TeamMemberResponse)
-}
-_TeamMemberResponses f (TeamMemberResponses o) = TeamMemberResponses <$> f o
-
-
 mkTeamMemberResponses :: (Array TeamMemberResponse) -> TeamMemberResponses
 mkTeamMemberResponses teamMemberResponses =
   TeamMemberResponses{teamMemberResponses}
@@ -16816,12 +15787,6 @@ type TeamMemberStatResponsesR = {
 }
 
 
-_TeamMemberStatResponses :: Lens' TeamMemberStatResponses {
-  teamMemberStatResponses :: (Array TeamMemberStatResponse)
-}
-_TeamMemberStatResponses f (TeamMemberStatResponses o) = TeamMemberStatResponses <$> f o
-
-
 mkTeamMemberStatResponses :: (Array TeamMemberStatResponse) -> TeamMemberStatResponses
 mkTeamMemberStatResponses teamMemberStatResponses =
   TeamMemberStatResponses{teamMemberStatResponses}
@@ -16876,12 +15841,6 @@ newtype TestRequest = TestRequest {
 type TestRequestR = {
   msg :: String
 }
-
-
-_TestRequest :: Lens' TestRequest {
-  msg :: String
-}
-_TestRequest f (TestRequest o) = TestRequest <$> f o
 
 
 mkTestRequest :: String -> TestRequest
@@ -16946,16 +15905,6 @@ type TestResponseR = {
   createdAt :: (Maybe Date),
   modifiedAt :: (Maybe Date)
 }
-
-
-_TestResponse :: Lens' TestResponse {
-  id :: Int,
-  userId :: Int,
-  msg :: String,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date)
-}
-_TestResponse f (TestResponse o) = TestResponse <$> f o
 
 
 mkTestResponse :: Int -> Int -> String -> (Maybe Date) -> (Maybe Date) -> TestResponse
@@ -17038,12 +15987,6 @@ type TestResponsesR = {
 }
 
 
-_TestResponses :: Lens' TestResponses {
-  testResponses :: (Array TestResponse)
-}
-_TestResponses f (TestResponses o) = TestResponses <$> f o
-
-
 mkTestResponses :: (Array TestResponse) -> TestResponses
 mkTestResponses testResponses =
   TestResponses{testResponses}
@@ -17112,19 +16055,6 @@ type ThreadRequestR = {
   tags :: (Array String),
   guard :: Int
 }
-
-
-_ThreadRequest :: Lens' ThreadRequest {
-  displayName :: String,
-  description :: (Maybe String),
-  sticky :: Boolean,
-  locked :: Boolean,
-  poll :: (Maybe String),
-  icon :: (Maybe String),
-  tags :: (Array String),
-  guard :: Int
-}
-_ThreadRequest f (ThreadRequest o) = ThreadRequest <$> f o
 
 
 mkThreadRequest :: String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array String) -> Int -> ThreadRequest
@@ -17259,30 +16189,6 @@ type ThreadResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_ThreadResponse :: Lens' ThreadResponse {
-  id :: Int,
-  userId :: Int,
-  orgId :: Int,
-  forumId :: Int,
-  boardId :: Int,
-  name :: String,
-  displayName :: String,
-  description :: (Maybe String),
-  sticky :: Boolean,
-  locked :: Boolean,
-  poll :: (Maybe String),
-  icon :: (Maybe String),
-  tags :: (Array String),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_ThreadResponse f (ThreadResponse o) = ThreadResponse <$> f o
 
 
 mkThreadResponse :: Int -> Int -> Int -> Int -> Int -> String -> String -> (Maybe String) -> Boolean -> Boolean -> (Maybe String) -> (Maybe String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadResponse
@@ -17449,12 +16355,6 @@ type ThreadResponsesR = {
 }
 
 
-_ThreadResponses :: Lens' ThreadResponses {
-  threadResponses :: (Array ThreadResponse)
-}
-_ThreadResponses f (ThreadResponses o) = ThreadResponses <$> f o
-
-
 mkThreadResponses :: (Array ThreadResponse) -> ThreadResponses
 mkThreadResponses threadResponses =
   ThreadResponses{threadResponses}
@@ -17513,14 +16413,6 @@ type ThreadStatResponseR = {
   threadPosts :: Int,
   views :: Int
 }
-
-
-_ThreadStatResponse :: Lens' ThreadStatResponse {
-  threadId :: Int,
-  threadPosts :: Int,
-  views :: Int
-}
-_ThreadStatResponse f (ThreadStatResponse o) = ThreadStatResponse <$> f o
 
 
 mkThreadStatResponse :: Int -> Int -> Int -> ThreadStatResponse
@@ -17589,12 +16481,6 @@ newtype ThreadStatResponses = ThreadStatResponses {
 type ThreadStatResponsesR = {
   threadStatResponses :: (Array ThreadStatResponse)
 }
-
-
-_ThreadStatResponses :: Lens' ThreadStatResponses {
-  threadStatResponses :: (Array ThreadStatResponse)
-}
-_ThreadStatResponses f (ThreadStatResponses o) = ThreadStatResponses <$> f o
 
 
 mkThreadStatResponses :: (Array ThreadStatResponse) -> ThreadStatResponses
@@ -17854,16 +16740,6 @@ type ThreadPostRequestR = {
 }
 
 
-_ThreadPostRequest :: Lens' ThreadPostRequest {
-  title :: (Maybe String),
-  body :: PostData,
-  tags :: (Array String),
-  privateTags :: (Array String),
-  guard :: Int
-}
-_ThreadPostRequest f (ThreadPostRequest o) = ThreadPostRequest <$> f o
-
-
 mkThreadPostRequest :: (Maybe String) -> PostData -> (Array String) -> (Array String) -> Int -> ThreadPostRequest
 mkThreadPostRequest title body tags privateTags guard =
   ThreadPostRequest{title, body, tags, privateTags, guard}
@@ -17974,28 +16850,6 @@ type ThreadPostResponseR = {
   modifiedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_ThreadPostResponse :: Lens' ThreadPostResponse {
-  id :: Int,
-  userId :: Int,
-  orgId :: Int,
-  forumId :: Int,
-  boardId :: Int,
-  threadId :: Int,
-  parentId :: (Maybe Int),
-  title :: (Maybe String),
-  body :: PostData,
-  tags :: (Array String),
-  privateTags :: (Array String),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedBy :: (Maybe Int),
-  modifiedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_ThreadPostResponse f (ThreadPostResponse o) = ThreadPostResponse <$> f o
 
 
 mkThreadPostResponse :: Int -> Int -> Int -> Int -> Int -> Int -> (Maybe Int) -> (Maybe String) -> PostData -> (Array String) -> (Array String) -> Boolean -> Int -> (Maybe Date) -> (Maybe Int) -> (Maybe Date) -> (Maybe Date) -> ThreadPostResponse
@@ -18150,12 +17004,6 @@ type ThreadPostResponsesR = {
 }
 
 
-_ThreadPostResponses :: Lens' ThreadPostResponses {
-  threadPostResponses :: (Array ThreadPostResponse)
-}
-_ThreadPostResponses f (ThreadPostResponses o) = ThreadPostResponses <$> f o
-
-
 mkThreadPostResponses :: (Array ThreadPostResponse) -> ThreadPostResponses
 mkThreadPostResponses threadPostResponses =
   ThreadPostResponses{threadPostResponses}
@@ -18220,17 +17068,6 @@ type ThreadPostStatResponseR = {
   stars :: Int,
   views :: Int
 }
-
-
-_ThreadPostStatResponse :: Lens' ThreadPostStatResponse {
-  threadPostId :: Int,
-  likes :: Int,
-  neutral :: Int,
-  dislikes :: Int,
-  stars :: Int,
-  views :: Int
-}
-_ThreadPostStatResponse f (ThreadPostStatResponse o) = ThreadPostStatResponse <$> f o
 
 
 mkThreadPostStatResponse :: Int -> Int -> Int -> Int -> Int -> Int -> ThreadPostStatResponse
@@ -18319,12 +17156,6 @@ type ThreadPostStatResponsesR = {
 }
 
 
-_ThreadPostStatResponses :: Lens' ThreadPostStatResponses {
-  threadPostStatResponses :: (Array ThreadPostStatResponse)
-}
-_ThreadPostStatResponses f (ThreadPostStatResponses o) = ThreadPostStatResponses <$> f o
-
-
 mkThreadPostStatResponses :: (Array ThreadPostStatResponse) -> ThreadPostStatResponses
 mkThreadPostStatResponses threadPostStatResponses =
   ThreadPostStatResponses{threadPostStatResponses}
@@ -18389,17 +17220,6 @@ type UserRequestR = {
   ident :: String,
   acceptTOS :: (Maybe Date)
 }
-
-
-_UserRequest :: Lens' UserRequest {
-  displayName :: String,
-  fullName :: String,
-  email :: String,
-  plugin :: String,
-  ident :: String,
-  acceptTOS :: (Maybe Date)
-}
-_UserRequest f (UserRequest o) = UserRequest <$> f o
 
 
 mkUserRequest :: String -> String -> String -> String -> String -> (Maybe Date) -> UserRequest
@@ -18514,26 +17334,6 @@ type UserResponseR = {
   deactivatedAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_UserResponse :: Lens' UserResponse {
-  id :: Int,
-  name :: String,
-  displayName :: String,
-  fullName :: String,
-  email :: String,
-  emailMD5 :: String,
-  plugin :: String,
-  ident :: String,
-  acceptTOS :: (Maybe Date),
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  modifiedAt :: (Maybe Date),
-  deactivatedAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_UserResponse f (UserResponse o) = UserResponse <$> f o
 
 
 mkUserResponse :: Int -> String -> String -> String -> String -> String -> String -> String -> (Maybe Date) -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> (Maybe Date) -> UserResponse
@@ -18676,12 +17476,6 @@ type UserResponsesR = {
 }
 
 
-_UserResponses :: Lens' UserResponses {
-  userResponses :: (Array UserResponse)
-}
-_UserResponses f (UserResponses o) = UserResponses <$> f o
-
-
 mkUserResponses :: (Array UserResponse) -> UserResponses
 mkUserResponses userResponses =
   UserResponses{userResponses}
@@ -18750,19 +17544,6 @@ type UserSanitizedResponseR = {
   createdAt :: (Maybe Date),
   activityAt :: (Maybe Date)
 }
-
-
-_UserSanitizedResponse :: Lens' UserSanitizedResponse {
-  id :: Int,
-  name :: String,
-  displayName :: String,
-  emailMD5 :: String,
-  active :: Boolean,
-  guard :: Int,
-  createdAt :: (Maybe Date),
-  activityAt :: (Maybe Date)
-}
-_UserSanitizedResponse f (UserSanitizedResponse o) = UserSanitizedResponse <$> f o
 
 
 mkUserSanitizedResponse :: Int -> String -> String -> String -> Boolean -> Int -> (Maybe Date) -> (Maybe Date) -> UserSanitizedResponse
@@ -18863,12 +17644,6 @@ type UserSanitizedResponsesR = {
 }
 
 
-_UserSanitizedResponses :: Lens' UserSanitizedResponses {
-  userSanitizedResponses :: (Array UserSanitizedResponse)
-}
-_UserSanitizedResponses f (UserSanitizedResponses o) = UserSanitizedResponses <$> f o
-
-
 mkUserSanitizedResponses :: (Array UserSanitizedResponse) -> UserSanitizedResponses
 mkUserSanitizedResponses userSanitizedResponses =
   UserSanitizedResponses{userSanitizedResponses}
@@ -18935,18 +17710,6 @@ type UserSanitizedStatResponseR = {
   leurons :: Int,
   workouts :: Int
 }
-
-
-_UserSanitizedStatResponse :: Lens' UserSanitizedStatResponse {
-  userId :: Int,
-  threads :: Int,
-  threadPosts :: Int,
-  respect :: Int,
-  resources :: Int,
-  leurons :: Int,
-  workouts :: Int
-}
-_UserSanitizedStatResponse f (UserSanitizedStatResponse o) = UserSanitizedStatResponse <$> f o
 
 
 mkUserSanitizedStatResponse :: Int -> Int -> Int -> Int -> Int -> Int -> Int -> UserSanitizedStatResponse
@@ -19039,12 +17802,6 @@ newtype UserSanitizedStatResponses = UserSanitizedStatResponses {
 type UserSanitizedStatResponsesR = {
   userSanitizedStatResponses :: (Array UserSanitizedStatResponse)
 }
-
-
-_UserSanitizedStatResponses :: Lens' UserSanitizedStatResponses {
-  userSanitizedStatResponses :: (Array UserSanitizedStatResponse)
-}
-_UserSanitizedStatResponses f (UserSanitizedStatResponses o) = UserSanitizedStatResponses <$> f o
 
 
 mkUserSanitizedStatResponses :: (Array UserSanitizedStatResponse) -> UserSanitizedStatResponses
@@ -19143,7 +17900,7 @@ instance visibilityRespondable :: Respondable Visibility where
       "Private" -> do
         pure Private
 
-      _ -> Left $ TypeMismatch "Visibility" "Respondable"
+      _ -> fail $ TypeMismatch "Visibility" "Respondable"
 
 
 
@@ -19157,7 +17914,7 @@ instance visibilityIsForeign :: IsForeign Visibility where
       "Private" -> do
         pure Private
 
-      _ -> Left $ TypeMismatch "Visibility" "IsForeign"
+      _ -> fail $ TypeMismatch "Visibility" "IsForeign"
 
 
 
@@ -19195,20 +17952,6 @@ type OrganizationPackResponseR = {
   permissions :: Permissions,
   teams :: (Array SystemTeam)
 }
-
-
-_OrganizationPackResponse :: Lens' OrganizationPackResponse {
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  organization :: OrganizationResponse,
-  organizationId :: Int,
-  stat :: OrganizationStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
-  permissions :: Permissions,
-  teams :: (Array SystemTeam)
-}
-_OrganizationPackResponse f (OrganizationPackResponse o) = OrganizationPackResponse <$> f o
 
 
 mkOrganizationPackResponse :: UserSanitizedResponse -> Int -> OrganizationResponse -> Int -> OrganizationStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> (Array SystemTeam) -> OrganizationPackResponse
@@ -19315,12 +18058,6 @@ type OrganizationPackResponsesR = {
 }
 
 
-_OrganizationPackResponses :: Lens' OrganizationPackResponses {
-  organizationPackResponses :: (Array OrganizationPackResponse)
-}
-_OrganizationPackResponses f (OrganizationPackResponses o) = OrganizationPackResponses <$> f o
-
-
 mkOrganizationPackResponses :: (Array OrganizationPackResponse) -> OrganizationPackResponses
 mkOrganizationPackResponses organizationPackResponses =
   OrganizationPackResponses{organizationPackResponses}
@@ -19385,17 +18122,6 @@ type TeamPackResponseR = {
   stat :: TeamStatResponse,
   permissions :: Permissions
 }
-
-
-_TeamPackResponse :: Lens' TeamPackResponse {
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  team :: TeamResponse,
-  teamId :: Int,
-  stat :: TeamStatResponse,
-  permissions :: Permissions
-}
-_TeamPackResponse f (TeamPackResponse o) = TeamPackResponse <$> f o
 
 
 mkTeamPackResponse :: UserSanitizedResponse -> Int -> TeamResponse -> Int -> TeamStatResponse -> Permissions -> TeamPackResponse
@@ -19484,12 +18210,6 @@ type TeamPackResponsesR = {
 }
 
 
-_TeamPackResponses :: Lens' TeamPackResponses {
-  teamPackResponses :: (Array TeamPackResponse)
-}
-_TeamPackResponses f (TeamPackResponses o) = TeamPackResponses <$> f o
-
-
 mkTeamPackResponses :: (Array TeamPackResponse) -> TeamPackResponses
 mkTeamPackResponses teamPackResponses =
   TeamPackResponses{teamPackResponses}
@@ -19552,16 +18272,6 @@ type TeamMemberPackResponseR = {
   teamMemberId :: Int,
   permissions :: Permissions
 }
-
-
-_TeamMemberPackResponse :: Lens' TeamMemberPackResponse {
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  teamMember :: TeamMemberResponse,
-  teamMemberId :: Int,
-  permissions :: Permissions
-}
-_TeamMemberPackResponse f (TeamMemberPackResponse o) = TeamMemberPackResponse <$> f o
 
 
 mkTeamMemberPackResponse :: UserSanitizedResponse -> Int -> TeamMemberResponse -> Int -> Permissions -> TeamMemberPackResponse
@@ -19644,12 +18354,6 @@ type TeamMemberPackResponsesR = {
 }
 
 
-_TeamMemberPackResponses :: Lens' TeamMemberPackResponses {
-  teamMemberPackResponses :: (Array TeamMemberPackResponse)
-}
-_TeamMemberPackResponses f (TeamMemberPackResponses o) = TeamMemberPackResponses <$> f o
-
-
 mkTeamMemberPackResponses :: (Array TeamMemberPackResponse) -> TeamMemberPackResponses
 mkTeamMemberPackResponses teamMemberPackResponses =
   TeamMemberPackResponses{teamMemberPackResponses}
@@ -19712,16 +18416,6 @@ type UserPackResponseR = {
   profile :: ProfileResponse,
   profileId :: Int
 }
-
-
-_UserPackResponse :: Lens' UserPackResponse {
-  user :: UserResponse,
-  userId :: Int,
-  stat :: UserSanitizedStatResponse,
-  profile :: ProfileResponse,
-  profileId :: Int
-}
-_UserPackResponse f (UserPackResponse o) = UserPackResponse <$> f o
 
 
 mkUserPackResponse :: UserResponse -> Int -> UserSanitizedStatResponse -> ProfileResponse -> Int -> UserPackResponse
@@ -19804,12 +18498,6 @@ type UserPackResponsesR = {
 }
 
 
-_UserPackResponses :: Lens' UserPackResponses {
-  userPackResponses :: (Array UserPackResponse)
-}
-_UserPackResponses f (UserPackResponses o) = UserPackResponses <$> f o
-
-
 mkUserPackResponses :: (Array UserPackResponse) -> UserPackResponses
 mkUserPackResponses userPackResponses =
   UserPackResponses{userPackResponses}
@@ -19876,18 +18564,6 @@ type UserSanitizedPackResponseR = {
   like :: (Maybe LikeResponse),
   star :: (Maybe StarResponse)
 }
-
-
-_UserSanitizedPackResponse :: Lens' UserSanitizedPackResponse {
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  profile :: ProfileResponse,
-  profileId :: Int,
-  stat :: UserSanitizedStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse)
-}
-_UserSanitizedPackResponse f (UserSanitizedPackResponse o) = UserSanitizedPackResponse <$> f o
 
 
 mkUserSanitizedPackResponse :: UserSanitizedResponse -> Int -> ProfileResponse -> Int -> UserSanitizedStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> UserSanitizedPackResponse
@@ -19982,12 +18658,6 @@ type UserSanitizedPackResponsesR = {
 }
 
 
-_UserSanitizedPackResponses :: Lens' UserSanitizedPackResponses {
-  userSanitizedPackResponses :: (Array UserSanitizedPackResponse)
-}
-_UserSanitizedPackResponses f (UserSanitizedPackResponses o) = UserSanitizedPackResponses <$> f o
-
-
 mkUserSanitizedPackResponses :: (Array UserSanitizedPackResponse) -> UserSanitizedPackResponses
 mkUserSanitizedPackResponses userSanitizedPackResponses =
   UserSanitizedPackResponses{userSanitizedPackResponses}
@@ -20052,17 +18722,6 @@ type GlobalGroupPackResponseR = {
   stat :: GlobalGroupStatResponse,
   permissions :: Permissions
 }
-
-
-_GlobalGroupPackResponse :: Lens' GlobalGroupPackResponse {
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  globalGroup :: GlobalGroupResponse,
-  globalGroupId :: Int,
-  stat :: GlobalGroupStatResponse,
-  permissions :: Permissions
-}
-_GlobalGroupPackResponse f (GlobalGroupPackResponse o) = GlobalGroupPackResponse <$> f o
 
 
 mkGlobalGroupPackResponse :: UserSanitizedResponse -> Int -> GlobalGroupResponse -> Int -> GlobalGroupStatResponse -> Permissions -> GlobalGroupPackResponse
@@ -20151,12 +18810,6 @@ type GlobalGroupPackResponsesR = {
 }
 
 
-_GlobalGroupPackResponses :: Lens' GlobalGroupPackResponses {
-  globalGroupPackResponses :: (Array GlobalGroupPackResponse)
-}
-_GlobalGroupPackResponses f (GlobalGroupPackResponses o) = GlobalGroupPackResponses <$> f o
-
-
 mkGlobalGroupPackResponses :: (Array GlobalGroupPackResponse) -> GlobalGroupPackResponses
 mkGlobalGroupPackResponses globalGroupPackResponses =
   GlobalGroupPackResponses{globalGroupPackResponses}
@@ -20225,19 +18878,6 @@ type GroupPackResponseR = {
   stat :: GroupStatResponse,
   permissions :: Permissions
 }
-
-
-_GroupPackResponse :: Lens' GroupPackResponse {
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  group :: GroupResponse,
-  groupId :: Int,
-  organization :: OrganizationResponse,
-  organizationId :: Int,
-  stat :: GroupStatResponse,
-  permissions :: Permissions
-}
-_GroupPackResponse f (GroupPackResponse o) = GroupPackResponse <$> f o
 
 
 mkGroupPackResponse :: UserSanitizedResponse -> Int -> GroupResponse -> Int -> OrganizationResponse -> Int -> GroupStatResponse -> Permissions -> GroupPackResponse
@@ -20338,12 +18978,6 @@ type GroupPackResponsesR = {
 }
 
 
-_GroupPackResponses :: Lens' GroupPackResponses {
-  groupPackResponses :: (Array GroupPackResponse)
-}
-_GroupPackResponses f (GroupPackResponses o) = GroupPackResponses <$> f o
-
-
 mkGroupPackResponses :: (Array GroupPackResponse) -> GroupPackResponses
 mkGroupPackResponses groupPackResponses =
   GroupPackResponses{groupPackResponses}
@@ -20406,16 +19040,6 @@ type GroupMemberPackResponseR = {
   groupMemberId :: Int,
   isOwner :: Boolean
 }
-
-
-_GroupMemberPackResponse :: Lens' GroupMemberPackResponse {
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  groupMember :: GroupMemberResponse,
-  groupMemberId :: Int,
-  isOwner :: Boolean
-}
-_GroupMemberPackResponse f (GroupMemberPackResponse o) = GroupMemberPackResponse <$> f o
 
 
 mkGroupMemberPackResponse :: UserSanitizedResponse -> Int -> GroupMemberResponse -> Int -> Boolean -> GroupMemberPackResponse
@@ -20498,12 +19122,6 @@ type GroupMemberPackResponsesR = {
 }
 
 
-_GroupMemberPackResponses :: Lens' GroupMemberPackResponses {
-  groupMemberPackResponses :: (Array GroupMemberPackResponse)
-}
-_GroupMemberPackResponses f (GroupMemberPackResponses o) = GroupMemberPackResponses <$> f o
-
-
 mkGroupMemberPackResponses :: (Array GroupMemberPackResponse) -> GroupMemberPackResponses
 mkGroupMemberPackResponses groupMemberPackResponses =
   GroupMemberPackResponses{groupMemberPackResponses}
@@ -20570,18 +19188,6 @@ type ForumPackResponseR = {
   withOrganization :: (Maybe OrganizationResponse),
   permissions :: Permissions
 }
-
-
-_ForumPackResponse :: Lens' ForumPackResponse {
-  forum :: ForumResponse,
-  forumId :: Int,
-  stat :: ForumStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
-  withOrganization :: (Maybe OrganizationResponse),
-  permissions :: Permissions
-}
-_ForumPackResponse f (ForumPackResponse o) = ForumPackResponse <$> f o
 
 
 mkForumPackResponse :: ForumResponse -> Int -> ForumStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe OrganizationResponse) -> Permissions -> ForumPackResponse
@@ -20676,12 +19282,6 @@ type ForumPackResponsesR = {
 }
 
 
-_ForumPackResponses :: Lens' ForumPackResponses {
-  forumPackResponses :: (Array ForumPackResponse)
-}
-_ForumPackResponses f (ForumPackResponses o) = ForumPackResponses <$> f o
-
-
 mkForumPackResponses :: (Array ForumPackResponse) -> ForumPackResponses
 mkForumPackResponses forumPackResponses =
   ForumPackResponses{forumPackResponses}
@@ -20756,22 +19356,6 @@ type BoardPackResponseR = {
   withForum :: (Maybe ForumResponse),
   permissions :: Permissions
 }
-
-
-_BoardPackResponse :: Lens' BoardPackResponse {
-  board :: BoardResponse,
-  boardId :: Int,
-  stat :: BoardStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
-  latestThread :: (Maybe ThreadResponse),
-  latestThreadPost :: (Maybe ThreadPostResponse),
-  latestThreadPostUser :: (Maybe UserSanitizedResponse),
-  withOrganization :: (Maybe OrganizationResponse),
-  withForum :: (Maybe ForumResponse),
-  permissions :: Permissions
-}
-_BoardPackResponse f (BoardPackResponse o) = BoardPackResponse <$> f o
 
 
 mkBoardPackResponse :: BoardResponse -> Int -> BoardStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> (Maybe OrganizationResponse) -> (Maybe ForumResponse) -> Permissions -> BoardPackResponse
@@ -20890,12 +19474,6 @@ type BoardPackResponsesR = {
 }
 
 
-_BoardPackResponses :: Lens' BoardPackResponses {
-  boardPackResponses :: (Array BoardPackResponse)
-}
-_BoardPackResponses f (BoardPackResponses o) = BoardPackResponses <$> f o
-
-
 mkBoardPackResponses :: (Array BoardPackResponse) -> BoardPackResponses
 mkBoardPackResponses boardPackResponses =
   BoardPackResponses{boardPackResponses}
@@ -20974,24 +19552,6 @@ type ThreadPackResponseR = {
   withBoard :: (Maybe BoardResponse),
   permissions :: Permissions
 }
-
-
-_ThreadPackResponse :: Lens' ThreadPackResponse {
-  thread :: ThreadResponse,
-  threadId :: Int,
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  stat :: ThreadStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
-  latestThreadPost :: (Maybe ThreadPostResponse),
-  latestThreadPostUser :: (Maybe UserSanitizedResponse),
-  withOrganization :: (Maybe OrganizationResponse),
-  withForum :: (Maybe ForumResponse),
-  withBoard :: (Maybe BoardResponse),
-  permissions :: Permissions
-}
-_ThreadPackResponse f (ThreadPackResponse o) = ThreadPackResponse <$> f o
 
 
 mkThreadPackResponse :: ThreadResponse -> Int -> UserSanitizedResponse -> Int -> ThreadStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe ThreadPostResponse) -> (Maybe UserSanitizedResponse) -> (Maybe OrganizationResponse) -> (Maybe ForumResponse) -> (Maybe BoardResponse) -> Permissions -> ThreadPackResponse
@@ -21122,12 +19682,6 @@ type ThreadPackResponsesR = {
 }
 
 
-_ThreadPackResponses :: Lens' ThreadPackResponses {
-  threadPackResponses :: (Array ThreadPackResponse)
-}
-_ThreadPackResponses f (ThreadPackResponses o) = ThreadPackResponses <$> f o
-
-
 mkThreadPackResponses :: (Array ThreadPackResponse) -> ThreadPackResponses
 mkThreadPackResponses threadPackResponses =
   ThreadPackResponses{threadPackResponses}
@@ -21204,23 +19758,6 @@ type ThreadPostPackResponseR = {
   withThread :: (Maybe ThreadResponse),
   permissions :: Permissions
 }
-
-
-_ThreadPostPackResponse :: Lens' ThreadPostPackResponse {
-  threadPost :: ThreadPostResponse,
-  threadPostId :: Int,
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  stat :: ThreadPostStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
-  withOrganization :: (Maybe OrganizationResponse),
-  withForum :: (Maybe ForumResponse),
-  withBoard :: (Maybe BoardResponse),
-  withThread :: (Maybe ThreadResponse),
-  permissions :: Permissions
-}
-_ThreadPostPackResponse f (ThreadPostPackResponse o) = ThreadPostPackResponse <$> f o
 
 
 mkThreadPostPackResponse :: ThreadPostResponse -> Int -> UserSanitizedResponse -> Int -> ThreadPostStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> (Maybe OrganizationResponse) -> (Maybe ForumResponse) -> (Maybe BoardResponse) -> (Maybe ThreadResponse) -> Permissions -> ThreadPostPackResponse
@@ -21345,12 +19882,6 @@ type ThreadPostPackResponsesR = {
 }
 
 
-_ThreadPostPackResponses :: Lens' ThreadPostPackResponses {
-  threadPostPackResponses :: (Array ThreadPostPackResponse)
-}
-_ThreadPostPackResponses f (ThreadPostPackResponses o) = ThreadPostPackResponses <$> f o
-
-
 mkThreadPostPackResponses :: (Array ThreadPostPackResponse) -> ThreadPostPackResponses
 mkThreadPostPackResponses threadPostPackResponses =
   ThreadPostPackResponses{threadPostPackResponses}
@@ -21419,19 +19950,6 @@ type ResourcePackResponseR = {
   star :: (Maybe StarResponse),
   permissions :: Permissions
 }
-
-
-_ResourcePackResponse :: Lens' ResourcePackResponse {
-  resource :: ResourceResponse,
-  resourceId :: Int,
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  stat :: ResourceStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
-  permissions :: Permissions
-}
-_ResourcePackResponse f (ResourcePackResponse o) = ResourcePackResponse <$> f o
 
 
 mkResourcePackResponse :: ResourceResponse -> Int -> UserSanitizedResponse -> Int -> ResourceStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> ResourcePackResponse
@@ -21532,12 +20050,6 @@ type ResourcePackResponsesR = {
 }
 
 
-_ResourcePackResponses :: Lens' ResourcePackResponses {
-  resourcePackResponses :: (Array ResourcePackResponse)
-}
-_ResourcePackResponses f (ResourcePackResponses o) = ResourcePackResponses <$> f o
-
-
 mkResourcePackResponses :: (Array ResourcePackResponse) -> ResourcePackResponses
 mkResourcePackResponses resourcePackResponses =
   ResourcePackResponses{resourcePackResponses}
@@ -21608,20 +20120,6 @@ type LeuronPackResponseR = {
   star :: (Maybe StarResponse),
   permissions :: Permissions
 }
-
-
-_LeuronPackResponse :: Lens' LeuronPackResponse {
-  leuron :: LeuronResponse,
-  leuronId :: Int,
-  user :: UserSanitizedResponse,
-  userId :: Int,
-  training :: LeuronTrainingResponse,
-  stat :: LeuronStatResponse,
-  like :: (Maybe LikeResponse),
-  star :: (Maybe StarResponse),
-  permissions :: Permissions
-}
-_LeuronPackResponse f (LeuronPackResponse o) = LeuronPackResponse <$> f o
 
 
 mkLeuronPackResponse :: LeuronResponse -> Int -> UserSanitizedResponse -> Int -> LeuronTrainingResponse -> LeuronStatResponse -> (Maybe LikeResponse) -> (Maybe StarResponse) -> Permissions -> LeuronPackResponse
@@ -21728,12 +20226,6 @@ type LeuronPackResponsesR = {
 }
 
 
-_LeuronPackResponses :: Lens' LeuronPackResponses {
-  leuronPackResponses :: (Array LeuronPackResponse)
-}
-_LeuronPackResponses f (LeuronPackResponses o) = LeuronPackResponses <$> f o
-
-
 mkLeuronPackResponses :: (Array LeuronPackResponse) -> LeuronPackResponses
 mkLeuronPackResponses leuronPackResponses =
   LeuronPackResponses{leuronPackResponses}
@@ -21794,15 +20286,6 @@ type PmInPackResponseR = {
   user :: UserSanitizedResponse,
   userId :: Int
 }
-
-
-_PmInPackResponse :: Lens' PmInPackResponse {
-  pmIn :: PmInResponse,
-  pmInId :: Int,
-  user :: UserSanitizedResponse,
-  userId :: Int
-}
-_PmInPackResponse f (PmInPackResponse o) = PmInPackResponse <$> f o
 
 
 mkPmInPackResponse :: PmInResponse -> Int -> UserSanitizedResponse -> Int -> PmInPackResponse
@@ -21879,12 +20362,6 @@ type PmInPackResponsesR = {
 }
 
 
-_PmInPackResponses :: Lens' PmInPackResponses {
-  pmInPackResponses :: (Array PmInPackResponse)
-}
-_PmInPackResponses f (PmInPackResponses o) = PmInPackResponses <$> f o
-
-
 mkPmInPackResponses :: (Array PmInPackResponse) -> PmInPackResponses
 mkPmInPackResponses pmInPackResponses =
   PmInPackResponses{pmInPackResponses}
@@ -21945,15 +20422,6 @@ type PmOutPackResponseR = {
   user :: UserSanitizedResponse,
   userId :: Int
 }
-
-
-_PmOutPackResponse :: Lens' PmOutPackResponse {
-  pmOut :: PmOutResponse,
-  pmOutId :: Int,
-  user :: UserSanitizedResponse,
-  userId :: Int
-}
-_PmOutPackResponse f (PmOutPackResponse o) = PmOutPackResponse <$> f o
 
 
 mkPmOutPackResponse :: PmOutResponse -> Int -> UserSanitizedResponse -> Int -> PmOutPackResponse
@@ -22028,12 +20496,6 @@ newtype PmOutPackResponses = PmOutPackResponses {
 type PmOutPackResponsesR = {
   pmOutPackResponses :: (Array PmOutPackResponse)
 }
-
-
-_PmOutPackResponses :: Lens' PmOutPackResponses {
-  pmOutPackResponses :: (Array PmOutPackResponse)
-}
-_PmOutPackResponses f (PmOutPackResponses o) = PmOutPackResponses <$> f o
 
 
 mkPmOutPackResponses :: (Array PmOutPackResponse) -> PmOutPackResponses
